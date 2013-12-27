@@ -23,7 +23,7 @@ The library is quite simple:
 
 Or if you want more control:
 
-    p = platec.create(seed=3,map_side=512,sea_level=0.65,erosion_perios=60,
+    p = platec.create(seed=3,map_side=512,sea_level=0.65,erosion_period=60,
                       folding_ratio=0.02,aggr_overlap_abs=1000000,
                       aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
 
