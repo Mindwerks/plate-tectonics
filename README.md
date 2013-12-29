@@ -28,3 +28,8 @@ Or if you want more control:
                       aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
 
 Enjoy!
+
+projects using it
+=================
+
+I created this wrapper for using this fantastic piece of code in [lands](http://github.com/ftomassetti/lands)
