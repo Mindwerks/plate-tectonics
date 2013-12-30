@@ -1,4 +1,4 @@
-pyplatec
+PyPlatec
 ========
 
 Plate simulation for python (wrapper of an existing C/C++ library).
