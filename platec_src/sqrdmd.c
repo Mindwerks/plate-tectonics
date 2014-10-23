@@ -141,7 +141,8 @@ extern int sqrdmd(float* map, int size, float rgh)
 		 * Calculate each sub diamonds' center point ("square step").
 		 * Diamond gets its left and right vertices from the square
 		 * corners of last iteration and its top and bottom vertices
-		 * from the "diamond step" we just performed.					 *************************************************************/
+		 * from the "diamond step" we just performed.					 
+		 *************************************************************/
 
 		i = step >> 1;
 		p0 = step;  /* right */

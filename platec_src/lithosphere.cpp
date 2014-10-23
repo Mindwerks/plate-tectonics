@@ -65,11 +65,18 @@ size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 lithosphere::lithosphere(size_t map_side_length, float sea_level,
 	size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
 	float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
-	hmap(0), plates(0), aggr_overlap_abs(aggr_ratio_abs),
-	aggr_overlap_rel(aggr_ratio_rel), cycle_count(0),
-	erosion_period(_erosion_period), folding_ratio(_folding_ratio),
-	iter_count(0), map_side(map_side_length + 1), max_cycles(num_cycles),
-	max_plates(0), num_plates(0)
+	hmap(0), 
+	plates(0), 
+	aggr_overlap_abs(aggr_ratio_abs),
+	aggr_overlap_rel(aggr_ratio_rel), 
+	cycle_count(0),
+	erosion_period(_erosion_period), 
+	folding_ratio(_folding_ratio),
+	iter_count(0), 
+	map_side(map_side_length + 1), 
+	max_cycles(num_cycles),
+	max_plates(0), 
+	num_plates(0)
 {
 	const size_t A = map_side * map_side;
 	float* tmp = new float[A];
@@ -284,9 +291,6 @@ void lithosphere::createPlates(size_t num_plates) throw()
 		const size_t height = y1 - y0;
 		float* plt = new float[width * height];
 
-//		printf("plate %u: (%u, %u)x(%u, %u)\n", i, x0, y0, width,
-//			height);
-
 		// Copy plate's height data from global map into local map.
 		for (size_t y = y0, j = 0; y < y1; ++y)
 			for (size_t x = x0; x < x1; ++x, ++j)
@@ -336,10 +340,6 @@ void lithosphere::update() throw()
 	if (systemKineticEnergy > peak_Ek)
 		peak_Ek = systemKineticEnergy;
 
-//	printf("%f > %f, ", totalVelocity, RESTART_SPEED_LIMIT);
-//	printf("%f/%f = %f > %f\n", systemKineticEnergy, peak_Ek,
-//		systemKineticEnergy / peak_Ek, RESTART_ENERGY_RATIO);
-
 	// If there's no continental collisions during past iterations,
 	// then interesting activity has ceased and we should restart.
 	// Also if the simulation has been going on for too long already,
@@ -368,7 +368,6 @@ void lithosphere::update() throw()
 		plates[i]->move();
 	}
 
-//	static size_t max_collisions = 0;	// DEBUG!!!
 	size_t oceanic_collisions = 0;
 	size_t continental_collisions = 0;
 
@@ -608,10 +607,6 @@ void lithosphere::update() throw()
 			coll_ratio = coll_ratio_i;
 			coll_ratio += (coll_ratio_j - coll_ratio) *
 				(coll_ratio_j > coll_ratio);
-
-//			printf("min(%u, %u) = %u, max(%f, %f) = %f\n",
-//				coll_count_i, coll_count_j, coll_count,
-//				coll_ratio_i, coll_ratio_j, coll_ratio);
 
 			if ((coll_count > aggr_overlap_abs) |
 			    (coll_ratio > aggr_overlap_rel))
