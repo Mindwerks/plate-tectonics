@@ -7,9 +7,9 @@ Take a look at the simulation at work: http://www.youtube.com/watch?v=bi4b45tMEP
 
 The original project is here: http://sourceforge.net/projects/platec/ . That project is part of a Bachelor of Engineering thesis in Metropolia University of Applied Sciences, Helsinki, Finland. The thesis is freely downloadable from http://urn.fi/URN:NBN:fi:amk-201204023993 .
 
-Kudos to the original author!
+Kudos to the original author: Lauri Viitanen!
 
-usage
+Usage
 =====
 
 The library is quite simple:
@@ -29,7 +29,7 @@ Or if you want more control:
 
 Enjoy!
 
-projects using it
+Projects using it
 =================
 
 I created this wrapper for using this fantastic piece of code in [lands](http://github.com/ftomassetti/lands)
