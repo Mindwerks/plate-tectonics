@@ -1033,3 +1033,8 @@ void lithosphere::restart() throw()
 	delete[] tmp;
 }
 
+// To be called from C
+extern "C" size_t lithosphere_getMapSide ( void* object)
+{
+    return static_cast<lithosphere*>( object)->getSideLength();
+}

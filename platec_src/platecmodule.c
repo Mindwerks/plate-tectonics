@@ -62,7 +62,9 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
         return NULL; 
     float *hm = platec_api_get_heightmap(litho);
 
-    PyObject* res =  makelist(hm,512*512);
+    size_t map_side = lithosphere_getMapSide(litho);
+
+    PyObject* res =  makelist(hm,map_side*map_side);
     Py_INCREF(res);
     return res;
 }
