@@ -23,8 +23,13 @@
 extern "C" {
 #endif
 
-void*  platec_api_create(size_t, float, size_t, float,
-                          size_t, float, size_t, size_t);
+void *  platec_api_create(
+        size_t map_side,
+        float sea_level,
+        size_t erosion_period, float folding_ratio,
+        size_t aggr_overlap_abs, float aggr_overlap_rel,
+        size_t cycle_count, size_t num_plates);
+
 void    platec_api_destroy(size_t);
 const size_t* platec_api_get_agemap(size_t);
 const float* platec_api_get_heightmap(void*);
