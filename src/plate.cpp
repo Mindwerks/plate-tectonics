@@ -818,7 +818,7 @@ void plate::move() throw()
 
 	// Apply some circular motion to the plate.
 	// Force the radius of the circle to remain fixed by adjusting
-	// anglular velocity (which depends on plate's velocity).
+	// angular velocity (which depends on plate's velocity).
 	float alpha = rot_dir * velocity / (world_side * 0.33);
 	float _cos = cos(alpha * velocity);
 	float _sin = sin(alpha * velocity);

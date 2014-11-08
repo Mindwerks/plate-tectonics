@@ -198,9 +198,8 @@ void lithosphere::createPlates(size_t num_plates) throw()
 	// "Grow" plates from their origins until surface is fully populated.
 	size_t max_border = 1;
 	size_t i;
-	while (max_border)
-		for (max_border = i = 0; i < num_plates; ++i)
-		{
+	while (max_border) {
+		for (max_border = i = 0; i < num_plates; ++i) {
 			const size_t N = area[i].border.size();
 			max_border = max_border > N ? max_border : N;
 
@@ -274,6 +273,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
 			area[i].border[j] = area[i].border.back();
 			area[i].border.pop_back();
 		}
+    }
 
 	plates = new plate*[num_plates];
 
