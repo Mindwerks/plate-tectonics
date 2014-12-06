@@ -203,7 +203,7 @@ class plate
 	protected:
 	private:
 
-	/// Container for details about a segmeted crust area on this plate.
+	/// Container for details about a segmented crust area on this plate.
 	class segmentData
 	{
 	  public:
