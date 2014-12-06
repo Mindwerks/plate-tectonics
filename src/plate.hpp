@@ -30,11 +30,11 @@ class plate
 
 	/// Initializes plate with the supplied height map.
 	///
-	/// @param	m	Pointer to array to height map of terrain.
-	/// @param	w	Width of height map in pixels.
-	/// @param	h	Height of height map in pixels.
-	/// @param	_x	X of height map's left-top corner on world map.
-	/// @param	_y	Y of height map's left-top corner on world map.
+	/// @param	m	       Pointer to array to height map of terrain.
+	/// @param	w	       Width of height map in pixels.
+	/// @param	h	       Height of height map in pixels.
+	/// @param	_x	       X of height map's left-top corner on world map.
+	/// @param	_y	       Y of height map's left-top corner on world map.
 	/// @param	world_side Length of world map's either side in pixels.
 	plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	      size_t plate_age, size_t world_side)
