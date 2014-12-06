@@ -948,10 +948,10 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 //			old_width, old_height,
 //			d_lft, d_top, d_rgt, d_btm, width, height);
 
-		float* tmph = new float[width*height];
-		AgeMap tmpa = AgeMap(width, height);
+		HeightMap tmph = HeightMap(width, height);
+		AgeMap    tmpa = AgeMap(width, height);
 		size_t* tmps = new size_t[width*height];
-		memset(tmph, 0, width*height*sizeof(float));
+		tmph.set_all(0);
 		tmpa.set_all(0);
 		memset(tmps, 255, width*height*sizeof(size_t));
 
@@ -971,7 +971,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		delete[] map;
 		delete[] age;
 		delete[] segment;
-		map = tmph;
+		map = new float[width*height];
+		tmph.copy_raw_to(map);
 		age = new size_t[width*height];
 		tmpa.copy_raw_to(age);
 		segment = tmps;
