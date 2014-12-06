@@ -52,19 +52,19 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
     	throw invalid_argument("world_side should be greater than zero");
     }
 
-	const size_t A = w * h; // A as in Area.
+	const size_t plate_area = w * h;
 	const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
 	size_t i, j, k;
 
-	map = new float[A];
-	age = new size_t[A];
-	segment = new size_t[A];
+	map     = new float[plate_area];
+	age     = new size_t[plate_area];
+	segment = new size_t[plate_area];
 
 	velocity = 1;
 	rot_dir = rand() & 1 ? 1 : -1;
 	vx = cos(angle) * INITIAL_SPEED_X;
 	vy = sin(angle) * INITIAL_SPEED_X;
-	memset(segment, 255, A * sizeof(size_t));
+	memset(segment, 255, plate_area * sizeof(size_t));
 
 	for (j = k = 0; j < height; ++j)
 		for (i = 0; i < width; ++i, ++k)

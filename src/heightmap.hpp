@@ -5,13 +5,26 @@
 
 using namespace std;
 
-class HeightMap
+template <typename Value>
+class Matrix
 {
 	public:
 
-	HeightMap(unsigned int width, unsigned int height);
-	~HeightMap();
-    inline void set(unsigned int x, unsigned y, float value)
+    Matrix(unsigned int width, unsigned int height)
+        : _width(width), _height(height)
+    {
+        if (width == 0 || height == 0) {
+            throw invalid_argument("width and height should be greater than zero");
+        }
+        _data = new Value[width * height];
+    };
+
+    ~Matrix()
+    {
+        delete _data;
+    }
+
+    inline void set(unsigned int x, unsigned y, Value value)
     {
         if (x >= _width || y >= _height) {
             throw invalid_argument("invalid coordinates");
@@ -19,7 +32,7 @@ class HeightMap
         _data[y * _width + x] = value;
     }
 
-    inline float get(unsigned int x, unsigned y)
+    inline Value get(unsigned int x, unsigned y)
     {
         if (x >= _width || y >= _height) {
             throw invalid_argument("invalid coordinates");
@@ -29,9 +42,11 @@ class HeightMap
 
 	private:
 
-    float* _data;
+    Value* _data;
     unsigned int _width;
     unsigned int _height;
 };
+
+typedef Matrix<float> HeightMap;
 
 #endif
