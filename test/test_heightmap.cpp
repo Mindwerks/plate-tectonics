@@ -27,3 +27,13 @@ TEST(HeightMapCopyConstructor)
   CHECK(0.5f == hm2.get(40, 18));
   CHECK(0.9f == hm2.get(49, 19));
 }
+
+TEST(HeightMapSetAll)
+{
+  HeightMap hm = HeightMap(50, 20);
+  hm.set_all( 1.789f );
+  CHECK(1.789f == hm.get( 0,  0));
+  CHECK(1.789f == hm.get(20, 18));
+  CHECK(1.789f == hm.get(40, 18));
+  CHECK(1.789f == hm.get(49, 19));
+}
