@@ -22,7 +22,7 @@
 #include <cstdlib> // rand
 #include <cstdio> // DEBUG print
 #include <vector>
-#include <stdexcept> // std::invalid_argume
+#include <stdexcept> // std::invalid_argument
 
 #include "plate.hpp"
 
