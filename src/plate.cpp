@@ -25,6 +25,7 @@
 #include <stdexcept> // std::invalid_argument
 
 #include "plate.hpp"
+#include "heightmap.hpp"
 
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
@@ -948,10 +949,10 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 //			d_lft, d_top, d_rgt, d_btm, width, height);
 
 		float* tmph = new float[width*height];
-		size_t* tmpa = new size_t[width*height];
+		AgeMap tmpa = AgeMap(width, height);
 		size_t* tmps = new size_t[width*height];
 		memset(tmph, 0, width*height*sizeof(float));
-		memset(tmpa, 0, width*height*sizeof(size_t));
+		tmpa.set_all(0);
 		memset(tmps, 255, width*height*sizeof(size_t));
 
 		// copy old plate into new.
@@ -971,7 +972,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		delete[] age;
 		delete[] segment;
 		map = tmph;
-		age = tmpa;
+		age = new size_t[width*height];
+		tmpa.copy_raw_to(age);
 		segment = tmps;
 
 		// Shift all segment data to match new coordinates.

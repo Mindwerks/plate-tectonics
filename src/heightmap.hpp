@@ -86,6 +86,16 @@ class Matrix
         return this->_data[index];
     }
 
+    void copy_raw_to(Value*& dst) const
+    {
+        memcpy(dst, _data, sizeof(Value) * _width * _height);
+    }
+
+    void from(Value* src)
+    {
+        memcpy(_data, src, sizeof(Value) * _width * _height);
+    }
+
 	private:
 
     Value* _data;
@@ -93,6 +103,7 @@ class Matrix
     unsigned int _height;
 };
 
-typedef Matrix<float> HeightMap;
+typedef Matrix<float>  HeightMap;
+typedef Matrix<size_t> AgeMap;
 
 #endif
