@@ -1,4 +1,5 @@
 #include "heightmap.hpp"
+#include <cmath>
 #include <UnitTest++/UnitTest++.h>
 
 TEST(HeightMapSetAndGet)
@@ -51,4 +52,30 @@ TEST(HeightMapSetAll)
   CHECK(1.789f == hm.get(20, 18));
   CHECK(1.789f == hm.get(40, 18));
   CHECK(1.789f == hm.get(49, 19));
+}
+
+#define CHECKF_EQ(a,b) CHECK( std::abs((float)(a-b)) < 0.001f)
+
+TEST(HeightMapIndexedAccessOperator)
+{
+  HeightMap hm = HeightMap(50, 20);
+  hm.set( 0,  0, 0.2f);
+  hm.set(20, 18, 0.7f);
+  hm.set(40, 18, 0.5f);
+  hm.set(49, 19, 0.9f);
+
+  CHECK(0.2f == hm[0]);
+  CHECK(0.7f == hm[920]);
+  CHECK(0.5f == hm[940]);
+  CHECK(0.9f == hm[999]);
+
+  hm[0]   += 0.1;
+  hm[920] += 0.1;
+  hm[940] -= 0.1;
+  hm[999] -= 0.1;
+
+  CHECKF_EQ(0.3f, hm[0]);
+  CHECKF_EQ(0.8f, hm[920]);
+  CHECKF_EQ(0.4f, hm[940]);
+  CHECKF_EQ(0.8f, hm[999]);
 }
