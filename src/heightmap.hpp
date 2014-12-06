@@ -19,6 +19,17 @@ class Matrix
         _data = new Value[width * height];
     };
 
+    Matrix( const Matrix<Value>& other )
+        : _width(other._width), _height(other._height)
+    {
+        _data = new Value[_width * _height];
+        for (int x=0; x<_width;x++){
+            for (int y=0; y<_height;y++){
+                set(x,y,other.get(x,y));
+            }
+        }
+    }
+
     ~Matrix()
     {
         delete _data;
