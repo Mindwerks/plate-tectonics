@@ -31,24 +31,6 @@
 
 using namespace std;
 
-/*
-// http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
-static float invSqrt(float x)
-{
-	float xhalf = 0.5f*x;
-        union { float x; int i; } u;
-
-        u.x = x;
-        u.i = 0x5f3759df - (u.i >> 1);
-        x = u.x * (1.5f - xhalf * u.x * u.x);
-        return x;
-}
-
-static float fastSqrt(float x)
-{
-	return 1.0f / invSqrt(x);
-}
-*/
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
              width(w), height(h), world_side(_world_side),
