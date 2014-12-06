@@ -239,23 +239,23 @@ class plate
 	/// @return		Offset in height map or -1 on error.
 	size_t getMapIndex(size_t* x, size_t* y) const throw();
 
-	float* map; ///< Bitmap of plate's structure/height.
-	size_t* age; ///< Bitmap of plate's soil's age: timestamp of creation.
+	float* map;           ///< Bitmap of plate's structure/height.
+	size_t* age;          ///< Bitmap of plate's soil's age: timestamp of creation.
 	size_t width, height; ///< Height map's dimensions along X and Y axis.
-	size_t world_side; ///< Container world map's either side in pixels.
+	size_t world_side;    ///< Container world map's either side in pixels.
 
-	float mass; ///< Amount of crust that constitutes the plate.
-	float left, top; ///< Height map's left-top corner in world coords.
-	float cx, cy; ///< X and Y components of the center of mass of plate.
+	float mass;           ///< Amount of crust that constitutes the plate.
+	float left, top;      ///< Height map's left-top corner in world coords.
+	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
-	float velocity; ///< Plate's velocity.
-	float vx, vy; ///< X and Y components of plate's direction unit vector.
-	float dx, dy; ///< X and Y components of plate's acceleration vector.
-	float rot_dir; ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
+	float velocity;       ///< Plate's velocity.
+	float vx, vy;         ///< X and Y components of plate's direction unit vector.
+	float dx, dy;         ///< X and Y components of plate's acceleration vector.
+	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 
 	std::vector<segmentData> seg_data; ///< Details of each crust segment.
-	size_t* segment; ///< Segment ID of each piece of continental crust.
-	size_t activeContinent; ///< Segment ID of the cont. that's processed.
+	size_t* segment;                   ///< Segment ID of each piece of continental crust.
+	size_t activeContinent;            ///< Segment ID of the cont. that's processed.
 };
 
 #endif
