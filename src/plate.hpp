@@ -19,7 +19,7 @@
 #ifndef PLATE_HPP
 #define PLATE_HPP
 
-#include <cstring>
+#include <cstring> // for size_t
 #include <vector>
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
