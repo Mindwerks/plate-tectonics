@@ -29,11 +29,11 @@
 class plate;
 
 /**
- * Litosphere is the rigid outermost shell of a rocky planet.
+ * Lithosphere is the rigid outermost shell of a rocky planet.
  *
- * Litosphere is divided into several rigid areas i.e. plates. In time passing
+ * Lithosphere is divided into several rigid areas i.e. plates. In time passing
  * the topography of the planet evolves as the result of plate dynamics.
- * Litosphere is the class responsibile for creating and managing all the
+ * Lithosphere is the class responsibile for creating and managing all the
  * plates. It updates heightmap to match the current setup of plates and thus
  * offers caller an easy access to system's topography.
  * 
@@ -46,7 +46,7 @@ class lithosphere
 	 * Initialize system's height map i.e. topography.
 	 *
 	 * @param map_side_length Square height map's side's length in pixels.
-	 * @param sea_level Amount of surcafe area that becomes oceanic crust.
+	 * @param sea_level Amount of surface area that becomes oceanic crust.
 	 * @param _erosion_period # of iterations between global erosion.
 	 * @param _folding_ratio Percent of overlapping crust that's folded.
 	 * @param aggr_ratio_abs # of overlapping points causing aggregation.
