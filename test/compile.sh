@@ -1,2 +1,4 @@
 #!/bin/sh
-g++ test_plate.cpp -l UnitTest++ -o tests_runner
+g++ -c ../src/plate.cpp
+g++ -c test_plate.cpp -I ../src
+g++ plate.o test_plate.o -l UnitTest++ -o tests_runner
