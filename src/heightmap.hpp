@@ -32,7 +32,7 @@ class Matrix
 
     ~Matrix()
     {
-        delete _data;
+        delete[] _data;
     }
 
     const void set_all(const Value& value)
@@ -61,12 +61,21 @@ class Matrix
         return _data[y * _width + x];
     }
 
-    Matrix<Value> const& operator=(Matrix<Value> const& dst)
+    Matrix<Value> & operator=(const Matrix<Value>& other)
     {
-        _width = dst._width;
-        _height = dst._height;
-        memcpy(_data, dst._data, sizeof(Value) * _width * _height);
-        return dst;
+        if (this != &other) // prevent self-assignment
+        {
+            _width  = other._width;
+            _height = other._height;
+            delete[] _data;
+            _data = new Value[_width * _height];
+            for (int x=0; x<_width;x++){
+                for (int y=0; y<_height;y++){
+                    set(x,y,other.get(x,y));
+                }
+            }
+        }
+        return *this;
     }
 
     Value& operator[](unsigned int index) const
