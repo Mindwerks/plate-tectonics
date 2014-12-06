@@ -24,20 +24,53 @@ class Matrix
         delete _data;
     }
 
-    inline void set(unsigned int x, unsigned y, Value value)
+    const Matrix<Value> copy()
+    {
+        Matrix<Value> copied(_width, _height);
+        memcpy(copied._data, _data, sizeof(Value) * _width * _height);
+        return copied;
+    }
+
+    const void set_all(const Value& value)
+    {
+        for (int x=0; x<_width;x++){
+            for (int y=0; y<_height;y++){
+                set(x,y,value);
+            }
+        }
+    }
+
+    inline const Value& set(unsigned int x, unsigned y, const Value& value)
     {
         if (x >= _width || y >= _height) {
             throw invalid_argument("invalid coordinates");
         }
         _data[y * _width + x] = value;
+        return value;
     }
 
-    inline Value get(unsigned int x, unsigned y)
+    inline Value get(unsigned int x, unsigned y) const
     {
         if (x >= _width || y >= _height) {
             throw invalid_argument("invalid coordinates");
         }
         return _data[y * _width + x];
+    }
+
+    Matrix<Value> const& operator=(Matrix<Value> const& dst)
+    {
+        _width = dst._width;
+        _height = dst._height;
+        memcpy(_data, dst._data, sizeof(Value) * _width * _height);
+        return dst;
+    }
+
+    Value& operator[](unsigned int index) const
+    {
+        if (index >= (_width*_height)) {
+            throw invalid_argument("invalid index");
+        }
+        return this->_data[index];
     }
 
 	private:
