@@ -45,7 +45,7 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
     if (_x < 0 || _y <0) {
     	throw invalid_argument("coordinates of the plate should be greater or equal to zero");
     }
-    if (age < 0) {
+    if (plate_age < 0) {
     	throw invalid_argument("age of the plate should be greater or equal to zero");
     }
     if (world_side <= 0) {

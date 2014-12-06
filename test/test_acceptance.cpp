@@ -33,6 +33,6 @@ TEST(PlatecGlobalGeneration)
   CHECK(0.13348780572414398f == heightmap[0]);
   CHECK(0.21046529710292816f == heightmap[100]);
   CHECK(0.17170283198356628f == heightmap[200]);
-  CHECK(2.9937195777893066f == heightmap[100000]);
+  CHECK(2.9937195777893066f  == heightmap[100000]);
   CHECK(0.17201107740402222f == heightmap[262143]);
 }
