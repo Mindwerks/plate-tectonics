@@ -2,6 +2,12 @@
 #include <UnitTest++/UnitTest++.h>
 #include <cstdlib>
 
+///
+/// These sort of acceptance tests are derived by running platec
+/// (the original library). We want to refactor the code while
+/// obtaining the same results.
+///
+
 TEST(PlatecCreate)
 {
   srand(3);
