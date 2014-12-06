@@ -33,7 +33,7 @@ class plate;
  *
  * Lithosphere is divided into several rigid areas i.e. plates. In time passing
  * the topography of the planet evolves as the result of plate dynamics.
- * Lithosphere is the class responsibile for creating and managing all the
+ * Lithosphere is the class responsible for creating and managing all the
  * plates. It updates heightmap to match the current setup of plates and thus
  * offers caller an easy access to system's topography.
  * 
