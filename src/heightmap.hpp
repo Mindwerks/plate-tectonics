@@ -35,13 +35,6 @@ class Matrix
         delete _data;
     }
 
-    const Matrix<Value> copy()
-    {
-        Matrix<Value> copied(_width, _height);
-        memcpy(copied._data, _data, sizeof(Value) * _width * _height);
-        return copied;
-    }
-
     const void set_all(const Value& value)
     {
         for (int x=0; x<_width;x++){
