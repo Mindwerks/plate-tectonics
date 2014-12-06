@@ -22,6 +22,7 @@
 #include <cstdlib> // rand
 #include <cstdio> // DEBUG print
 #include <vector>
+#include <stdexcept> // std::invalid_argume
 
 #include "plate.hpp"
 
@@ -53,12 +54,25 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              width(w), height(h), world_side(_world_side),
              mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0)
 {
+	if (NULL == m) {
+		throw invalid_argument("the given heightmap should not be null");
+    }
+    if (w <= 0 || h <= 0) {
+    	throw invalid_argument("width and height of the plate should be greater than zero");
+    }
+    if (_x < 0 || _y <0) {
+    	throw invalid_argument("coordinates of the plate should be greater or equal to zero");
+    }
+    if (age < 0) {
+    	throw invalid_argument("age of the plate should be greater or equal to zero");
+    }
+    if (world_side <= 0) {
+    	throw invalid_argument("world_side should be greater than zero");
+    }
+
 	const size_t A = w * h; // A as in Area.
 	const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
 	size_t i, j, k;
-
-	if (!m)
-		return;
 
 	map = new float[A];
 	age = new size_t[A];
