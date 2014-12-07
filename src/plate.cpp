@@ -32,7 +32,7 @@
 
 using namespace std;
 
-#define VERIFY(cond) { if (!(cond)) { throw domain_error("Condition violated");}}
+#define VERIFY(cond) { if (!(cond)) { throw domain_error("Condition violated");};};
 
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
@@ -213,15 +213,20 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	    y &= height - 1;
 	}
 
+	//VERIFY(age_map.equals(age));
+
 	index = y * width + x;
 	if (index < width * height && map[index] > 0)
 	{
 		t = (map[index] * age[index] + z * t) / (map[index] + z);
 		age[index] = t * (z > 0);
+		//age_map[index] = t * (z > 0);
 
 		map[index] += z;
 		mass += z;
 	}
+
+	//VERIFY(age_map.equals(age));
 }
 
 float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
@@ -985,7 +990,10 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		map = new float[width*height];
 		tmph.copy_raw_to(map);
 		age = new size_t[width*height];
+		age_map = AgeMap(width, height);
 		tmpa.copy_raw_to(age);
+		age_map = tmpa;
+		VERIFY(age_map.equals(age));
 		segment = tmps;
 
 		// Shift all segment data to match new coordinates.
@@ -1021,10 +1029,13 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 	t = (t & ~old_crust) | ((size_t)((map[index] * age[index] + z * t) /
 		(map[index] + z)) & old_crust);
 	age[index] = (t & new_crust) | (age[index] & ~new_crust);
+	age_map[index] = (t & new_crust) | (age_map[index] & ~new_crust);
 
 	mass -= map[index];
 	map[index] = z;		// Set new crust height to desired location.
 	mass += z;		// Update mass counter.
+
+	//VERIFY(age_map.equals(age));
 }
 
 void plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
