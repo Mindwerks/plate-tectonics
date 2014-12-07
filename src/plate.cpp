@@ -55,7 +55,7 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 
 	const size_t plate_area = w * h;
 	const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
-	size_t i, j, k;
+	size_t k;
 
 	map     = new float[plate_area];
 	age     = new size_t[plate_area];
@@ -67,15 +67,16 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	vy = sin(angle) * INITIAL_SPEED_X;
 	memset(segment, 255, plate_area * sizeof(size_t));
 
-	for (j = k = 0; j < height; ++j)
-		for (i = 0; i < width; ++i, ++k)
+	for (size_t y = k = 0; y < height; ++y)
+	{
+		for (size_t x = 0; x < width; ++x, ++k)
 		{
 			// Clone map data and count crust mass.
 			mass += map[k] = m[k];
 
 			// Calculate center coordinates weighted by mass.
-			cx += i * m[k];
-			cy += j * m[k];
+			cx += x * m[k];
+			cy += y * m[k];
 
 			// Set the age of ALL points in this plate to same
 			// value. The right thing to do would be to simulate
@@ -84,6 +85,7 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 			// plate's (oceanic) crust receive an age.
 			age[k] = plate_age & -(m[k] > 0);
 		}
+    }
 
 	// Normalize center of mass coordinates.
 	cx /= mass;
@@ -199,8 +201,12 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	x = (size_t)((int)x + dx);
 	y = (size_t)((int)y + dy);
 
-	if (width == world_side) x &= width - 1;
-	if (height == world_side) y &= height - 1;
+	if (width  == world_side) {
+	    x &= width - 1;
+	}
+	if (height == world_side) {
+	    y &= height - 1;
+	}
 
 	index = y * width + x;
 	if (index < width * height && map[index] > 0)
