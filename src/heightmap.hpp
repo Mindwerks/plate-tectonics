@@ -2,6 +2,7 @@
 #define HEIGHTMAP_HPP
 
 #include <stdexcept> // std::invalid_argument
+#include <cstring>
 
 using namespace std;
 
@@ -86,8 +87,11 @@ class Matrix
         return this->_data[index];
     }
 
-    void copy_raw_to(Value*& dst) const
+    void copy_raw_to(Value*& dst, bool allocate = false) const
     {
+        if (allocate) {
+            dst = new Value[_width * _height];
+        }
         memcpy(dst, _data, sizeof(Value) * _width * _height);
     }
 

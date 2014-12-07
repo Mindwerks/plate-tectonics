@@ -78,3 +78,33 @@ TEST(HeightMapIndexedAccessOperator)
   CHECKF_EQ(0.4f, hm[940]);
   CHECKF_EQ(0.8f, hm[999]);
 }
+
+TEST(HeightMapCopyRawToNoAllocate)
+{
+    HeightMap hm = HeightMap(30, 10);
+    hm.set( 3, 8, 0.123);
+    hm.set(23, 4, 0.234);
+    hm.set(12, 9, 0.345);
+
+    float* dst = new float[300];
+    hm.copy_raw_to(dst);
+
+    CHECKF_EQ(0.123f, hm.get( 3, 8));
+    CHECKF_EQ(0.234f, hm.get(23, 4));
+    CHECKF_EQ(0.345f, hm.get(12, 9));
+}
+
+TEST(HeightMapCopyRawToAllocate)
+{
+    HeightMap hm = HeightMap(30, 10);
+    hm.set( 3, 8, 0.123);
+    hm.set(23, 4, 0.234);
+    hm.set(12, 9, 0.345);
+
+    float* dst = NULL;
+    hm.copy_raw_to(dst, true);
+
+    CHECKF_EQ(0.123f, hm.get( 3, 8));
+    CHECKF_EQ(0.234f, hm.get(23, 4));
+    CHECKF_EQ(0.345f, hm.get(12, 9));
+}
