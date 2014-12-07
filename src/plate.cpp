@@ -60,7 +60,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	size_t k;
 
 	map     = new float[plate_area];
-	age     = new size_t[plate_area];
 	segment = new size_t[plate_area];
 
 	velocity = 1;
@@ -85,12 +84,9 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 			// the generation of new oceanic crust as if the plate
 			// had been moving to its current direction until all
 			// plate's (oceanic) crust receive an age.
-			age[k] = plate_age & -(m[k] > 0);
 			age_map.set(x, y, plate_age & -(m[k] > 0));
 		}
     }
-
-    VERIFY(age_map.equals(age));
 
 	// Normalize center of mass coordinates.
 	cx /= mass;
@@ -100,7 +96,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 plate::~plate() throw()
 {
 	delete[] map; map = 0;
-	delete[] age; age = 0;
 	delete[] segment; segment = 0;
 }
 
@@ -213,14 +208,14 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	    y &= height - 1;
 	}
 
+    //age_map.from(age);
 	//VERIFY(age_map.equals(age));
 
 	index = y * width + x;
 	if (index < width * height && map[index] > 0)
 	{
-		t = (map[index] * age[index] + z * t) / (map[index] + z);
-		age[index] = t * (z > 0);
-		//age_map[index] = t * (z > 0);
+		t = (map[index] * age_map[index] + z * t) / (map[index] + z);
+		age_map[index] = t * (z > 0);
 
 		map[index] += z;
 		mass += z;
@@ -292,7 +287,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 		if ((segment[i] == seg_id) & (map[i] > 0))
 		{
 			p->addCrustByCollision(wx + x - lx, wy + y - ly,
-				map[i], age[i]);
+				map[i], age_map[i]);
 
 			mass -= map[i];
 			map[i] = 0;
@@ -802,13 +797,13 @@ float plate::getCrust(size_t x, size_t y) const throw()
 size_t plate::getCrustTimestamp(size_t x, size_t y) const throw()
 {
 	const size_t index = getMapIndex(&x, &y);
-	return index < (size_t)(-1) ? age[index] : 0;
+	return index < (size_t)(-1) ? age_map[index] : 0;
 }
 
 void plate::getMap(const float** c, const size_t** t) const throw()
 {
 	if (c) *c = map;
-	if (t) *t = age;
+	if (t) *t = age_map.raw_data();
 }
 
 void plate::move() throw()
@@ -978,22 +973,17 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 			const size_t src_i = j * old_width;
 			memcpy(&tmph[dest_i], &map[src_i], old_width *
 				sizeof(float));
-			memcpy(&tmpa[dest_i], &age[src_i], old_width *
+			memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
 				sizeof(size_t));
 			memcpy(&tmps[dest_i], &segment[src_i], old_width *
 				sizeof(size_t));
 		}
 
 		delete[] map;
-		delete[] age;
 		delete[] segment;
 		map = new float[width*height];
 		tmph.copy_raw_to(map);
-		age = new size_t[width*height];
-		age_map = AgeMap(width, height);
-		tmpa.copy_raw_to(age);
 		age_map = tmpa;
-		VERIFY(age_map.equals(age));
 		segment = tmps;
 
 		// Shift all segment data to match new coordinates.
@@ -1026,9 +1016,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 	// If no new crust is added, original time remains intact.
 	const size_t old_crust = -(map[index] > 0);
 	const size_t new_crust = -(z > 0);
-	t = (t & ~old_crust) | ((size_t)((map[index] * age[index] + z * t) /
+	t = (t & ~old_crust) | ((size_t)((map[index] * age_map[index] + z * t) /
 		(map[index] + z)) & old_crust);
-	age[index] = (t & new_crust) | (age[index] & ~new_crust);
 	age_map[index] = (t & new_crust) | (age_map[index] & ~new_crust);
 
 	mass -= map[index];

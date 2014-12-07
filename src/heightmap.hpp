@@ -110,6 +110,11 @@ class Matrix
         return true;
     }
 
+    Value* raw_data() const
+    {
+        return _data;
+    }
+
 	private:
 
     Value* _data;
