@@ -32,8 +32,6 @@
 
 using namespace std;
 
-#define VERIFY(cond) { if (!(cond)) { throw domain_error("Condition violated");};};
-
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
              width(w), height(h), world_side(_world_side),
