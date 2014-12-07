@@ -240,7 +240,7 @@ class plate
 	/// @return		Offset in height map or -1 on error.
 	size_t getMapIndex(size_t* x, size_t* y) const throw();
 
-	float* map;           ///< Bitmap of plate's structure/height.
+	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
 	size_t width, height; ///< Height map's dimensions along X and Y axis.
 	size_t world_side;    ///< Container world map's either side in pixels.

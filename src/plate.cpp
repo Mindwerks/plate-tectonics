@@ -37,7 +37,8 @@ using namespace std;
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
              width(w), height(h), world_side(_world_side),
-             mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0), age_map(w, h)
+             mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
+             map(w, h), age_map(w, h)
 {
 	if (NULL == m) {
 		throw invalid_argument("the given heightmap should not be null");
@@ -59,7 +60,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
 	size_t k;
 
-	map     = new float[plate_area];
 	segment = new size_t[plate_area];
 
 	velocity = 1;
@@ -95,7 +95,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 
 plate::~plate() throw()
 {
-	delete[] map; map = 0;
 	delete[] segment; segment = 0;
 }
 
@@ -208,9 +207,6 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	    y &= height - 1;
 	}
 
-    //age_map.from(age);
-	//VERIFY(age_map.equals(age));
-
 	index = y * width + x;
 	if (index < width * height && map[index] > 0)
 	{
@@ -220,8 +216,6 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 		map[index] += z;
 		mass += z;
 	}
-
-	//VERIFY(age_map.equals(age));
 }
 
 float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
@@ -442,7 +436,7 @@ void plate::erode(float lower_bound) throw()
   vector<size_t>* sinks = &sinks_data;
 
   float* tmp = new float[width*height];
-  memcpy(tmp, map, width*height*sizeof(float));
+  map.copy_raw_to(tmp);
 
   // Find all tops.
   for (size_t y = 0; y < height; ++y)
@@ -589,7 +583,7 @@ void plate::erode(float lower_bound) throw()
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 
-  memcpy(map, tmp, width*height*sizeof(float));
+  memcpy(map.raw_data(), tmp, width*height*sizeof(float));
   memset(tmp, 0, width*height*sizeof(float));
   mass = 0;
   cx = cy = 0;
@@ -725,8 +719,7 @@ void plate::erode(float lower_bound) throw()
 	}
     }
 
-  delete[] map;
-  map = tmp;
+  map.from(tmp);
 
   if (mass > 0)
   {
@@ -802,7 +795,7 @@ size_t plate::getCrustTimestamp(size_t x, size_t y) const throw()
 
 void plate::getMap(const float** c, const size_t** t) const throw()
 {
-	if (c) *c = map;
+	if (c) *c = map.raw_data();
 	if (t) *t = age_map.raw_data();
 }
 
@@ -979,10 +972,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 				sizeof(size_t));
 		}
 
-		delete[] map;
 		delete[] segment;
-		map = new float[width*height];
-		tmph.copy_raw_to(map);
+		map = tmph;
 		age_map = tmpa;
 		segment = tmps;
 
@@ -1023,8 +1014,6 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 	mass -= map[index];
 	map[index] = z;		// Set new crust height to desired location.
 	mass += z;		// Update mass counter.
-
-	//VERIFY(age_map.equals(age));
 }
 
 void plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
