@@ -2,6 +2,8 @@
 #include <UnitTest++/UnitTest++.h>
 #include <cstdlib>
 
+#include "testing.hpp"
+
 ///
 /// These sort of acceptance tests are derived by running platec
 /// (the original library). We want to refactor the code while
@@ -30,9 +32,9 @@ TEST(PlatecGlobalGeneration)
   }
   const float* heightmap = platec_api_get_heightmap(p);
 
-  CHECK(0.13348780572414398f == heightmap[0]);
-  CHECK(0.21046529710292816f == heightmap[100]);
-  CHECK(0.17170283198356628f == heightmap[200]);
-  CHECK(2.9937195777893066f  == heightmap[100000]);
-  CHECK(0.17201107740402222f == heightmap[262143]);
+  CHECKF_EQ(0.13348780572414398f, heightmap[0]);
+  CHECKF_EQ(0.21046529710292816f, heightmap[100]);
+  CHECKF_EQ(0.17170283198356628f, heightmap[200]);
+  CHECKF_EQ(2.9937195777893066f, heightmap[100000]);
+  CHECKF_EQ(0.17201107740402222f, heightmap[262143]);
 }
