@@ -264,10 +264,10 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	wx += world_side;
 	wy += world_side;
 
-//	printf("Aggregating segment [%u, %u]x[%u, %u] vs. [%u, %u]@[%u, %u]\n",
-//		seg_data[seg_id].x0, seg_data[seg_id].y0,
-//		seg_data[seg_id].x1, seg_data[seg_id].y1,
-//		width, height, lx, ly);
+    // Aggregating segment [%u, %u]x[%u, %u] vs. [%u, %u]@[%u, %u]\n",
+    //		seg_data[seg_id].x0, seg_data[seg_id].y0,
+    //		seg_data[seg_id].x1, seg_data[seg_id].y1,
+    //		width, height, lx, ly);
 
 	float old_mass = mass;
 
@@ -368,8 +368,6 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 
 	if (rel_dot_n <= 0)
 	{
-//		printf("n=%.2f, %.2f r=%.2f, %.2f, dot=%.4f\n",
-//			nx, ny, rel_vx, rel_vy, rel_dot_n);
 		return; // Exit if objects are moving away from each other.
 	}
 
@@ -945,10 +943,6 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		top -= d_top;
 		top += top >= 0 ? 0 : world_side;
 		height += d_top + d_btm;
-
-//		printf("%ux%u + [%u,%u] + [%u, %u] = %ux%u\n",
-//			old_width, old_height,
-//			d_lft, d_top, d_rgt, d_btm, width, height);
 
 		HeightMap tmph = HeightMap(width, height);
 		AgeMap    tmpa = AgeMap(width, height);
