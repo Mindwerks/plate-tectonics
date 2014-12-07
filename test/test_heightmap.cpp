@@ -108,3 +108,20 @@ TEST(HeightMapCopyRawToAllocate)
     CHECKF_EQ(0.234f, hm.get(23, 4));
     CHECKF_EQ(0.345f, hm.get(12, 9));
 }
+
+TEST(HeightMapFrom)
+{
+    float* src = new float[300];
+    src[0]   = 0.01f;
+    src[100] = 0.02f;
+    src[200] = 0.03f;
+    src[299] = 0.04f;
+
+    HeightMap hm = HeightMap(30, 10);
+    hm.from(src);
+
+    CHECKF_EQ(0.01f, hm.get( 0,  0));
+    CHECKF_EQ(0.02f, hm.get(10,  3));
+    CHECKF_EQ(0.03f, hm.get(20,  6));
+    CHECKF_EQ(0.04f, hm.get(29,  9));
+}
