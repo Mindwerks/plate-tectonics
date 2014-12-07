@@ -21,6 +21,7 @@
 
 #include <cstring> // for size_t
 #include <vector>
+#include "heightmap.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
@@ -241,6 +242,7 @@ class plate
 
 	float* map;           ///< Bitmap of plate's structure/height.
 	size_t* age;          ///< Bitmap of plate's soil's age: timestamp of creation.
+	AgeMap age_map;
 	size_t width, height; ///< Height map's dimensions along X and Y axis.
 	size_t world_side;    ///< Container world map's either side in pixels.
 

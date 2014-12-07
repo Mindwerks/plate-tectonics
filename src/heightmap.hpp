@@ -100,6 +100,16 @@ class Matrix
         memcpy(_data, src, sizeof(Value) * _width * _height);
     }
 
+    bool equals(Value* other)
+    {
+        for (int i=0; i<(_width*_height);i++){
+            if (_data[i] != other[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
 	private:
 
     Value* _data;

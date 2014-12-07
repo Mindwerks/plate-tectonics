@@ -32,10 +32,12 @@
 
 using namespace std;
 
+#define VERIFY(cond) { if (!(cond)) { throw domain_error("Condition violated");}}
+
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
              width(w), height(h), world_side(_world_side),
-             mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0)
+             mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0), age_map(w, h)
 {
 	if (NULL == m) {
 		throw invalid_argument("the given heightmap should not be null");
@@ -84,8 +86,11 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 			// had been moving to its current direction until all
 			// plate's (oceanic) crust receive an age.
 			age[k] = plate_age & -(m[k] > 0);
+			age_map.set(x, y, plate_age & -(m[k] > 0));
 		}
     }
+
+    VERIFY(age_map.equals(age));
 
 	// Normalize center of mass coordinates.
 	cx /= mass;
