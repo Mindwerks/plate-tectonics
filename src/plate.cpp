@@ -1276,15 +1276,15 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 	// smart as HELL to debug it!
 	///////////////////////////////////////////////////////////////////////
 
-	const size_t xOkA = (x >= ilft) & (x < irgt);
-	const size_t xOkB = (x + world_side >= ilft) &
+	const size_t xOkA = (x >= ilft) && (x < irgt);
+	const size_t xOkB = (x + world_side >= ilft) &&
 	                      (x +world_side < irgt);
-	const size_t xOk = xOkA | xOkB;
+	const size_t xOk = xOkA || xOkB;
 
 	const size_t yOkA = (y >= itop) & (y < ibtm);
-	const size_t yOkB = (y + world_side >= itop) &
+	const size_t yOkB = (y + world_side >= itop) &&
 	                      (y +world_side < ibtm);
-	const size_t yOk = yOkA | yOkB;
+	const size_t yOk = yOkA || yOkB;
 
 	x += world_side & -(x < ilft); // Point is within plate's map: wrap
 	y += world_side & -(y < itop); // it around world edges if necessary.
@@ -1292,7 +1292,7 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
 
-	size_t failMask = -(!xOk | !yOk);
+	size_t failMask = -(!xOk || !yOk);
 
 	#ifdef DEBUG
 	if (failMask)
