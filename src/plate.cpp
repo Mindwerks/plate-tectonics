@@ -164,7 +164,7 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	//       However to achieve a little more "natural" look normal
 	//       distributed randomness is added around the "center" point.
 	//       Benefits:
-	//           NEVER adds crust aoutside plate.
+	//           NEVER adds crust outside plate.
 	//           ALWAYS goes inland as much as possible
 	//       Drawbacks:
 	//           Additional logic required
