@@ -1268,8 +1268,8 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 	const size_t irgt = ilft + width;
 	const size_t ibtm = itop + height;
 
-	x &= world_side - 1; // Sometimes input is beyond map dimensions.
-	y &= world_side - 1; // Scale it to fit within world map.
+	x %= world_side; // Sometimes input is beyond map dimensions.
+	y %= world_side; // Scale it to fit within world map.
 
 	///////////////////////////////////////////////////////////////////////
 	// If you think you're smart enough to optimize this then PREPARE to be
