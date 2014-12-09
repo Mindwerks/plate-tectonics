@@ -1290,34 +1290,15 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
 
-	size_t failMask = -(!xOk || !yOk);
-
-	#ifdef DEBUG
-	if (failMask)
-	{
-		bool X_OK = (*px >= ilft && *px < irgt) || 
-			(*px+world_side >= ilft && *px+world_side < irgt);
-		bool Y_OK = (*py >= itop && *py < ibtm) || 
-			(*py+world_side >= itop && *py+world_side < ibtm);
-
-		if (X_OK && Y_OK)
-		{
-			puts("MapIndex has an error, goddamn!");
-			exit(1);
-		}
-	}
-	else if (y >= height || x >= width)
-	{
-		printf("Map Index error: %u <= %u < %u, %u <= %u < %u\n",
-			0, x, width, 0, y, height);
-		printf("%u <= %u < %u, %u <= %u < %u\n", ilft, *px, irgt,
-			itop, *py, ibtm);
-		exit(1);
-	}
-	#endif
-
-	*px = x & ~failMask;
-	*py = y & ~failMask;
-	return (y * width + x) | failMask;
+    if (xOk && yOk) {
+        *px = x;
+        *py = y;
+        return (y * width + x);
+    }
+    else {
+        *px = -1;
+        *py = -1;
+        return -1;
+    }
 }
 
