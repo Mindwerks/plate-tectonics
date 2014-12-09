@@ -1296,8 +1296,6 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
         return (y * width + x);
     }
     else {
-        *px = -1;
-        *py = -1;
         return -1;
     }
 }
