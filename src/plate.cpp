@@ -1261,15 +1261,13 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 
 size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 {
-	size_t x = *px;
-	size_t y = *py;
+	size_t x = *px % world_side;
+	size_t y = *py % world_side;
+
 	const size_t ilft = (size_t)(int)left;
 	const size_t itop = (size_t)(int)top;
 	const size_t irgt = ilft + width;
 	const size_t ibtm = itop + height;
-
-	x %= world_side; // Sometimes input is beyond map dimensions.
-	y %= world_side; // Scale it to fit within world map.
 
 	///////////////////////////////////////////////////////////////////////
 	// If you think you're smart enough to optimize this then PREPARE to be
