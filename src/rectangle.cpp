@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "rectangle.hpp"
 
 size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
@@ -7,9 +8,12 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 
 	const size_t ilft = (size_t)(int)_left;
 	const size_t itop = (size_t)(int)_top;
-	const size_t irgt = _right;
-	const size_t ibtm = _bottom;
-	const size_t width = _right - _left;
+	const size_t irgt = (size_t)(int)_right  + (((size_t)(int)_right  < ilft) ? (size_t)(int)_world_width  : 0);
+	const size_t ibtm = (size_t)(int)_bottom + (((size_t)(int)_bottom < itop)  ? (size_t)(int)_world_height : 0);
+	const int width = irgt - ilft;
+	if (width < 0) {
+	    throw std::invalid_argument("FAIL");
+	}
 
 	///////////////////////////////////////////////////////////////////////
 	// If you think you're smart enough to optimize this then PREPARE to be
@@ -30,12 +34,18 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
 
+    if (x < 0) {
+        throw std::invalid_argument("failure x");
+    }
+    if (y < 0) {
+        throw std::invalid_argument("failure y");
+    }
+
     if (xOk && yOk) {
         *px = x;
         *py = y;
         return (y * width + x);
-    }
-    else {
+    } else {
         return -1;
     }
 }
