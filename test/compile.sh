@@ -1,5 +1,7 @@
 #!/bin/sh
 export FLAGS="-Wall"
+rm *.o
+rm tests_runner
 g++ $FLAGS -c ../src/heightmap.cpp
 g++ $FLAGS -c ../src/plate.cpp
 g++ $FLAGS -c ../src/platecapi.cpp
