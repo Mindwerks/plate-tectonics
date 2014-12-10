@@ -26,6 +26,7 @@
 
 #include "plate.hpp"
 #include "heightmap.hpp"
+#include "rectangle.hpp"
 
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
@@ -1261,40 +1262,12 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 
 size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 {
-	size_t x = *px % world_side;
-	size_t y = *py % world_side;
-
 	const size_t ilft = (size_t)(int)left;
 	const size_t itop = (size_t)(int)top;
 	const size_t irgt = ilft + width;
 	const size_t ibtm = itop + height;
 
-	///////////////////////////////////////////////////////////////////////
-	// If you think you're smart enough to optimize this then PREPARE to be
-	// smart as HELL to debug it!
-	///////////////////////////////////////////////////////////////////////
-
-	const size_t xOkA = (x >= ilft) && (x < irgt);
-	const size_t xOkB = (x + world_side >= ilft) && (x +world_side < irgt);
-	const size_t xOk = xOkA || xOkB;
-
-	const size_t yOkA = (y >= itop) && (y < ibtm);
-	const size_t yOkB = (y + world_side >= itop) && (y +world_side < ibtm);
-	const size_t yOk = yOkA || yOkB;
-
-	x += (x < ilft) ? world_side : 0; // Point is within plate's map: wrap
-	y += (y < itop) ? world_side : 0; // it around world edges if necessary.
-
-	x -= ilft; // Calculate offset within local map.
-	y -= itop;
-
-    if (xOk && yOk) {
-        *px = x;
-        *py = y;
-        return (y * width + x);
-    }
-    else {
-        return -1;
-    }
+    Rectangle rect = Rectangle(world_side, world_side, ilft, irgt, itop, ibtm);
+    return rect.getMapIndex(px, py);
 }
 
