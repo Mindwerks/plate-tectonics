@@ -756,8 +756,12 @@ size_t plate::getCrustTimestamp(size_t x, size_t y) const throw()
 
 void plate::getMap(const float** c, const size_t** t) const throw()
 {
-	if (c) *c = map.raw_data();
-	if (t) *t = age_map.raw_data();
+	if (c) {
+	    *c = map.raw_data();
+	}
+	if (t) {
+	    *t = age_map.raw_data();
+	}
 }
 
 void plate::move() throw()
