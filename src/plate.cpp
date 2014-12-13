@@ -101,12 +101,11 @@ size_t plate::addCollision(size_t wx, size_t wy) throw()
 {
 	size_t lx = wx, ly = wy;
 	size_t index = getMapIndex(&lx, &ly);
-	size_t seg = seg_data.size();
+	size_t seg = segment[index];
 
-	seg = segment[index];
-
-	if (seg >= seg_data.size())
+	if (seg >= seg_data.size()) {
 		seg = createSegment(lx, ly);
+    }
 
 	#ifdef DEBUG
 	if (seg >= seg_data.size())
@@ -131,10 +130,18 @@ void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t, Continent
 	segmentData& data = seg_data[activeContinent];
 
 	++data.area;
-	if (y < data.y0) data.y0 = y;
-	if (y > data.y1) data.y1 = y;
-	if (x < data.x0) data.x0 = x;
-	if (x > data.x1) data.x1 = x;
+	if (y < data.y0) {
+	    data.y0 = y;
+	}
+	if (y > data.y1) {
+	    data.y1 = y;
+	}
+	if (x < data.x0) {
+	    data.x0 = x;
+	}
+	if (x > data.x1) {
+	    data.x1 = x;
+	}
 }
 
 void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
@@ -221,8 +228,9 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	// causes continent to aggregate then all successive collisions and
 	// attempts of aggregation would necessarily change nothing at all,
 	// because the continent was removed from this plate earlier!
-	if (seg_data[seg_id].area == 0)
+	if (seg_data[seg_id].area == 0) {
 		return 0;	// Do not process empty continents.
+	}
 
 	ContinentId activeContinent = p->selectCollisionSegment(wx, wy);
 
