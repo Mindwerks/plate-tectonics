@@ -1,5 +1,5 @@
 #include "heightmap.hpp"
-#include <UnitTest++/UnitTest++.h>
+#include "gtest/gtest.h"
 
 #include "testing.hpp"
 

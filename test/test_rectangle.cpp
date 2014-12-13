@@ -1,6 +1,6 @@
 #include "rectangle.hpp"
 #include <cstdio>
-#include <UnitTest++/UnitTest++.h>
+#include "gtest/gtest.h"
 
 #include "testing.hpp"
 

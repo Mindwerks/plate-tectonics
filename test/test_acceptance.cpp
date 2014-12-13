@@ -1,5 +1,5 @@
 #include "platecapi.hpp"
-#include <UnitTest++/UnitTest++.h>
+#include "gtest/gtest.h"
 #include <cstdlib>
 
 #include "testing.hpp"

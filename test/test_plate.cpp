@@ -1,5 +1,5 @@
 #include "plate.hpp"
-#include <UnitTest++/UnitTest++.h>
+#include "gtest/gtest.h"
 
 TEST(CreatePlate)
 {
@@ -7,7 +7,7 @@ TEST(CreatePlate)
   plate p = plate(heightmap, 100, 3, 50, 23, 18, 200);
 }
 
-int main()
-{
-return UnitTest::RunAllTests();
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
