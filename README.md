@@ -32,6 +32,13 @@ How to run tests
 
 We use googletest (which is included in the project). After building the library:
 
+```
+cd test
+make
+./PlateTectonicsTest
+```
+
+Currently the test coverage is rather poor, tests are present only for new code and tiny portion of the old code that were refactored.
 
 Original project
 ================
