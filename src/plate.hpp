@@ -25,6 +25,8 @@
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
+typedef size_t ContinentId;
+
 class plate
 {
 	public:
@@ -255,8 +257,8 @@ class plate
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 
 	std::vector<segmentData> seg_data; ///< Details of each crust segment.
-	size_t* segment;                   ///< Segment ID of each piece of continental crust.
-	size_t activeContinent;            ///< Segment ID of the cont. that's processed.
+	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
+	ContinentId activeContinent;       ///< Segment ID of the cont. that's processed.
 };
 
 #endif
