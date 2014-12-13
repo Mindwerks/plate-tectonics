@@ -699,25 +699,15 @@ void plate::erode(float lower_bound) throw()
   }
 }
 
-void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count,
-                             float* ratio) const throw()
+void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) const throw()
 {
-	size_t lx = wx, ly = wy;
+	size_t lx = wx, ly = wy; // lx and ly are never read
 	size_t index = getMapIndex(&lx, &ly);
-	size_t seg = seg_data.size();
+	size_t seg = segment[index];
 
 	*count = 0;
 	*ratio = 0;
 
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("getCollisionInfo: out of map bounds!");
-		exit(1);
-	}
-	#endif
-
-	seg = segment[index];
 	#ifdef DEBUG
 	if (seg >= seg_data.size())
 	{
