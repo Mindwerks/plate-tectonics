@@ -50,6 +50,11 @@ That project is part of a Bachelor of Engineering thesis in Metropolia Universit
 
 Kudos to the original author: Lauri Viitanen!
 
+License
+=======
+
+This work is (as the original work) released under the GNU LGPL.
+
 Goals
 =====
 
