@@ -57,7 +57,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 
 	const size_t plate_area = w * h;
 	const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
-	size_t k;
 
 	segment = new size_t[plate_area];
 
@@ -67,10 +66,9 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	vy = sin(angle) * INITIAL_SPEED_X;
 	memset(segment, 255, plate_area * sizeof(size_t));
 
-	for (size_t y = k = 0; y < height; ++y)
-	{
-		for (size_t x = 0; x < width; ++x, ++k)
-		{
+    size_t k;
+	for (size_t y = k = 0; y < height; ++y) {
+		for (size_t x = 0; x < width; ++x, ++k) {
 			// Clone map data and count crust mass.
 			mass += map[k] = m[k];
 
@@ -830,8 +828,9 @@ void plate::resetSegments() throw()
 
 void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 {
-	if (z < 0) // Do not accept negative values.
+	if (z < 0) { // Do not accept negative values.
 		z = 0;
+	}
 
 	size_t _x = x;
 	size_t _y = y;
