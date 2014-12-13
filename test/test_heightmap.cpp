@@ -1,8 +1,6 @@
 #include "heightmap.hpp"
 #include "gtest/gtest.h"
 
-#include "testing.hpp"
-
 TEST(HeightMap, SetAndGet)
 {
   HeightMap hm = HeightMap(50, 20);
@@ -73,10 +71,10 @@ TEST(HeightMap, IndexedAccessOperator)
   hm[940] -= 0.1;
   hm[999] -= 0.1;
 
-  CHECKF_EQ(0.3f, hm[0]);
-  CHECKF_EQ(0.8f, hm[920]);
-  CHECKF_EQ(0.4f, hm[940]);
-  CHECKF_EQ(0.8f, hm[999]);
+  EXPECT_FLOAT_EQ(0.3f, hm[0]);
+  EXPECT_FLOAT_EQ(0.8f, hm[920]);
+  EXPECT_FLOAT_EQ(0.4f, hm[940]);
+  EXPECT_FLOAT_EQ(0.8f, hm[999]);
 }
 
 TEST(HeightMap, CopyRawToNoAllocate)
@@ -89,9 +87,9 @@ TEST(HeightMap, CopyRawToNoAllocate)
     float* dst = new float[300];
     hm.copy_raw_to(dst);
 
-    CHECKF_EQ(0.123f, hm.get( 3, 8));
-    CHECKF_EQ(0.234f, hm.get(23, 4));
-    CHECKF_EQ(0.345f, hm.get(12, 9));
+    EXPECT_FLOAT_EQ(0.123f, hm.get( 3, 8));
+    EXPECT_FLOAT_EQ(0.234f, hm.get(23, 4));
+    EXPECT_FLOAT_EQ(0.345f, hm.get(12, 9));
 }
 
 TEST(HeightMap, CopyRawToAllocate)
@@ -104,9 +102,9 @@ TEST(HeightMap, CopyRawToAllocate)
     float* dst = NULL;
     hm.copy_raw_to(dst, true);
 
-    CHECKF_EQ(0.123f, hm.get( 3, 8));
-    CHECKF_EQ(0.234f, hm.get(23, 4));
-    CHECKF_EQ(0.345f, hm.get(12, 9));
+    EXPECT_FLOAT_EQ(0.123f, hm.get( 3, 8));
+    EXPECT_FLOAT_EQ(0.234f, hm.get(23, 4));
+    EXPECT_FLOAT_EQ(0.345f, hm.get(12, 9));
 }
 
 TEST(HeightMap, From)
@@ -120,8 +118,8 @@ TEST(HeightMap, From)
     HeightMap hm = HeightMap(30, 10);
     hm.from(src);
 
-    CHECKF_EQ(0.01f, hm.get( 0,  0));
-    CHECKF_EQ(0.02f, hm.get(10,  3));
-    CHECKF_EQ(0.03f, hm.get(20,  6));
-    CHECKF_EQ(0.04f, hm.get(29,  9));
+    EXPECT_FLOAT_EQ(0.01f, hm.get( 0,  0));
+    EXPECT_FLOAT_EQ(0.02f, hm.get(10,  3));
+    EXPECT_FLOAT_EQ(0.03f, hm.get(20,  6));
+    EXPECT_FLOAT_EQ(0.04f, hm.get(29,  9));
 }
