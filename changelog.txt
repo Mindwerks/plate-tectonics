@@ -1,0 +1,6 @@
+V 0.1
+-----
+* Imported code from Platec
+* Added CMake build files
+* Started writing tests with googletest
+* Configured build integration with Travis
