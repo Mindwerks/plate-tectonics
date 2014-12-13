@@ -1012,25 +1012,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 void plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
 {
 	size_t index = getMapIndex(&coll_x, &coll_y);
-
-	activeContinent = seg_data.size();
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("Collision segment cannot be set outside plate!");
-		exit(1);
-	}
-	#endif
-
 	activeContinent = segment[index];
-
-	#ifdef DEBUG
-	if (activeContinent >= seg_data.size())
-	{
-		puts("Collision happened at unsegmented location!");
-		exit(1);
-	}
-	#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
