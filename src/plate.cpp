@@ -120,7 +120,7 @@ size_t plate::addCollision(size_t wx, size_t wy) throw()
 	return seg_data[seg].area;
 }
 
-void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t) throw()
+void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent) throw()
 {
 	// Add crust. Extend plate if necessary.
 	setCrust(x, y, getCrust(x, y) + z, t);
@@ -224,7 +224,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	if (seg_data[seg_id].area == 0)
 		return 0;	// Do not process empty continents.
 
-	p->selectCollisionSegment(wx, wy);
+	ContinentId activeContinent = p->selectCollisionSegment(wx, wy);
 
 	// Wrap coordinates around world edges to safeguard subtractions.
 	wx += world_side;
@@ -245,7 +245,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 		if ((segment[i] == seg_id) & (map[i] > 0))
 		{
 			p->addCrustByCollision(wx + x - lx, wy + y - ly,
-				map[i], age_map[i]);
+				map[i], age_map[i], activeContinent);
 
 			mass -= map[i];
 			map[i] = 0;
@@ -974,10 +974,11 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 	mass += z;		// Update mass counter.
 }
 
-void plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
+ContinentId plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
 {
 	size_t index = getMapIndex(&coll_x, &coll_y);
-	activeContinent = segment[index];
+	ContinentId activeContinent = segment[index];
+	return activeContinent;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

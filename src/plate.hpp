@@ -58,7 +58,8 @@ class plate
 	/// @param	y	Location of new crust on global world map (Y).
 	/// @param	z	Amount of crust to add.
 	/// @param	t	Time of creation of new crust.
-	void addCrustByCollision(size_t x, size_t y, float z, size_t t) throw();
+	/// @param activeContinent Segment ID of the continent that's processed.
+	void addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent) throw();
 
 	/// Simulates subduction of oceanic plate under this plate.
 	///
@@ -180,7 +181,8 @@ class plate
 	///
 	/// @param	coll_x	Origin of collision on global world map (X).
 	/// @param	coll_y	Origin of collision on global world map (Y).
-	void selectCollisionSegment(size_t coll_x, size_t coll_y) throw();
+	/// @return the Id of the continent being processed
+	ContinentId selectCollisionSegment(size_t coll_x, size_t coll_y) throw();
 
 	/// Set the amount of plate's crustal material at some location.
 	///
@@ -258,7 +260,6 @@ class plate
 
 	std::vector<segmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
-	ContinentId activeContinent;       ///< Segment ID of the cont. that's processed.
 };
 
 #endif
