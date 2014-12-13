@@ -92,7 +92,8 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
 
 plate::~plate() throw()
 {
-	delete[] segment; segment = 0;
+	delete[] segment;
+	segment = NULL;
 }
 
 size_t plate::addCollision(size_t wx, size_t wy) throw()
