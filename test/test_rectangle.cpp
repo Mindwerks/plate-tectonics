@@ -4,9 +4,9 @@
 
 #include "testing.hpp"
 
-#define ASSERT_EQUAL(actual, expected) { if (expected != actual) fprintf(stderr, "Expected %i, actual %i\n", expected, actual); CHECK(expected == actual); }
+#define ASSERT_EQUAL(actual, expected) { if (expected != actual) fprintf(stderr, "Expected %i, actual %i\n", expected, actual); ASSERT_TRUE(expected == actual); }
 
-TEST(RectangleMapIndexInsideRectNotWrapping)
+TEST(Rectangle, MapIndexInsideRectNotWrapping)
 {
     Rectangle r = Rectangle(50, 30, 42, 48, 8, 15);
     size_t px, py, res;
@@ -33,7 +33,7 @@ TEST(RectangleMapIndexInsideRectNotWrapping)
     ASSERT_EQUAL(res, 6);
 }
 
-TEST(RectangleMapIndexOutsideRect)
+TEST(Rectangle, MapIndexOutsideRect)
 {
     Rectangle r = Rectangle(50, 30, 42, 48, 8, 15);
     size_t px, py, res;
@@ -60,7 +60,7 @@ TEST(RectangleMapIndexOutsideRect)
     ASSERT_EQUAL(res, -1);
 }
 
-TEST(RectangleMapIndexInsideRectWrappingOnX)
+TEST(Rectangle, MapIndexInsideRectWrappingOnX)
 {
     Rectangle r = Rectangle(50, 30, 42, 6, 8, 12);
     size_t px, py, res;
@@ -87,7 +87,7 @@ TEST(RectangleMapIndexInsideRectWrappingOnX)
     ASSERT_EQUAL(res, 24);
 }
 
-TEST(RectangleMapIndexInsideRectWrappingOnY)
+TEST(Rectangle, MapIndexInsideRectWrappingOnY)
 {
     Rectangle r = Rectangle(50, 30, 42, 48, 25, 5);
     size_t px, py, res;
@@ -114,6 +114,6 @@ TEST(RectangleMapIndexInsideRectWrappingOnY)
     ASSERT_EQUAL(res, 44);
 }
 
-TEST(RectangleMapIndexInsideRectLargeAsWorld)
+TEST(Rectangle, MapIndexInsideRectLargeAsWorld)
 {
 }

@@ -18,7 +18,7 @@
 
 #include "lithosphere.hpp"
 #include "plate.hpp"
-#include "sqrdmd.h"
+#include "sqrdmd.hpp"
 
 #include <cfloat>
 #include <cmath>

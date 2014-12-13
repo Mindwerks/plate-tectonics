@@ -3,6 +3,6 @@
 
 #include <cmath>
 
-#define CHECKF_EQ(a,b) CHECK( std::abs((float)(a-b)) < 0.001f)
+#define CHECKF_EQ(a,b) ASSERT_TRUE( std::abs((float)(a-b)) < 0.001f)
 
 #endif

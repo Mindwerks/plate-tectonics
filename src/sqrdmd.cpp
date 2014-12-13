@@ -24,9 +24,9 @@
  */
 #include <stdlib.h>
 
-#include "sqrdmd.h"
+#include "sqrdmd.hpp"
 
-extern void normalize(float* arr, int size)
+void normalize(float* arr, int size)
 {
 	float min = arr[0], max = arr[0], diff;
 
@@ -43,7 +43,7 @@ extern void normalize(float* arr, int size)
 			arr[i] = (arr[i] - min) / diff;
 }
 
-extern int sqrdmd(float* map, int size, float rgh)
+int sqrdmd(float* map, int size, float rgh)
 {
 	const int full_size = size * size;
 

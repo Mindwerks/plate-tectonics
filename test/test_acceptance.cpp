@@ -10,7 +10,7 @@
 /// obtaining the same results.
 ///
 
-TEST(PlatecCreate)
+TEST(PlatecCreate, SameResultAsPlatec)
 {
   srand(3);
   void* p = platec_api_create(512,0.65,60,0.02,1000000,0.33,2,10);
@@ -23,7 +23,7 @@ TEST(PlatecCreate)
   CHECKF_EQ(1.7803807258605957f,  heightmap[262143]);
 }
 
-TEST(PlatecGlobalGeneration)
+TEST(PlatecGlobalGeneration, SameResultAsPlatec)
 {
   srand(3);
   void* p = platec_api_create(512,0.65,60,0.02,1000000,0.33,2,10);

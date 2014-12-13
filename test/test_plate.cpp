@@ -1,7 +1,7 @@
 #include "plate.hpp"
 #include "gtest/gtest.h"
 
-TEST(CreatePlate)
+TEST(CreatePlate, DoesNotExplode)
 {
   const float *heightmap = new float[40000]; // 200 x 200
   plate p = plate(heightmap, 100, 3, 50, 23, 18, 200);

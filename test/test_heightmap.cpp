@@ -3,20 +3,20 @@
 
 #include "testing.hpp"
 
-TEST(HeightMapSetAndGet)
+TEST(HeightMap, SetAndGet)
 {
   HeightMap hm = HeightMap(50, 20);
   hm.set( 0,  0, 0.2f);
   hm.set(20, 18, 0.7f);
   hm.set(40, 18, 0.5f);
   hm.set(49, 19, 0.9f);
-  CHECK(0.2f == hm.get( 0,  0));
-  CHECK(0.7f == hm.get(20, 18));
-  CHECK(0.5f == hm.get(40, 18));
-  CHECK(0.9f == hm.get(49, 19));
+  ASSERT_TRUE(0.2f == hm.get( 0,  0));
+  ASSERT_TRUE(0.7f == hm.get(20, 18));
+  ASSERT_TRUE(0.5f == hm.get(40, 18));
+  ASSERT_TRUE(0.9f == hm.get(49, 19));
 }
 
-TEST(HeightMapCopyConstructor)
+TEST(HeightMap, CopyConstructor)
 {
   HeightMap hm = HeightMap(50, 20);
   hm.set( 0,  0, 0.2f);
@@ -24,13 +24,13 @@ TEST(HeightMapCopyConstructor)
   hm.set(40, 18, 0.5f);
   hm.set(49, 19, 0.9f);
   HeightMap hm2 = hm;
-  CHECK(0.2f == hm2.get( 0,  0));
-  CHECK(0.7f == hm2.get(20, 18));
-  CHECK(0.5f == hm2.get(40, 18));
-  CHECK(0.9f == hm2.get(49, 19));
+  ASSERT_TRUE(0.2f == hm2.get( 0,  0));
+  ASSERT_TRUE(0.7f == hm2.get(20, 18));
+  ASSERT_TRUE(0.5f == hm2.get(40, 18));
+  ASSERT_TRUE(0.9f == hm2.get(49, 19));
 }
 
-TEST(HeightMapAssignmentOperator)
+TEST(HeightMap, AssignmentOperator)
 {
   HeightMap hm = HeightMap(50, 20);
   hm.set( 0,  0, 0.2f);
@@ -39,23 +39,23 @@ TEST(HeightMapAssignmentOperator)
   hm.set(49, 19, 0.9f);
   HeightMap hm2 = HeightMap(10, 10);
   hm2 = hm;
-  CHECK(0.2f == hm2.get( 0,  0));
-  CHECK(0.7f == hm2.get(20, 18));
-  CHECK(0.5f == hm2.get(40, 18));
-  CHECK(0.9f == hm2.get(49, 19));
+  ASSERT_TRUE(0.2f == hm2.get( 0,  0));
+  ASSERT_TRUE(0.7f == hm2.get(20, 18));
+  ASSERT_TRUE(0.5f == hm2.get(40, 18));
+  ASSERT_TRUE(0.9f == hm2.get(49, 19));
 }
 
-TEST(HeightMapSetAll)
+TEST(HeightMap, SetAll)
 {
   HeightMap hm = HeightMap(50, 20);
   hm.set_all( 1.789f );
-  CHECK(1.789f == hm.get( 0,  0));
-  CHECK(1.789f == hm.get(20, 18));
-  CHECK(1.789f == hm.get(40, 18));
-  CHECK(1.789f == hm.get(49, 19));
+  ASSERT_TRUE(1.789f == hm.get( 0,  0));
+  ASSERT_TRUE(1.789f == hm.get(20, 18));
+  ASSERT_TRUE(1.789f == hm.get(40, 18));
+  ASSERT_TRUE(1.789f == hm.get(49, 19));
 }
 
-TEST(HeightMapIndexedAccessOperator)
+TEST(HeightMap, IndexedAccessOperator)
 {
   HeightMap hm = HeightMap(50, 20);
   hm.set( 0,  0, 0.2f);
@@ -63,10 +63,10 @@ TEST(HeightMapIndexedAccessOperator)
   hm.set(40, 18, 0.5f);
   hm.set(49, 19, 0.9f);
 
-  CHECK(0.2f == hm[0]);
-  CHECK(0.7f == hm[920]);
-  CHECK(0.5f == hm[940]);
-  CHECK(0.9f == hm[999]);
+  ASSERT_TRUE(0.2f == hm[0]);
+  ASSERT_TRUE(0.7f == hm[920]);
+  ASSERT_TRUE(0.5f == hm[940]);
+  ASSERT_TRUE(0.9f == hm[999]);
 
   hm[0]   += 0.1;
   hm[920] += 0.1;
@@ -79,7 +79,7 @@ TEST(HeightMapIndexedAccessOperator)
   CHECKF_EQ(0.8f, hm[999]);
 }
 
-TEST(HeightMapCopyRawToNoAllocate)
+TEST(HeightMap, CopyRawToNoAllocate)
 {
     HeightMap hm = HeightMap(30, 10);
     hm.set( 3, 8, 0.123);
@@ -94,7 +94,7 @@ TEST(HeightMapCopyRawToNoAllocate)
     CHECKF_EQ(0.345f, hm.get(12, 9));
 }
 
-TEST(HeightMapCopyRawToAllocate)
+TEST(HeightMap, CopyRawToAllocate)
 {
     HeightMap hm = HeightMap(30, 10);
     hm.set( 3, 8, 0.123);
@@ -109,7 +109,7 @@ TEST(HeightMapCopyRawToAllocate)
     CHECKF_EQ(0.345f, hm.get(12, 9));
 }
 
-TEST(HeightMapFrom)
+TEST(HeightMap, From)
 {
     float* src = new float[300];
     src[0]   = 0.01f;
