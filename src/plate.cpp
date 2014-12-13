@@ -247,6 +247,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 
 	// Add all of the collided continent's crust to destination plate.
 	for (size_t y = seg_data[seg_id].y0; y <= seg_data[seg_id].y1; ++y)
+	{
 	  for (size_t x = seg_data[seg_id].x0; x <= seg_data[seg_id].x1; ++x)
 	  {
 		const size_t i = y * width + x;
@@ -259,6 +260,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 			map[i] = 0;
 		}
 	  }
+	}
 
 	seg_data[seg_id].area = 0; // Mark segment as non-exitent.
 	return old_mass - mass;
@@ -322,8 +324,9 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 	nx = ap_dx - bp_dx;
 	ny = ap_dy - bp_dy;
 
-	if (nx * nx + ny * ny <= 0)
+	if (nx * nx + ny * ny <= 0) {
 		return; // Avoid division by zero!
+    }
 
 	// Scaling is required at last when impulses are added to plates!
 	float n_len = sqrt(nx * nx + ny * ny);
@@ -340,8 +343,7 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 	// Note that vector n must be a unit vector!
 	const float rel_dot_n = rel_vx * nx + rel_vy * ny;
 
-	if (rel_dot_n <= 0)
-	{
+	if (rel_dot_n <= 0) {
 		return; // Exit if objects are moving away from each other.
 	}
 
@@ -409,134 +411,133 @@ void plate::erode(float lower_bound) throw()
   map.copy_raw_to(tmp);
 
   // Find all tops.
-  for (size_t y = 0; y < height; ++y)
-    for (size_t x = 0; x < width; ++x)
-    {
-	const size_t index = y * width + x;
+  for (size_t y = 0; y < height; ++y) {
+    for (size_t x = 0; x < width; ++x) {
+        const size_t index = y * width + x;
 
-	if (map[index] < lower_bound)
-		continue;
+        if (map[index] < lower_bound) {
+            continue;
+        }
 
-	// Build masks for accessible directions (4-way).
-	// Allow wrapping around map edges if plate has world wide dimensions.
-	size_t w_mask = -((x > 0) | (width == world_side));
-	size_t e_mask = -((x < width - 1) | (width == world_side));
-	size_t n_mask = -((y > 0) | (height == world_side));
-	size_t s_mask = -((y < height - 1) | (height == world_side));
+        // Build masks for accessible directions (4-way).
+        // Allow wrapping around map edges if plate has world wide dimensions.
+        size_t w_mask = -((x > 0) | (width == world_side));
+        size_t e_mask = -((x < width - 1) | (width == world_side));
+        size_t n_mask = -((y > 0) | (height == world_side));
+        size_t s_mask = -((y < height - 1) | (height == world_side));
 
-	// Calculate the x and y offset of neighbour directions.
-	// If neighbour is out of plate edges, set it to zero. This protects
-	// map memory reads from segment faulting.
-    	size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
-    	size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
-    	size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
-    	size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
+        // Calculate the x and y offset of neighbour directions.
+        // If neighbour is out of plate edges, set it to zero. This protects
+        // map memory reads from segment faulting.
+        size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
+        size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
+        size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
+        size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
 
-	// Calculate offsets within map memory.
-	w = y * width + w;
-	e = y * width + e;
-	n = n * width + x;
-	s = s * width + x;
+        // Calculate offsets within map memory.
+        w = y * width + w;
+        e = y * width + e;
+        n = n * width + x;
+        s = s * width + x;
 
-	// Extract neighbours heights. Apply validity filtering: 0 is invalid.
-	float w_crust = map[w] * (w_mask & (map[w] < map[index]));
-	float e_crust = map[e] * (e_mask & (map[e] < map[index]));
-	float n_crust = map[n] * (n_mask & (map[n] < map[index]));
-	float s_crust = map[s] * (s_mask & (map[s] < map[index]));
+        // Extract neighbours heights. Apply validity filtering: 0 is invalid.
+        float w_crust = map[w] * (w_mask & (map[w] < map[index]));
+        float e_crust = map[e] * (e_mask & (map[e] < map[index]));
+        float n_crust = map[n] * (n_mask & (map[n] < map[index]));
+        float s_crust = map[s] * (s_mask & (map[s] < map[index]));
 
-	// This location is either at the edge of the plate or it is not the
-	// tallest of its neightbours. Don't start a river from here.
-	if (w_crust * e_crust * n_crust * s_crust == 0)
-		continue;
+        // This location is either at the edge of the plate or it is not the
+        // tallest of its neightbours. Don't start a river from here.
+        if (w_crust * e_crust * n_crust * s_crust == 0) {
+            continue;
+        }
 
-	sources->push_back(index);
+        sources->push_back(index);
     }
+  }
 
   size_t* isDone = new size_t[width*height];
   memset(isDone, 0, width*height*sizeof(size_t));
 
   // From each top, start flowing water along the steepest slope.
-  while (!sources->empty())
-  {
-    while (!sources->empty())
-    {
-	const size_t index = sources->back();
-	const size_t y = index / width;
-	const size_t x = index - y * width;
+  while (!sources->empty()) {
+    while (!sources->empty()) {
+        const size_t index = sources->back();
+        const size_t y = index / width;
+        const size_t x = index - y * width;
 
-	sources->pop_back();
+        sources->pop_back();
 
-	if (map[index] < lower_bound)
-		continue;
+        if (map[index] < lower_bound) {
+            continue;
+        }
 
-	// Build masks for accessible directions (4-way).
-	// Allow wrapping around map edges if plate has world wide dimensions.
-	size_t w_mask = -((x > 0) | (width == world_side));
-	size_t e_mask = -((x < width - 1) | (width == world_side));
-	size_t n_mask = -((y > 0) | (height == world_side));
-	size_t s_mask = -((y < height - 1) | (height == world_side));
+        // Build masks for accessible directions (4-way).
+        // Allow wrapping around map edges if plate has world wide dimensions.
+        size_t w_mask = -((x > 0) | (width == world_side));
+        size_t e_mask = -((x < width - 1) | (width == world_side));
+        size_t n_mask = -((y > 0) | (height == world_side));
+        size_t s_mask = -((y < height - 1) | (height == world_side));
 
-	// Calculate the x and y offset of neighbour directions.
-	// If neighbour is out of plate edges, set it to zero. This protects
-	// map memory reads from segment faulting.
-    	size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
-    	size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
-    	size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
-    	size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
+        // Calculate the x and y offset of neighbour directions.
+        // If neighbour is out of plate edges, set it to zero. This protects
+        // map memory reads from segment faulting.
+        size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
+        size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
+        size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
+        size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
 
-	// Calculate offsets within map memory.
-	w = y * width + w;
-	e = y * width + e;
-	n = n * width + x;
-	s = s * width + x;
+        // Calculate offsets within map memory.
+        w = y * width + w;
+        e = y * width + e;
+        n = n * width + x;
+        s = s * width + x;
 
-	// Extract neighbours heights. Apply validity filtering: 0 is invalid.
-	float w_crust = map[w] * (w_mask & (map[w] < map[index]));
-	float e_crust = map[e] * (e_mask & (map[e] < map[index]));
-	float n_crust = map[n] * (n_mask & (map[n] < map[index]));
-	float s_crust = map[s] * (s_mask & (map[s] < map[index]));
+        // Extract neighbours heights. Apply validity filtering: 0 is invalid.
+        float w_crust = map[w] * (w_mask & (map[w] < map[index]));
+        float e_crust = map[e] * (e_mask & (map[e] < map[index]));
+        float n_crust = map[n] * (n_mask & (map[n] < map[index]));
+        float s_crust = map[s] * (s_mask & (map[s] < map[index]));
 
-	// If this is the lowest part of its neighbourhood, stop.
-	if (w_crust + e_crust + n_crust + s_crust == 0)
-		continue;
+        // If this is the lowest part of its neighbourhood, stop.
+        if (w_crust + e_crust + n_crust + s_crust == 0) {
+            continue;
+        }
 
-	w_crust += (w_crust == 0) * map[index];
-	e_crust += (e_crust == 0) * map[index];
-	n_crust += (n_crust == 0) * map[index];
-	s_crust += (s_crust == 0) * map[index];
+        w_crust += (w_crust == 0) * map[index];
+        e_crust += (e_crust == 0) * map[index];
+        n_crust += (n_crust == 0) * map[index];
+        s_crust += (s_crust == 0) * map[index];
 
-	// Find lowest neighbour.
-	float lowest_crust = w_crust;
-	size_t dest = index - 1;
+        // Find lowest neighbour.
+        float lowest_crust = w_crust;
+        size_t dest = index - 1;
 
-	if (e_crust < lowest_crust)
-	{
-		lowest_crust = e_crust;
-		dest = index + 1;
-	}
+        if (e_crust < lowest_crust) {
+            lowest_crust = e_crust;
+            dest = index + 1;
+        }
 
-	if (n_crust < lowest_crust)
-	{
-		lowest_crust = n_crust;
-		dest = index - width;
-	}
+        if (n_crust < lowest_crust) {
+            lowest_crust = n_crust;
+            dest = index - width;
+        }
 
-	if (s_crust < lowest_crust)
-	{
-		lowest_crust = s_crust;
-		dest = index + width;
-	}
+        if (s_crust < lowest_crust) {
+            lowest_crust = s_crust;
+            dest = index + width;
+        }
 
-	// if it's not handled yet, add it as new sink.
-	if (dest < width * height && !isDone[dest])
-	{
-		sinks->push_back(dest);
-		isDone[dest] = 1;
-	}
+        // if it's not handled yet, add it as new sink.
+        if (dest < width * height && !isDone[dest]) {
+            sinks->push_back(dest);
+            isDone[dest] = 1;
+        }
 
-	// Erode this location with the water flow.
-	tmp[index] -= (tmp[index] - lower_bound) * 0.2;
+        // Erode this location with the water flow.
+        tmp[index] -= (tmp[index] - lower_bound) * 0.2;
     }
+
 
     vector<size_t>* v_tmp = sources;
     sources = sinks;
