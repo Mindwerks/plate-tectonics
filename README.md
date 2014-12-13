@@ -27,6 +27,12 @@ To compile on other platforms please run:
 cmake --help
 ```
 
+How to run tests
+================
+
+We use googletest (which is included in the project). After building the library:
+
+
 Original project
 ================
 
