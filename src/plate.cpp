@@ -103,14 +103,6 @@ size_t plate::addCollision(size_t wx, size_t wy) throw()
 	size_t index = getMapIndex(&lx, &ly);
 	size_t seg = seg_data.size();
 
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("Continental collision out of map bounds!");
-		exit(1);
-	}
-	#endif
-
 	seg = segment[index];
 
 	if (seg >= seg_data.size())
@@ -134,14 +126,6 @@ void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t) throw()
 	setCrust(x, y, getCrust(x, y) + z, t);
 
 	size_t index = getMapIndex(&x, &y);
-	
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("Aggregation went overboard!");
-		exit(1);
-	}
-	#endif
 
 	segment[index] = activeContinent;
 	segmentData& data = seg_data[activeContinent];
@@ -171,16 +155,6 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	//           Additional logic required
 	//           Might place crust on other continent on same plate!
 	size_t index = getMapIndex(&x, &y);
-
-	#ifdef DEBUG
-	if (index >= width * height) // Should never be true!
-	{
-		puts("Subduction origin not on plate!");
-		printf("%u, %u @ [%f, %f]x[%u, %u]\n", x, y, left, top,
-			width, height);
-		exit(1);
-	}
-	#endif
 
 	// Take vector difference only between plates that move more or less
 	// to same direction. This makes subduction direction behave better.
@@ -221,15 +195,6 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 {
 	size_t lx = wx, ly = wy;
 	const size_t index = getMapIndex(&lx, &ly);
-
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("Trying to aggregate beyond plate limits!");
-		exit(1);
-	}
-	#endif
-
 	const size_t seg_id = segment[index];
 
 	// This check forces the caller to do things in proper order!
