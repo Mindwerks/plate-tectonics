@@ -679,14 +679,6 @@ void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) 
 	*count = 0;
 	*ratio = 0;
 
-	#ifdef DEBUG
-	if (seg >= seg_data.size())
-	{
-		puts("getCollisionInfo: no segment found!");
-		exit(1);
-	}
-	#endif
-
 	*count = seg_data[seg].coll_count;
 	*ratio = (float)seg_data[seg].coll_count /
 		(float)(1 + seg_data[seg].area); // +1 avoids DIV with zero.
