@@ -5,9 +5,7 @@ plate-tectonics
 
 This is a library to simulate plate tectonics.
 
-You can see a simulation using the library at work at:
-
-Take a look at the simulation at work: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
+You can see a simulation using the library at work at: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
 
 How to build plate-tectonics
 ============================
@@ -64,7 +62,7 @@ Goals
 Bindings
 ========
 
-I am working these bindings:
+I am working on these bindings:
 * Python [pyplatec](http://github.com/ftomassetti/pyplatec)
 * Haskell [hplatec](http://github.com/ftomassetti/hplatec)
 
