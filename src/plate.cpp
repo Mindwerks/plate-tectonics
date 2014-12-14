@@ -216,7 +216,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	  for (size_t x = seg_data[seg_id].getLeft(); x <= seg_data[seg_id].getRight(); ++x)
 	  {
 		const size_t i = y * width + x;
-		if ((segment[i] == seg_id) & (map[i] > 0))
+		if ((segment[i] == seg_id) && (map[i] > 0))
 		{
 			p->addCrustByCollision(wx + x - lx, wy + y - ly,
 				map[i], age_map[i], activeContinent);
@@ -227,7 +227,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	  }
 	}
 
-	seg_data[seg_id].area = 0; // Mark segment as non-exitent.
+	seg_data[seg_id].area = 0; // Mark segment as non-existent
 	return old_mass - mass;
 }
 
@@ -271,7 +271,7 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 	// happen in the overlapping region of the two plates.
 	size_t apx = wx, apy = wy, bpx = wx, bpy = wy;
 	float ap_dx, ap_dy, bp_dx, bp_dy, nx, ny;
-	size_t index = getMapIndex(&apx, &apy);
+	size_t index   =   getMapIndex(&apx, &apy);
 	size_t p_index = p.getMapIndex(&bpx, &bpy);
 
     // out of colliding map's bounds!
