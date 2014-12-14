@@ -103,10 +103,10 @@ size_t plate::addCollision(size_t wx, size_t wy) throw()
 	return seg_data[seg].area;
 }
 
-void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent) throw()
+void plate::addCrustByCollision(size_t x, size_t y, float z, size_t time, ContinentId activeContinent) throw()
 {
 	// Add crust. Extend plate if necessary.
-	setCrust(x, y, getCrust(x, y) + z, t);
+	setCrust(x, y, getCrust(x, y) + z, time);
 
 	size_t index = getMapIndex(&x, &y);
 
@@ -153,11 +153,11 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 	x = (size_t)((int)x + dx);
 	y = (size_t)((int)y + dy);
 
-	if (width  == world_side) {
-	    x &= width - 1;
+	if (width == world_side) {
+	    x %= width;
 	}
 	if (height == world_side) {
-	    y &= height - 1;
+	    y %= height;
 	}
 
 	index = y * width + x;
@@ -898,7 +898,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		}
 
 		delete[] segment;
-		map = tmph;
+		map     = tmph;
 		age_map = tmpa;
 		segment = tmps;
 
