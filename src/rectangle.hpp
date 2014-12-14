@@ -37,6 +37,12 @@ public:
         return (x >= 0 && x < _width && y >= 0 && y < _height);
     }
 
+    void normalize(size_t& x, size_t& y) const
+    {
+        x %= _width;
+        y %= _height;
+    }
+
 private:
     const size_t _width;
     const size_t _height;

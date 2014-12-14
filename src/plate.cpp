@@ -767,8 +767,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		const size_t irgt = ilft + width - 1;
 		const size_t ibtm = itop + height - 1;
 
-		x &= world_side - 1; // HACK!
-		y &= world_side - 1; // Just to be safe...
+        _worldDimension.normalize(x, y);
 
 		// Calculate distance of new point from plate edges.
 		const size_t _lft = ilft - x;
