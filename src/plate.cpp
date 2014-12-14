@@ -20,7 +20,6 @@
 #include <cfloat>    // FT_EPSILON
 #include <cmath>     // sin, cos
 #include <cstdlib>   // rand
-#include <cstdio>    // DEBUG print
 #include <vector>
 #include <stdexcept> // std::invalid_argument
 #include <assert.h>
@@ -602,15 +601,8 @@ void plate::erode(float lower_bound) throw()
 	                 (n_diff - min_diff) * (n_crust > 0) +
 	                 (s_diff - min_diff) * (s_crust > 0);
 
-	#ifdef DEBUG
-	if (diff_sum < 0)
-	{
-		puts("Erosion difference sum is negative!");
-		printf("%f > %f %f %f %f\n", min_diff, w_diff, e_diff,
-			n_diff, s_diff);
-		exit(1);
-	}
-	#endif
+    // Erosion difference sum is negative!
+	assert(diff_sum >= 0);
 
 	if (diff_sum < min_diff)
 	{
@@ -737,13 +729,6 @@ void plate::move() throw()
 	// If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
     assert(_worldDimension.contains(left, top));
-	#ifdef DEBUG
-	if (left < 0 || left > world_side || top < 0 || top > world_side)
-	{
-		puts("Location coordinates out of world map bounds (PRE)!");
-		exit(1);
-	}
-	#endif
 
 	left += vx * velocity;
 	left += left > 0 ? 0 : world_side;
@@ -753,14 +738,7 @@ void plate::move() throw()
 	top += top > 0 ? 0 : world_side;
 	top -= top < world_side ? 0 : world_side;
 
-	#ifdef DEBUG
-	if (left < 0 || left > world_side || top < 0 || top > world_side)
-	{
-		puts("Location coordinates out of world map bounds (POST)!");
-		printf("%f, %f, %f; %f, %f\n", vx, vy, velocity, left, top);
-		exit(1);
-	}
-	#endif
+	assert(_worldDimension.contains(left, top));
 }
 
 void plate::resetSegments() throw()
@@ -781,13 +759,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 
 	if (index >= width*height)
 	{
-		#ifdef DEBUG
-		if (z <= 0)
-		{
-			printf("Extending plate for nothing!");
-			exit(1);
-		}
-		#endif
+	    // Extending plate for nothing!
+		assert(z>0);
 
 		const size_t ilft = left;
 		const size_t itop = top;
@@ -829,20 +802,8 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 			d_btm = world_side - height;
 		}
 
-		#ifdef DEBUG
-		if (d_lft + d_rgt + d_top + d_btm == 0)
-		{
-			printf("[%u, %u]x[%u, %u], [%u, %u]/[%u, %u]\n",
-				(size_t)left, (size_t)top, (size_t)left+width,
-				(size_t)top+height,
-				x + world_side * (x < world_side),
-				y + world_side * (y < world_side),
-				x % world_side, y % world_side);
-
-			puts("Index out of bounds, but nowhere to grow!");
-			exit(1);
-		}
-		#endif
+		// Index out of bounds, but nowhere to grow!
+		assert(d_lft + d_rgt + d_top + d_btm != 0);
 
 		const size_t old_width = width;
 		const size_t old_height = height;
@@ -889,17 +850,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		_x = x, _y = y;
 		index = getMapIndex(&_x, &_y);
 
-		#ifdef DEBUG
-		if (index >= width * height)
-		{
-			printf("Index out of bounds after resize!\n"
-				"[%u, %u]x[%u, %u], [%u, %u]/[%u, %u]\n",
-				(size_t)left, (size_t)top, (size_t)left+width,
-				(size_t)top+height,
-				x, y, x % world_side, y % world_side);
-			exit(1);
-		}
-		#endif
+		assert(index < width * height);
 	}
 
 	// Update crust's age.
