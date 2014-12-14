@@ -804,7 +804,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		// Index out of bounds, but nowhere to grow!
 		assert(d_lft + d_rgt + d_top + d_btm != 0);
 
-		const size_t old_width = width;
+		const size_t old_width  = width;
 		const size_t old_height = height;
 		
 		left -= d_lft;
@@ -1129,4 +1129,3 @@ ContinentId plate::getContinentAt(int x, int y) const
 	}
     return seg;
 }
-
