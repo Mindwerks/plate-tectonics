@@ -112,4 +112,27 @@ TEST(Rectangle, MapIndexInsideRectWrappingOnY)
 
 TEST(Rectangle, MapIndexInsideRectLargeAsWorld)
 {
+    Rectangle r = Rectangle(50, 30, 0, 50, 0, 30);
+    size_t px, py, res;
+
+    px = 0;
+    py = 0;
+    res = r.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 0);
+    ASSERT_EQ(py, 0);
+    ASSERT_EQ(res, 0);
+
+    px =  12;
+    py =  8;
+    res = r.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 12);
+    ASSERT_EQ(py, 8);
+    ASSERT_EQ(res, 412);
+
+    px =  49;
+    py =  29;
+    res = r.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 49);
+    ASSERT_EQ(py, 29);
+    ASSERT_EQ(res, 1499);
 }
