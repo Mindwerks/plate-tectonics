@@ -187,7 +187,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 {
 	size_t lx = wx, ly = wy;
 	const size_t index = getMapIndex(&lx, &ly);
-	const size_t seg_id = segment[index];
+	const ContinentId seg_id = segment[index];
 
 	// This check forces the caller to do things in proper order!
 	//
@@ -686,9 +686,7 @@ void plate::erode(float lower_bound) throw()
 
 void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) const throw()
 {
-	size_t lx = wx, ly = wy; // lx and ly are never read
-	size_t index = getMapIndex(&lx, &ly);
-	size_t seg = segment[index];
+	ContinentId seg = getContinentAt(wx, wy);
 
 	*count = 0;
 	*ratio = 0;
@@ -1208,14 +1206,17 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
     return rect.getMapIndex(px, py);
 }
 
-ContinentId plate::getContinentAt(int x, int y)
+ContinentId plate::getContinentAt(int x, int y) const
 {
 	size_t lx = x, ly = y;
 	size_t index = getMapIndex(&lx, &ly);
 	ContinentId seg = segment[index];
 
 	if (seg >= seg_data.size()) {
-		seg = createSegment(lx, ly);
+	    // in this case, we consider as const this call because we calculate
+	    // something that we would calculate anyway, so the segments are
+	    // a sort of cache
+		seg = const_cast<plate*>(this)->createSegment(lx, ly);
     }
 
 	if (seg >= seg_data.size())
