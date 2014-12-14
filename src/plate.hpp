@@ -208,6 +208,8 @@ class plate
 	protected:
 	private:
 
+	ContinentId getContinentAt(int x, int y);
+
 	/// Container for details about a segmented crust area on this plate.
 	class segmentData
 	{

@@ -98,21 +98,7 @@ plate::~plate() throw()
 
 size_t plate::addCollision(size_t wx, size_t wy) throw()
 {
-	size_t lx = wx, ly = wy;
-	size_t index = getMapIndex(&lx, &ly);
-	size_t seg = segment[index];
-
-	if (seg >= seg_data.size()) {
-		seg = createSegment(lx, ly);
-    }
-
-	#ifdef DEBUG
-	if (seg >= seg_data.size())
-	{
-		puts("Could not create segment!");
-		exit(1);
-	}
-	#endif
+	ContinentId seg = getContinentAt(wx, wy);
 
 	++seg_data[seg].coll_count;
 	return seg_data[seg].area;
@@ -1220,5 +1206,22 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 
     Rectangle rect = Rectangle(world_side, world_side, ilft, irgt, itop, ibtm);
     return rect.getMapIndex(px, py);
+}
+
+ContinentId plate::getContinentAt(int x, int y)
+{
+	size_t lx = x, ly = y;
+	size_t index = getMapIndex(&lx, &ly);
+	ContinentId seg = segment[index];
+
+	if (seg >= seg_data.size()) {
+		seg = createSegment(lx, ly);
+    }
+
+	if (seg >= seg_data.size())
+	{
+	    throw invalid_argument("Could not create segment");
+	}
+    return seg;
 }
 
