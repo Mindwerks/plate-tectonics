@@ -3,16 +3,64 @@
 
 #include <cstring> // for size_t
 
+class WorldDimension {
+public:
+
+    WorldDimension(size_t width, size_t height) :
+        _width(width), _height(height)
+    {
+    };
+
+    WorldDimension(const WorldDimension& original) :
+        _width(original.getWidth()), _height(original.getHeight())
+    {
+    };
+
+    WorldDimension operator=(const WorldDimension& original)
+    {
+        WorldDimension wd(original);
+        return wd;
+    };
+
+    size_t getWidth() const
+    {
+        return _width;
+    };
+
+    size_t getHeight() const
+    {
+        return _height;
+    };
+
+private:
+    const size_t _width;
+    const size_t _height;
+};
+
 class Rectangle {
 public:
-    Rectangle(size_t world_width, size_t world_height,
+    Rectangle(const WorldDimension& worldDimension,
             size_t left, size_t right,
             size_t top, size_t bottom)
-            : _world_width(world_width), _world_height(world_height),
+            : _worldDimension(worldDimension),
               _left(left), _right(right),
               _top(top), _bottom(bottom)
     {
     };
+
+    Rectangle(const Rectangle& original) :
+        _worldDimension(original._worldDimension),
+        _left(original._left), _right(original._right),
+        _top(original._top), _bottom(original._bottom)
+    {
+    };
+
+    Rectangle operator=(const Rectangle& original)
+    {
+        Rectangle r(original);
+        return r;
+    };
+
 
     size_t getMapIndex(size_t* px, size_t* py) const throw();
     void enlarge_to_contain(size_t x, size_t y);
@@ -66,7 +114,7 @@ public:
     }
 
 private:
-    size_t _world_width, _world_height;
+    const WorldDimension _worldDimension;
     size_t _left, _right;
     size_t _top, _bottom;
 };

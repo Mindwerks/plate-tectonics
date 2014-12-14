@@ -301,7 +301,10 @@ class plate
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
 	size_t width, height; ///< Height map's dimensions along X and Y axis.
-	size_t world_side;    ///< Container world map's either side in pixels.
+
+	// It should be removed over time
+	const size_t world_side;    ///< Container world map's either side in pixels.
+	const WorldDimension _worldDimension;
 
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float left, top;      ///< Height map's left-top corner in world coords.

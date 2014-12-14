@@ -37,7 +37,7 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, size_t _world_side) throw() :
              width(w), height(h), world_side(_world_side),
              mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
-             map(w, h), age_map(w, h)
+             map(w, h), age_map(w, h), _worldDimension(_world_side, _world_side)
 {
 	if (NULL == m) {
 		throw invalid_argument("the given heightmap should not be null");
@@ -946,27 +946,28 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 	const size_t origin_index = y * width + x;
 	const size_t ID = seg_data.size();
 
-	if (segment[origin_index] < ID)
+	if (segment[origin_index] < ID) {
 		return segment[origin_index];
+	}
 
-	size_t canGoLeft = x > 0 && map[origin_index - 1] >= CONT_BASE;
-	size_t canGoRight = x < width - 1 && map[origin_index+1] >= CONT_BASE;
-	size_t canGoUp = y > 0 && map[origin_index - width] >= CONT_BASE;
-	size_t canGoDown = y < height - 1 &&
-		map[origin_index + width] >= CONT_BASE;
+	size_t canGoLeft  = x > 0          && map[origin_index - 1]     >= CONT_BASE;
+	size_t canGoRight = x < width - 1  && map[origin_index+1]       >= CONT_BASE;
+	size_t canGoUp    = y > 0          && map[origin_index - width] >= CONT_BASE;
+	size_t canGoDown  = y < height - 1 && map[origin_index + width] >= CONT_BASE;
 	size_t nbour_id = ID;
 
 	// This point belongs to no segment yet.
 	// However it might be a neighbour to some segment created earlier.
 	// If such neighbour is found, associate this point with it.
-	if (canGoLeft && segment[origin_index - 1] < ID)
+	if (canGoLeft && segment[origin_index - 1] < ID) {
 		nbour_id = segment[origin_index - 1];
-	else if (canGoRight && segment[origin_index + 1] < ID)
+	} else if (canGoRight && segment[origin_index + 1] < ID) {
 		nbour_id = segment[origin_index + 1];
-	else if (canGoUp && segment[origin_index - width] < ID)
+	} else if (canGoUp && segment[origin_index - width] < ID) {
 		nbour_id = segment[origin_index - width];
-	else if (canGoDown && segment[origin_index + width] < ID)
+	} else if (canGoDown && segment[origin_index + width] < ID) {
 		nbour_id = segment[origin_index + width];
+	}
 
 	if (nbour_id < ID)
 	{
@@ -979,7 +980,7 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 	}
 
 	size_t lines_processed;
-	Rectangle r = Rectangle(world_side, world_side, x, x, y, y);
+	Rectangle r = Rectangle(_worldDimension, x, x, y, y);
 	segmentData data(r, 0);
 
 	std::vector<size_t>* spans_todo = new std::vector<size_t>[height];
@@ -1169,7 +1170,7 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
 	const size_t irgt = ilft + width;
 	const size_t ibtm = itop + height;
 
-    Rectangle rect = Rectangle(world_side, world_side, ilft, irgt, itop, ibtm);
+    Rectangle rect = Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
     return rect.getMapIndex(px, py);
 }
 

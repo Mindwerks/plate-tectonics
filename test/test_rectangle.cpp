@@ -4,7 +4,7 @@
 
 TEST(Rectangle, MapIndexInsideRectNotWrapping)
 {
-    Rectangle r = Rectangle(50, 30, 42, 48, 8, 15);
+    Rectangle r = Rectangle(WorldDimension(50, 30), 42, 48, 8, 15);
     size_t px, py, res;
 
     px = 42;
@@ -31,7 +31,7 @@ TEST(Rectangle, MapIndexInsideRectNotWrapping)
 
 TEST(Rectangle, MapIndexOutsideRect)
 {
-    Rectangle r = Rectangle(50, 30, 42, 48, 8, 15);
+    Rectangle r = Rectangle(WorldDimension(50, 30), 42, 48, 8, 15);
     size_t px, py, res;
 
     px = 49;
@@ -58,7 +58,7 @@ TEST(Rectangle, MapIndexOutsideRect)
 
 TEST(Rectangle, MapIndexInsideRectWrappingOnX)
 {
-    Rectangle r = Rectangle(50, 30, 42, 6, 8, 12);
+    Rectangle r = Rectangle(WorldDimension(50, 30), 42, 6, 8, 12);
     size_t px, py, res;
 
     px = 42;
@@ -85,7 +85,7 @@ TEST(Rectangle, MapIndexInsideRectWrappingOnX)
 
 TEST(Rectangle, MapIndexInsideRectWrappingOnY)
 {
-    Rectangle r = Rectangle(50, 30, 42, 48, 25, 5);
+    Rectangle r = Rectangle(WorldDimension(50, 30), 42, 48, 25, 5);
     size_t px, py, res;
 
     px = 42;
@@ -112,7 +112,7 @@ TEST(Rectangle, MapIndexInsideRectWrappingOnY)
 
 TEST(Rectangle, MapIndexInsideRectLargeAsWorld)
 {
-    Rectangle r = Rectangle(50, 30, 0, 50, 0, 30);
+    Rectangle r = Rectangle(WorldDimension(50, 30), 0, 50, 0, 30);
     size_t px, py, res;
 
     px = 0;
