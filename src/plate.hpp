@@ -22,6 +22,7 @@
 #include <cstring> // for size_t
 #include <vector>
 #include "heightmap.hpp"
+#include "rectangle.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
@@ -214,14 +215,65 @@ class plate
 	class segmentData
 	{
 	  public:
-		segmentData(size_t _x0, size_t _y0, size_t _x1, size_t _y1,
-		            size_t _area) : x0(_x0), x1(_x1), y0(_y0), y1(_y1),
-		                          area(_area), coll_count(0) {}
+		segmentData(Rectangle& rectangle,
+		            size_t _area) : _rectangle(rectangle),
+		                          area(_area), coll_count(0) {};
 
-		size_t x0, x1; ///< Left and right bounds of this segment. 
-		size_t y0, y1; ///< Top and bottom bounds for this segment.
+        void enlarge_to_contain(size_t x, size_t y)
+        {
+            _rectangle.enlarge_to_contain(x, y);
+        };
+
+        size_t getLeft()
+        {
+            return _rectangle.getLeft();
+        }
+
+        size_t getRight()
+        {
+            return _rectangle.getRight();
+        }
+
+        size_t getTop()
+        {
+            return _rectangle.getTop();
+        }
+
+        size_t getBottom()
+        {
+            return _rectangle.getBottom();
+        }
+
+        void shift(size_t dx, size_t dy)
+        {
+            _rectangle.shift(dx, dy);
+        }
+
+        void setLeft(size_t v)
+        {
+            _rectangle.setLeft(v);
+        }
+
+        void setRight(size_t v)
+        {
+            _rectangle.setRight(v);
+        }
+
+        void setTop(size_t v)
+        {
+            _rectangle.setTop(v);
+        }
+
+        void setBottom(size_t v)
+        {
+            _rectangle.setBottom(v);
+        }
+
 		size_t area; ///< Number of locations this area consists of.
 		size_t coll_count; ///< Number of collisions on this segment.
+
+      private:
+        Rectangle _rectangle;
 	};
 
 	/// Separate a continent at (X, Y) to its own partition.

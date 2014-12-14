@@ -49,3 +49,19 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
         return -1;
     }
 }
+
+void Rectangle::enlarge_to_contain(size_t x, size_t y)
+{
+    if (y < _top) {
+        _top = y;
+    }
+    if (y > _bottom) {
+        _bottom = y;
+    }
+    if (x < _left) {
+        _left = x;
+    }
+    if (x > _right) {
+        _right = x;
+    }
+}

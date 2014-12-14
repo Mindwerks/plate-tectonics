@@ -115,18 +115,7 @@ void plate::addCrustByCollision(size_t x, size_t y, float z, size_t t, Continent
 	segmentData& data = seg_data[activeContinent];
 
 	++data.area;
-	if (y < data.y0) {
-	    data.y0 = y;
-	}
-	if (y > data.y1) {
-	    data.y1 = y;
-	}
-	if (x < data.x0) {
-	    data.x0 = x;
-	}
-	if (x > data.x1) {
-	    data.x1 = x;
-	}
+	data.enlarge_to_contain(x, y);
 }
 
 void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
@@ -231,9 +220,9 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	float old_mass = mass;
 
 	// Add all of the collided continent's crust to destination plate.
-	for (size_t y = seg_data[seg_id].y0; y <= seg_data[seg_id].y1; ++y)
+	for (size_t y = seg_data[seg_id].getTop(); y <= seg_data[seg_id].getBottom(); ++y)
 	{
-	  for (size_t x = seg_data[seg_id].x0; x <= seg_data[seg_id].x1; ++x)
+	  for (size_t x = seg_data[seg_id].getLeft(); x <= seg_data[seg_id].getRight(); ++x)
 	  {
 		const size_t i = y * width + x;
 		if ((segment[i] == seg_id) & (map[i] > 0))
@@ -925,10 +914,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 		// Shift all segment data to match new coordinates.
 		for (size_t s = 0; s < seg_data.size(); ++s)
 		{
-			seg_data[s].x0 += d_lft;
-			seg_data[s].x1 += d_lft;
-			seg_data[s].y0 += d_top;
-			seg_data[s].y1 += d_top;
+		    seg_data[s].shift(d_lft, d_top);
 		}
 
 		_x = x, _y = y;
@@ -1004,16 +990,14 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 		segment[origin_index] = nbour_id;
 		++seg_data[nbour_id].area;
 
-		if (y < seg_data[nbour_id].y0) seg_data[nbour_id].y0 = y;
-		if (y > seg_data[nbour_id].y1) seg_data[nbour_id].y1 = y;
-		if (x < seg_data[nbour_id].x0) seg_data[nbour_id].x0 = x;
-		if (x > seg_data[nbour_id].x1) seg_data[nbour_id].x1 = x;
+        seg_data[nbour_id].enlarge_to_contain(x, y);
 
 		return nbour_id;
 	}
 
 	size_t lines_processed;
-	segmentData data(x, y, x, y, 0);
+	Rectangle r = Rectangle(world_side, world_side, x, x, y, y);
+	segmentData data(r, 0);
 
 	std::vector<size_t>* spans_todo = new std::vector<size_t>[height];
 	std::vector<size_t>* spans_done = new std::vector<size_t>[height];
@@ -1123,10 +1107,10 @@ size_t plate::createSegment(size_t x, size_t y) throw()
 		data.area += 1 + end - start; // Update segment area counter.
 
 		// Record any changes in extreme dimensions.
-		if (line < data.y0) data.y0 = line;
-		if (line > data.y1) data.y1 = line;
-		if (start < data.x0) data.x0 = start;
-		if (end > data.x1) data.x1 = end;
+		if (line < data.getTop()) data.setTop(line);
+		if (line > data.getBottom()) data.setBottom(line);
+		if (start < data.getLeft()) data.setLeft(start);
+		if (end > data.getRight()) data.setRight(end);
 
 		if (line > 0 || height == world_side)
 		for (size_t j = start; j <= end; ++j)
