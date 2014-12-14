@@ -187,15 +187,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	//
 	// Therefore, segmentation bookkeeping is left intact. It doesn't
 	// cause significant problems because all crust is cleared and empty
-	// points are not processed at all.
-	#ifdef DEBUG
-	if (seg_id >= seg_data.size())
-	{
-		puts("Trying to aggregate without deforming first!");
-		printf("%u %u\n", wx, wy);
-		exit(1);
-	}
-	#endif
+	// points are not processed at all. (Test on (seg_id >= seg_data.size()) removed)
 
 	// One continent may have many points of collision. If one of them
 	// causes continent to aggregate then all successive collisions and
