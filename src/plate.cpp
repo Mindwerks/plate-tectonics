@@ -200,8 +200,8 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	ContinentId activeContinent = p->selectCollisionSegment(wx, wy);
 
 	// Wrap coordinates around world edges to safeguard subtractions.
-	wx += world_side;
-	wy += world_side;
+	wx += _worldDimension.getWidth();
+	wy += _worldDimension.getHeight();
 
     // Aggregating segment [%u, %u]x[%u, %u] vs. [%u, %u]@[%u, %u]\n",
     //		seg_data[seg_id].x0, seg_data[seg_id].y0,
@@ -386,18 +386,18 @@ void plate::erode(float lower_bound) throw()
 
         // Build masks for accessible directions (4-way).
         // Allow wrapping around map edges if plate has world wide dimensions.
-        size_t w_mask = -((x > 0) | (width == world_side));
-        size_t e_mask = -((x < width - 1) | (width == world_side));
-        size_t n_mask = -((y > 0) | (height == world_side));
-        size_t s_mask = -((y < height - 1) | (height == world_side));
+        size_t w_mask = -((x > 0) | (width == _worldDimension.getWidth()));
+        size_t e_mask = -((x < width - 1) | (width == _worldDimension.getWidth()));
+        size_t n_mask = -((y > 0) | (height == _worldDimension.getHeight()));
+        size_t s_mask = -((y < height - 1) | (height == _worldDimension.getHeight()));
 
         // Calculate the x and y offset of neighbour directions.
         // If neighbour is out of plate edges, set it to zero. This protects
         // map memory reads from segment faulting.
-        size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
-        size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
-        size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
-        size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
+        size_t w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
+        size_t e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
+        size_t n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
+        size_t s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
 
         // Calculate offsets within map memory.
         w = y * width + w;
