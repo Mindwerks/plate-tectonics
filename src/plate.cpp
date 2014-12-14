@@ -99,7 +99,6 @@ plate::~plate() throw()
 size_t plate::addCollision(size_t wx, size_t wy) throw()
 {
 	ContinentId seg = getContinentAt(wx, wy);
-
 	++seg_data[seg].coll_count;
 	return seg_data[seg].area;
 }
@@ -617,7 +616,7 @@ void plate::erode(float lower_bound) throw()
 	#ifdef DEBUG
 	if (diff_sum < 0)
 	{
-		puts("Erosion differense sum is negative!");
+		puts("Erosion difference sum is negative!");
 		printf("%f > %f %f %f %f\n", min_diff, w_diff, e_diff,
 			n_diff, s_diff);
 		exit(1);
