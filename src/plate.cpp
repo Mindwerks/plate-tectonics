@@ -193,7 +193,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
 	// causes continent to aggregate then all successive collisions and
 	// attempts of aggregation would necessarily change nothing at all,
 	// because the continent was removed from this plate earlier!
-	if (seg_data[seg_id].area == 0) {
+	if (seg_data[seg_id].isEmpty()) {
 		return 0;	// Do not process empty continents.
 	}
 

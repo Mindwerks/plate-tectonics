@@ -224,50 +224,55 @@ class plate
             _rectangle.enlarge_to_contain(x, y);
         };
 
-        size_t getLeft()
+        size_t getLeft() const
         {
             return _rectangle.getLeft();
-        }
+        };
 
-        size_t getRight()
+        size_t getRight() const
         {
             return _rectangle.getRight();
-        }
+        };
 
-        size_t getTop()
+        size_t getTop() const
         {
             return _rectangle.getTop();
-        }
+        };
 
-        size_t getBottom()
+        size_t getBottom() const
         {
             return _rectangle.getBottom();
-        }
+        };
 
         void shift(size_t dx, size_t dy)
         {
             _rectangle.shift(dx, dy);
-        }
+        };
 
         void setLeft(size_t v)
         {
             _rectangle.setLeft(v);
-        }
+        };
 
         void setRight(size_t v)
         {
             _rectangle.setRight(v);
-        }
+        };
 
         void setTop(size_t v)
         {
             _rectangle.setTop(v);
-        }
+        };
 
         void setBottom(size_t v)
         {
             _rectangle.setBottom(v);
-        }
+        };
+
+        bool isEmpty() const
+        {
+            return area == 0;
+        };
 
 		size_t area; ///< Number of locations this area consists of.
 		size_t coll_count; ///< Number of collisions on this segment.

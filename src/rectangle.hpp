@@ -65,22 +65,22 @@ public:
     size_t getMapIndex(size_t* px, size_t* py) const throw();
     void enlarge_to_contain(size_t x, size_t y);
 
-    size_t getLeft()
+    size_t getLeft() const
     {
         return _left;
     }
 
-    size_t getRight()
+    size_t getRight() const
     {
         return _right;
     }
 
-    size_t getTop()
+    size_t getTop() const
     {
         return _top;
     }
 
-    size_t getBottom()
+    size_t getBottom() const
     {
         return _bottom;
     }
