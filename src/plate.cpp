@@ -23,6 +23,7 @@
 #include <cstdio>    // DEBUG print
 #include <vector>
 #include <stdexcept> // std::invalid_argument
+#include <assert.h>
 
 #include "plate.hpp"
 #include "heightmap.hpp"
@@ -274,13 +275,9 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 	size_t index = getMapIndex(&apx, &apy);
 	size_t p_index = p.getMapIndex(&bpx, &bpy);
 
-	if (index >= width * height || p_index >= p.width * p.height)
-	{
-	#ifdef DEBUG
-		printf("@%u, %u: out of colliding map's bounds!\n", wx, wy);
-		exit(1);
-	#endif
-	}
+    // out of colliding map's bounds!
+    assert(index < width * height);
+    assert(p_index < p.width * p.height);
 
 	ap_dx = (int)apx - (int)cx;
 	ap_dy = (int)apy - (int)cy;
@@ -680,19 +677,7 @@ size_t plate::getContinentArea(size_t wx, size_t wy) const throw()
 {
 	const size_t index = getMapIndex(&wx, &wy);
 
-	#ifdef DEBUG
-	if (index >= width * height)
-	{
-		puts("getContinentArea: out of map bounds!");
-		exit(1);
-	}
-
-	if (segment[index] >= seg_data.size())
-	{
-		puts("getContinentArea: no segment found!");
-		exit(1);
-	}
-	#endif
+    assert(segment[index] < seg_data.size());
 
 	return seg_data[segment[index]].area;
 }
@@ -751,6 +736,7 @@ void plate::move() throw()
 	// Location modulations into range [0, world_side[ are a have to!
 	// If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
+    assert(_worldDimension.contains(left, top));
 	#ifdef DEBUG
 	if (left < 0 || left > world_side || top < 0 || top > world_side)
 	{

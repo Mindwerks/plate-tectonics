@@ -32,6 +32,11 @@ public:
         return _height;
     };
 
+    bool contains(const size_t x, const size_t y) const
+    {
+        return (x >= 0 && x < _width && y >= 0 && y < _height);
+    }
+
 private:
     const size_t _width;
     const size_t _height;
