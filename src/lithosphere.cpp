@@ -573,7 +573,6 @@ void lithosphere::update() throw()
             // Collision causes friction. Apply it to both plates.
             plates[i]->applyFriction(coll.crust);
             plates[coll.index]->applyFriction(coll.crust);
-//          hmap[coll.wy * map_side + coll.wx] = 0;
 
             plates[i]->getCollisionInfo(coll.wx, coll.wy,
                 &coll_count_i, &coll_ratio_i);
@@ -647,18 +646,6 @@ void lithosphere::update() throw()
             plates[imap[i]]->setCrust(x, y, OCEANIC_BASE,
                 iter_count);
 
-            // DEBUG!
-//          size_t lx = x, ly = y;
-//          plates[imap[i]]->getMapIndex(&lx, &ly);
-//          size_t px = (size_t) plates[imap[i]]->left + lx;
-//          size_t py = (size_t) plates[imap[i]]->top + ly;
-//
-//          if ((py & (map_side - 1)) * map_side +
-//              (px & (map_side - 1)) != i)
-//          {
-//              puts("Added sea floor to odd place!");
-//              exit(1);
-//          }
         }
         else if (++indexFound[imap[i]] && hmap[i] <= 0)
         {
@@ -702,36 +689,6 @@ void lithosphere::update() throw()
         hmap[i] += (hmap[i] < CONTINENTAL_BASE) * BUOYANCY_BONUS_X *
                    OCEANIC_BASE * crust_age * MULINV_MAX_BUOYANCY_AGE;
     }
-
-/*  size_t i = 0;
-    const size_t x0 = (size_t)plates[i]->getLeft();
-    const size_t y0 = (size_t)plates[i]->getTop();
-    const size_t x1 = x0 + plates[i]->getWidth();
-    const size_t y1 = y0 + plates[i]->getHeight();
-
-    const float*  this_map;
-    const size_t* this_age;
-    plates[i]->getMap(&this_map, &this_age);
-
-    // Show only plate[0]'s segments, draw everything else dark blue.
-    if (iter_count < 300)
-    for (size_t y = y0, j = 0; y < y1; ++y)
-      for (size_t x = x0; x < x1; ++x, ++j)
-      {
-        const size_t x_mod = x & (map_side - 1);
-        const size_t y_mod = y & (map_side - 1);
-
-        const size_t k = y_mod * map_side + x_mod;
-
-        if (this_map[j] < 2 * FLT_EPSILON) // No crust here...
-        {
-            hmap[k] = 4*FLT_EPSILON;
-            continue;
-        }
-
-        float Q = (plates[i]->segment[j] < plates[i]->seg_data.size());
-        hmap[k] = (this_map[j] * Q);
-      }*/
 
     delete[] prev_imap;
     ++iter_count;
