@@ -691,18 +691,18 @@ void plate::move() throw()
     vx = _vx;
     vy = _vy;
 
-    // Location modulations into range [0, world_side[ are a have to!
+    // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
     assert(_worldDimension.contains(left, top));
 
     left += vx * velocity;
-    left += left > 0 ? 0 : world_side;
-    left -= left < world_side ? 0 : world_side;
+    left += left > 0 ? 0 : _worldDimension.getWidth();
+    left -= left < _worldDimension.getWidth() ? 0 : _worldDimension.getWidth();
 
     top += vy * velocity;
-    top += top > 0 ? 0 : world_side;
-    top -= top < world_side ? 0 : world_side;
+    top += top > 0 ? 0 : _worldDimension.getHeight();
+    top -= top < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
 
     assert(_worldDimension.contains(left, top));
 }
@@ -967,7 +967,7 @@ size_t plate::createSegment(size_t x, size_t y) throw()
         }
 
         // Check if should wrap around left edge.
-        if (width == world_side && start == 0 &&
+        if (width == _worldDimension.getWidth() && start == 0 &&
             segment[line_here+width-1] > ID &&
             map[line_here+width-1] >= CONT_BASE)
         {
@@ -979,7 +979,7 @@ size_t plate::createSegment(size_t x, size_t y) throw()
         }
 
         // Check if should wrap around right edge.
-        if (width == world_side && end == width - 1 &&
+        if (width == _worldDimension.getWidth() && end == width - 1 &&
             segment[line_here+0] > ID &&
             map[line_here+0] >= CONT_BASE)
         {
@@ -998,7 +998,7 @@ size_t plate::createSegment(size_t x, size_t y) throw()
         if (start < data.getLeft()) data.setLeft(start);
         if (end > data.getRight()) data.setRight(end);
 
-        if (line > 0 || height == world_side)
+        if (line > 0 || height == _worldDimension.getHeight())
         for (size_t j = start; j <= end; ++j)
           if (segment[line_above + j] > ID &&
               map[line_above + j] >= CONT_BASE)
