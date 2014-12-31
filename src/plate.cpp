@@ -34,10 +34,10 @@
 using namespace std;
 
 plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
-             size_t plate_age, size_t _world_side) throw() :
-             width(w), height(h), world_side(_world_side),
+             size_t plate_age, WorldDimension worldDimension) throw() :
+             width(w), height(h),
              mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
-             map(w, h), age_map(w, h), _worldDimension(_world_side, _world_side)
+             map(w, h), age_map(w, h), _worldDimension(worldDimension)
 {
     if (NULL == m) {
         throw invalid_argument("the given heightmap should not be null");
@@ -50,9 +50,6 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
     }
     if (plate_age < 0) {
         throw invalid_argument("age of the plate should be greater or equal to zero");
-    }
-    if (world_side <= 0) {
-        throw invalid_argument("world_side should be greater than zero");
     }
 
     const size_t plate_area = w * h;
@@ -153,10 +150,10 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
     x = (size_t)((int)x + dx);
     y = (size_t)((int)y + dy);
 
-    if (width == world_side) {
+    if (width == _worldDimension.getWidth()) {
         x %= width;
     }
-    if (height == world_side) {
+    if (height == _worldDimension.getHeight()) {
         y %= height;
     }
 
@@ -683,7 +680,8 @@ void plate::move() throw()
     // Apply some circular motion to the plate.
     // Force the radius of the circle to remain fixed by adjusting
     // angular velocity (which depends on plate's velocity).
-    float alpha = rot_dir * velocity / (world_side * 0.33);
+    size_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
+    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
     float _cos = cos(alpha * velocity);
     float _sin = sin(alpha * velocity);
     float _vx = vx * _cos - vy * _sin;
@@ -737,16 +735,16 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
 
         // Calculate distance of new point from plate edges.
         const size_t _lft = ilft - x;
-        const size_t _rgt = (world_side & -(x < ilft)) + x - irgt;
+        const size_t _rgt = (_worldDimension.getWidth() & -(x < ilft)) + x - irgt;
         const size_t _top = itop - y;
-        const size_t _btm = (world_side & -(y < itop)) + y - ibtm;
+        const size_t _btm = (_worldDimension.getHeight() & -(y < itop)) + y - ibtm;
 
         // Set larger of horizontal/vertical distance to zero.
         // A valid distance is NEVER larger than world's side's length!
-        size_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < world_side);
-        size_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < world_side);
-        size_t d_top = _top & -(_top <  _btm) & -(_top < world_side);
-        size_t d_btm = _btm & -(_btm <= _top) & -(_btm < world_side);
+        size_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < _worldDimension.getWidth());
+        size_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < _worldDimension.getWidth());
+        size_t d_top = _top & -(_top <  _btm) & -(_top < _worldDimension.getHeight());
+        size_t d_btm = _btm & -(_btm <= _top) & -(_btm < _worldDimension.getHeight());
 
         // Scale all changes to multiple of 8.
         d_lft = ((d_lft > 0) + (d_lft >> 3)) << 3;
@@ -755,16 +753,16 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
         d_btm = ((d_btm > 0) + (d_btm >> 3)) << 3;
 
         // Make sure plate doesn't grow bigger than the system it's in!
-        if (width + d_lft + d_rgt > world_side)
+        if (width + d_lft + d_rgt > _worldDimension.getWidth())
         {
             d_lft = 0;
-            d_rgt = world_side - width;
+            d_rgt = _worldDimension.getWidth() - width;
         }
 
-        if (height + d_top + d_btm > world_side)
+        if (height + d_top + d_btm > _worldDimension.getHeight())
         {
             d_top = 0;
-            d_btm = world_side - height;
+            d_btm = _worldDimension.getHeight() - height;
         }
 
         // Index out of bounds, but nowhere to grow!
@@ -774,11 +772,11 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
         const size_t old_height = height;
         
         left -= d_lft;
-        left += left >= 0 ? 0 : world_side;
+        left += left >= 0 ? 0 : _worldDimension.getWidth();
         width += d_lft + d_rgt;
 
         top -= d_top;
-        top += top >= 0 ? 0 : world_side;
+        top += top >= 0 ? 0 : _worldDimension.getHeight();
         height += d_top + d_btm;
 
         HeightMap tmph = HeightMap(width, height);
@@ -1024,7 +1022,7 @@ size_t plate::createSegment(size_t x, size_t y) throw()
             ++j; // Skip the last scanned point.
           }
 
-        if (line < height - 1 || height == world_side)
+        if (line < height - 1 || height == _worldDimension.getHeight())
         for (size_t j = start; j <= end; ++j)
           if (segment[line_below + j] > ID &&
               map[line_below + j] >= CONT_BASE)

@@ -301,7 +301,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
             }
 
         // Create plate.
-        plates[i] = new plate(plt, width, height, x0, y0, i, map_side);
+        plates[i] = new plate(plt, width, height, x0, y0, i, WorldDimension(map_side, map_side));
         delete[] plt;
     }
 
