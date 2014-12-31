@@ -361,6 +361,37 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
     // path upwards like it should. Seems correct right?
 }
 
+void plate::calculateCrust(size_t x, size_t y, size_t index, 
+    float& w_crust, float& e_crust, float& n_crust, float& s_crust)
+{
+    // Build masks for accessible directions (4-way).
+    // Allow wrapping around map edges if plate has world wide dimensions.
+    size_t w_mask = -((x > 0)          | (width == _worldDimension.getWidth()));
+    size_t e_mask = -((x < width - 1)  | (width == _worldDimension.getWidth()));
+    size_t n_mask = -((y > 0)          | (height == _worldDimension.getHeight()));
+    size_t s_mask = -((y < height - 1) | (height == _worldDimension.getHeight()));
+
+    // Calculate the x and y offset of neighbour directions.
+    // If neighbour is out of plate edges, set it to zero. This protects
+    // map memory reads from segment faulting.
+    size_t w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
+    size_t e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
+    size_t n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
+    size_t s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
+
+    // Calculate offsets within map memory.
+    w = y * width + w;
+    e = y * width + e;
+    n = n * width + x;
+    s = s * width + x;
+
+    // Extract neighbours heights. Apply validity filtering: 0 is invalid.
+    w_crust = map[w] * (w_mask & (map[w] < map[index]));
+    e_crust = map[e] * (e_mask & (map[e] < map[index]));
+    n_crust = map[n] * (n_mask & (map[n] < map[index]));
+    s_crust = map[s] * (s_mask & (map[s] < map[index]));    
+}
+
 void plate::erode(float lower_bound) throw()
 {
   vector<size_t> sources_data;
@@ -380,32 +411,8 @@ void plate::erode(float lower_bound) throw()
             continue;
         }
 
-        // Build masks for accessible directions (4-way).
-        // Allow wrapping around map edges if plate has world wide dimensions.
-        size_t w_mask = -((x > 0) | (width == _worldDimension.getWidth()));
-        size_t e_mask = -((x < width - 1) | (width == _worldDimension.getWidth()));
-        size_t n_mask = -((y > 0) | (height == _worldDimension.getHeight()));
-        size_t s_mask = -((y < height - 1) | (height == _worldDimension.getHeight()));
-
-        // Calculate the x and y offset of neighbour directions.
-        // If neighbour is out of plate edges, set it to zero. This protects
-        // map memory reads from segment faulting.
-        size_t w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
-        size_t e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
-        size_t n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
-        size_t s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
-
-        // Calculate offsets within map memory.
-        w = y * width + w;
-        e = y * width + e;
-        n = n * width + x;
-        s = s * width + x;
-
-        // Extract neighbours heights. Apply validity filtering: 0 is invalid.
-        float w_crust = map[w] * (w_mask & (map[w] < map[index]));
-        float e_crust = map[e] * (e_mask & (map[e] < map[index]));
-        float n_crust = map[n] * (n_mask & (map[n] < map[index]));
-        float s_crust = map[s] * (s_mask & (map[s] < map[index]));
+        float w_crust, e_crust, n_crust, s_crust;
+        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust);
 
         // This location is either at the edge of the plate or it is not the
         // tallest of its neightbours. Don't start a river from here.
@@ -544,10 +551,10 @@ void plate::erode(float lower_bound) throw()
     // Calculate the x and y offset of neighbour directions.
     // If neighbour is out of plate edges, set it to zero. This protects
     // map memory reads from segment faulting.
-        size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
-        size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
-        size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
-        size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
+    size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
+    size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
+    size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
+    size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
 
     // Calculate offsets within map memory.
     w = y * width + w;

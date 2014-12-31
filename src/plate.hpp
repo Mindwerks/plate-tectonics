@@ -209,6 +209,8 @@ class plate
 	protected:
 	private:
 
+    inline void calculateCrust(size_t x, size_t y, size_t index, float& w_crust, float& e_crust, float& n_crust, float& s_crust);
+
 	ContinentId getContinentAt(int x, int y) const;
 
 	/// Container for details about a segmented crust area on this plate.
