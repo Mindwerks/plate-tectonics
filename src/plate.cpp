@@ -362,7 +362,8 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
 }
 
 void plate::calculateCrust(size_t x, size_t y, size_t index, 
-    float& w_crust, float& e_crust, float& n_crust, float& s_crust)
+    float& w_crust, float& e_crust, float& n_crust, float& s_crust,
+    size_t& w, size_t& e, size_t& n, size_t& s)
 {
     // Build masks for accessible directions (4-way).
     // Allow wrapping around map edges if plate has world wide dimensions.
@@ -374,10 +375,10 @@ void plate::calculateCrust(size_t x, size_t y, size_t index,
     // Calculate the x and y offset of neighbour directions.
     // If neighbour is out of plate edges, set it to zero. This protects
     // map memory reads from segment faulting.
-    size_t w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
-    size_t e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
-    size_t n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
-    size_t s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
+    w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
+    e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
+    n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
+    s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
 
     // Calculate offsets within map memory.
     w = y * width + w;
@@ -412,7 +413,9 @@ void plate::erode(float lower_bound) throw()
         }
 
         float w_crust, e_crust, n_crust, s_crust;
-        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust);
+        size_t w, e, n, s;
+        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
+            w, e, n, s);
 
         // This location is either at the edge of the plate or it is not the
         // tallest of its neightbours. Don't start a river from here.
@@ -441,7 +444,9 @@ void plate::erode(float lower_bound) throw()
         }
 
         float w_crust, e_crust, n_crust, s_crust;
-        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust);
+        size_t w, e, n, s;
+        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
+            w, e, n, s);
 
         // If this is the lowest part of its neighbourhood, stop.
         if (w_crust + e_crust + n_crust + s_crust == 0) {
@@ -518,8 +523,9 @@ void plate::erode(float lower_bound) throw()
         continue;
 
     float w_crust, e_crust, n_crust, s_crust;
-    calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust);
-
+    size_t w, e, n, s;
+    calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
+        w, e, n, s);
 
     // This location has no neighbours (ARTIFACT!) or it is the lowest
     // part of its area. In either case the work here is done.

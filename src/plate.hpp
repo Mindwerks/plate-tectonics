@@ -209,7 +209,9 @@ class plate
 	protected:
 	private:
 
-    inline void calculateCrust(size_t x, size_t y, size_t index, float& w_crust, float& e_crust, float& n_crust, float& s_crust);
+    inline void calculateCrust(size_t x, size_t y, size_t index, 
+    		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
+    		size_t& w, size_t& e, size_t& n, size_t& s);
 
 	ContinentId getContinentAt(int x, int y) const;
 
