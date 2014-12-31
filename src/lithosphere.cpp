@@ -524,15 +524,6 @@ void lithosphere::update() throw()
         }
     }
 
-//  size_t total_collisions = oceanic_collisions + continental_collisions;
-//  if (total_collisions > max_collisions)
-//      max_collisions = total_collisions;
-//  printf("%5u + %5u = %5u collisions (%f %%) (max %5u (%f %%)). %c\n",
-//      oceanic_collisions, continental_collisions, total_collisions,
-//      (float)total_collisions / (float)(map_side * map_side),
-//      max_collisions, (float)max_collisions /
-//      (float)(map_side * map_side), '+' + (2 & -(iter_count & 1)));
-
     // Update the counter of iterations since last continental collision.
     last_coll_count = (last_coll_count + 1) &
         -(continental_collisions == 0);
