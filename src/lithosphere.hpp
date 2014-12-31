@@ -22,6 +22,7 @@
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
+#include "heightmap.hpp"
 
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
@@ -113,7 +114,7 @@ class lithosphere
 
 	void restart() throw(); //< Replace plates with a new population.
 
-	float* hmap; ///< Height map representing the topography of system.
+	HeightMap hmap; ///< Height map representing the topography of system.
 	size_t* imap; ///< Plate index map of the "owner" of each map point.
 	size_t* amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.

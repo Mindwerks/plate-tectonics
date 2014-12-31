@@ -65,7 +65,7 @@ size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 lithosphere::lithosphere(size_t map_side_length, float sea_level,
     size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
     float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
-    hmap(0), 
+    hmap(map_side_length, map_side_length), 
     plates(0), 
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel), 
@@ -131,7 +131,6 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     // Scalp the +1 away from map side to get a power of two side length!
     // Practically only the redundant map edges become removed.
     --map_side;
-    hmap = new float[map_side*map_side];
     for (size_t i = 0; i < map_side; ++i)
         memcpy(&hmap[i*map_side], &tmp[i*(map_side+1)],
               map_side*sizeof(float));
@@ -147,7 +146,6 @@ lithosphere::~lithosphere() throw()
     delete[] plates; plates = 0;
     delete[] amap;   amap = 0;
     delete[] imap;   imap = 0;
-    delete[] hmap;   hmap = 0;
 }
 
 void lithosphere::createPlates(size_t num_plates) throw()
@@ -323,7 +321,7 @@ const size_t* lithosphere::getAgemap() const throw()
 
 const float* lithosphere::getTopography() const throw()
 {
-    return hmap;
+    return hmap.raw_data();
 }
 
 void lithosphere::update() throw()
@@ -376,7 +374,7 @@ void lithosphere::update() throw()
     // Each plate's map's memory area is accessed sequentially and only
     // once as opposed to calculating "num_plates" indices within plate
     // maps in order to find out which plate(s) own current location.
-    memset(hmap,   0, map_area * sizeof(float));
+    hmap.set_all(0);
     memset(imap, 255, map_area * sizeof(size_t));
     for (size_t i = 0; i < num_plates; ++i)
     {
@@ -703,7 +701,7 @@ void lithosphere::restart() throw()
         return;
 
     // Update height map to include all recent changes.
-    memset(hmap, 0, map_area * sizeof(float));
+    hmap.set_all(0);
     for (size_t i = 0; i < num_plates; ++i)
     {
       const size_t x0 = (size_t)plates[i]->getLeft();
@@ -789,7 +787,7 @@ void lithosphere::restart() throw()
     float* tmp = new float[A];
     float* original = new float[A];
 
-    memcpy(original, hmap, map_area * sizeof(float));
+    hmap.copy_raw_to(original);
 
     float h_lowest = hmap[0], h_highest = hmap[0];
     for (size_t i = 1; i < map_area; ++i) // Record elevation extremes.
@@ -905,7 +903,7 @@ void lithosphere::restart() throw()
     }
 
     // Add a smoothing factor to sea floor.
-    memcpy(original, hmap, map_area * sizeof(float));
+    hmap.copy_raw_to(original);
 
     h_lowest = hmap[0], h_highest = hmap[0];
     for (size_t i = 1; i < map_area; ++i) // Record elevation extremes.
