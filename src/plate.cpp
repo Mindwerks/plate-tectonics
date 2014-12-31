@@ -440,32 +440,8 @@ void plate::erode(float lower_bound) throw()
             continue;
         }
 
-        // Build masks for accessible directions (4-way).
-        // Allow wrapping around map edges if plate has world wide dimensions.
-        size_t w_mask = -((x > 0) | (width == world_side));
-        size_t e_mask = -((x < width - 1) | (width == world_side));
-        size_t n_mask = -((y > 0) | (height == world_side));
-        size_t s_mask = -((y < height - 1) | (height == world_side));
-
-        // Calculate the x and y offset of neighbour directions.
-        // If neighbour is out of plate edges, set it to zero. This protects
-        // map memory reads from segment faulting.
-        size_t w = (world_side + x - 1) & (world_side - 1) & w_mask;
-        size_t e = (world_side + x + 1) & (world_side - 1) & e_mask;
-        size_t n = (world_side + y - 1) & (world_side - 1) & n_mask;
-        size_t s = (world_side + y + 1) & (world_side - 1) & s_mask;
-
-        // Calculate offsets within map memory.
-        w = y * width + w;
-        e = y * width + e;
-        n = n * width + x;
-        s = s * width + x;
-
-        // Extract neighbours heights. Apply validity filtering: 0 is invalid.
-        float w_crust = map[w] * (w_mask & (map[w] < map[index]));
-        float e_crust = map[e] * (e_mask & (map[e] < map[index]));
-        float n_crust = map[n] * (n_mask & (map[n] < map[index]));
-        float s_crust = map[s] * (s_mask & (map[s] < map[index]));
+        float w_crust, e_crust, n_crust, s_crust;
+        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust);
 
         // If this is the lowest part of its neighbourhood, stop.
         if (w_crust + e_crust + n_crust + s_crust == 0) {
