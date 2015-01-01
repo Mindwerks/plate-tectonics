@@ -388,7 +388,7 @@ void lithosphere::update() throw()
         const size_t x_mod = _worldDimension.xMod(x);
         const size_t y_mod = _worldDimension.yMod(y);
 
-        const size_t k = y_mod * map_side + x_mod;
+        const size_t k = _worldDimension.indexOf(x_mod, y_mod);
 
         if (this_map[j] < 2 * FLT_EPSILON) // No crust here...
             continue;
@@ -613,7 +613,7 @@ void lithosphere::update() throw()
 
     // Fill divergent boundaries with new crustal material, molten magma.
     for (size_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * map_side; ++y)
-      for (size_t x = 0; x < map_side; ++x, ++i)
+      for (size_t x = 0; x < _worldDimension.getWidth(); ++x, ++i)
         if (imap[i] >= num_plates)
         {
             // The owner of this new crust is that neighbour plate
@@ -790,9 +790,9 @@ void lithosphere::restart() throw()
         h_highest = h_highest > hmap[i] ? h_highest : hmap[i];
     }
 
-    for (size_t y = 0; y < map_side; y += 8)
+    for (size_t y = 0; y < _worldDimension.getHeight(); y += 8)
     {
-        for (size_t x = 0; x < map_side; x += 8)
+        for (size_t x = 0; x < _worldDimension.getWidth(); x += 8)
         {
             size_t i = _worldDimension.indexOf(x, y);
             hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
@@ -825,7 +825,7 @@ void lithosphere::restart() throw()
         memset(&hmap[(y+7)*map_side], 0, map_side * sizeof(float));
     }
 
-    for (size_t y = 0; y < map_side; ++y) // Copy map into fractal buffer.
+    for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
         memcpy(&tmp[y*(map_side+1)], &hmap[y*map_side],
             map_side*sizeof(float));
@@ -853,11 +853,11 @@ void lithosphere::restart() throw()
 
     for (size_t y = 0; y < map_side; ++y)
         for (size_t x = 0; x < map_side; ++x)
-            if (original[y*map_side+x] > CONTINENTAL_BASE)
+            if (original[_worldDimension.indexOf(x,y)] > CONTINENTAL_BASE)
             {
                 float new_height = tmp[y*(map_side+1)+x] *
                     1.0 + original[y*map_side+x] * 0.0;
-                float alpha = sqrt((original[y*map_side+x] -
+                float alpha = sqrt((original[_worldDimension.indexOf(x,y)] -
                     CONTINENTAL_BASE) / (h_highest -
                     CONTINENTAL_BASE));
 
@@ -902,11 +902,11 @@ void lithosphere::restart() throw()
         h_highest = h_highest > hmap[i] ? h_highest : hmap[i];
     }
 
-    for (size_t y = 0; y < map_side; y += 4)
+    for (size_t y = 0; y < _worldDimension.getHeight(); y += 4)
     {
-        for (size_t x = 0; x < map_side; x += 4)
+        for (size_t x = 0; x < _worldDimension.getWidth(); x += 4)
         {
-            size_t i = y * map_side + x;
+            size_t i = _worldDimension.indexOf(x,y);
             hmap[i] = 4.0f * RAND_MAX * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
@@ -959,8 +959,8 @@ void lithosphere::restart() throw()
     for (size_t i = 0; i < A; ++i) // Restore original height range.
         tmp[i] = h_lowest + tmp[i] * h_range;
 
-    for (size_t y = 0; y < map_side; ++y)
-        for (size_t x = 0; x < map_side; ++x)
+    for (size_t y = 0; y < _worldDimension.getHeight(); ++y)
+        for (size_t x = 0; x < _worldDimension.getWidth(); ++x)
             if (original[y*map_side+x] < CONTINENTAL_BASE)
                 hmap[_worldDimension.indexOf(x, y)] = tmp[y*(map_side+1)+x];
             else
