@@ -839,10 +839,10 @@ void lithosphere::restart() throw()
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
-        memcpy(&tmp[y*(map_side+1)], &hmap[y*map_side],
+        memcpy(&tmp[y*(map_side+1)], &hmap[_worldDimension.lineIndex(y)],
             map_side*sizeof(float));
 
-        tmp[y*(map_side+1) + map_side] = hmap[y*map_side];
+        tmp[y*(map_side+1) + map_side] = hmap[_worldDimension.lineIndex(y)];
     }
 
     // Copy last line - the one that "wraps around" the top edge.
@@ -864,7 +864,7 @@ void lithosphere::restart() throw()
             if (original[_worldDimension.indexOf(x,y)] > CONTINENTAL_BASE)
             {
                 float new_height = tmp[y*(map_side+1)+x] *
-                    1.0 + original[y*map_side+x] * 0.0;
+                    1.0 + original[_worldDimension.indexOf(x, y)] * 0.0;
                 float alpha = sqrt((original[_worldDimension.indexOf(x,y)] -
                     CONTINENTAL_BASE) / (h_highest -
                     CONTINENTAL_BASE));
@@ -918,11 +918,12 @@ void lithosphere::restart() throw()
                 hmap[j] = 0;
         }
 
-        memset(&hmap[(y+1)*map_side], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex(y+1)], 0, line_size);
 
-        for (size_t i = 0; i < 2; ++i)
-            hmap[(y+2)*map_side+i] = 
-            hmap[(y+2)*map_side+map_side-i-1] = 0;
+        for (size_t i = 0; i < 2; ++i) {
+            hmap[_worldDimension.indexOf(i,y+2)] = 0;
+            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,y+2)] = 0;
+        }
 
         for (size_t x = 2; x < map_side-2; x += 4)
         {
