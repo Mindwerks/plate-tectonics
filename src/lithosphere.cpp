@@ -62,6 +62,15 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
+void lithosphere::createNoise(float* tmp)
+{
+    if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
+    {
+        delete[] tmp;
+        throw invalid_argument("Failed to generate height map.");
+    }    
+}
+
 lithosphere::lithosphere(size_t map_side_length, float sea_level,
     size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
     float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
@@ -84,11 +93,7 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
-    if (sqrdmd(tmp, map_side+1, SQRDMD_ROUGHNESS) < 0)
-    {
-        delete[] tmp;
-        throw invalid_argument("Failed to generate height map.");
-    }
+    createNoise(tmp);
 
     float lowest = tmp[0], highest = tmp[0];
     for (size_t i = 1; i < A; ++i)
@@ -840,11 +845,7 @@ void lithosphere::restart() throw()
     tmp[map_side*(map_side+1) + map_side] = hmap[0];
 
     // Finally create some fractal slopes!
-    if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
-    {
-        delete[] tmp;
-        throw invalid_argument("Failed to fractalize heightmap.");
-    }
+    createNoise(tmp);
 
     normalize(tmp, A);
 
@@ -871,11 +872,7 @@ void lithosphere::restart() throw()
     // Add some random noise to the map.
     memset(tmp, 0, A * sizeof(float));
 
-    if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
-    {
-        delete[] tmp;
-        throw invalid_argument("Failed to generate height map again.");
-    }
+    createNoise(tmp);
 
     normalize(tmp, A);
 
@@ -948,11 +945,7 @@ void lithosphere::restart() throw()
     tmp[map_side*(map_side+1) + map_side] = hmap[0];
 
     // Finally create some fractal slopes!
-    if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
-    {
-        delete[] tmp;
-        throw invalid_argument("Failed to fractalize heightmap.");
-    }
+    createNoise(tmp);
 
     normalize(tmp, A);
 
