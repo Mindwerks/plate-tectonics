@@ -35,8 +35,10 @@
 
 #define SAVE_SUM(a)\
 {\
-	masked = !((int)map[a]);\
-	map[a] = map[a] * !masked + sum * masked;\
+	bool isZero = (int)map[a] == 0;  \
+	if (isZero) { \
+		map[a] = sum; \
+	} \
 }
 
 void normalize(float* arr, int size)
