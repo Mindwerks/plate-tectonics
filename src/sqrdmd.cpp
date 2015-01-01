@@ -69,7 +69,7 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	int size = width;
 	const int full_size = width * height;
 
-	int i, temp;
+	int i;
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
@@ -168,8 +168,10 @@ int sqrdmd(float* map, int width, int height, float rgh)
 		 * row of map. 'size - (step >> 1)' guarantees that data will
 		 * not be read beyond bottom row of map.
 		 */
-		for (y = step >> 1, temp = 0; y < size - (step >> 1);
-		y += step >> 1, temp = !temp)
+		int temp;
+		for (y = step >> 1, temp = 0; 
+			 y < size - (step >> 1);
+			 y += step >> 1, temp = !temp)
 		{
 			p0 = step >> 1;  /* right */
 			p1 = p0 * size;  /* bottom */
