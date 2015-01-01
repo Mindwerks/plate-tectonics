@@ -89,7 +89,8 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     num_plates(0),
     _worldDimension(map_side_length, map_side_length)
 {
-    const size_t A = (map_side+1) * (map_side+1);
+    WorldDimension tmpDim = WorldDimension(map_side+1, map_side+1);
+    const size_t A = tmpDim.getArea();
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
@@ -133,9 +134,11 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
 
     // Scalp the +1 away from map side to get a power of two side length!
     // Practically only the redundant map edges become removed.
-    for (size_t i = 0; i < map_side; ++i)
-        memcpy(&hmap[i*map_side], &tmp[i*(map_side+1)],
-              map_side*sizeof(float));
+    for (size_t y = 0; y < _worldDimension.getHeight(); ++y) {
+        memcpy(&hmap[_worldDimension.lineIndex(y)], 
+               &tmp[ tmpDim.lineIndex(y)],
+               _worldDimension.getWidth()*sizeof(float));
+    }
 
     imap = new size_t[_worldDimension.getArea()];
 
