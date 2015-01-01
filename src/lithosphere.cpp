@@ -940,7 +940,7 @@ void lithosphere::restart() throw()
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
-        memcpy(&tmp[_tmpDim.lineIndex(y)], &hmap[_worldDimension.lineIndex(y)],
+        memcpy(&tmp[tmpDim.lineIndex(y)], &hmap[_worldDimension.lineIndex(y)],
             map_side*sizeof(float));
 
         tmp[y*(map_side+1) + map_side] = hmap[_worldDimension.lineIndex(y)];
