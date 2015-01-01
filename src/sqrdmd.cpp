@@ -45,7 +45,12 @@ void normalize(float* arr, int size)
 
 int sqrdmd(float* map, int size, float rgh)
 {
-	const int full_size = size * size;
+	return sqrdmd(map, size, size, rgh);
+}
+
+int sqrdmd(float* map, int width, int height, float rgh)
+{
+	const int full_size = width * height;
 
 	int i, temp;
 	int x, y, dx, dy;
@@ -53,14 +58,11 @@ int sqrdmd(float* map, int size, float rgh)
 	int p0, p1, p2, p3;
 	int step, line_jump, masked;
 	float slope, sum, center_sum;
+	
+	int size = width;
 
 	i = 0;
-	temp = size - 1;
 
-	if (temp & (temp - 1) || temp & 3)  /* MUST EQUAL TO 2^x + 1! */
-		return (-1);
-
-	temp = size;
 	slope = rgh;
 	step = size & ~1;
 
@@ -214,8 +216,8 @@ int sqrdmd(float* map, int size, float rgh)
 			}
 
 			/* copy rows first element into its last */
-			i = y * size;
-			map[i + size - 1] = map[i];
+			i = y * width;
+			map[i + width - 1] = map[i];
 		}
 
 		slope *= rgh; /* reduce amount of randomness for next round */
