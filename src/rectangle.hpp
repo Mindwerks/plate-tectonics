@@ -63,6 +63,11 @@ public:
         return y * getWidth() + x;
     }
 
+    size_t lineIndex(const size_t y) const
+    {
+        return indexOf(0, y);
+    }
+
     size_t yFromIndex(const size_t index) const
     {
         return index / _width;
