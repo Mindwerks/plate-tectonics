@@ -27,6 +27,20 @@ To compile on other platforms please run:
 cmake --help
 ```
 
+Running the example
+===================
+
+To run also the example you need to install the library DevIL.
+
+From the root directory run:
+
+```
+cmake -DWITH_EXAMPLE=TRUE -G "Unix Makefiles"
+make
+cd example
+./PlateTectonicsExample
+```
+
 How to run tests
 ================
 
