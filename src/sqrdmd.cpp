@@ -65,19 +65,23 @@ int sqrdmd(float* map, int size, float rgh)
 
 int sqrdmd(float* map, int width, int height, float rgh)
 {
+	// temporary: it should be removed later
 	int size = width;
-	const int full_size = size * size;
+	const int full_size = width * height;
 
 	int i, temp;
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
-	int step, line_jump, masked;
+	int step; // temporary: it should be removed later
+	int step_x, step_y, line_jump, masked;
 	float slope, sum, center_sum;
 
 	i = 0;
 	slope = rgh;
-	step = size & ~1;
+	step = size - 1;
+	step_x = width - 1;
+	step_y = height - 1;
 
 	/* Calculate midpoint ("diamond step"). */
 	dy = step * size;
