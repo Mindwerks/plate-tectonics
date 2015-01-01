@@ -219,7 +219,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
                 owner[n] = i;
                 area[i].border.push_back(n);
 
-                if (area[i].top == ((top + 1) & (map_side-1)))
+                if (area[i].top == _worldDimension.yMod(top + 1))
                 {
                     area[i].top = top;
                     area[i].hgt++;
@@ -231,7 +231,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
                 owner[s] = i;
                 area[i].border.push_back(s);
 
-                if (btm == ((area[i].btm + 1) & (map_side-1)))
+                if (btm == _worldDimension.yMod(area[i].btm + 1))
                 {
                     area[i].btm = btm;
                     area[i].hgt++;
@@ -243,7 +243,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
                 owner[w] = i;
                 area[i].border.push_back(w);
 
-                if (area[i].lft == ((lft + 1) & (map_side-1)))
+                if (area[i].lft == _worldDimension.xMod(lft + 1))
                 {
                     area[i].lft = lft;
                     area[i].wdt++;
@@ -255,7 +255,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
                 owner[e] = i;
                 area[i].border.push_back(e);
 
-                if (rgt == ((area[i].rgt + 1) & (map_side-1)))
+                if (rgt == _worldDimension.xMod(area[i].rgt + 1))
                 {
                     area[i].rgt = rgt;
                     area[i].wdt++;
@@ -612,7 +612,7 @@ void lithosphere::update() throw()
     memset(indexFound, 0, sizeof(size_t)*num_plates);
 
     // Fill divergent boundaries with new crustal material, molten magma.
-    for (size_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * map_side; ++y)
+    for (size_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * _worldDimension.getHeight(); ++y)
       for (size_t x = 0; x < _worldDimension.getWidth(); ++x, ++i)
         if (imap[i] >= num_plates)
         {
