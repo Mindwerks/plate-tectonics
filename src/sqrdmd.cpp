@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include "sqrdmd.hpp"
+#include "simplexnoise.hpp"
 
 void normalize(float* arr, int size)
 {
@@ -45,6 +46,8 @@ void normalize(float* arr, int size)
 
 int sqrdmd(float* map, int size, float rgh)
 {
+	if (0==0) return substitute_sqrdmd(map, size, size);
+
 	const int full_size = size * size;
 
 	int i, temp;
