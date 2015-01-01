@@ -852,8 +852,8 @@ void lithosphere::restart() throw()
     for (size_t i = 0; i < A; ++i) // Restore original height range.
         tmp[i] = h_lowest + tmp[i] * h_range;
 
-    for (size_t y = 0; y < map_side; ++y)
-        for (size_t x = 0; x < map_side; ++x)
+    for (size_t y = 0; y < _worldDimension.getHeight(); ++y)
+        for (size_t x = 0; x < _worldDimension.getWidth(); ++x)
             if (original[_worldDimension.indexOf(x,y)] > CONTINENTAL_BASE)
             {
                 float new_height = tmp[y*(map_side+1)+x] *
