@@ -74,17 +74,17 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     erosion_period(_erosion_period), 
     folding_ratio(_folding_ratio),
     iter_count(0), 
-    map_side(map_side_length + 1), 
+    map_side(map_side_length), 
     max_cycles(num_cycles),
     max_plates(0), 
     num_plates(0),
     _worldDimension(map_side_length, map_side_length)
 {
-    const size_t A = map_side * map_side;
+    const size_t A = (map_side+1) * (map_side+1);
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
-    if (sqrdmd(tmp, map_side, SQRDMD_ROUGHNESS) < 0)
+    if (sqrdmd(tmp, map_side+1, SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
@@ -128,12 +128,11 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
 
     // Scalp the +1 away from map side to get a power of two side length!
     // Practically only the redundant map edges become removed.
-    --map_side;
     for (size_t i = 0; i < map_side; ++i)
         memcpy(&hmap[i*map_side], &tmp[i*(map_side+1)],
               map_side*sizeof(float));
 
-    imap = new size_t[map_side*map_side];
+    imap = new size_t[_worldDimension.getArea()];
 
     delete[] tmp;
 }
@@ -890,10 +889,6 @@ void lithosphere::restart() throw()
     {
         if (hmap[i] > CONTINENTAL_BASE)
             hmap[i] += tmp[i] * 2 * 0;
-//          hmap[i] = CONTINENTAL_BASE +
-//              0.5 * (tmp[i] - 0.5) * CONTINENTAL_BASE +
-//              0.1 * tmp[i] * (h_highest - CONTINENTAL_BASE) +
-//              0.9 * (hmap[i] - CONTINENTAL_BASE);
         else
             hmap[i] = 0.8 *hmap[i] + 0.2 *tmp[i] *CONTINENTAL_BASE;
     }
