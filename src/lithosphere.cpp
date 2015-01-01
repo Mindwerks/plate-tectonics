@@ -780,6 +780,7 @@ void lithosphere::restart() throw()
     size_t A = (map_side + 1)*(map_side + 1);
     float* tmp = new float[A];
     float* original = new float[A];
+    const size_t line_size = _worldDimension.getWidth() * sizeof(float);
 
     hmap.copy_raw_to(original);
 
@@ -802,9 +803,9 @@ void lithosphere::restart() throw()
                 hmap[j] = 0;
         }
 
-        memset(&hmap[(y+1)*map_side], 0, map_side * sizeof(float));
-        memset(&hmap[(y+2)*map_side], 0, map_side * sizeof(float));
-        memset(&hmap[(y+3)*map_side], 0, map_side * sizeof(float));
+        memset(&hmap[(y+1)*map_side], 0, line_size);
+        memset(&hmap[(y+2)*map_side], 0, line_size);
+        memset(&hmap[(y+3)*map_side], 0, line_size);
 
         for (size_t i = 0; i < 4; ++i)
             hmap[(y+4)*map_side+i] = 
@@ -820,9 +821,9 @@ void lithosphere::restart() throw()
                 hmap[j] = 0;
         }
 
-        memset(&hmap[(y+5)*map_side], 0, map_side * sizeof(float));
-        memset(&hmap[(y+6)*map_side], 0, map_side * sizeof(float));
-        memset(&hmap[(y+7)*map_side], 0, map_side * sizeof(float));
+        memset(&hmap[(y+5)*map_side], 0, line_size);
+        memset(&hmap[(y+6)*map_side], 0, line_size);
+        memset(&hmap[(y+7)*map_side], 0, line_size);
     }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
@@ -914,7 +915,7 @@ void lithosphere::restart() throw()
                 hmap[j] = 0;
         }
 
-        memset(&hmap[(y+1)*map_side], 0, map_side * sizeof(float));
+        memset(&hmap[(y+1)*map_side], 0, line_size);
 
         for (size_t i = 0; i < 2; ++i)
             hmap[(y+2)*map_side+i] = 
@@ -930,7 +931,7 @@ void lithosphere::restart() throw()
                 hmap[j] = 0;
         }
 
-        memset(&hmap[(y+3)*map_side], 0, map_side * sizeof(float));
+        memset(&hmap[(y+3)*map_side], 0, line_size);
     }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
