@@ -79,8 +79,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 	i = 0;
 	slope = rgh;
-	step = size - 1;
-	step_x = width - 1;
+	step   = size   - 1;
+	step_x = width  - 1;
 	step_y = height - 1;
 
 	/* Calculate midpoint ("diamond step"). */
@@ -197,12 +197,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 			 * read beyond rightmost column of map. */
 			for (; x < size - (step >> 1); x += step)
 			{
-				sum = (map[p0] + map[p1] +
-				       map[p2] + map[p3]) * 0.25f;
-				sum = sum + slope * ((rand() << 1) - RAND_MAX);
-
-				masked = !((int)map[i]);
-				map[i] = map[i] * !masked + sum * masked;
+				CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
+				SAVE_SUM(i);
 
 				p0 += step;
 				p1 += step;
@@ -223,7 +219,9 @@ int sqrdmd(float* map, int width, int height, float rgh)
 		}
 
 		slope *= rgh; /* reduce amount of randomness for next round */
-		step >>= 1; /* split squares and diamonds in half */
+		step   /= 2; /* split squares and diamonds in half */
+		step_x /= 2;
+		step_y /= 2;
 	}
 
 	return (0);
