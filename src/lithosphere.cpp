@@ -171,8 +171,8 @@ void lithosphere::createPlates(size_t num_plates) throw()
     {
         // Randomly select an unused plate origin.
         const size_t p = imap[(size_t)rand() % (map_area - i)];
-        const size_t y = p / map_side;
-        const size_t x = p - y * map_side;
+        const size_t y = _worldDimension.yFromIndex(p);
+        const size_t x = _worldDimension.xFromIndex(p);
 
         area[i].lft = area[i].rgt = x; // Save origin...
         area[i].top = area[i].btm = y;
@@ -201,8 +201,8 @@ void lithosphere::createPlates(size_t num_plates) throw()
 
             const size_t j = rand() % N;
             const size_t p = area[i].border[j];
-            const size_t cy = p / map_side;
-            const size_t cx = p - cy * map_side;
+            const size_t cy = _worldDimension.yFromIndex(p);
+            const size_t cx = _worldDimension.xFromIndex(p);
 
             const size_t lft = cx > 0 ? cx - 1 : map_side - 1;
             const size_t rgt = cx < map_side - 1 ? cx + 1 : 0;
@@ -933,7 +933,7 @@ void lithosphere::restart() throw()
         memset(&hmap[(y+3)*map_side], 0, map_side * sizeof(float));
     }
 
-    for (size_t y = 0; y < map_side; ++y) // Copy map into fractal buffer.
+    for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
         memcpy(&tmp[y*(map_side+1)], &hmap[y*map_side],
             map_side*sizeof(float));
