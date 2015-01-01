@@ -3,7 +3,9 @@ cmake_minimum_required (VERSION 2.6)
 project (PlateTectonicsExample)
 add_executable(PlateTectonicsExample example.cpp)
 
-find_package(DevIL)
+if (WITH_EXAMPLE)
+	find_package(DevIL)
+endif (WITH_EXAMPLE)
 
 include_directories("../src" ${IL_INCLUDE_DIR})
 
