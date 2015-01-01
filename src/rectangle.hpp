@@ -68,6 +68,16 @@ public:
         return indexOf(xMod(x), yMod(y));
     }
 
+    size_t xCap(const size_t x)
+    {
+        return x < _width ? x : (_width-1);
+    }
+
+    size_t yCap(const size_t y)
+    {
+        return y < _height ? y : (_height-1);
+    }
+
 private:
     const size_t _width;
     const size_t _height;

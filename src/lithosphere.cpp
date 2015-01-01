@@ -209,10 +209,10 @@ void lithosphere::createPlates(size_t num_plates) throw()
             const size_t top = cy > 0 ? cy - 1 : map_side - 1;
             const size_t btm = cy < map_side - 1 ? cy + 1 : 0;
 
-            const size_t n = top * map_side +  cx; // North.
-            const size_t s = btm * map_side +  cx; // South.
-            const size_t w =  cy * map_side + lft; // West.
-            const size_t e =  cy * map_side + rgt; // East.
+            const size_t n = top * _worldDimension.getWidth() +  cx; // North.
+            const size_t s = btm * _worldDimension.getWidth() +  cx; // South.
+            const size_t w =  cy * _worldDimension.getWidth() + lft; // West.
+            const size_t e =  cy * _worldDimension.getWidth() + rgt; // East.
 
             if (owner[n] >= num_plates)
             {
@@ -273,8 +273,8 @@ void lithosphere::createPlates(size_t num_plates) throw()
     // Extract and create plates from initial terrain.
     for (size_t i = 0; i < num_plates; ++i)
     {
-        area[i].wdt = area[i].wdt<map_side ? area[i].wdt : map_side-1;
-        area[i].hgt = area[i].hgt<map_side ? area[i].hgt : map_side-1;
+        area[i].wdt = _worldDimension.xCap(area[i].wdt);
+        area[i].hgt = _worldDimension.yCap(area[i].hgt);
 
         const size_t x0 = area[i].lft;
         const size_t x1 = 1 + x0 + area[i].wdt;
