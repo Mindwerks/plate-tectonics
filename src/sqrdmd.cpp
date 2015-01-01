@@ -23,6 +23,7 @@
  *  @date 2011-08-09
  */
 #include <stdlib.h>
+#include <cstdio>
 
 #include "sqrdmd.hpp"
 
@@ -75,8 +76,9 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 	i = 0;
 
-	slope = rgh;
-	step = size & ~1;
+	slope = rgh;	
+	step = size - 1;
+	printf("Width %i Height %i Step %i\n", width, height, step);
 
 	/* Calculate midpoint ("diamond step"). */
 	dy = step * size;
