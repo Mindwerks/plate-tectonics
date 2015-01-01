@@ -124,12 +124,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx,
 				i += step)
 			{
-				sum = (map[y0+x0] + map[y0+x1] +
-				       map[y1+x0] + map[y1+x1]) * 0.25f;
-				sum = sum + slope * ((rand() << 1) - RAND_MAX);
-
-				masked = !((int)map[i]);
-				map[i] = map[i] * !masked + sum * masked;
+                CALC_SUM(map[y0 + x0], map[y0 + x1], map[y1 + x0], map[y1 + x1]);
+				SAVE_SUM(i);
 			}
 
 			/* There's additional step taken at the end of last
@@ -157,11 +153,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 		/* Calculate "diamond" values for top row in map. */
 		while (p0 < size)
 		{
-			sum = (map[p0] + map[p1] + map[p2] + map[p3]) * 0.25f;
-			sum = sum + slope * ((rand() << 1) - RAND_MAX);
-
-			masked = !((int)map[i]);
-			map[i] = map[i] * !masked + sum * masked;
+            CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
+			SAVE_SUM(i);
 			/* Copy it into bottom row. */
 			map[full_size + i - size] = map[i];
 
@@ -226,4 +219,3 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 	return (0);
 }
-
