@@ -64,9 +64,8 @@ int sqrdmd(float* map, int size, float rgh)
 }
 
 int sqrdmd(float* map, int width, int height, float rgh)
-{
-	// temporary: it should be removed later
-	int size = width;
+{	
+	int size = width; // temporary: it should be removed later
 	const int full_size = width * height;
 
 	int i;
@@ -78,14 +77,14 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	float slope, sum, center_sum;
 
 	i = 0;
-	slope = rgh;
+	slope  = rgh;
 	step   = size   - 1;
 	step_x = width  - 1;
 	step_y = height - 1;
 
 	/* Calculate midpoint ("diamond step"). */
-	dy = step * size;
-	CALC_SUM(map[0], map[step], map[dy], map[dy + step]);
+	dy = step_y * height; // start of a row
+	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
 	SAVE_SUM(i);
 
 	center_sum = sum;
@@ -93,12 +92,12 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	/* Calculate each sub diamonds' center points ("square step"). */
 
 	/* Top row. */
-	p0 = step >> 1;
+	p0 = step_x >> 1;
 	CALC_SUM(map[0], map[step], center_sum, center_sum);
 	SAVE_SUM(p0);
 
 	/* Left column. */
-	p1 = p0 * size;
+	p1 = step_y >> 1 * width;
 	CALC_SUM(map[0], map[dy], center_sum, center_sum);
 	SAVE_SUM(p1);
 
@@ -107,6 +106,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 	slope *= rgh;
 	step >>= 1;
+	step_x >>= 1;
+	step_y >>= 1;
 
 	while (step > 1)  /* Enter the main loop. */
 	{
