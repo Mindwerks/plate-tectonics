@@ -77,9 +77,10 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     map_side(map_side_length + 1), 
     max_cycles(num_cycles),
     max_plates(0), 
-    num_plates(0)
+    num_plates(0),
+    _worldDimension(map_side_length, map_side_length)
 {
-    const size_t A = map_side * map_side;
+    const size_t A = _worldDimension.getArea();
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
@@ -350,7 +351,7 @@ void lithosphere::update() throw()
         return;
     }
 
-    const size_t map_area = map_side * map_side;
+    const size_t map_area = _worldDimension.getArea();
     const size_t* prev_imap = imap;
     imap = new size_t[map_area];
 

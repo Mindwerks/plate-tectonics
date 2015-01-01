@@ -32,6 +32,11 @@ public:
         return _height;
     };
 
+    size_t getArea() const
+    {
+        return _width * _height;
+    }
+
     bool contains(const size_t x, const size_t y) const
     {
         return (x >= 0 && x < _width && y >= 0 && y < _height);

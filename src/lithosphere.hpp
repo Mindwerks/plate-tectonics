@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <vector>
 #include "heightmap.hpp"
+#include "rectangle.hpp"
 
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
@@ -136,6 +137,7 @@ class lithosphere
 	float peak_Ek; ///< Max total kinetic energy in the system so far.
 	size_t last_coll_count; ///< Iterations since last cont. collision.
 
+	const WorldDimension _worldDimension;
 };
 
 
