@@ -17,7 +17,7 @@
  *****************************************************************************/
 
 /** @file	hmapgen_sqrdmd.c
- *  @brief	Contains unctions to generate fractal height maps.
+ *  @brief	Contains functions to generate fractal height maps.
  *
  *  @author Lauri Viitanen
  *  @date 2011-08-09
@@ -69,14 +69,15 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
-	int step_x, step_y, line_jump, masked;
+	int step, step_x, step_y, line_jump, masked;
 	float slope, sum, center_sum;
 
 	int size = width;
 
 	i = 0;
 
-	slope = rgh;	
+	slope = rgh;
+	step = width - 1;	
 	step_x = width - 1;
 	step_y = height - 1;
 
