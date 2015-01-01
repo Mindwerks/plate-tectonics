@@ -961,7 +961,7 @@ void lithosphere::restart() throw()
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y)
         for (size_t x = 0; x < _worldDimension.getWidth(); ++x)
-            if (original[y*map_side+x] < CONTINENTAL_BASE)
+            if (original[_worldDimension.indexOf(x, y)] < CONTINENTAL_BASE)
                 hmap[_worldDimension.indexOf(x, y)] = tmp[y*(map_side+1)+x];
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
