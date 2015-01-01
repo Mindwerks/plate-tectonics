@@ -78,6 +78,11 @@ public:
         return y < _height ? y : (_height-1);
     }
 
+    size_t largerSize()
+    {
+        return _width > _height ? _width : _height;
+    }
+
 private:
     const size_t _width;
     const size_t _height;

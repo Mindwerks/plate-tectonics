@@ -149,7 +149,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
     this->max_plates = this->num_plates = num_plates;
 
     std::vector<plateCollision> vec;
-    vec.reserve(map_side*4); // == map's circumference.
+    vec.reserve(_worldDimension.largerSize()*4); // == map's circumference.
 
     collisions.reserve(num_plates);
     subductions.reserve(num_plates);
