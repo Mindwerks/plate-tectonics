@@ -63,12 +63,12 @@ public:
         return y * getWidth() + x;
     }
 
-    size_t yFromIndex(const size_t index)
+    size_t yFromIndex(const size_t index) const
     {
         return index / _width;
     }
 
-    size_t xFromIndex(const size_t index)
+    size_t xFromIndex(const size_t index) const
     {
         const size_t y = yFromIndex(index);
         return index - y * _width;
@@ -89,7 +89,7 @@ public:
         return y < _height ? y : (_height-1);
     }
 
-    size_t largerSize()
+    size_t largerSize() const
     {
         return _width > _height ? _width : _height;
     }
