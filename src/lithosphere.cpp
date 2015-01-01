@@ -80,7 +80,7 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     num_plates(0),
     _worldDimension(map_side_length, map_side_length)
 {
-    const size_t A = _worldDimension.getArea();
+    const size_t A = map_side * map_side;
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
@@ -121,10 +121,6 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     sea_level = sea_threshold;
     for (size_t i = 0; i < A; ++i) // Genesis 1:9-10.
     {
-//      if (tmp[i] < sea_level)
-//          tmp[i] /= sea_level;
-//      else
-//          tmp[i] = 1.0+(tmp[i] - sea_level) * 20;
         tmp[i] = (tmp[i] > sea_level) *
             (tmp[i] + CONTINENTAL_BASE) + 
             (tmp[i] <= sea_level) * OCEANIC_BASE;
@@ -150,7 +146,7 @@ lithosphere::~lithosphere() throw()
 
 void lithosphere::createPlates(size_t num_plates) throw()
 {
-    const size_t map_area = map_side * map_side;
+    const size_t map_area = _worldDimension.getArea();
     this->max_plates = this->num_plates = num_plates;
 
     std::vector<plateCollision> vec;
@@ -694,7 +690,7 @@ void lithosphere::update() throw()
 
 void lithosphere::restart() throw()
 {
-    const size_t map_area = map_side * map_side;
+    const size_t map_area = _worldDimension.getArea();
 
     cycle_count += max_cycles > 0; // No increment if running for ever.
     if (cycle_count > max_cycles)
