@@ -76,12 +76,6 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	float slope, sum, center_sum;
 
 	i = 0;
-	temp = size - 1;
-
-	if (temp & (temp - 1) || temp & 3)  /* MUST EQUAL TO 2^x + 1! */
-		return (-1);
-
-	temp = size;
 	slope = rgh;
 	step = size & ~1;
 
