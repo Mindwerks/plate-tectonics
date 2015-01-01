@@ -845,9 +845,8 @@ void lithosphere::restart() throw()
         tmp[y*(map_side+1) + map_side] = hmap[_worldDimension.lineIndex(y)];
     }
 
-    // Copy last line - the one that "wraps around" the top edge.
-    memcpy(&tmp[map_side*(map_side+1)], &hmap[0],
-        line_size);
+    // Copy last line - the one that "wraps around" the top edge.    
+    memcpy(&tmp[tmpDim.lineIndex(_worldDimension.getHeight())], &hmap[0], line_size);
     tmp[map_side*(map_side+1) + map_side] = hmap[0];
 
     // Finally create some fractal slopes!
@@ -863,7 +862,7 @@ void lithosphere::restart() throw()
         for (size_t x = 0; x < _worldDimension.getWidth(); ++x)
             if (original[_worldDimension.indexOf(x,y)] > CONTINENTAL_BASE)
             {
-                float new_height = tmp[y*(map_side+1)+x] *
+                float new_height = tmp[tmpDim.indexOf(x,y)] *
                     1.0 + original[_worldDimension.indexOf(x, y)] * 0.0;
                 float alpha = sqrt((original[_worldDimension.indexOf(x,y)] -
                     CONTINENTAL_BASE) / (h_highest -
@@ -884,9 +883,9 @@ void lithosphere::restart() throw()
 
     // Shrink the fractal map by 1 pixel from right and bottom.
     // This makes it same size as lithosphere's height map.
-    for (size_t i = 0; i < map_side; ++i)
-        memmove(&tmp[i*map_side], &tmp[i*(map_side+1)],
-              map_side*sizeof(float));
+    for (size_t i = 0; i < map_side; ++i) {
+        memmove(&tmp[i*map_side], &tmp[i*(map_side+1)], line_size);
+    }
 
     for (size_t i = 0; i < map_area; ++i)
     {
@@ -941,14 +940,13 @@ void lithosphere::restart() throw()
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
         memcpy(&tmp[tmpDim.lineIndex(y)], &hmap[_worldDimension.lineIndex(y)],
-            map_side*sizeof(float));
+            line_size);
 
         tmp[y*(map_side+1) + map_side] = hmap[_worldDimension.lineIndex(y)];
     }
 
     // Copy last line - the one that "wraps around" the top edge.
-    memcpy(&tmp[map_side*(map_side+1)], &hmap[0],
-        map_side*sizeof(float));
+    memcpy(&tmp[map_side*(map_side+1)], &hmap[0], line_size);
     tmp[map_side*(map_side+1) + map_side] = hmap[0];
 
     // Finally create some fractal slopes!
