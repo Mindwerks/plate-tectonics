@@ -714,18 +714,20 @@ void lithosphere::restart() throw()
 
       // Copy first part of plate onto world map.
       for (size_t y = y0, j = 0; y < y1; ++y)
+      {
         for (size_t x = x0; x < x1; ++x, ++j)
         {
-        const size_t x_mod = _worldDimension.xMod(x);
-        const size_t y_mod = _worldDimension.yMod(y);
-        const float h0 = hmap[_worldDimension.indexOf(x_mod, y_mod)];
-        const float h1 = this_map[j];
-        const size_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
-        const size_t a1 =  this_age[j];
+            const size_t x_mod = _worldDimension.xMod(x);
+            const size_t y_mod = _worldDimension.yMod(y);
+            const float h0 = hmap[_worldDimension.indexOf(x_mod, y_mod)];
+            const float h1 = this_map[j];
+            const size_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
+            const size_t a1 =  this_age[j];
 
-        amap[_worldDimension.indexOf(x_mod, y_mod)] = (h0 *a0 +h1 *a1) /(h0 +h1);
-        hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
+            amap[_worldDimension.indexOf(x_mod, y_mod)] = (h0 *a0 +h1 *a1) /(h0 +h1);
+            hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
         }
+      }
     }
 
     // Delete plates.
@@ -755,13 +757,15 @@ void lithosphere::restart() throw()
           this_age = (size_t *)this_age_const;
 
           for (size_t y = y0, j = 0; y < y1; ++y)
+          {
             for (size_t x = x0; x < x1; ++x, ++j)
             {
-            const size_t x_mod = _worldDimension.xMod(x);
-            const size_t y_mod = _worldDimension.yMod(y);
+                const size_t x_mod = _worldDimension.xMod(x);
+                const size_t y_mod = _worldDimension.yMod(y);
 
-            this_age[j] = amap[_worldDimension.indexOf(x_mod, y_mod)];
+                this_age[j] = amap[_worldDimension.indexOf(x_mod, y_mod)];
             }
+          }
         }
 
         return;
@@ -783,7 +787,7 @@ void lithosphere::restart() throw()
     ///////////////////////////////////////////////////////////////////////
 
     size_t A = (_worldDimension.getWidth() + 1)*(_worldDimension.getHeight() + 1);
-    float* tmp = new float[A];
+    float* tmp      = new float[A];
     float* original = new float[A];
     const size_t line_size = _worldDimension.getWidth() * sizeof(float);
 
@@ -812,11 +816,13 @@ void lithosphere::restart() throw()
         memset(&hmap[_worldDimension.lineIndex(y+2)], 0, line_size);
         memset(&hmap[_worldDimension.lineIndex(y+3)], 0, line_size);
 
-        for (size_t i = 0; i < 4; ++i)
-            hmap[(y+4)*map_side+i] = 
-            hmap[(y+4)*map_side+map_side-i-1] = 0;
+        // set the start and end of a line to zero
+        for (size_t i = 0; i < 4; ++i) {
+            hmap[_worldDimension.indexOf(i,y+4)] = 0;
+            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,y+4)] = 0;
+        }
 
-        for (size_t x = 4; x < map_side-4; x += 8)
+        for (size_t x = 4; x < _worldDimension.getWidth()-4; x += 8)
         {
             size_t i = _worldDimension.indexOf(x, y+4);
             hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
