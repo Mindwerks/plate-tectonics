@@ -6,3 +6,4 @@ include_directories("src")
 set(CMAKE_C_FLAGS "-std=c99")
 
 add_subdirectory (test)
+add_subdirectory (example)
