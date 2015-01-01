@@ -26,6 +26,18 @@
 
 #include "sqrdmd.hpp"
 
+#define CALC_SUM(a, b, c, d)\
+{\
+	sum = ((a) + (b) + (c) + (d)) * 0.25f;\
+	sum = sum + slope * ((rand() << 1) - RAND_MAX);\
+}
+
+#define SAVE_SUM(a)\
+{\
+	masked = !((int)map[a]);\
+	map[a] = map[a] * !masked + sum * masked;\
+}
+
 void normalize(float* arr, int size)
 {
 	float min = arr[0], max = arr[0], diff;
@@ -58,25 +70,13 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	int p0, p1, p2, p3;
 	int step, line_jump, masked;
 	float slope, sum, center_sum;
-	
+
 	int size = width;
 
 	i = 0;
 
 	slope = rgh;
 	step = size & ~1;
-
-	#define CALC_SUM(a, b, c, d)\
-	do {\
-		sum = ((a) + (b) + (c) + (d)) * 0.25f;\
-		sum = sum + slope * ((rand() << 1) - RAND_MAX);\
-	} while (0)
-
-	#define SAVE_SUM(a)\
-	do {\
-		masked = !((int)map[a]);\
-		map[a] = map[a] * !masked + sum * masked;\
-	} while (0)
 
 	/* Calculate midpoint ("diamond step"). */
 	dy = step * size;
