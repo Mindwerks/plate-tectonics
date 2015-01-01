@@ -288,8 +288,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
         for (size_t y = y0, j = 0; y < y1; ++y)
             for (size_t x = x0; x < x1; ++x, ++j)
             {
-                size_t k = (y & (map_side - 1)) * map_side +
-                           (x & (map_side - 1));
+                size_t k = _worldDimension.normalizedIndexOf(x, y);
                 plt[j] = hmap[k] * (owner[k] == i);
             }
 
