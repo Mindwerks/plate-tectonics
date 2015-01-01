@@ -37,6 +37,16 @@ public:
         return _width * _height;
     }
 
+    size_t xMod(size_t x) const
+    {
+        return x % getWidth();
+    }
+
+    size_t yMod(size_t y) const
+    {
+        return y % getHeight();
+    }    
+
     bool contains(const size_t x, const size_t y) const
     {
         return (x >= 0 && x < _width && y >= 0 && y < _height);

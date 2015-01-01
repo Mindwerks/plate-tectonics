@@ -126,7 +126,7 @@ class lithosphere
 	size_t erosion_period; ///< # of iterations between global erosion.
 	float  folding_ratio; ///< Percent of overlapping crust that's folded.
 	size_t iter_count; ///< Iteration count. Used to timestamp new crust.
-	size_t map_side; ///< Length of square height map's side in pixels.
+	const size_t map_side; ///< Length of square height map's side in pixels.
 	size_t max_cycles; ///< Max n:o of times the system'll be restarted.
 	size_t max_plates; ///< Number of plates in the initial setting.
 	size_t num_plates; ///< Number of plates in the current setting.

@@ -294,7 +294,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
             }
 
         // Create plate.
-        plates[i] = new plate(plt, width, height, x0, y0, i, WorldDimension(map_side, map_side));
+        plates[i] = new plate(plt, width, height, x0, y0, i, _worldDimension);
         delete[] plt;
     }
 
@@ -386,8 +386,8 @@ void lithosphere::update() throw()
       for (size_t y = y0, j = 0; y < y1; ++y)
         for (size_t x = x0; x < x1; ++x, ++j)
         {
-        const size_t x_mod = x & (map_side - 1);
-        const size_t y_mod = y & (map_side - 1);
+        const size_t x_mod = _worldDimension.xMod(x);
+        const size_t y_mod = _worldDimension.yMod(y);
 
         const size_t k = y_mod * map_side + x_mod;
 
@@ -712,8 +712,8 @@ void lithosphere::restart() throw()
       for (size_t y = y0, j = 0; y < y1; ++y)
         for (size_t x = x0; x < x1; ++x, ++j)
         {
-        const size_t x_mod = x & (map_side - 1);
-        const size_t y_mod = y & (map_side - 1);
+        const size_t x_mod = _worldDimension.xMod(x);
+        const size_t y_mod = _worldDimension.yMod(y);
         const float h0 = hmap[y_mod * map_side + x_mod];
         const float h1 = this_map[j];
         const size_t a0 = amap[y_mod * map_side + x_mod];
@@ -753,8 +753,8 @@ void lithosphere::restart() throw()
           for (size_t y = y0, j = 0; y < y1; ++y)
             for (size_t x = x0; x < x1; ++x, ++j)
             {
-            const size_t x_mod = x & (map_side - 1);
-            const size_t y_mod = y & (map_side - 1);
+            const size_t x_mod = _worldDimension.xMod(x);
+            const size_t y_mod = _worldDimension.yMod(y);
 
             this_age[j] = amap[y_mod * map_side + x_mod];
             }
