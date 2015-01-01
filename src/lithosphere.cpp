@@ -659,7 +659,7 @@ void lithosphere::update() throw()
             // Life is seldom as simple as seems at first.
             // Replace the moved plate's index in the index map
             // to match its current position in the array!
-            for (size_t j = 0; j < map_side * map_side; ++j)
+            for (size_t j = 0; j < _worldDimension.getArea(); ++j)
                 if (imap[j] == num_plates - 1)
                     imap[j] = i;
 
@@ -714,13 +714,13 @@ void lithosphere::restart() throw()
         {
         const size_t x_mod = _worldDimension.xMod(x);
         const size_t y_mod = _worldDimension.yMod(y);
-        const float h0 = hmap[y_mod * map_side + x_mod];
+        const float h0 = hmap[_worldDimension.indexOf(x_mod, y_mod)];
         const float h1 = this_map[j];
-        const size_t a0 = amap[y_mod * map_side + x_mod];
+        const size_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
         const size_t a1 =  this_age[j];
 
-        amap[y_mod * map_side + x_mod] = (h0 *a0 +h1 *a1) /(h0 +h1);
-        hmap[y_mod * map_side + x_mod] += this_map[j];
+        amap[_worldDimension.indexOf(x_mod, y_mod)] = (h0 *a0 +h1 *a1) /(h0 +h1);
+        hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
         }
     }
 
@@ -756,7 +756,7 @@ void lithosphere::restart() throw()
             const size_t x_mod = _worldDimension.xMod(x);
             const size_t y_mod = _worldDimension.yMod(y);
 
-            this_age[j] = amap[y_mod * map_side + x_mod];
+            this_age[j] = amap[_worldDimension.indexOf(x_mod, y_mod)];
             }
         }
 
@@ -795,7 +795,7 @@ void lithosphere::restart() throw()
     {
         for (size_t x = 0; x < map_side; x += 8)
         {
-            size_t i = y * map_side + x;
+            size_t i = _worldDimension.indexOf(x, y);
             hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
@@ -813,7 +813,7 @@ void lithosphere::restart() throw()
 
         for (size_t x = 4; x < map_side-4; x += 8)
         {
-            size_t i = (y+4) * map_side + x;
+            size_t i = _worldDimension.indexOf(x, y+4);
             hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
@@ -862,11 +862,11 @@ void lithosphere::restart() throw()
                     CONTINENTAL_BASE) / (h_highest -
                     CONTINENTAL_BASE));
 
-                hmap[y*map_side+x] = alpha * new_height +
-                    (1.0f-alpha) * original[y*map_side+x];
+                hmap[_worldDimension.indexOf(x, y)] = alpha * new_height +
+                    (1.0f-alpha) * original[_worldDimension.indexOf(x, y)];
             }
             else
-                hmap[y*map_side+x] = original[y*map_side+x];
+                hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
     // Add some random noise to the map.
     memset(tmp, 0, A * sizeof(float));
@@ -963,9 +963,9 @@ void lithosphere::restart() throw()
     for (size_t y = 0; y < map_side; ++y)
         for (size_t x = 0; x < map_side; ++x)
             if (original[y*map_side+x] < CONTINENTAL_BASE)
-                hmap[y*map_side+x] = tmp[y*(map_side+1)+x];
+                hmap[_worldDimension.indexOf(x, y)] = tmp[y*(map_side+1)+x];
             else
-                hmap[y*map_side+x] = original[y*map_side+x];
+                hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
     delete[] tmp;
 }

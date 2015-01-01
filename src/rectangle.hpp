@@ -58,6 +58,11 @@ public:
         y %= _height;
     }
 
+    size_t indexOf(const size_t x, const size_t y) const
+    {
+        return y * getWidth() + x;
+    }
+
 private:
     const size_t _width;
     const size_t _height;
