@@ -83,8 +83,8 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	step_y = height - 1;
 
 	/* Calculate midpoint ("diamond step"). */
-	dy = step_y * height; // start of a row
-	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
+	dy = step * height; // start of a row
+	CALC_SUM(map[0], map[step], map[dy], map[dy + step]);
 	SAVE_SUM(i);
 
 	center_sum = sum;
@@ -92,12 +92,12 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	/* Calculate each sub diamonds' center points ("square step"). */
 
 	/* Top row. */
-	p0 = step_x >> 1;
+	p0 = step >> 1;
 	CALC_SUM(map[0], map[step], center_sum, center_sum);
 	SAVE_SUM(p0);
 
 	/* Left column. */
-	p1 = step_y >> 1 * width;
+	p1 = p0 * width;
 	CALC_SUM(map[0], map[dy], center_sum, center_sum);
 	SAVE_SUM(p1);
 
@@ -105,11 +105,11 @@ int sqrdmd(float* map, int width, int height, float rgh)
 	map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
 
 	slope *= rgh;
-	step >>= 1;
+	step >>= 1; // temporary
 	step_x >>= 1;
 	step_y >>= 1;
 
-	while (step > 1)  /* Enter the main loop. */
+	while (step_x > 1 && step_y > 1)  /* Enter the main loop. */
 	{
 		/*************************************************************
 		 * Calc midpoint of sub squares on the map ("diamond step"). *
@@ -117,10 +117,10 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 		dx = step;
 		dy = step * size;
-		i = (step >> 1) * (size + 1);
+		i  = (step >> 1) * (size + 1);
 		line_jump = step * size + 1 + step - size;
 
-		for (y0 = 0, y1 = dy; y1 < size * size; y0 += dy, y1 += dy)
+		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
 		{
 			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx,
 				i += step)
@@ -145,7 +145,7 @@ int sqrdmd(float* map, int width, int height, float rgh)
 		 * from the "diamond step" we just performed.					 
 		 *************************************************************/
 
-		i = step >> 1;
+		i  = step >> 1;
 		p0 = step;  /* right */
 		p1 = i * size + i;  /* bottom */
 		p2 = 0;  /* left */
@@ -159,8 +159,11 @@ int sqrdmd(float* map, int width, int height, float rgh)
 			/* Copy it into bottom row. */
 			map[full_size + i - size] = map[i];
 
-			p0 += step; p1 += step; p2 += step;
-			p3 += step; i += step;
+			p0 += step; 
+			p1 += step; 
+			p2 += step;
+			p3 += step; 
+			i  += step;
 		}
 
 		/* Now that top row's values are calculated starting from
@@ -200,7 +203,7 @@ int sqrdmd(float* map, int width, int height, float rgh)
 				p1 += step;
 				p2 += step;
 				p3 += step;
-				i += step;
+				i  += step;
 
 				/* if we start from leftmost column -> left
 				 * point (p2) is going over the right border ->
