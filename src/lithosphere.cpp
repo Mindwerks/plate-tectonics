@@ -204,10 +204,10 @@ void lithosphere::createPlates(size_t num_plates) throw()
             const size_t cy = _worldDimension.yFromIndex(p);
             const size_t cx = _worldDimension.xFromIndex(p);
 
-            const size_t lft = cx > 0 ? cx - 1 : map_side - 1;
-            const size_t rgt = cx < map_side - 1 ? cx + 1 : 0;
-            const size_t top = cy > 0 ? cy - 1 : map_side - 1;
-            const size_t btm = cy < map_side - 1 ? cy + 1 : 0;
+            const size_t lft = cx > 0 ? cx - 1 : _worldDimension.getWidth() - 1;
+            const size_t rgt = cx < _worldDimension.getWidth() - 1 ? cx + 1 : 0;
+            const size_t top = cy > 0 ? cy - 1 : _worldDimension.getHeight() - 1;
+            const size_t btm = cy < _worldDimension.getHeight() - 1 ? cy + 1 : 0;
 
             const size_t n = top * _worldDimension.getWidth() +  cx; // North.
             const size_t s = btm * _worldDimension.getWidth() +  cx; // South.
@@ -777,7 +777,7 @@ void lithosphere::restart() throw()
     // This is the LAST cycle! ////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
-    size_t A = (map_side + 1)*(map_side + 1);
+    size_t A = (_worldDimension.getWidth() + 1)*(_worldDimension.getHeight() + 1);
     float* tmp = new float[A];
     float* original = new float[A];
     const size_t line_size = _worldDimension.getWidth() * sizeof(float);
