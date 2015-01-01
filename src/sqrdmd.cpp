@@ -63,66 +63,66 @@ int sqrdmd(float* map, int size, float rgh)
 
 int sqrdmd(float* map, int width, int height, float rgh)
 {
-	const int full_size = width * height;
+	int size = width;
+	const int full_size = size * size;
 
 	int i, temp;
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
-	int step, step_x, step_y, line_jump, masked;
+	int step, line_jump, masked;
 	float slope, sum, center_sum;
 
-	int size = width;
-
 	i = 0;
+	temp = size - 1;
 
+	if (temp & (temp - 1) || temp & 3)  /* MUST EQUAL TO 2^x + 1! */
+		return (-1);
+
+	temp = size;
 	slope = rgh;
-	step = width - 1;	
-	step_x = width - 1;
-	step_y = height - 1;
+	step = size & ~1;
 
 	/* Calculate midpoint ("diamond step"). */
-	dy = step_y * width; // start last line
-	// top left, top right, bottom left, bottom right
-	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
+	dy = step * size;
+	CALC_SUM(map[0], map[step], map[dy], map[dy + step]);
 	SAVE_SUM(i);
 
 	center_sum = sum;
 
 	/* Calculate each sub diamonds' center points ("square step"). */
 
-	/* Top row. p0 = first row, middle point */
-	p0 = step_x >> 1;
-	CALC_SUM(map[0], map[step_x], center_sum, center_sum);
+	/* Top row. */
+	p0 = step >> 1;
+	CALC_SUM(map[0], map[step], center_sum, center_sum);
 	SAVE_SUM(p0);
 
-	/* Left column. p1 = row in the middle, left column */
-	p1 = step_y >> 1 * width;
+	/* Left column. */
+	p1 = p0 * size;
 	CALC_SUM(map[0], map[dy], center_sum, center_sum);
 	SAVE_SUM(p1);
 
-	map[full_size + p0 - width] = map[p0]; /* Copy top val into btm row. */
-	map[p1 + width - 1] = map[p1]; /* Copy left value into right column. */
+	map[full_size + p0 - size] = map[p0]; /* Copy top val into btm row. */
+	map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
 
 	slope *= rgh;
-	step_x >>= 1;
-	step_y >>= 1;
+	step >>= 1;
 
-	while (step_x > 1 && step_y > 1)  /* Enter the main loop. */
+	while (step > 1)  /* Enter the main loop. */
 	{
 		/*************************************************************
 		 * Calc midpoint of sub squares on the map ("diamond step"). *
 		 *************************************************************/
 
-		dx = step_x;
-		dy = step_y * width;
-		i = (step_y >> 1) * (width + 1);
-		line_jump = step_y * width + 1 + step_x - width;
+		dx = step;
+		dy = step * size;
+		i = (step >> 1) * (size + 1);
+		line_jump = step * size + 1 + step - size;
 
-		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
+		for (y0 = 0, y1 = dy; y1 < size * size; y0 += dy, y1 += dy)
 		{
 			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx,
-				i += step_x)
+				i += step)
 			{
 				sum = (map[y0+x0] + map[y0+x1] +
 				       map[y1+x0] + map[y1+x1]) * 0.25f;
@@ -138,7 +138,7 @@ int sqrdmd(float* map, int width, int height, float rgh)
 			 * manually remove it after the loop so that 'i'
 			 * points again to the index accessed last.
 			 */
-			i += line_jump - step_x;
+			i += line_jump - step;
 		}
 
 		/**************************************************************
@@ -195,7 +195,7 @@ int sqrdmd(float* map, int width, int height, float rgh)
 
 			/* size - (step >> 1) guarantees that data will not be
 			 * read beyond rightmost column of map. */
-			for (; x < width - (step_x >> 1); x += step_x)
+			for (; x < size - (step >> 1); x += step)
 			{
 				sum = (map[p0] + map[p1] +
 				       map[p2] + map[p3]) * 0.25f;
@@ -218,13 +218,12 @@ int sqrdmd(float* map, int width, int height, float rgh)
 			}
 
 			/* copy rows first element into its last */
-			i = y * width;
-			map[i + width - 1] = map[i];
+			i = y * size;
+			map[i + size - 1] = map[i];
 		}
 
 		slope *= rgh; /* reduce amount of randomness for next round */
-		step_x >>= 1; /* split squares and diamonds in half */
-		step_y >>= 1;
+		step >>= 1; /* split squares and diamonds in half */
 	}
 
 	return (0);
