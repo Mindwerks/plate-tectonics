@@ -63,6 +63,11 @@ public:
         return y * getWidth() + x;
     }
 
+    size_t normalizedIndexOf(const size_t x, const size_t y) const
+    {
+        return indexOf(xMod(x), yMod(y));
+    }
+
 private:
     const size_t _width;
     const size_t _height;
