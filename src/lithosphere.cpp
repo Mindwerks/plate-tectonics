@@ -65,7 +65,8 @@ size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 lithosphere::lithosphere(size_t map_side_length, float sea_level,
     size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
     float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
-    hmap(map_side_length, map_side_length), 
+    hmap(map_side_length, map_side_length),
+    amap(map_side_length, map_side_length),
     plates(0), 
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel), 
@@ -136,7 +137,6 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
               map_side*sizeof(float));
 
     imap = new size_t[map_side*map_side];
-    amap = new size_t[map_side*map_side];
 
     delete[] tmp;
 }
@@ -144,7 +144,6 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
 lithosphere::~lithosphere() throw()
 {
     delete[] plates; plates = 0;
-    delete[] amap;   amap = 0;
     delete[] imap;   imap = 0;
 }
 
@@ -316,7 +315,7 @@ size_t lithosphere::getPlateCount() const throw()
 
 const size_t* lithosphere::getAgemap() const throw()
 {
-    return amap;
+    return amap.raw_data();
 }
 
 const float* lithosphere::getTopography() const throw()

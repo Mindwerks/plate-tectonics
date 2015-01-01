@@ -116,7 +116,7 @@ class lithosphere
 
 	HeightMap hmap; ///< Height map representing the topography of system.
 	size_t* imap; ///< Plate index map of the "owner" of each map point.
-	size_t* amap; ///< Age map of the system's surface (topography).
+	AgeMap amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.
 
 	size_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
