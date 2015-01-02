@@ -105,7 +105,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	map[p1 + width - 1] = map[p1]; /* Copy left value into right column. */
 
 	slope *= rgh;
-	step >>= 1; // temporary
+	step   >>= 1; // temporary
 	step_x >>= 1;
 	step_y >>= 1;
 
