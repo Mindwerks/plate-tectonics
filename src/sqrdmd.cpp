@@ -71,12 +71,10 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
-	int step; // temporary: it should be removed later
 	int step_x, step_y, line_jump, masked;
 	float slope, sum, center_sum;
 
 	slope  = rgh;
-	step   = size   - 1;
 	step_x = width  - 1;
 	step_y = height - 1;
 
@@ -103,7 +101,6 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	map[p1 + width - 1] = map[p1]; /* Copy left value into right column. */
 
 	slope *= rgh;
-	step   >>= 1; // temporary
 	step_x >>= 1;
 	step_y >>= 1;
 
@@ -143,7 +140,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 * from the "diamond step" we just performed.					 
 		 *************************************************************/
 
-		i  = step >> 1; // temporary: should be removed
+		i  = step_x >> 1; // temporary: should be removed
 		int ix = step_x / 2, iy = step_y / 2;
 		p0 = step_x;  /* right */
 		p1 = iy * width + ix;  /* bottom */
@@ -220,8 +217,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		}
 
 		slope *= rgh; /* reduce amount of randomness for next round */
-		step   /= 2; /* split squares and diamonds in half */
-		step_x /= 2;
+		step_x /= 2; /* split squares and diamonds in half */
 		step_y /= 2;
 	}
 
