@@ -115,27 +115,17 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 * Calc midpoint of sub squares on the map ("diamond step"). *
 		 *************************************************************/
 
-		dx = step;
-		dy = step * size;
-		i  = (step >> 1) * (size + 1);
-		line_jump = step * size + 1 + step - size;
+		dx = step_x;
+		dy = step_y * width;
 
 		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
 		{
-			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx,
-				i += step)
+			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx)
 			{
+				i = ((y0 + step_y/2) * width) + (x0 + step_x/2);
                 CALC_SUM(map[y0 + x0], map[y0 + x1], map[y1 + x0], map[y1 + x1]);
 				SAVE_SUM(i);
 			}
-
-			/* There's additional step taken at the end of last
-			 * valid loop. That step actually isn't valid because
-			 * the row ends right then. Thus we are forced to
-			 * manually remove it after the loop so that 'i'
-			 * points again to the index accessed last.
-			 */
-			i += line_jump - step;
 		}
 
 		/**************************************************************
@@ -146,10 +136,10 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 *************************************************************/
 
 		i  = step >> 1;
-		p0 = step;  /* right */
-		p1 = i * size + i;  /* bottom */
+		p0 = step_x;  /* right */
+		p1 = (step_y / 2) * width + (step_x / 2);  /* bottom */
 		p2 = 0;  /* left */
-		p3 = full_size + i - (i + 1) * size; /* top (wrapping edges) */
+		p3 = full_size + (step_x / 2) - (step_y / 2 + 1) * width; /* top (wrapping edges) */
 
 		/* Calculate "diamond" values for top row in map. */
 		while (p0 < size)
