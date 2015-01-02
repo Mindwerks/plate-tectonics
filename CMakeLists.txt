@@ -9,5 +9,5 @@ option(WITH_EXAMPLE "compile also the example" OFF)
 
 add_subdirectory (test)
 IF(WITH_EXAMPLE)
-	add_subdirectory (example)
+	add_subdirectory (examples)
 ENDIF(WITH_EXAMPLE)

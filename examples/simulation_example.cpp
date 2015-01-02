@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     int seed = 10;
     printf("Generating a map with seed %d\n", seed);
 
-    srand(3);
+    srand(seed);
     void* p = platec_api_create(512,0.65,60,0.02,1000000,0.33,2,10);
     printf(" * initial map created\n");
 
