@@ -92,17 +92,17 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	/* Calculate each sub diamonds' center points ("square step"). */
 
 	/* Top row. */
-	p0 = step >> 1;
-	CALC_SUM(map[0], map[step], center_sum, center_sum);
+	p0 = step_x >> 1;
+	CALC_SUM(map[0], map[step_x], center_sum, center_sum);
 	SAVE_SUM(p0);
 
 	/* Left column. */
-	p1 = p0 * width;
+	p1 = (step_y >> 1) * width;
 	CALC_SUM(map[0], map[dy], center_sum, center_sum);
 	SAVE_SUM(p1);
 
-	map[full_size + p0 - size] = map[p0]; /* Copy top val into btm row. */
-	map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
+	map[full_size + p0 - width] = map[p0]; /* Copy top val into btm row. */
+	map[p1 + width - 1] = map[p1]; /* Copy left value into right column. */
 
 	slope *= rgh;
 	step >>= 1; // temporary
