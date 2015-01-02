@@ -83,9 +83,9 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	step_y = height - 1;
 
 	/* Calculate midpoint ("diamond step"). */
-	dy = step * height; // start of a row
-	CALC_SUM(map[0], map[step], map[dy], map[dy + step]);
-	SAVE_SUM(i);
+	dy = step_y * width; // start of last row
+	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
+	//SAVE_SUM(i);
 
 	center_sum = sum;
 
