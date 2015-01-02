@@ -188,17 +188,17 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 
 			/* For even rows add step/2. Otherwise add nothing. */
 			x = i = p0 * temp;  /* Init 'x' while it's easy. */
-			i += y * size;  /* Move 'i' into correct row. */
+			i += y * width;  /* Move 'i' into correct row. */
 
 			p0 += i;
 			p1 += i;
 			/* For odd rows p2 (left) wraps around map edges. */
-			p2 += i + (size - 1) * !temp;  
+			p2 += i + (width - 1) * !temp;  
 			p3 += i;
 
 			/* size - (step >> 1) guarantees that data will not be
 			 * read beyond rightmost column of map. */
-			for (; x < size - (step >> 1); x += step)
+			for (; x < width - (step_x >> 1); x += step_x)
 			{
 				CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
 				SAVE_SUM(i);
