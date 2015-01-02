@@ -58,6 +58,21 @@ void normalize(float* arr, int size)
 			arr[i] = (arr[i] - min) / diff;
 }
 
+class Coord 
+{
+public:
+	Coord(int width, int height) : _width(width), _height(height)
+	{};
+	int indexOf(int x, int y) const
+	{
+		if (x < 0 || x >= _width)  throw invalid_argument("x is not valid"); 
+		if (y < 0 || y >= _height) throw invalid_argument("y is not valid"); 
+		return y * _width + x;
+	}
+private:
+	int _width, _height;
+};
+
 int sqrdmd(float* map, const int size, float rgh)
 {
 	return sqrdmd(map, size, size, rgh);
