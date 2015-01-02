@@ -115,8 +115,8 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 * Calc midpoint of sub squares on the map ("diamond step"). *
 		 *************************************************************/
 
-		dx = step;
-		dy = step * size;
+		dx = step_x;
+		dy = step_y * width;
 		i  = (step >> 1) * (size + 1);
 		line_jump = step * size + 1 + step - size;
 
