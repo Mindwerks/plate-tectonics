@@ -68,7 +68,6 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	const int size = width; // temporary: it should be removed later
 	const int full_size = width * height;
 
-	int i;
 	int x, y, dx, dy;
 	int x0, x1, y0, y1;
 	int p0, p1, p2, p3;
@@ -76,7 +75,6 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	int step_x, step_y, line_jump, masked;
 	float slope, sum, center_sum;
 
-	i = 0;
 	slope  = rgh;
 	step   = size   - 1;
 	step_x = width  - 1;
@@ -85,7 +83,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 	/* Calculate midpoint ("diamond step"). */
 	dy = step_y * width; // start of last row
 	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
-	SAVE_SUM(i);
+	SAVE_SUM(0);
 
 	center_sum = sum;
 
@@ -118,7 +116,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		dx = step_x;
 		dy = step_y * width;
 		
-		i  = (step_y >> 1) * (width ) + (step_x >> 1);		
+		int i  = (step_y >> 1) * (width ) + (step_x >> 1);		
 		line_jump = step_y * width + 1 + step_x - width;
 
 		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
@@ -217,8 +215,8 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 			}
 
 			/* copy rows first element into its last */
-			i = y * size;
-			map[i + size - 1] = map[i];
+			i = y * width;
+			map[i + width - 1] = map[i];
 		}
 
 		slope *= rgh; /* reduce amount of randomness for next round */
