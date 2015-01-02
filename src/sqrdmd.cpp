@@ -136,13 +136,13 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 *************************************************************/
 
 		i  = step >> 1;
-		p0 = step_x;  /* right */
-		p1 = (step_y / 2) * width + (step_x / 2);  /* bottom */
+		p0 = step;  /* right */
+		p1 = i * size + i;  /* bottom */
 		p2 = 0;  /* left */
-		p3 = full_size + (step_x / 2) - (step_y / 2 + 1) * width; /* top (wrapping edges) */
+		p3 = full_size + i - (i + 1) * size; /* top (wrapping edges) */
 
 		/* Calculate "diamond" values for top row in map. */
-		while (p0 < size)
+		while (p0 < width)
 		{
             CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
 			SAVE_SUM(i);
