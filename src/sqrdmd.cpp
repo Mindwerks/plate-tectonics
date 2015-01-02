@@ -176,12 +176,13 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		 * not be read beyond bottom row of map.
 		 */
 		int temp;
-		for (y = step >> 1, temp = 0; 
-			 y < size - (step >> 1);
-			 y += step >> 1, temp = !temp)
+		for (y = step_y >> 1, temp = 0; 
+			 y < height - (step_y >> 1);
+			 y += step_y >> 1, temp = !temp)
 		{
-			p0 = step >> 1;  /* right */
-			p1 = p0 * size;  /* bottom */
+			int i;
+			p0 = step_x >> 1;  /* right */
+			p1 = (step_y >> 1) * width;  /* bottom */
 			p2 = -p0;  /* left */
 			p3 = -p1;  /* top */
 
