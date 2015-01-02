@@ -119,7 +119,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		dy = step_y * width;
 		
 		i  = (step_y >> 1) * (width ) + (step_x >> 1);		
-		line_jump = step * size + 1 + step - size;
+		line_jump = step_y * width + 1 + step_x - width;
 
 		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
 		{
