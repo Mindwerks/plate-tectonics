@@ -58,14 +58,14 @@ void normalize(float* arr, int size)
 			arr[i] = (arr[i] - min) / diff;
 }
 
-int sqrdmd(float* map, int size, float rgh)
+int sqrdmd(float* map, const int size, float rgh)
 {
 	return sqrdmd(map, size, size, rgh);
 }
 
-int sqrdmd(float* map, int width, int height, float rgh)
+int sqrdmd(float* map, const int width, const int height, float rgh)
 {	
-	int size = width; // temporary: it should be removed later
+	const int size = width; // temporary: it should be removed later
 	const int full_size = width * height;
 
 	int i;
