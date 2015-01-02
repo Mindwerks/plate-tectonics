@@ -117,13 +117,13 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 
 		dx = step_x;
 		dy = step_y * width;
-		i  = (step >> 1) * (size + 1);
+		
+		i  = (step_y >> 1) * (width ) + (step_x >> 1);		
 		line_jump = step * size + 1 + step - size;
 
 		for (y0 = 0, y1 = dy; y1 < width * height; y0 += dy, y1 += dy)
 		{
-			for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx,
-				i += step)
+			for (x0 = 0, x1 = dx; x1 < width; x0 += dx, x1 += dx, i += step_x)
 			{
                 CALC_SUM(map[y0 + x0], map[y0 + x1], map[y1 + x0], map[y1 + x1]);
 				SAVE_SUM(i);
@@ -135,7 +135,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 			 * manually remove it after the loop so that 'i'
 			 * points again to the index accessed last.
 			 */
-			i += line_jump - step;
+			i += line_jump - step_x;
 		}
 
 		/**************************************************************
