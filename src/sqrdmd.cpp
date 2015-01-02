@@ -203,17 +203,17 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 				CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
 				SAVE_SUM(i);
 
-				p0 += step;
-				p1 += step;
-				p2 += step;
-				p3 += step;
-				i  += step;
+				p0 += step_x;
+				p1 += step_x;
+				p2 += step_x;
+				p3 += step_x;
+				i  += step_x;
 
 				/* if we start from leftmost column -> left
 				 * point (p2) is going over the right border ->
 				 * wrap it around into the beginning of
 				 * previous rows left line. */
-				p2 -= (size - 1) * !x;
+				p2 -= (width - 1) * !x;
 			}
 
 			/* copy rows first element into its last */
