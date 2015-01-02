@@ -24,8 +24,11 @@
  */
 #include <stdlib.h>
 #include <cstdio>
+#include <stdexcept>
 
 #include "sqrdmd.hpp"
+
+using namespace std;
 
 #define CALC_SUM(a, b, c, d)\
 {\
