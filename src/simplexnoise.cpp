@@ -504,7 +504,7 @@ int simplexnoise(float* map, int width, int height, float roughness)
                     kb+b*noiseScale,
                     kc+c*noiseScale,
                     kd+d*noiseScale);          
-            map[y * width + x] = v;          
+            if (map[y * width + x] == 0) map[y * width + x] = v;          
         }
     }
 

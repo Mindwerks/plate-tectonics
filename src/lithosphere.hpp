@@ -86,7 +86,7 @@ class lithosphere
   protected:
   private:
 
-  	void createNoise(float* tmp);
+  	void createNoise(float* tmp, bool useSimplex = false);
 
 	/**
 	 * Container for collision details between two plates.

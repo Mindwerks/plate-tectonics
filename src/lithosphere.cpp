@@ -19,6 +19,7 @@
 #include "lithosphere.hpp"
 #include "plate.hpp"
 #include "sqrdmd.hpp"
+#include "simplexnoise.hpp"
 
 #include <cfloat>
 #include <cmath>
@@ -62,9 +63,12 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
-void lithosphere::createNoise(float* tmp)
+void lithosphere::createNoise(float* tmp, bool useSimplex)
 {
-    if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
+    if (useSimplex) {
+        simplexnoise(tmp, map_side+1, map_side+1, SQRDMD_ROUGHNESS);
+    }
+    else if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
@@ -94,7 +98,7 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
-    createNoise(tmp);
+    createNoise(tmp, true);
 
     float lowest = tmp[0], highest = tmp[0];
     for (size_t i = 1; i < A; ++i)

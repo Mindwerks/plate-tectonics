@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "platecapi.hpp"
+#include "sqrdmd.hpp"
 #include <cstdlib>
 #include <il.h>
 #include <ilu.h>
@@ -34,12 +35,10 @@ void drawMap(const float* heightmap)
           float h = heightmap[(y*width + x)];
           if (h <= 0.0f) {
             bytes[(y*width + x)] = 0;
-          } else if (h < 0.5f) {
-            bytes[(y*width + x)] = (ILubyte)(0.0f + 40.0f * h);
-          } else if (h > 5.0f) {
+          } else if (h >= 1.0f) {
             bytes[(y*width + x)] = 255;
           } else {
-            bytes[(y*width + x)] = (ILubyte)(128.0f + (127.0f/5.0f) * h);
+            bytes[(y*width + x)] = (ILubyte)(h*255.0f);
           }          
        }
     }
@@ -66,6 +65,8 @@ int main(int argc, char* argv[])
 
     printf(" * simulation completed\n");
     const float* heightmap = platec_api_get_heightmap(p);
+    float copy[512 * 512];
+    memcpy(copy, heightmap, sizeof(float)*512*512);
     printf(" * heightmap obtained\n");
 
     ilInit();
@@ -78,7 +79,8 @@ int main(int argc, char* argv[])
     iluScale(512, 512, 32);
     CheckForErrors();
 
-    drawMap(heightmap);   
+    normalize(copy, 512 * 512);
+    drawMap(copy);   
 
     ilEnable(IL_FILE_OVERWRITE);
     CheckForErrors();
