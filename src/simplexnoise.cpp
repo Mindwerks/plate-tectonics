@@ -496,8 +496,10 @@ int simplexnoise(long seed, float* map, int width, int height, float roughness)
             float b = fRdsSin*cosf(fRdx);
             float c = fRdsSin*sinf(fRdy);
             float d = fRdsSin*cosf(fRdy);
-            float v = octave_noise_4d(64.0f,
+            float v = scaled_octave_noise_4d(64.0f,
                     roughness,
+                    2.0f,
+                    -1.0f,
                     1.0f,
                     ka+a*noiseScale, 
                     kb+b*noiseScale,
