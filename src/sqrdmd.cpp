@@ -25,15 +25,16 @@
 #include <stdlib.h>
 #include <cstdio>
 #include <stdexcept>
+#include <random>
 
 #include "sqrdmd.hpp"
 
 using namespace std;
 
-#define CALC_SUM(a, b, c, d)\
+#define CALC_SUM(a, b, c, d, rnd)\
 {\
 	sum = ((a) + (b) + (c) + (d)) * 0.25f;\
-	sum = sum + slope * ((rand() << 1) - RAND_MAX);\
+	sum = sum + slope * ((rnd << 1) - _randsource.max());\
 }
 
 #define SAVE_SUM(a)\
@@ -76,13 +77,14 @@ private:
 	int _width, _height;
 };
 
-int sqrdmd(float* map, const int size, float rgh)
+int sqrdmd(long seed, float* map, const int size, float rgh)
 {
-	return sqrdmd(map, size, size, rgh);
+	return sqrdmd(seed, map, size, size, rgh);
 }
 
-int sqrdmd(float* map, const int width, const int height, float rgh)
+int sqrdmd(long seed, float* map, const int width, const int height, float rgh)
 {	
+	std::minstd_rand0 _randsource(seed);
 	const int full_size = width * height;
 
 	int x, y, dx, dy;
@@ -97,7 +99,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 
 	/* Calculate midpoint ("diamond step"). */
 	dy = step_y * width; // start of last row
-	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x]);
+	CALC_SUM(map[0], map[step_x], map[dy], map[dy + step_x], _randsource());
 	SAVE_SUM(0);
 
 	center_sum = sum;
@@ -106,12 +108,12 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 
 	/* Top row. */
 	p0 = step_x >> 1;
-	CALC_SUM(map[0], map[step_x], center_sum, center_sum);
+	CALC_SUM(map[0], map[step_x], center_sum, center_sum, _randsource());
 	SAVE_SUM(p0);
 
 	/* Left column. */
 	p1 = (step_y >> 1) * width;
-	CALC_SUM(map[0], map[dy], center_sum, center_sum);
+	CALC_SUM(map[0], map[dy], center_sum, center_sum, _randsource());
 	SAVE_SUM(p1);
 
 	map[full_size + p0 - width] = map[p0]; /* Copy top val into btm row. */
@@ -137,7 +139,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		{
 			for (x0 = 0, x1 = dx; x1 < width; x0 += dx, x1 += dx, i += step_x)
 			{
-                CALC_SUM(map[y0 + x0], map[y0 + x1], map[y1 + x0], map[y1 + x1]);
+                CALC_SUM(map[y0 + x0], map[y0 + x1], map[y1 + x0], map[y1 + x1], _randsource());
 				SAVE_SUM(i);
 			}
 
@@ -167,7 +169,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 		/* Calculate "diamond" values for top row in map. */
 		while (p0 < width)
 		{
-            CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
+            CALC_SUM(map[p0], map[p1], map[p2], map[p3], _randsource());
 			SAVE_SUM(i);
 			/* Copy it into bottom row. */
 			map[full_size + ix - width] = map[ix];
@@ -212,7 +214,7 @@ int sqrdmd(float* map, const int width, const int height, float rgh)
 			 * read beyond rightmost column of map. */
 			for (; x < width - (step_x >> 1); x += step_x)
 			{
-				CALC_SUM(map[p0], map[p1], map[p2], map[p3]);
+				CALC_SUM(map[p0], map[p1], map[p2], map[p3], _randsource());
 				SAVE_SUM(i);
 
 				p0 += step_x;

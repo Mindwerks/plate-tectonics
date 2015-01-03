@@ -26,6 +26,7 @@ extern "C" {
 #endif
 
 void *  platec_api_create(
+	    long seed,
         size_t map_side,
         float sea_level,
         size_t erosion_period, float folding_ratio,

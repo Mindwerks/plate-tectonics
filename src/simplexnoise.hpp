@@ -114,7 +114,7 @@ float scaled_raw_noise_4d( const float loBound,
                         const float w);
 
 void normalize(float* arr, int size);
-int simplexnoise(float* map, int width, int height, float roughness);
+int simplexnoise(long seed, float* map, int width, int height, float roughness);
 
 
 // Raw Simplex noise - a single noise value.

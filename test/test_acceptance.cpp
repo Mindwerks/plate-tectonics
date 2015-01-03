@@ -10,8 +10,8 @@
 
 TEST(PlatecCreate, SameResultAsPlatec)
 {
-  srand(3);
-  void* p = platec_api_create(512,0.65,60,0.02,1000000,0.33,2,10);
+  long seed = 3;
+  void* p = platec_api_create(seed, 512,0.65,60,0.02,1000000,0.33,2,10);
   const float* heightmap = platec_api_get_heightmap(p);
 
   EXPECT_FLOAT_EQ(1.8901190757751465f,  heightmap[0]);
@@ -29,8 +29,8 @@ TEST(PlatecCreate, SameResultAsPlatec)
 
 TEST(PlatecGlobalGeneration, SameResultAsPlatec)
 {
-  srand(3);
-  void* p = platec_api_create(512,0.65,60,0.02,1000000,0.33,2,10);
+  long seed = 3;
+  void* p = platec_api_create(seed, 512,0.65,60,0.02,1000000,0.33,2,10);
   while (platec_api_is_finished(p) == 0) {
     platec_api_step(p);
   }

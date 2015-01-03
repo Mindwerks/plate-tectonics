@@ -66,16 +66,16 @@ size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 void lithosphere::createNoise(float* tmp, bool useSimplex)
 {
     if (useSimplex) {
-        simplexnoise(tmp, map_side+1, map_side+1, SQRDMD_ROUGHNESS);
+        simplexnoise(_randsource(), tmp, map_side+1, map_side+1, SQRDMD_ROUGHNESS);
     }
-    else if (sqrdmd(tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
+    else if (sqrdmd(_randsource(), tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
     }    
 }
 
-lithosphere::lithosphere(size_t map_side_length, float sea_level,
+lithosphere::lithosphere(long seed, size_t map_side_length, float sea_level,
     size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
     float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
     hmap(map_side_length, map_side_length),
@@ -91,7 +91,9 @@ lithosphere::lithosphere(size_t map_side_length, float sea_level,
     max_cycles(num_cycles),
     max_plates(0), 
     num_plates(0),
-    _worldDimension(map_side_length, map_side_length)
+    _worldDimension(map_side_length, map_side_length),
+    _seed(seed),
+    _randsource(seed)
 {
     WorldDimension tmpDim = WorldDimension(map_side+1, map_side+1);
     const size_t A = tmpDim.getArea();
@@ -182,7 +184,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
     for (size_t i = 0; i < num_plates; ++i)
     {
         // Randomly select an unused plate origin.
-        const size_t p = imap[(size_t)rand() % (map_area - i)];
+        const size_t p = imap[(size_t)_randsource() % (map_area - i)];
         const size_t y = _worldDimension.yFromIndex(p);
         const size_t x = _worldDimension.xFromIndex(p);
 
@@ -211,7 +213,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
             if (N == 0)
                 continue;
 
-            const size_t j = rand() % N;
+            const size_t j = _randsource() % N;
             const size_t p = area[i].border[j];
             const size_t cy = _worldDimension.yFromIndex(p);
             const size_t cx = _worldDimension.xFromIndex(p);
@@ -305,7 +307,7 @@ void lithosphere::createPlates(size_t num_plates) throw()
             }
 
         // Create plate.
-        plates[i] = new plate(plt, width, height, x0, y0, i, _worldDimension);
+        plates[i] = new plate(_randsource(), plt, width, height, x0, y0, i, _worldDimension);
         delete[] plt;
     }
 
@@ -812,7 +814,7 @@ void lithosphere::restart() throw()
         for (size_t x = 0; x < _worldDimension.getWidth(); x += 8)
         {
             size_t i = _worldDimension.indexOf(x, y);
-            hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
+            hmap[i] = (_randsource.max() / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
             for (size_t j = i+1; j < i+8; ++j)
@@ -832,7 +834,7 @@ void lithosphere::restart() throw()
         for (size_t x = 4; x < _worldDimension.getWidth()-4; x += 8)
         {
             size_t i = _worldDimension.indexOf(x, y+4);
-            hmap[i] = (RAND_MAX / 8) * (hmap[i] - h_lowest) /
+            hmap[i] = (_randsource.max() / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
             for (size_t j = i+1; j < i+8; ++j)
@@ -917,7 +919,7 @@ void lithosphere::restart() throw()
         for (size_t x = 0; x < _worldDimension.getWidth(); x += 4)
         {
             size_t i = _worldDimension.indexOf(x,y);
-            hmap[i] = 4.0f * RAND_MAX * (hmap[i] - h_lowest) /
+            hmap[i] = 4.0f * _randsource.max() * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
             for (size_t j = i+1; j < i+4; ++j)
@@ -934,7 +936,7 @@ void lithosphere::restart() throw()
         for (size_t x = 2; x < _worldDimension.getWidth()-2; x += 4)
         {
             size_t i = _worldDimension.indexOf(x, y+2);
-            hmap[i] = 4.0f * RAND_MAX * (hmap[i] - h_lowest) /
+            hmap[i] = 4.0f * _randsource.max() * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
             for (size_t j = i+1; j < i+4; ++j)

@@ -61,10 +61,10 @@ void save_image(float* heightmap, int width, int height, const char* filename)
     CheckForErrors();
 }
 
-void generate(float* heightmap, int width, int height)
+void generate(long seed, float* heightmap, int width, int height)
 {
     memset(heightmap, 0, sizeof(float) * width * height);
-    sqrdmd(heightmap, width, height, 0.5f);
+    sqrdmd(seed, heightmap, width, height, 0.5f);
     normalize(heightmap, width * height);
 }
 
@@ -73,15 +73,14 @@ int main(int argc, char* argv[])
     int seed = 10;
     printf("Generating a square-diamond noise map with seed %d\n", seed);
 
-    srand(seed);
     float heightmap_square[513 * 513];
-    generate(heightmap_square, 513, 513);
+    generate(seed, heightmap_square, 513, 513);
 
     float heightmap_large[513 * 129];
-    generate(heightmap_large, 513, 129);
+    generate(seed, heightmap_large, 513, 129);
 
     float heightmap_tall[129 * 513];
-    generate(heightmap_tall, 129, 513);
+    generate(seed, heightmap_tall, 129, 513);
 
     ilInit();
     iluInit();

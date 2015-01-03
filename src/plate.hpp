@@ -21,6 +21,7 @@
 
 #include <cstring> // for size_t
 #include <vector>
+#include <random>
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 
@@ -40,7 +41,7 @@ class plate
 	/// @param	_x	           X of height map's left-top corner on world map.
 	/// @param	_y	           Y of height map's left-top corner on world map.
 	/// @param	worldDimension Dimension of world map's either side in pixels.
-	plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
+	plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
 	      size_t plate_age, WorldDimension worldDimension)
 		throw();
 
@@ -208,6 +209,8 @@ class plate
 
 	protected:
 	private:
+
+	std::minstd_rand0 _randsource;
 
     inline void calculateCrust(size_t x, size_t y, size_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,

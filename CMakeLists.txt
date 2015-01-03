@@ -4,6 +4,7 @@ add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp 
 
 include_directories("src")
 set(CMAKE_C_FLAGS "-std=c99")
+set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
 
 option(WITH_EXAMPLE "compile also the example" OFF)
 

@@ -33,8 +33,9 @@
 
 using namespace std;
 
-plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
+plate::plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
              size_t plate_age, WorldDimension worldDimension) throw() :
+             _randsource(seed),
              width(w), height(h),
              mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
              map(w, h), age_map(w, h), _worldDimension(worldDimension)
@@ -53,12 +54,12 @@ plate::plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
     }
 
     const size_t plate_area = w * h;
-    const double angle = 2 * M_PI * rand() / (double)RAND_MAX;
+    const double angle = 2 * M_PI * _randsource() / (double)_randsource.max();
 
     segment = new size_t[plate_area];
 
     velocity = 1;
-    rot_dir = rand() & 1 ? 1 : -1;
+    rot_dir = _randsource() & 1 ? 1 : -1;
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
     memset(segment, 255, plate_area * sizeof(size_t));
@@ -142,8 +143,8 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
     dx -= this->vx * (dot > 0);
     dy -= this->vy * (dot > 0);
 
-    float offset = (float)rand() / (float)RAND_MAX;
-    offset *= offset * offset * (2 * (rand() & 1) - 1);
+    float offset = (float)_randsource() / (float)_randsource.max();
+    offset *= offset * offset * (2 * (_randsource() & 1) - 1);
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset;
 
@@ -496,7 +497,7 @@ void plate::erode(float lower_bound) throw()
   // Add random noise (10 %) to heightmap.
   for (size_t i = 0; i < width*height; ++i)
   {
-    float alpha = 0.2 * rand() / (float)RAND_MAX;
+    float alpha = 0.2 * _randsource() / (float)_randsource.max();
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 

@@ -46,8 +46,8 @@ void normalize(float* map, int size);
  *  @param	rgh Amount of roughness/randomness in the final map.
  *  @return	Returns zero on success.
  */
-int sqrdmd(float* map, const int size, float rgh);
+int sqrdmd(long seed, float* map, const int size, float rgh);
 
-int sqrdmd(float* map, const int width, const int height, float rgh);
+int sqrdmd(long seed, float* map, const int width, const int height, float rgh);
 
 #endif

@@ -477,9 +477,8 @@ float dot( const int* g, const float x, const float y, const float z, const floa
 
 #define PI 3.14159265
 
-int simplexnoise(float* map, int width, int height, float roughness)
+int simplexnoise(long seed, float* map, int width, int height, float roughness)
 {
-    int seed = rand();
     float ka = 256/seed;
     float kb = seed*567%256;
     float kc = (seed*seed) % 256;

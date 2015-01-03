@@ -22,8 +22,11 @@
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
+#include <random>
 #include "heightmap.hpp"
 #include "rectangle.hpp"
+
+using namespace std;
 
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
@@ -57,7 +60,7 @@ class lithosphere
 	 * @exception	invalid_argument Exception is thrown if map side length
 	 *           	is not a power of two and greater than three.
 	 */
-	lithosphere(size_t map_side_length, float sea_level,
+	lithosphere(long seed, size_t map_side_length, float sea_level,
 		size_t _erosion_period, float _folding_ratio,
 		size_t aggr_ratio_abs, float aggr_ratio_rel,
 		size_t num_cycles) throw(std::invalid_argument);
@@ -79,12 +82,12 @@ class lithosphere
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	const float* getTopography() const throw(); ///< Return height map.
-	void update() throw(); ///< Simulate one step of plate tectonics.
-
-	long seed;
+	void update() throw(); ///< Simulate one step of plate tectonics.	
 
   protected:
   private:
+
+  	long _seed;
 
   	void createNoise(float* tmp, bool useSimplex = false);
 
@@ -140,6 +143,7 @@ class lithosphere
 	size_t last_coll_count; ///< Iterations since last cont. collision.
 
 	const WorldDimension _worldDimension;
+	std::minstd_rand0 _randsource;
 };
 
 
