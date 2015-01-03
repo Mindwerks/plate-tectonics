@@ -958,7 +958,7 @@ void lithosphere::restart() throw()
     tmp[(tmpDim.getHeight()-1)*(tmpDim.getWidth()) + (tmpDim.getWidth()-1)] = hmap[0];
 
     // Finally create some fractal slopes!
-    createNoise(tmp);
+    createNoise(tmp, true);
 
     normalize(tmp, tmpDim.getArea());
 
