@@ -26,21 +26,27 @@ void drawMap(const float* heightmap)
 {
     ILubyte* bytes = ilGetData(); 
     ILuint width,height;
-    width  = ilGetInteger(IL_IMAGE_WIDTH);
-    height = ilGetInteger(IL_IMAGE_HEIGHT);
+    width  = ilGetInteger(IL_IMAGE_WIDTH) / 2;
+    height = ilGetInteger(IL_IMAGE_HEIGHT) / 2;
 
     for (int y = 0; y < height; y++)
     {
        for (int x = 0; x < width; x++)
        {
-          float h = heightmap[(y*width + x)];
+          float h = heightmap[(y*width + x)];          
+          float res = 0.0f;
           if (h <= 0.0f) {
-            bytes[(y*width + x)] = 0;
+            res = 0;
           } else if (h >= 1.0f) {
-            bytes[(y*width + x)] = 255;
+            res = 255;
           } else {
-            bytes[(y*width + x)] = (ILubyte)(h * 255.0);
-          }          
+            res = (ILubyte)(h * 255.0f);
+          }
+          //printf("h= %f res=%i\n", h, res);
+          bytes[(y+0)*width*2 + (x+0)] = res;
+          bytes[(y+0)*width*2 + (x+width)] = res;
+          bytes[(y+height)*width*2 + (x+0)] = res;
+          bytes[(y+height)*width*2 + (x+width)] = res;
        }
     }
 }
@@ -51,7 +57,7 @@ void save_image(float* heightmap, int width, int height, const char* filename)
     CheckForErrors();
     ilBindImage(imageName);    
     CheckForErrors();
-    iluScale(width, height, 32);
+    iluScale(width * 2, height * 2, 32);
     CheckForErrors();
 
     drawMap(heightmap);   
