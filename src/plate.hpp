@@ -210,7 +210,7 @@ class plate
 	protected:
 	private:
 
-	std::minstd_rand0 _randsource;
+	mt19937 _randsource;
 
     inline void calculateCrust(size_t x, size_t y, size_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,

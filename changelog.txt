@@ -4,3 +4,10 @@ V 0.1
 * Added CMake build files
 * Started writing tests with googletest
 * Configured build integration with Travis
+
+V 0.2
+-----
+* Using random function stable across platforms
+* Using simplex noise in some cases
+* Working towards supporting rectangular maps
+* Trying to simplify code

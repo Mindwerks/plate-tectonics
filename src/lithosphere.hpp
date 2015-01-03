@@ -143,7 +143,7 @@ class lithosphere
 	size_t last_coll_count; ///< Iterations since last cont. collision.
 
 	const WorldDimension _worldDimension;
-	std::minstd_rand0 _randsource;
+	mt19937 _randsource;
 };
 
 

@@ -84,7 +84,7 @@ int sqrdmd(long seed, float* map, const int size, float rgh)
 
 int sqrdmd(long seed, float* map, const int width, const int height, float rgh)
 {	
-	std::minstd_rand0 _randsource(seed);
+	mt19937 _randsource(seed);
 	const int full_size = width * height;
 
 	int x, y, dx, dy;
