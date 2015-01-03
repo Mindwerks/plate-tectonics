@@ -23,7 +23,7 @@
  *  @date 2011-08-09
  */
 #include <stdlib.h>
-#include <cstdio>
+#include <stdio.h>
 #include <stdexcept>
 #include <random>
 
