@@ -885,7 +885,7 @@ void lithosphere::restart() throw()
     // Add some random noise to the map.
     memset(tmp, 0, tmpDim.getArea() * sizeof(float));
 
-    createNoise(tmp);
+    createNoise(tmp, true);
 
     normalize(tmp, tmpDim.getArea());
 
