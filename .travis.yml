@@ -24,4 +24,6 @@ install:
   - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi   
 
-script: cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
+script: 
+	$CXX --version
+	cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
