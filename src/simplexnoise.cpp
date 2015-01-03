@@ -475,36 +475,39 @@ float dot( const int* g, const float x, const float y ) { return g[0]*x + g[1]*y
 float dot( const int* g, const float x, const float y, const float z ) { return g[0]*x + g[1]*y + g[2]*z; }
 float dot( const int* g, const float x, const float y, const float z, const float w ) { return g[0]*x + g[1]*y + g[2]*z + g[3]*w; }
 
+#define PI 3.14159265
+
 int simplexnoise(float* map, int width, int height, float roughness)
 {
     int seed = rand();
+    float ka = 256/seed;
+    float kb = seed*567%256;
+    float kc = (seed*seed) % 256;
+    float kd = (567-seed) % 256;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            map[y * width + x] = 
-            octave_noise_3d(16.0f,
+            float fNX = x/(float)width; // we let the x-offset define the circle
+            float fNY = y/(float)height; // we let the x-offset define the circle
+            float fRdx = fNX*2*PI; // a full circle is two pi radians
+            float fRdy = fNY*4*PI; // a full circle is two pi radians
+            float fYSin = sinf(fRdy);
+            float fRdsSin = 1.0f;
+            float noiseScale = 0.593;
+            float a = fRdsSin*sinf(fRdx);
+            float b = fRdsSin*cosf(fRdx);
+            float c = fRdsSin*sinf(fRdy);
+            float d = fRdsSin*cosf(fRdy);
+            float v = octave_noise_4d(64.0f,
                     roughness,
                     1.0f,
-                    (float)x/(float)width, 
-                    (float)y/(float)height,
-                    (float)seed/(float)10000);
+                    ka+a*noiseScale, 
+                    kb+b*noiseScale,
+                    kc+c*noiseScale,
+                    kd+d*noiseScale);          
+            map[y * width + x] = v;          
         }
     }
+
     return 0;
 }
 
-void normalize(float* arr, int size)
-{
-    float min = arr[0], max = arr[0], diff;
-
-    for (int i = 1; i < size; ++i)
-    {
-        min = min < arr[i] ? min : arr[i];
-        max = max > arr[i] ? max : arr[i];
-    }
-
-    diff = max - min;
-
-    if (diff > 0)
-        for (int i = 0; i < size; ++i)
-            arr[i] = (arr[i] - min) / diff;
-}
