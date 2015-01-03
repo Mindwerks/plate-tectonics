@@ -15,3 +15,11 @@ TEST(Randomness, Sequence)
   EXPECT_FLOAT_EQ(3.0414717e+09,  randsource());
 }
 
+TEST(Randomness, Max)
+{
+  long seed = 3;
+  mt19937 randsource(seed);
+
+  EXPECT_FLOAT_EQ(4.2949673e+09,  randsource.max());
+}
+
