@@ -5,6 +5,7 @@ compiler:
 
 before_install:
     - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
+    - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update -qq
     - sudo apt-get install cmake
     # g++4.8.1
@@ -18,11 +19,10 @@ before_install:
 install:
   # g++4.8.1
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; ; fi
 
   # clang 3.4
   - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi   
 
-script: $CXX --version
-script: cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
+script: $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
