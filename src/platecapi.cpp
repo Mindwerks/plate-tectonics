@@ -111,13 +111,8 @@ size_t platec_api_is_finished(void *pointer)
 }
 
 void platec_api_step(void *pointer)
-{	
-   
+{	   
 	lithosphere* litho = (lithosphere*)pointer;
-	//srand(litho->seed);
-
 	litho->update();
-	
-	//litho->seed = rand();
 }
 

@@ -92,7 +92,6 @@ lithosphere::lithosphere(long seed, size_t map_side_length, float sea_level,
     max_plates(0), 
     num_plates(0),
     _worldDimension(map_side_length, map_side_length),
-    _seed(seed),
     _randsource(seed)
 {
     WorldDimension tmpDim = WorldDimension(map_side+1, map_side+1);

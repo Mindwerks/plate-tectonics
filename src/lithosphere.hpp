@@ -87,8 +87,6 @@ class lithosphere
   protected:
   private:
 
-  	long _seed;
-
   	void createNoise(float* tmp, bool useSimplex = false);
 
 	/**
