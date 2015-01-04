@@ -47,9 +47,11 @@ void drawMap(const float* heightmap)
 int main(int argc, char* argv[])
 {
     int seed = 10;
+    int width = 1024;
+    int height = 256;
     printf("Generating a map with seed %d\n", seed);
 
-    void* p = platec_api_create(seed, 512, 512, 0.65,60,0.02,1000000,0.33,2,10);
+    void* p = platec_api_create(seed, width, height, 0.65,60,0.02,1000000,0.33,2,10);
     printf(" * initial map created\n");
 
     int step = 0;
@@ -64,8 +66,8 @@ int main(int argc, char* argv[])
 
     printf(" * simulation completed\n");
     const float* heightmap = platec_api_get_heightmap(p);
-    float copy[512 * 512];
-    memcpy(copy, heightmap, sizeof(float)*512*512);
+    float copy[width * height];
+    memcpy(copy, heightmap, sizeof(float)*width*height);
     printf(" * heightmap obtained\n");
 
     ilInit();
@@ -75,14 +77,14 @@ int main(int argc, char* argv[])
     CheckForErrors();
     ilBindImage(imageName);    
     CheckForErrors();
-    iluScale(512, 512, 32);
+    iluScale(width, height, 32);
     CheckForErrors();
 
-    normalize(copy, 512 * 512);
+    normalize(copy, width * height);
     drawMap(copy);   
 
     ilEnable(IL_FILE_OVERWRITE);
     CheckForErrors();
-    ilSaveImage("map.png"); 
+    ilSaveImage("map_rect.png"); 
     CheckForErrors();
 }

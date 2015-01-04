@@ -63,23 +63,29 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
-void lithosphere::createNoise(float* tmp, bool useSimplex)
+void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
-    if (useSimplex) {
-        simplexnoise(_randsource(), tmp, map_side+1, map_side+1, SQRDMD_ROUGHNESS);
+    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){
+        throw new invalid_argument("cannot use sqrdmd on rect map");
     }
-    else if (sqrdmd(_randsource(), tmp, map_side + 1, SQRDMD_ROUGHNESS) < 0)
+    if (useSimplex) {
+        simplexnoise(_randsource(), tmp, 
+            tmpDim.getWidth(), 
+            tmpDim.getHeight()+1, 
+            SQRDMD_ROUGHNESS);
+    }
+    else if (sqrdmd(_randsource(), tmp, tmpDim.getWidth(), SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
     }    
 }
 
-lithosphere::lithosphere(long seed, size_t map_side_length, float sea_level,
+lithosphere::lithosphere(long seed, size_t width, size_t height, float sea_level,
     size_t _erosion_period, float _folding_ratio, size_t aggr_ratio_abs,
     float aggr_ratio_rel, size_t num_cycles) throw(invalid_argument) :
-    hmap(map_side_length, map_side_length),
-    amap(map_side_length, map_side_length),
+    hmap(width, height),
+    amap(width, height),
     plates(0), 
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel), 
@@ -87,19 +93,18 @@ lithosphere::lithosphere(long seed, size_t map_side_length, float sea_level,
     erosion_period(_erosion_period), 
     folding_ratio(_folding_ratio),
     iter_count(0), 
-    map_side(map_side_length), 
     max_cycles(num_cycles),
     max_plates(0), 
     num_plates(0),
-    _worldDimension(map_side_length, map_side_length),
+    _worldDimension(width, height),
     _randsource(seed)
 {
-    WorldDimension tmpDim = WorldDimension(map_side+1, map_side+1);
+    WorldDimension tmpDim = WorldDimension(width+1, height+1);
     const size_t A = tmpDim.getArea();
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
-    createNoise(tmp, true);
+    createNoise(tmp, tmpDim, true);
 
     float lowest = tmp[0], highest = tmp[0];
     for (size_t i = 1; i < A; ++i)
@@ -858,7 +863,7 @@ void lithosphere::restart() throw()
     tmp[tmpDim.lineIndex(_worldDimension.getHeight()) + tmpDim.getWidth() - 1] = hmap[0];
 
     // Finally create some fractal slopes!
-    createNoise(tmp);
+    createNoise(tmp, tmpDim);
     normalize(tmp, tmpDim.getArea());
 
     float h_range = h_highest - h_lowest;
@@ -884,14 +889,14 @@ void lithosphere::restart() throw()
     // Add some random noise to the map.
     memset(tmp, 0, tmpDim.getArea() * sizeof(float));
 
-    createNoise(tmp);
+    createNoise(tmp, tmpDim);
 
     normalize(tmp, tmpDim.getArea());
 
     // Shrink the fractal map by 1 pixel from right and bottom.
     // This makes it same size as lithosphere's height map.
-    for (size_t i = 0; i < map_side; ++i) {
-        memmove(&tmp[i*map_side], &tmp[i*(map_side+1)], line_size);
+    for (size_t i = 0; i < tmpDim.getHeight(); ++i) {
+        memmove(&tmp[i*_worldDimension.getWidth()], &tmp[i*(tmpDim.getWidth())], line_size);
     }
 
     for (size_t i = 0; i < map_area; ++i)
@@ -957,7 +962,7 @@ void lithosphere::restart() throw()
     tmp[(tmpDim.getHeight()-1)*(tmpDim.getWidth()) + (tmpDim.getWidth()-1)] = hmap[0];
 
     // Finally create some fractal slopes!
-    createNoise(tmp, true);
+    createNoise(tmp, tmpDim, true);
 
     normalize(tmp, tmpDim.getArea());
 
@@ -973,10 +978,4 @@ void lithosphere::restart() throw()
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
     delete[] tmp;
-}
-
-// To be called from C
-extern "C" size_t lithosphere_getMapSide ( void* object)
-{
-    return static_cast<lithosphere*>( object)->getSideLength();
 }

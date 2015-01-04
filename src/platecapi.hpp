@@ -27,7 +27,8 @@ extern "C" {
 
 void *  platec_api_create(
 	    long seed,
-        size_t map_side,
+        size_t width,
+        size_t height,
         float sea_level,
         size_t erosion_period, float folding_ratio,
         size_t aggr_overlap_abs, float aggr_overlap_rel,
@@ -36,7 +37,6 @@ void *  platec_api_create(
 void    platec_api_destroy(size_t);
 const size_t* platec_api_get_agemap(size_t);
 const float* platec_api_get_heightmap(void*);
-size_t platec_api_get_side_length(size_t);
 size_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
 

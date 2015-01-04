@@ -60,7 +60,9 @@ class lithosphere
 	 * @exception	invalid_argument Exception is thrown if map side length
 	 *           	is not a power of two and greater than three.
 	 */
-	lithosphere(long seed, size_t map_side_length, float sea_level,
+	lithosphere(long seed, 
+		size_t width, size_t height, 
+		float sea_level,
 		size_t _erosion_period, float _folding_ratio,
 		size_t aggr_ratio_abs, float aggr_ratio_rel,
 		size_t num_cycles) throw(std::invalid_argument);
@@ -78,7 +80,7 @@ class lithosphere
 
 	size_t getCycleCount() const throw() { return cycle_count; }
 	size_t getIterationCount() const throw() { return iter_count; }
-	size_t getSideLength() const throw() { return map_side; }
+	const WorldDimension& getWorldDimension() const throw() { return _worldDimension; }
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	const float* getTopography() const throw(); ///< Return height map.
@@ -87,7 +89,7 @@ class lithosphere
   protected:
   private:
 
-  	void createNoise(float* tmp, bool useSimplex = false);
+  	void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
 
 	/**
 	 * Container for collision details between two plates.
@@ -129,7 +131,6 @@ class lithosphere
 	size_t erosion_period; ///< # of iterations between global erosion.
 	float  folding_ratio; ///< Percent of overlapping crust that's folded.
 	size_t iter_count; ///< Iteration count. Used to timestamp new crust.
-	const size_t map_side; ///< Length of square height map's side in pixels.
 	size_t max_cycles; ///< Max n:o of times the system'll be restarted.
 	size_t max_plates; ///< Number of plates in the initial setting.
 	size_t num_plates; ///< Number of plates in the current setting.

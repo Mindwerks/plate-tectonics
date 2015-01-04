@@ -39,7 +39,7 @@ static size_t last_id = 1;
 
 #include <stdio.h>
 
-void* platec_api_create(long seed, size_t map_side, float sea_level,
+void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
                          size_t erosion_period, float folding_ratio,
                          size_t aggr_overlap_abs, float aggr_overlap_rel,
                          size_t cycle_count, size_t num_plates)
@@ -47,7 +47,7 @@ void* platec_api_create(long seed, size_t map_side, float sea_level,
 	/* Miten nykyisen opengl-mainin koodit refaktoroidaan tänne?
 	 *    parametrien tarkistus, kommentit eli dokumentointi, muuta? */
 
-	lithosphere* litho = new lithosphere(seed, map_side, sea_level,
+	lithosphere* litho = new lithosphere(seed, width, height, sea_level,
 		erosion_period, folding_ratio, aggr_overlap_abs,
 		aggr_overlap_rel, cycle_count);
 	litho->createPlates(num_plates);
@@ -83,15 +83,6 @@ const float* platec_api_get_heightmap(void *pointer)
 	lithosphere* litho = (lithosphere*)pointer;
 	const float *res = litho->getTopography();
 	return res;
-}
-
-size_t platec_api_get_side_length(size_t id)
-{
-	lithosphere* litho = platec_api_get_lithosphere(id);
-	if (!litho)
-		return 0;
-
-	return litho->getSideLength();
 }
 
 lithosphere* platec_api_get_lithosphere(size_t id)
