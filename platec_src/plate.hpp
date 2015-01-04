@@ -19,10 +19,15 @@
 #ifndef PLATE_HPP
 #define PLATE_HPP
 
-#include <cstring>
+#include <cstring> // for size_t
 #include <vector>
+#include <random>
+#include "heightmap.hpp"
+#include "rectangle.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
+
+typedef size_t ContinentId;
 
 class plate
 {
@@ -30,14 +35,14 @@ class plate
 
 	/// Initializes plate with the supplied height map.
 	///
-	/// @param	m	Pointer to array to height map of terrain.
-	/// @param	w	Width of height map in pixels.
-	/// @param	h	Height of height map in pixels.
-	/// @param	_x	X of height map's left-top corner on world map.
-	/// @param	_y	Y of height map's left-top corner on world map.
-	/// @param	world_side Length of world map's either side in pixels.
-	plate(const float* m, size_t w, size_t h, size_t _x, size_t _y,
-	      size_t plate_age, size_t world_side)
+	/// @param	m	           Pointer to array to height map of terrain.
+	/// @param	w	           Width of height map in pixels.
+	/// @param	h	           Height of height map in pixels.
+	/// @param	_x	           X of height map's left-top corner on world map.
+	/// @param	_y	           Y of height map's left-top corner on world map.
+	/// @param	worldDimension Dimension of world map's either side in pixels.
+	plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
+	      size_t plate_age, WorldDimension worldDimension)
 		throw();
 
 	~plate() throw(); ///< Default destructor for plate.
@@ -55,7 +60,8 @@ class plate
 	/// @param	y	Location of new crust on global world map (Y).
 	/// @param	z	Amount of crust to add.
 	/// @param	t	Time of creation of new crust.
-	void addCrustByCollision(size_t x, size_t y, float z, size_t t) throw();
+	/// @param activeContinent Segment ID of the continent that's processed.
+	void addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent) throw();
 
 	/// Simulates subduction of oceanic plate under this plate.
 	///
@@ -177,7 +183,8 @@ class plate
 	///
 	/// @param	coll_x	Origin of collision on global world map (X).
 	/// @param	coll_y	Origin of collision on global world map (Y).
-	void selectCollisionSegment(size_t coll_x, size_t coll_y) throw();
+	/// @return the Id of the continent being processed
+	ContinentId selectCollisionSegment(size_t coll_x, size_t coll_y) throw();
 
 	/// Set the amount of plate's crustal material at some location.
 	///
@@ -203,18 +210,82 @@ class plate
 	protected:
 	private:
 
-	/// Container for details about a segmeted crust area on this plate.
+	mt19937 _randsource;
+
+    inline void calculateCrust(size_t x, size_t y, size_t index, 
+    		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
+    		size_t& w, size_t& e, size_t& n, size_t& s);
+
+	ContinentId getContinentAt(int x, int y) const;
+
+	/// Container for details about a segmented crust area on this plate.
 	class segmentData
 	{
 	  public:
-		segmentData(size_t _x0, size_t _y0, size_t _x1, size_t _y1,
-		            size_t _area) : x0(_x0), x1(_x1), y0(_y0), y1(_y1),
-		                          area(_area), coll_count(0) {}
+		segmentData(Rectangle& rectangle,
+		            size_t _area) : _rectangle(rectangle),
+		                          area(_area), coll_count(0) {};
 
-		size_t x0, x1; ///< Left and right bounds of this segment. 
-		size_t y0, y1; ///< Top and bottom bounds for this segment.
+        void enlarge_to_contain(size_t x, size_t y)
+        {
+            _rectangle.enlarge_to_contain(x, y);
+        };
+
+        size_t getLeft() const
+        {
+            return _rectangle.getLeft();
+        };
+
+        size_t getRight() const
+        {
+            return _rectangle.getRight();
+        };
+
+        size_t getTop() const
+        {
+            return _rectangle.getTop();
+        };
+
+        size_t getBottom() const
+        {
+            return _rectangle.getBottom();
+        };
+
+        void shift(size_t dx, size_t dy)
+        {
+            _rectangle.shift(dx, dy);
+        };
+
+        void setLeft(size_t v)
+        {
+            _rectangle.setLeft(v);
+        };
+
+        void setRight(size_t v)
+        {
+            _rectangle.setRight(v);
+        };
+
+        void setTop(size_t v)
+        {
+            _rectangle.setTop(v);
+        };
+
+        void setBottom(size_t v)
+        {
+            _rectangle.setBottom(v);
+        };
+
+        bool isEmpty() const
+        {
+            return area == 0;
+        };
+
 		size_t area; ///< Number of locations this area consists of.
 		size_t coll_count; ///< Number of collisions on this segment.
+
+      private:
+        Rectangle _rectangle;
 	};
 
 	/// Separate a continent at (X, Y) to its own partition.
@@ -239,23 +310,23 @@ class plate
 	/// @return		Offset in height map or -1 on error.
 	size_t getMapIndex(size_t* x, size_t* y) const throw();
 
-	float* map; ///< Bitmap of plate's structure/height.
-	size_t* age; ///< Bitmap of plate's soil's age: timestamp of creation.
+	HeightMap map;        ///< Bitmap of plate's structure/height.
+	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
 	size_t width, height; ///< Height map's dimensions along X and Y axis.
-	size_t world_side; ///< Container world map's either side in pixels.
 
-	float mass; ///< Amount of crust that constitutes the plate.
-	float left, top; ///< Height map's left-top corner in world coords.
-	float cx, cy; ///< X and Y components of the center of mass of plate.
+	const WorldDimension _worldDimension;
 
-	float velocity; ///< Plate's velocity.
-	float vx, vy; ///< X and Y components of plate's direction unit vector.
-	float dx, dy; ///< X and Y components of plate's acceleration vector.
-	float rot_dir; ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
+	float mass;           ///< Amount of crust that constitutes the plate.
+	float left, top;      ///< Height map's left-top corner in world coords.
+	float cx, cy;         ///< X and Y components of the center of mass of plate.
+
+	float velocity;       ///< Plate's velocity.
+	float vx, vy;         ///< X and Y components of plate's direction unit vector.
+	float dx, dy;         ///< X and Y components of plate's acceleration vector.
+	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 
 	std::vector<segmentData> seg_data; ///< Details of each crust segment.
-	size_t* segment; ///< Segment ID of each piece of continental crust.
-	size_t activeContinent; ///< Segment ID of the cont. that's processed.
+	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
 };
 
 #endif
