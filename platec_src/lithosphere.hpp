@@ -22,6 +22,11 @@
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
+#include <random>
+#include "heightmap.hpp"
+#include "rectangle.hpp"
+
+using namespace std;
 
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
@@ -29,11 +34,11 @@
 class plate;
 
 /**
- * Litosphere is the rigid outermost shell of a rocky planet.
+ * Lithosphere is the rigid outermost shell of a rocky planet.
  *
- * Litosphere is divided into several rigid areas i.e. plates. In time passing
+ * Lithosphere is divided into several rigid areas i.e. plates. In time passing
  * the topography of the planet evolves as the result of plate dynamics.
- * Litosphere is the class responsibile for creating and managing all the
+ * Lithosphere is the class responsible for creating and managing all the
  * plates. It updates heightmap to match the current setup of plates and thus
  * offers caller an easy access to system's topography.
  * 
@@ -46,7 +51,7 @@ class lithosphere
 	 * Initialize system's height map i.e. topography.
 	 *
 	 * @param map_side_length Square height map's side's length in pixels.
-	 * @param sea_level Amount of surcafe area that becomes oceanic crust.
+	 * @param sea_level Amount of surface area that becomes oceanic crust.
 	 * @param _erosion_period # of iterations between global erosion.
 	 * @param _folding_ratio Percent of overlapping crust that's folded.
 	 * @param aggr_ratio_abs # of overlapping points causing aggregation.
@@ -55,7 +60,9 @@ class lithosphere
 	 * @exception	invalid_argument Exception is thrown if map side length
 	 *           	is not a power of two and greater than three.
 	 */
-	lithosphere(size_t map_side_length, float sea_level,
+	lithosphere(long seed, 
+		size_t width, size_t height, 
+		float sea_level,
 		size_t _erosion_period, float _folding_ratio,
 		size_t aggr_ratio_abs, float aggr_ratio_rel,
 		size_t num_cycles) throw(std::invalid_argument);
@@ -73,16 +80,18 @@ class lithosphere
 
 	size_t getCycleCount() const throw() { return cycle_count; }
 	size_t getIterationCount() const throw() { return iter_count; }
-	size_t getSideLength() const throw() { return map_side; }
+	const WorldDimension& getWorldDimension() const throw() { return _worldDimension; }
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	const float* getTopography() const throw(); ///< Return height map.
-	void update() throw(); ///< Simulate one step of plate tectonics.
-
-	long seed;
+	void update() throw(); ///< Simulate one step of plate tectonics.	
+	size_t getWidth() const;
+	size_t getHeight() const;
 
   protected:
   private:
+
+  	void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
 
 	/**
 	 * Container for collision details between two plates.
@@ -113,9 +122,9 @@ class lithosphere
 
 	void restart() throw(); //< Replace plates with a new population.
 
-	float* hmap; ///< Height map representing the topography of system.
+	HeightMap hmap; ///< Height map representing the topography of system.
 	size_t* imap; ///< Plate index map of the "owner" of each map point.
-	size_t* amap; ///< Age map of the system's surface (topography).
+	AgeMap amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.
 
 	size_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
@@ -124,7 +133,6 @@ class lithosphere
 	size_t erosion_period; ///< # of iterations between global erosion.
 	float  folding_ratio; ///< Percent of overlapping crust that's folded.
 	size_t iter_count; ///< Iteration count. Used to timestamp new crust.
-	size_t map_side; ///< Length of square height map's side in pixels.
 	size_t max_cycles; ///< Max n:o of times the system'll be restarted.
 	size_t max_plates; ///< Number of plates in the initial setting.
 	size_t num_plates; ///< Number of plates in the current setting.
@@ -135,6 +143,8 @@ class lithosphere
 	float peak_Ek; ///< Max total kinetic energy in the system so far.
 	size_t last_coll_count; ///< Iterations since last cont. collision.
 
+	const WorldDimension _worldDimension;
+	mt19937 _randsource;
 };
 
 

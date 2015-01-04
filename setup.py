@@ -1,18 +1,21 @@
 from distutils.core import setup, Extension
 
-extra_compile_args = "-std=c99"
+#extra_compile_args = "-std=c99"
 
 pyplatec = Extension('platec',                    
                     sources = ['platec_src/platecmodule.c',
                         'platec_src/platecapi.cpp',
                         'platec_src/plate.cpp',
                         'platec_src/lithosphere.cpp',
-                        'platec_src/sqrdmd.c'],
-                    extra_compile_args=[extra_compile_args],
+                        'platec_src/heightmap.cpp',
+                        'platec_src/rectangle.cpp',
+                        'platec_src/simplexnoise.cpp',
+                        'platec_src/sqrdmd.cpp']
+                    #extra_compile_args=[extra_compile_args],
                     )
 
 setup (name = 'PyPlatec',
-       version = '1.1',
+       version = '1.2',
        author = "Federico Tomassetti",
        author_email = "f.tomassetti@gmail.com",
        url = "https://github.com/ftomassetti/pyplatec",

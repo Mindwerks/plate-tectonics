@@ -5,7 +5,8 @@
 static PyObject * platec_create(PyObject *self, PyObject *args)
 {
     unsigned int seed;
-    unsigned int map_side;
+    unsigned int width;
+    unsigned int height;
     float sea_level;
     unsigned int erosion_period;
     float folding_ratio;
@@ -13,13 +14,13 @@ static PyObject * platec_create(PyObject *self, PyObject *args)
     float aggr_overlap_rel;
     unsigned int cycle_count;
     unsigned int num_plates;
-    if (!PyArg_ParseTuple(args, "IIfIfIfII", &seed, &map_side, &sea_level, &erosion_period,
+    if (!PyArg_ParseTuple(args, "IIfIfIfII", &seed, &width, &height, &sea_level, &erosion_period,
             &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
             &cycle_count, &num_plates))
         return NULL; 
     srand(seed);
 
-    void *litho = platec_api_create(map_side, sea_level, erosion_period,
+    void *litho = platec_api_create(seed, width, height, sea_level, erosion_period,
             folding_ratio, aggr_overlap_abs, aggr_overlap_rel,
             cycle_count, num_plates);
 
@@ -62,9 +63,10 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
         return NULL; 
     float *hm = platec_api_get_heightmap(litho);
 
-    size_t map_side = lithosphere_getMapSide(litho);
+    size_t width = lithosphere_getMapWidth(litho);
+    size_t height = lithosphere_getMapHeight(litho);
 
-    PyObject* res =  makelist(hm,map_side*map_side);
+    PyObject* res =  makelist(hm,width*height);
     Py_INCREF(res);
     return res;
 }
