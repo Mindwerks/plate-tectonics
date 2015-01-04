@@ -499,13 +499,13 @@ int simplexnoise(long seed, float* map, int width, int height, float roughness)
             float v = scaled_octave_noise_4d(64.0f,
                     roughness,
                     2.0f,
-                    -1.0f,
+                    0.0f,
                     1.0f,
                     ka+a*noiseScale, 
                     kb+b*noiseScale,
                     kc+c*noiseScale,
                     kd+d*noiseScale);          
-            if (map[y * width + x] == 0) map[y * width + x] = v;          
+            if (map[y * width + x] == 0.0f) map[y * width + x] = v;          
         }
     }
 

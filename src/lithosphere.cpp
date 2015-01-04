@@ -850,16 +850,15 @@ void lithosphere::restart() throw()
         memcpy(&tmp[tmpDim.lineIndex(y)], &hmap[_worldDimension.lineIndex(y)],
             line_size);
 
-        tmp[y*(map_side+1) + map_side] = hmap[_worldDimension.lineIndex(y)];
+        tmp[tmpDim.lineIndex(y) + tmpDim.getWidth() - 1] = hmap[_worldDimension.lineIndex(y)];
     }
 
     // Copy last line - the one that "wraps around" the top edge.    
     memcpy(&tmp[tmpDim.lineIndex(_worldDimension.getHeight())], &hmap[0], line_size);
-    tmp[map_side*(map_side+1) + map_side] = hmap[0];
+    tmp[tmpDim.lineIndex(_worldDimension.getHeight()) + tmpDim.getWidth() - 1] = hmap[0];
 
     // Finally create some fractal slopes!
     createNoise(tmp);
-
     normalize(tmp, tmpDim.getArea());
 
     float h_range = h_highest - h_lowest;
@@ -885,7 +884,7 @@ void lithosphere::restart() throw()
     // Add some random noise to the map.
     memset(tmp, 0, tmpDim.getArea() * sizeof(float));
 
-    createNoise(tmp, true);
+    createNoise(tmp);
 
     normalize(tmp, tmpDim.getArea());
 
