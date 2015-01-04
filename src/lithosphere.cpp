@@ -987,3 +987,24 @@ void lithosphere::restart() throw()
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
 }
+
+size_t lithosphere::getWidth() const
+{
+    return _worldDimension.getWidth();
+}
+
+size_t lithosphere::getHeight() const
+{
+    return _worldDimension.getHeight();
+}
+
+// To be called from C
+extern "C" size_t lithosphere_getMapWidth ( void* object)
+{
+    return static_cast<lithosphere*>( object)->getWidth();
+}
+
+extern "C" size_t lithosphere_getMapHeight ( void* object)
+{
+    return static_cast<lithosphere*>( object)->getHeight();
+}

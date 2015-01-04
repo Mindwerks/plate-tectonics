@@ -85,6 +85,8 @@ class lithosphere
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	const float* getTopography() const throw(); ///< Return height map.
 	void update() throw(); ///< Simulate one step of plate tectonics.	
+	size_t getWidth() const;
+	size_t getHeight() const;
 
   protected:
   private:
