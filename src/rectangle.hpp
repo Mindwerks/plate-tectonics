@@ -32,6 +32,11 @@ public:
         return _height;
     };
 
+    size_t getMax() const
+    {
+        return _width > _height ? _width : _height;
+    }
+
     size_t getArea() const
     {
         return _width * _height;

@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <cstring>
 
 #define BOOL_REGENERATE_CRUST   1
 
@@ -66,15 +67,23 @@ size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
     if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){
-        throw new invalid_argument("cannot use sqrdmd on rect map");
-    }
-    if (useSimplex) {
+        size_t side = tmpDim.getMax();
+        float* squareTmp = new float[side*side];
+        memset(squareTmp, 0, sizeof(float)*side*side);
+        for (int y=0; y<tmpDim.getHeight(); y++){
+            memcpy(&squareTmp[y*side],&tmp[y*tmpDim.getWidth()],sizeof(float)*tmpDim.getWidth());
+        }
+        sqrdmd(_randsource(), squareTmp, side, SQRDMD_ROUGHNESS);
+        for (int y=0; y<tmpDim.getHeight(); y++){
+            memcpy(&tmp[y*tmpDim.getWidth()],&squareTmp[y*side],sizeof(float)*tmpDim.getWidth());
+        }
+        delete[] squareTmp;
+    } else if (useSimplex) {
         simplexnoise(_randsource(), tmp, 
             tmpDim.getWidth(), 
-            tmpDim.getHeight()+1, 
+            tmpDim.getHeight(), 
             SQRDMD_ROUGHNESS);
-    }
-    else if (sqrdmd(_randsource(), tmp, tmpDim.getWidth(), SQRDMD_ROUGHNESS) < 0)
+    } else if (sqrdmd(_randsource(), tmp, tmpDim.getWidth(), SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
