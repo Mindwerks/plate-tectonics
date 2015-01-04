@@ -9,6 +9,14 @@ The original project is here: http://sourceforge.net/projects/platec/ . That pro
 
 Kudos to the original author: Lauri Viitanen!
 
+Compile
+=======
+
+```
+export CXXFLAGS='-std=c++11'
+python setup.py build
+```
+
 Usage
 =====
 
