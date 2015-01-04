@@ -800,7 +800,7 @@ void lithosphere::restart() throw()
     ///////////////////////////////////////////////////////////////////////
 
     WorldDimension tmpDim = WorldDimension(_worldDimension.getWidth() + 1, _worldDimension.getHeight() + 1);
-    float* tmp      = new float[tmpDim.getArea()];    
+    HeightMap tmp(tmpDim.getWidth(), tmpDim.getHeight());
     float* original = new float[tmpDim.getArea()];
     const size_t line_size = _worldDimension.getWidth() * sizeof(float);
 
@@ -863,8 +863,8 @@ void lithosphere::restart() throw()
     tmp[tmpDim.lineIndex(_worldDimension.getHeight()) + tmpDim.getWidth() - 1] = hmap[0];
 
     // Finally create some fractal slopes!
-    createNoise(tmp, tmpDim);
-    normalize(tmp, tmpDim.getArea());
+    createNoise(tmp.raw_data(), tmpDim);
+    normalize(tmp.raw_data(), tmpDim.getArea());
 
     float h_range = h_highest - h_lowest;
     for (size_t i = 0; i < tmpDim.getArea(); ++i) // Restore original height range.
@@ -887,11 +887,11 @@ void lithosphere::restart() throw()
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
     // Add some random noise to the map.
-    memset(tmp, 0, tmpDim.getArea() * sizeof(float));
+    tmp.set_all(0);
 
-    createNoise(tmp, tmpDim);
+    createNoise(tmp.raw_data(), tmpDim);
 
-    normalize(tmp, tmpDim.getArea());
+    normalize(tmp.raw_data(), tmpDim.getArea());
 
     // Shrink the fractal map by 1 pixel from right and bottom.
     // This makes it same size as lithosphere's height map.
@@ -962,9 +962,9 @@ void lithosphere::restart() throw()
     tmp[(tmpDim.getHeight()-1)*(tmpDim.getWidth()) + (tmpDim.getWidth()-1)] = hmap[0];
 
     // Finally create some fractal slopes!
-    createNoise(tmp, tmpDim, true);
+    createNoise(tmp.raw_data(), tmpDim, true);
 
-    normalize(tmp, tmpDim.getArea());
+    normalize(tmp.raw_data(), tmpDim.getArea());
 
     h_range = h_highest - h_lowest;
     for (size_t i = 0; i < tmpDim.getArea(); ++i) // Restore original height range.
@@ -977,5 +977,4 @@ void lithosphere::restart() throw()
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 
-    delete[] tmp;
 }
