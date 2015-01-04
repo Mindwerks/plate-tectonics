@@ -14,7 +14,7 @@ static PyObject * platec_create(PyObject *self, PyObject *args)
     float aggr_overlap_rel;
     unsigned int cycle_count;
     unsigned int num_plates;
-    if (!PyArg_ParseTuple(args, "IIfIfIfII", &seed, &width, &height, &sea_level, &erosion_period,
+    if (!PyArg_ParseTuple(args, "IIIfIfIfII", &seed, &width, &height, &sea_level, &erosion_period,
             &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
             &cycle_count, &num_plates))
         return NULL; 
