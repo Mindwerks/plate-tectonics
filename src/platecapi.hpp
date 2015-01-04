@@ -19,7 +19,7 @@
 #ifndef PLATECAPI_H
 #define PLATECAPI_H
 
-#include <cstring> // For size_t.
+#include <string.h> // For size_t.
 
 #ifdef	__cplusplus
 extern "C" {
