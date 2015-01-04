@@ -1,7 +1,5 @@
 from distutils.core import setup, Extension
 
-#extra_compile_args = "-std=c99"
-
 pyplatec = Extension('platec',                    
                     sources = ['platec_src/platecmodule.c',
                         'platec_src/platecapi.cpp',
@@ -11,7 +9,6 @@ pyplatec = Extension('platec',
                         'platec_src/rectangle.cpp',
                         'platec_src/simplexnoise.cpp',
                         'platec_src/sqrdmd.cpp']
-                    #extra_compile_args=[extra_compile_args],
                     )
 
 setup (name = 'PyPlatec',
