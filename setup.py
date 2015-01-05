@@ -12,11 +12,12 @@ pyplatec = Extension('platec',
                         'platec_src/rectangle.cpp',
                         'platec_src/simplexnoise.cpp',
                         'platec_src/sqrdmd.cpp'],
+                     language='c++',
                      extra_compile_args=[extra_compile_args],
                     )
 
 setup (name = 'PyPlatec',
-       version = '1.2.1',
+       version = '1.2.2',
        author = "Federico Tomassetti",
        author_email = "f.tomassetti@gmail.com",
        url = "https://github.com/ftomassetti/pyplatec",

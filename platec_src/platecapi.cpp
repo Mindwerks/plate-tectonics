@@ -58,8 +58,9 @@ void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
 	return litho;
 }
 
-void platec_api_destroy(size_t id)
+void platec_api_destroy(void* litho)
 {
+	size_t id = ((lithosphere*)litho)->id;
 	for (size_t i = 0; i < lithospheres.size(); ++i)
 		if (lithospheres[i].id == id) {
 			lithospheres.erase(lithospheres.begin()+i);
