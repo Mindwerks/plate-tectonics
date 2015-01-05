@@ -21,10 +21,6 @@
 
 #include <string.h> // For size_t.
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
 void *  platec_api_create(
 	    long seed,
         size_t width,
@@ -42,9 +38,5 @@ void    platec_api_step(void*);
 
 size_t lithosphere_getMapWidth ( void* object);
 size_t lithosphere_getMapHeight ( void* object);
-
-#ifdef	__cplusplus
-}
-#endif
 
 #endif

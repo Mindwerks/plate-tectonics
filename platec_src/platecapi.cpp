@@ -19,6 +19,7 @@
 #include "lithosphere.hpp"
 #include "platecapi.hpp"
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <vector>
 
@@ -37,7 +38,6 @@ extern lithosphere* platec_api_get_lithosphere(size_t);
 static std::vector<platec_api_list_elem> lithospheres;
 static size_t last_id = 1;
 
-#include <stdio.h>
 
 void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
                          size_t erosion_period, float folding_ratio,
@@ -59,10 +59,9 @@ void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
 }
 
 void platec_api_destroy(void* litho)
-{
-	size_t id = ((lithosphere*)litho)->id;
+{	
 	for (size_t i = 0; i < lithospheres.size(); ++i)
-		if (lithospheres[i].id == id) {
+		if (lithospheres[i].data == litho) {
 			lithospheres.erase(lithospheres.begin()+i);
 			break;
 		}
@@ -76,8 +75,6 @@ const size_t* platec_api_get_agemap(size_t id)
 
 	return litho->getAgemap();
 }
-
-#include <stdio.h>
 
 float* platec_api_get_heightmap(void *pointer)
 {
@@ -108,13 +105,13 @@ void platec_api_step(void *pointer)
 	litho->update();
 }
 
-// To be called from C
-extern "C" size_t lithosphere_getMapWidth ( void* object)
+
+size_t lithosphere_getMapWidth ( void* object)
 {
     return static_cast<lithosphere*>( object)->getWidth();
 }
 
-extern "C" size_t lithosphere_getMapHeight ( void* object)
+size_t lithosphere_getMapHeight ( void* object)
 {
     return static_cast<lithosphere*>( object)->getHeight();
 }
