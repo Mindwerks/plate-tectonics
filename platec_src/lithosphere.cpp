@@ -340,7 +340,7 @@ const size_t* lithosphere::getAgemap() const throw()
     return amap.raw_data();
 }
 
-const float* lithosphere::getTopography() const throw()
+float* lithosphere::getTopography() const throw()
 {
     return hmap.raw_data();
 }
@@ -998,13 +998,3 @@ size_t lithosphere::getHeight() const
     return _worldDimension.getHeight();
 }
 
-// To be called from C
-extern "C" size_t lithosphere_getMapWidth ( void* object)
-{
-    return static_cast<lithosphere*>( object)->getWidth();
-}
-
-extern "C" size_t lithosphere_getMapHeight ( void* object)
-{
-    return static_cast<lithosphere*>( object)->getHeight();
-}

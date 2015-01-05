@@ -1,14 +1,18 @@
 from distutils.core import setup, Extension
 
+extra_compile_args = "-std=c++11"
+
 pyplatec = Extension('platec',                    
-                    sources = ['platec_src/platecmodule.c',
+                    sources = [
+                        'platec_src/platecmodule.cpp',
                         'platec_src/platecapi.cpp',
                         'platec_src/plate.cpp',
                         'platec_src/lithosphere.cpp',
                         'platec_src/heightmap.cpp',
                         'platec_src/rectangle.cpp',
                         'platec_src/simplexnoise.cpp',
-                        'platec_src/sqrdmd.cpp']
+                        'platec_src/sqrdmd.cpp'],
+                     extra_compile_args=[extra_compile_args],
                     )
 
 setup (name = 'PyPlatec',

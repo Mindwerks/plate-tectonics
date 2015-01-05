@@ -83,7 +83,7 @@ class lithosphere
 	const WorldDimension& getWorldDimension() const throw() { return _worldDimension; }
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
-	const float* getTopography() const throw(); ///< Return height map.
+	float* getTopography() const throw(); ///< Return height map.
 	void update() throw(); ///< Simulate one step of plate tectonics.	
 	size_t getWidth() const;
 	size_t getHeight() const;

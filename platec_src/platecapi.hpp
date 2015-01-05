@@ -34,11 +34,14 @@ void *  platec_api_create(
         size_t aggr_overlap_abs, float aggr_overlap_rel,
         size_t cycle_count, size_t num_plates);
 
-void    platec_api_destroy(size_t);
+void    platec_api_destroy(void*);
 const size_t* platec_api_get_agemap(size_t);
-const float* platec_api_get_heightmap(void*);
+float* platec_api_get_heightmap(void*);
 size_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
+
+size_t lithosphere_getMapWidth ( void* object);
+size_t lithosphere_getMapHeight ( void* object);
 
 #ifdef	__cplusplus
 }
