@@ -78,10 +78,10 @@ const size_t* platec_api_get_agemap(size_t id)
 
 #include <stdio.h>
 
-const float* platec_api_get_heightmap(void *pointer)
+float* platec_api_get_heightmap(void *pointer)
 {
 	lithosphere* litho = (lithosphere*)pointer;
-	const float *res = litho->getTopography();
+	float *res = litho->getTopography();
 	return res;
 }
 
@@ -107,3 +107,13 @@ void platec_api_step(void *pointer)
 	litho->update();
 }
 
+// To be called from C
+extern "C" size_t lithosphere_getMapWidth ( void* object)
+{
+    return static_cast<lithosphere*>( object)->getWidth();
+}
+
+extern "C" size_t lithosphere_getMapHeight ( void* object)
+{
+    return static_cast<lithosphere*>( object)->getHeight();
+}
