@@ -94,8 +94,32 @@ static PyMethodDef PlatecMethods[] = {
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "platec",     /* m_name */
+        "Plate tectonics simulation",  /* m_doc */
+        -1,                  /* m_size */
+        PlatecMethods,       /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+#endif
+
 PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_platec(void)
+#else
 initplatec(void)
+#endif
 {
-    (void) Py_InitModule("platec", PlatecMethods);
+    #if PY_MAJOR_VERSION >= 3
+        PyMODINIT_FUNC m = PyModule_Create(&moduledef);
+    #else
+        PyMODINIT_FUNC m = Py_InitModule3("platec",
+            PlatecMethods, "Plate tectonics simulation");
+    #endif
+    return m;
 }
