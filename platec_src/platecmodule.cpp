@@ -117,8 +117,7 @@ static PyMethodDef PlatecMethods[] = {
 MOD_INIT(platec)
 {
     #if PY_MAJOR_VERSION >= 3
-        PyMODINIT_FUNC m = PyModule_Create(&moduledef);
-        return m;
+        return PyModule_Create(&moduledef);
     #else
         Py_InitModule3("platec",
             PlatecMethods, "Plate tectonics simulation");        
