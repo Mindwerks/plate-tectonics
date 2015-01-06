@@ -117,9 +117,9 @@ initplatec(void)
 {
     #if PY_MAJOR_VERSION >= 3
         PyMODINIT_FUNC m = PyModule_Create(&moduledef);
+        return m;
     #else
         PyMODINIT_FUNC m = Py_InitModule3("platec",
-            PlatecMethods, "Plate tectonics simulation");
-    #endif
-    return m;
+            PlatecMethods, "Plate tectonics simulation");        
+    #endif    
 }
