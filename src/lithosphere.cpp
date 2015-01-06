@@ -184,6 +184,7 @@ lithosphere::~lithosphere() throw()
 
 void lithosphere::createPlates(size_t num_plates)
 {
+try {    
     const size_t map_area = _worldDimension.getArea();
     this->max_plates = this->num_plates = num_plates;
 
@@ -340,6 +341,11 @@ void lithosphere::createPlates(size_t num_plates)
     peak_Ek = 0;
     last_coll_count = 0;
     delete[] area;
+} catch (const exception& e){
+    std::string msg = "Problem during createPlates: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 size_t lithosphere::getPlateCount() const throw()
@@ -1005,7 +1011,7 @@ try {
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
 } catch (const exception& e){
-    std::string msg = "Problem during update: ";
+    std::string msg = "Problem during restart: ";
     msg = msg + e.what();
     throw runtime_error(msg.c_str());
 }

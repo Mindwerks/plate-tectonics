@@ -171,6 +171,7 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
 
 float plate::aggregateCrust(plate* p, size_t wx, size_t wy)
 {
+try {    
     size_t lx = wx, ly = wy;
     const size_t index = getMapIndex(&lx, &ly);
     const ContinentId seg_id = segment[index];
@@ -227,6 +228,11 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy)
 
     seg_data[seg_id].area = 0; // Mark segment as non-existent
     return old_mass - mass;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::aggregateCrust: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 void plate::applyFriction(float deformed_mass)
@@ -247,6 +253,7 @@ void plate::applyFriction(float deformed_mass)
 
 void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass)
 {
+try {    
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
 
@@ -357,12 +364,36 @@ void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass)
     // We see that in with restitution 0, both balls continue at same
     // speed along X axis. However at the same time ball B continues its
     // path upwards like it should. Seems correct right?
+} catch (const exception& e){
+    std::string msg = "Problem during plate::collide: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
+}
+
+bool plate::contains(size_t x, size_t y) const
+{
+    size_t cleanX = (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
+    size_t cleanY = (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
+
+    return cleanX>=left && cleanX<(left+width) && cleanY>=top && cleanY<(top+height);
 }
 
 void plate::calculateCrust(size_t x, size_t y, size_t index, 
     float& w_crust, float& e_crust, float& n_crust, float& s_crust,
     size_t& w, size_t& e, size_t& n, size_t& s)
 {
+    if (!contains(x,y)){
+        string s = "Given point is not contained";
+        s = s + ": x " + to_string(x)
+              + ", y " + to_string(y)
+              + ", left " + to_string(left)
+              + ", top " + to_string(top)
+              + ", width " + to_string(width)
+              + ", height " + to_string(height);
+        //throw invalid_argument(s);
+    }
+try {    
     // Build masks for accessible directions (4-way).
     // Allow wrapping around map edges if plate has world wide dimensions.
     size_t w_mask = -((x > 0)          | (width == _worldDimension.getWidth()));
@@ -389,10 +420,22 @@ void plate::calculateCrust(size_t x, size_t y, size_t index,
     e_crust = map[e] * (e_mask & (map[e] < map[index]));
     n_crust = map[n] * (n_mask & (map[n] < map[index]));
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
+} catch (const exception& e){
+    std::string msg = "Problem during plate::calculateCrust (width: ";
+    msg = msg + to_string(width)
+            + ", height: " + to_string(height) 
+            + ", left: " + to_string(left) 
+            + ", top: " + to_string(top) 
+            + ", x: " + to_string(x)
+            + ", y:" + to_string(y) + ") :"
+            + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 void plate::erode(float lower_bound)
 {
+try {    
   vector<size_t> sources_data;
   vector<size_t> sinks_data;
   vector<size_t>* sources = &sources_data;
@@ -615,6 +658,11 @@ void plate::erode(float lower_bound)
     cx /= mass;
     cy /= mass;
   }
+} catch (const exception& e){
+    std::string msg = "Problem during plate::erode: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) const
@@ -662,6 +710,7 @@ void plate::getMap(const float** c, const size_t** t) const
 
 void plate::move()
 {
+try {    
     float len;
 
     // Apply any new impulses to the plate's trajectory.
@@ -704,6 +753,11 @@ void plate::move()
     top -= top < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
 
     assert(_worldDimension.contains(left, top));
+} catch (const exception& e){
+    std::string msg = "Problem during plate::move: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 void plate::resetSegments()
@@ -714,6 +768,7 @@ void plate::resetSegments()
 
 void plate::setCrust(size_t x, size_t y, float z, size_t t)
 {
+try {    
     if (z < 0) { // Do not accept negative values.
         z = 0;
     }
@@ -829,6 +884,11 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t)
     mass -= map[index];
     map[index] = z;     // Set new crust height to desired location.
     mass += z;      // Update mass counter.
+} catch (const exception& e){
+    std::string msg = "Problem during plate::setCrust: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 ContinentId plate::selectCollisionSegment(size_t coll_x, size_t coll_y)
@@ -844,6 +904,7 @@ ContinentId plate::selectCollisionSegment(size_t coll_x, size_t coll_y)
 
 size_t plate::createSegment(size_t x, size_t y) throw()
 {
+try {    
     const size_t origin_index = y * width + x;
     const size_t ID = seg_data.size();
 
@@ -1060,6 +1121,11 @@ size_t plate::createSegment(size_t x, size_t y) throw()
     seg_data.push_back(data);
 
     return ID;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::createSegement: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 size_t plate::getMapIndex(size_t* px, size_t* py) const throw()

@@ -206,14 +206,17 @@ class plate
 	size_t getWidth() const throw() { return width; }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
+	bool contains(size_t x, size_t y) const;
+
+	// visible for testing
+	inline void calculateCrust(size_t x, size_t y, size_t index, 
+    		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
+    		size_t& w, size_t& e, size_t& n, size_t& s);
+
 	protected:
 	private:
 
-	mt19937 _randsource;
-
-    inline void calculateCrust(size_t x, size_t y, size_t index, 
-    		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
-    		size_t& w, size_t& e, size_t& n, size_t& s);
+	mt19937 _randsource;    
 
 	ContinentId getContinentAt(int x, int y) const;
 
