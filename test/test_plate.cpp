@@ -20,6 +20,7 @@ TEST(Plate, contains)
 	EXPECT_EQ(true, p.contains(148, 25));
 }
 
+// TODO test also when plate is large as world
 TEST(Plate, calculateCrust)
 {
   const float *heightmap = new float[256 * 128];

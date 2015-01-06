@@ -418,10 +418,6 @@ try {
     e = e_mask==-1 ? xMod(x+1) : 0;
     n = n_mask==-1 ? yMod(y-1) : 0;
     s = s_mask==-1 ? yMod(y+1) : 0;
-    /*w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
-    e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
-    n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
-    s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;*/
 
     // Calculate offsets within map memory.
     w = y * width + w;
