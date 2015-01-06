@@ -108,12 +108,13 @@ static PyMethodDef PlatecMethods[] = {
     };
 #endif
 
-PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
-PyInit_platec(void)
+    #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
 #else
-initplatec(void)
+    #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
 #endif
+
+MOD_INIT(platec)
 {
     #if PY_MAJOR_VERSION >= 3
         PyMODINIT_FUNC m = PyModule_Create(&moduledef);
