@@ -76,7 +76,7 @@ class lithosphere
 	 *
 	 * @param num_plates Number of areas the surface is divided into.
 	 */
-	void createPlates(size_t num_plates) throw();
+	void createPlates(size_t num_plates);
 
 	size_t getCycleCount() const throw() { return cycle_count; }
 	size_t getIterationCount() const throw() { return iter_count; }

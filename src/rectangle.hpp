@@ -2,6 +2,9 @@
 #define RECTANGLE_HPP
 
 #include <cstring> // for size_t
+#include <stdexcept>
+
+using namespace std;
 
 class WorldDimension {
 public:
@@ -70,6 +73,9 @@ public:
 
     size_t lineIndex(const size_t y) const
     {
+        if (y<0 || y>=_height){
+            throw invalid_argument("WorldDimension::line_index: y is not valid");
+        }
         return indexOf(0, y);
     }
 

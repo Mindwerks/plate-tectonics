@@ -120,6 +120,21 @@ class Matrix
         return _data;
     }
 
+    size_t area() const
+    {
+        return _width * _height;
+    }
+
+    int xMod(int x) const
+    {
+        return (x + _width) % _width;
+    }
+
+    int yMod(int y) const
+    {
+        return (y + _height) % _height;
+    }    
+
 	private:
 
     Value* _data;
