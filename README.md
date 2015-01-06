@@ -1,6 +1,8 @@
 PyPlatec
 ========
 
+[![Build Status](https://travis-ci.org/ftomassetti/pyplatec.svg?branch=master)](https://travis-ci.org/ftomassetti/pyplatec)
+
 Plate simulation for python (wrapper of an existing C/C++ library).
 
 Take a look at the simulation at work: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
@@ -9,11 +11,22 @@ The original project is here: http://sourceforge.net/projects/platec/ . That pro
 
 Kudos to the original author: Lauri Viitanen!
 
+Requirements
+============
+
+Supported versions:
+* Python 2.6
+* Python 2.7
+* Python 3.2
+* Python 3.3
+* Python 3.4
+
+C++ compiler supporting C++11
+
 Compile
 =======
 
 ```
-export CXXFLAGS='-std=c++11'
 python setup.py build
 ```
 
@@ -31,7 +44,8 @@ The library is quite simple:
 
 Or if you want more control:
 
-    p = platec.create(seed=3,map_side=512,sea_level=0.65,erosion_period=60,
+    p = platec.create(seed=3, width=1000, height=800,
+                      sea_level=0.65,erosion_period=60,
                       folding_ratio=0.02,aggr_overlap_abs=1000000,
                       aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
 
