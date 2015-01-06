@@ -84,7 +84,7 @@ class lithosphere
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	float* getTopography() const throw(); ///< Return height map.
-	void update() throw(); ///< Simulate one step of plate tectonics.	
+	void update(); ///< Simulate one step of plate tectonics.	
 	size_t getWidth() const;
 	size_t getHeight() const;
 
@@ -120,7 +120,7 @@ class lithosphere
 		float crust; ///< Amount of crust that will deform/subduct.
 	};
 
-	void restart() throw(); //< Replace plates with a new population.
+	void restart(); //< Replace plates with a new population.
 
 	HeightMap hmap; ///< Height map representing the topography of system.
 	size_t* imap; ///< Plate index map of the "owner" of each map point.

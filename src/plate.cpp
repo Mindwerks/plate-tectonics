@@ -34,7 +34,7 @@
 using namespace std;
 
 plate::plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
-             size_t plate_age, WorldDimension worldDimension) throw() :
+             size_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
              width(w), height(h),
              mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
@@ -94,14 +94,14 @@ plate::~plate() throw()
     segment = NULL;
 }
 
-size_t plate::addCollision(size_t wx, size_t wy) throw()
+size_t plate::addCollision(size_t wx, size_t wy)
 {
     ContinentId seg = getContinentAt(wx, wy);
     ++seg_data[seg].coll_count;
     return seg_data[seg].area;
 }
 
-void plate::addCrustByCollision(size_t x, size_t y, float z, size_t time, ContinentId activeContinent) throw()
+void plate::addCrustByCollision(size_t x, size_t y, float z, size_t time, ContinentId activeContinent)
 {
     // Add crust. Extend plate if necessary.
     setCrust(x, y, getCrust(x, y) + z, time);
@@ -116,7 +116,7 @@ void plate::addCrustByCollision(size_t x, size_t y, float z, size_t time, Contin
 }
 
 void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
-    float dx, float dy) throw()
+    float dx, float dy)
 {
     // TODO: Create an array of coordinate changes that would create
     //       a circle around current point. Array is static and it is
@@ -169,7 +169,7 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
     }
 }
 
-float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
+float plate::aggregateCrust(plate* p, size_t wx, size_t wy)
 {
     size_t lx = wx, ly = wy;
     const size_t index = getMapIndex(&lx, &ly);
@@ -229,7 +229,7 @@ float plate::aggregateCrust(plate* p, size_t wx, size_t wy) throw()
     return old_mass - mass;
 }
 
-void plate::applyFriction(float deformed_mass) throw()
+void plate::applyFriction(float deformed_mass)
 {
     // Remove the energy that deformation consumed from plate's kinetic
     // energy: F - dF = ma - dF => a = dF/m.
@@ -245,7 +245,7 @@ void plate::applyFriction(float deformed_mass) throw()
     }
 }
 
-void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass) throw()
+void plate::collide(plate& p, size_t wx, size_t wy, float coll_mass)
 {
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
@@ -391,7 +391,7 @@ void plate::calculateCrust(size_t x, size_t y, size_t index,
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
 }
 
-void plate::erode(float lower_bound) throw()
+void plate::erode(float lower_bound)
 {
   vector<size_t> sources_data;
   vector<size_t> sinks_data;
@@ -617,7 +617,7 @@ void plate::erode(float lower_bound) throw()
   }
 }
 
-void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) const throw()
+void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) const
 {
     ContinentId seg = getContinentAt(wx, wy);
 
@@ -629,7 +629,7 @@ void plate::getCollisionInfo(size_t wx, size_t wy, size_t* count, float* ratio) 
         (float)(1 + seg_data[seg].area); // +1 avoids DIV with zero.
 }
 
-size_t plate::getContinentArea(size_t wx, size_t wy) const throw()
+size_t plate::getContinentArea(size_t wx, size_t wy) const
 {
     const size_t index = getMapIndex(&wx, &wy);
 
@@ -638,19 +638,19 @@ size_t plate::getContinentArea(size_t wx, size_t wy) const throw()
     return seg_data[segment[index]].area;
 }
 
-float plate::getCrust(size_t x, size_t y) const throw()
+float plate::getCrust(size_t x, size_t y) const
 {
     const size_t index = getMapIndex(&x, &y);
     return index < (size_t)(-1) ? map[index] : 0;
 }
 
-size_t plate::getCrustTimestamp(size_t x, size_t y) const throw()
+size_t plate::getCrustTimestamp(size_t x, size_t y) const
 {
     const size_t index = getMapIndex(&x, &y);
     return index < (size_t)(-1) ? age_map[index] : 0;
 }
 
-void plate::getMap(const float** c, const size_t** t) const throw()
+void plate::getMap(const float** c, const size_t** t) const
 {
     if (c) {
         *c = map.raw_data();
@@ -660,7 +660,7 @@ void plate::getMap(const float** c, const size_t** t) const throw()
     }
 }
 
-void plate::move() throw()
+void plate::move()
 {
     float len;
 
@@ -706,13 +706,13 @@ void plate::move() throw()
     assert(_worldDimension.contains(left, top));
 }
 
-void plate::resetSegments() throw()
+void plate::resetSegments()
 {
     memset(segment, -1, sizeof(size_t) * width * height);
     seg_data.clear();
 }
 
-void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
+void plate::setCrust(size_t x, size_t y, float z, size_t t)
 {
     if (z < 0) { // Do not accept negative values.
         z = 0;
@@ -831,7 +831,7 @@ void plate::setCrust(size_t x, size_t y, float z, size_t t) throw()
     mass += z;      // Update mass counter.
 }
 
-ContinentId plate::selectCollisionSegment(size_t coll_x, size_t coll_y) throw()
+ContinentId plate::selectCollisionSegment(size_t coll_x, size_t coll_y)
 {
     size_t index = getMapIndex(&coll_x, &coll_y);
     ContinentId activeContinent = segment[index];

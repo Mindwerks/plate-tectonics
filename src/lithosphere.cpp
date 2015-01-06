@@ -64,10 +64,22 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
+static uint32_t nearest_pow(uint32_t num)
+{
+    uint32_t n = 1;
+
+    while (n < num){
+        n <<= 1;
+    }
+
+    return n;
+}
+
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
-    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){
+    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){        
         size_t side = tmpDim.getMax();
+        side = nearest_pow(side)+1;
         float* squareTmp = new float[side*side];
         memset(squareTmp, 0, sizeof(float)*side*side);
         for (int y=0; y<tmpDim.getHeight(); y++){
@@ -170,7 +182,7 @@ lithosphere::~lithosphere() throw()
     delete[] imap;   imap = 0;
 }
 
-void lithosphere::createPlates(size_t num_plates) throw()
+void lithosphere::createPlates(size_t num_plates)
 {
     const size_t map_area = _worldDimension.getArea();
     this->max_plates = this->num_plates = num_plates;
@@ -345,8 +357,9 @@ float* lithosphere::getTopography() const throw()
     return hmap.raw_data();
 }
 
-void lithosphere::update() throw()
+void lithosphere::update()
 {
+try {
     float totalVelocity = 0;
     float systemKineticEnergy = 0;
 
@@ -711,10 +724,16 @@ void lithosphere::update() throw()
 
     delete[] prev_imap;
     ++iter_count;
+} catch (const exception& e){
+    std::string msg = "Problem during update: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
-void lithosphere::restart() throw()
+void lithosphere::restart()
 {
+try {
     const size_t map_area = _worldDimension.getArea();
 
     cycle_count += max_cycles > 0; // No increment if running for ever.
@@ -985,7 +1004,11 @@ void lithosphere::restart() throw()
                 hmap[_worldDimension.indexOf(x, y)] = tmp[tmpDim.indexOf(x, y)];
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
-
+} catch (const exception& e){
+    std::string msg = "Problem during update: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 size_t lithosphere::getWidth() const

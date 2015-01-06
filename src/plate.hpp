@@ -42,8 +42,7 @@ class plate
 	/// @param	_y	           Y of height map's left-top corner on world map.
 	/// @param	worldDimension Dimension of world map's either side in pixels.
 	plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
-	      size_t plate_age, WorldDimension worldDimension)
-		throw();
+	      size_t plate_age, WorldDimension worldDimension);
 
 	~plate() throw(); ///< Default destructor for plate.
 
@@ -52,7 +51,7 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Surface area of the collided continent (HACK!)
-	size_t addCollision(size_t wx, size_t wy) throw();
+	size_t addCollision(size_t wx, size_t wy);
 
 	/// Add crust to plate as result of continental collision.
 	///
@@ -61,7 +60,7 @@ class plate
 	/// @param	z	Amount of crust to add.
 	/// @param	t	Time of creation of new crust.
 	/// @param activeContinent Segment ID of the continent that's processed.
-	void addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent) throw();
+	void addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent);
 
 	/// Simulates subduction of oceanic plate under this plate.
 	///
@@ -77,7 +76,7 @@ class plate
 	/// @param	dx	Direction of the subducting plate (X).
 	/// @param	dy	Direction of the subducting plate (Y).
 	void addCrustBySubduction(size_t x, size_t y, float z, size_t t,
-		float dx, float dy) throw();
+		float dx, float dy);
 
 	/// Add continental crust from this plate as part of other plate.
 	///
@@ -94,7 +93,7 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Amount of crust aggregated to destination plate.
-	float aggregateCrust(plate* p, size_t wx, size_t wy) throw();
+	float aggregateCrust(plate* p, size_t wx, size_t wy);
 
 	/// Decrease the speed of plate amount relative to its total mass.
 	///
@@ -105,7 +104,7 @@ class plate
 	/// a small plate will halt it but have little effect on a huge plate.
 	///
 	/// @param	deforming_mass Amount of mass deformed in collision.
-	void applyFriction(float deforming_mass) throw();
+	void applyFriction(float deforming_mass);
 
 	/// Method collides two plates according to Newton's laws of motion.
 	///
@@ -118,14 +117,14 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @param	coll_mass Amount of colliding mass from source plate.
-	void collide(plate& p, size_t xw, size_t wy, float coll_mass) throw();
+	void collide(plate& p, size_t xw, size_t wy, float coll_mass);
 
 	/// Apply plate wide erosion algorithm.
 	///
 	/// Plates total mass and the center of mass are updated.
 	///
 	/// @param	lower_bound Sets limit below which there's no erosion.
-	void erode(float lower_bound) throw();
+	void erode(float lower_bound);
 
 	/// Retrieve collision statistics of continent at given location.
 	///
@@ -134,21 +133,21 @@ class plate
 	/// @param[in, out] count Destination for the count of collisions.
 	/// @param[in, out] count Destination for the % of area that collided.
 	void getCollisionInfo(size_t wx, size_t wy, size_t* count,
-	                        float* ratio) const throw();
+	                        float* ratio) const;
 
 	/// Retrieve the surface area of continent lying at desired location.
 	///
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Area of continent at desired location or 0 if none.
-	size_t getContinentArea(size_t wx, size_t wy) const throw();
+	size_t getContinentArea(size_t wx, size_t wy) const;
 
 	/// Get the amount of plate's crustal material at some location.
 	///
 	/// @param	x	Offset on the global world map along X axis.
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @return		Amount of crust at requested location.
-	float getCrust(size_t x, size_t y) const throw();
+	float getCrust(size_t x, size_t y) const;
 
 	/// Get the timestamp of plate's crustal material at some location.
 	///
@@ -156,15 +155,15 @@ class plate
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @return		Timestamp of creation of crust at the location.
 	///                     Zero is returned if location contains no crust.
-	size_t getCrustTimestamp(size_t x, size_t y) const throw();
+	size_t getCrustTimestamp(size_t x, size_t y) const;
 
 	/// Get pointers to plate's data.
 	///
 	/// @param	c	Adress of crust height map is stored here.
 	/// @param	t	Adress of crust timestamp map is stored here.
-	void getMap(const float** c, const size_t** t) const throw();
+	void getMap(const float** c, const size_t** t) const;
 
-	void move() throw(); ///< Moves plate along it's trajectory.
+	void move(); ///< Moves plate along it's trajectory.
 
 	/// Clear any earlier continental crust partitions.
 	///
@@ -177,14 +176,14 @@ class plate
 	/// To alleviate this problem without the need of per iteration
 	/// recalculations plate supplies caller a method to reset its
 	/// bookkeeping and start clean.
-	void resetSegments() throw();
+	void resetSegments();
 
 	/// Remember the currently processed continent's segment number.
 	///
 	/// @param	coll_x	Origin of collision on global world map (X).
 	/// @param	coll_y	Origin of collision on global world map (Y).
 	/// @return the Id of the continent being processed
-	ContinentId selectCollisionSegment(size_t coll_x, size_t coll_y) throw();
+	ContinentId selectCollisionSegment(size_t coll_x, size_t coll_y);
 
 	/// Set the amount of plate's crustal material at some location.
 	///
@@ -194,7 +193,7 @@ class plate
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @param	z	Amount of crust at given location.
 	/// @param	t	Time of creation of new crust.
-	void setCrust(size_t x, size_t y, float z, size_t t) throw();
+	void setCrust(size_t x, size_t y, float z, size_t t);
 
 	float getMass() const throw() { return mass; }
 	float getMomentum() const throw() { return mass * velocity; }
