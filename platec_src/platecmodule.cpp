@@ -120,7 +120,7 @@ MOD_INIT(platec)
         PyMODINIT_FUNC m = PyModule_Create(&moduledef);
         return m;
     #else
-        PyMODINIT_FUNC m = Py_InitModule3("platec",
+        Py_InitModule3("platec",
             PlatecMethods, "Plate tectonics simulation");        
     #endif    
 }
