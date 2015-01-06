@@ -84,6 +84,11 @@ int sqrdmd(long seed, float* map, const int size, float rgh)
 
 int sqrdmd(long seed, float* map, const int width, const int height, float rgh)
 {	
+	if ((width -1) & (width - 2) || (width-1) & 3)  /* MUST EQUAL TO 2^x + 1! */
+		throw invalid_argument("width is not 2**n+1");
+	if ((height -1) & (height - 2) || (height-1) & 3)  /* MUST EQUAL TO 2^x + 1! */
+		throw invalid_argument("height is not 2**n+1");
+
 	mt19937 _randsource(seed);
 	const int full_size = width * height;
 

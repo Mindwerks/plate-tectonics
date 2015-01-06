@@ -3,6 +3,7 @@
 
 #include <stdexcept> // std::invalid_argument
 #include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -82,7 +83,11 @@ class Matrix
     Value& operator[](unsigned int index) const
     {
         if (index >= (_width*_height)) {
-            throw invalid_argument("invalid index");
+            string s("invalid index: ");
+            s = s + to_string(index) 
+                + ", width " + to_string(_width)
+                + ", height " + to_string(_height);
+            throw invalid_argument(s);
         }
         return this->_data[index];
     }
@@ -114,6 +119,21 @@ class Matrix
     {
         return _data;
     }
+
+    size_t area() const
+    {
+        return _width * _height;
+    }
+
+    int xMod(int x) const
+    {
+        return (x + _width) % _width;
+    }
+
+    int yMod(int y) const
+    {
+        return (y + _height) % _height;
+    }    
 
 	private:
 

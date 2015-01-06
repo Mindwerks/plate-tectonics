@@ -64,10 +64,22 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
+static uint32_t nearest_pow(uint32_t num)
+{
+    uint32_t n = 1;
+
+    while (n < num){
+        n <<= 1;
+    }
+
+    return n;
+}
+
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
-    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){
+    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){        
         size_t side = tmpDim.getMax();
+        side = nearest_pow(side)+1;
         float* squareTmp = new float[side*side];
         memset(squareTmp, 0, sizeof(float)*side*side);
         for (int y=0; y<tmpDim.getHeight(); y++){
@@ -170,8 +182,9 @@ lithosphere::~lithosphere() throw()
     delete[] imap;   imap = 0;
 }
 
-void lithosphere::createPlates(size_t num_plates) throw()
+void lithosphere::createPlates(size_t num_plates)
 {
+try {    
     const size_t map_area = _worldDimension.getArea();
     this->max_plates = this->num_plates = num_plates;
 
@@ -328,6 +341,11 @@ void lithosphere::createPlates(size_t num_plates) throw()
     peak_Ek = 0;
     last_coll_count = 0;
     delete[] area;
+} catch (const exception& e){
+    std::string msg = "Problem during createPlates: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 size_t lithosphere::getPlateCount() const throw()
@@ -345,8 +363,9 @@ float* lithosphere::getTopography() const throw()
     return hmap.raw_data();
 }
 
-void lithosphere::update() throw()
+void lithosphere::update()
 {
+try {
     float totalVelocity = 0;
     float systemKineticEnergy = 0;
 
@@ -711,10 +730,17 @@ void lithosphere::update() throw()
 
     delete[] prev_imap;
     ++iter_count;
+} catch (const exception& e){
+    std::string msg = "Problem during update: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
-void lithosphere::restart() throw()
+void lithosphere::restart()
 {
+try {
+    
     const size_t map_area = _worldDimension.getArea();
 
     cycle_count += max_cycles > 0; // No increment if running for ever.
@@ -830,33 +856,36 @@ void lithosphere::restart() throw()
             hmap[i] = (_randsource.max() / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
-            for (size_t j = i+1; j < i+8; ++j)
-                hmap[j] = 0;
+            for (size_t dx = 1; dx < 8; dx++){
+                hmap.set(hmap.xMod(x+dx),y,0);
+            }
         }
 
-        memset(&hmap[_worldDimension.lineIndex(y+1)], 0, line_size);
-        memset(&hmap[_worldDimension.lineIndex(y+2)], 0, line_size);
-        memset(&hmap[_worldDimension.lineIndex(y+3)], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+1) % _worldDimension.getHeight())], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+2) % _worldDimension.getHeight())], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+3) % _worldDimension.getHeight())], 0, line_size);
 
         // set the start and end of a line to zero
         for (size_t i = 0; i < 4; ++i) {
-            hmap[_worldDimension.indexOf(i,y+4)] = 0;
-            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,y+4)] = 0;
+            hmap[_worldDimension.indexOf(i,(y+4) % _worldDimension.getHeight())] = 0;
+            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,(y+4) % _worldDimension.getHeight())] = 0;
         }
 
         for (size_t x = 4; x < _worldDimension.getWidth()-4; x += 8)
         {
-            size_t i = _worldDimension.indexOf(x, y+4);
+            int myY = (y+4)% _worldDimension.getHeight();
+            size_t i = _worldDimension.indexOf(x, myY);
             hmap[i] = (_randsource.max() / 8) * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
-            for (size_t j = i+1; j < i+8; ++j)
-                hmap[j] = 0;
+            for (size_t dx = 1; dx < 8; dx++){
+                hmap.set(hmap.xMod(x+dx),myY,0);
+            }
         }
 
-        memset(&hmap[_worldDimension.lineIndex(y+5)], 0, line_size);
-        memset(&hmap[_worldDimension.lineIndex(y+6)], 0, line_size);
-        memset(&hmap[_worldDimension.lineIndex(y+7)], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+5) % _worldDimension.getHeight())], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+6) % _worldDimension.getHeight())], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+7) % _worldDimension.getHeight())], 0, line_size);
     }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
@@ -934,28 +963,31 @@ void lithosphere::restart() throw()
             hmap[i] = 4.0f * _randsource.max() * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
-            for (size_t j = i+1; j < i+4; ++j)
-                hmap[j] = 0;
+            for (size_t dx = 1; dx < 4; dx++){
+                hmap.set(hmap.xMod(x+dx),y,0);
+            }
         }
 
         memset(&hmap[_worldDimension.lineIndex(y+1)], 0, line_size);
 
         for (size_t i = 0; i < 2; ++i) {
-            hmap[_worldDimension.indexOf(i,y+2)] = 0;
-            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,y+2)] = 0;
+            hmap[_worldDimension.indexOf(i,(y+2) % _worldDimension.getHeight())] = 0;
+            hmap[_worldDimension.indexOf(_worldDimension.getWidth()-i-1,(y+2) % _worldDimension.getHeight())] = 0;
         }
 
         for (size_t x = 2; x < _worldDimension.getWidth()-2; x += 4)
         {
-            size_t i = _worldDimension.indexOf(x, y+2);
+            size_t myY = (y+2) % _worldDimension.getHeight();
+            size_t i = _worldDimension.indexOf(x, myY);
             hmap[i] = 4.0f * _randsource.max() * (hmap[i] - h_lowest) /
                 (h_highest - h_lowest);
 
-            for (size_t j = i+1; j < i+4; ++j)
-                hmap[j] = 0;
+            for (size_t dx = 1; dx < 4; dx++){
+                hmap.set(hmap.xMod(x+dx),myY,0);
+            }
         }
 
-        memset(&hmap[_worldDimension.lineIndex(y+3)], 0, line_size);
+        memset(&hmap[_worldDimension.lineIndex((y+3) % _worldDimension.getHeight())], 0, line_size);
     }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
@@ -985,7 +1017,11 @@ void lithosphere::restart() throw()
                 hmap[_worldDimension.indexOf(x, y)] = tmp[tmpDim.indexOf(x, y)];
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
-
+} catch (const exception& e){
+    std::string msg = "Problem during restart: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 size_t lithosphere::getWidth() const
