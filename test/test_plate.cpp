@@ -13,6 +13,13 @@ TEST(CreatePlate, NotSquareDoesNotExplode)
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 400));
 }
 
+TEST(Plate, contains)
+{
+	const float *heightmap = new float[256 * 128];
+    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
+	EXPECT_EQ(true, p.contains(148, 25));
+}
+
 TEST(Plate, calculateCrust)
 {
   const float *heightmap = new float[256 * 128];
@@ -40,6 +47,9 @@ TEST(Plate, calculateCrust)
   EXPECT_EQ(200, e);
   EXPECT_EQ(199, n);
   EXPECT_EQ(99, s);
+
+  size_t w_mask = -((x > 0)          | (100 == 256));
+  printf("w_mask %i\n", w_mask);
 
   // point in the middle
   x = 50;

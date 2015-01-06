@@ -371,10 +371,20 @@ try {
 }
 }
 
+size_t plate::xMod(size_t x) const
+{
+    return (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
+}
+
+size_t plate::yMod(size_t y) const
+{
+    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
+}
+
 bool plate::contains(size_t x, size_t y) const
 {
-    size_t cleanX = (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
-    size_t cleanY = (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
+    size_t cleanX = xMod(x);
+    size_t cleanY = yMod(y);
 
     return cleanX>=left && cleanX<(left+width) && cleanY>=top && cleanY<(top+height);
 }
@@ -404,10 +414,14 @@ try {
     // Calculate the x and y offset of neighbour directions.
     // If neighbour is out of plate edges, set it to zero. This protects
     // map memory reads from segment faulting.
-    w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
+    w = w_mask==-1 ? xMod(x-1) : 0;
+    e = e_mask==-1 ? xMod(x+1) : 0;
+    n = n_mask==-1 ? yMod(y-1) : 0;
+    s = s_mask==-1 ? yMod(y+1) : 0;
+    /*w = (_worldDimension.getWidth()  + x - 1) & (_worldDimension.getWidth()  - 1) & w_mask;
     e = (_worldDimension.getWidth()  + x + 1) & (_worldDimension.getWidth()  - 1) & e_mask;
     n = (_worldDimension.getHeight() + y - 1) & (_worldDimension.getHeight() - 1) & n_mask;
-    s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;
+    s = (_worldDimension.getHeight() + y + 1) & (_worldDimension.getHeight() - 1) & s_mask;*/
 
     // Calculate offsets within map memory.
     w = y * width + w;
