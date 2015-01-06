@@ -49,9 +49,6 @@ TEST(Plate, calculateCrust)
   EXPECT_EQ(199, n);
   EXPECT_EQ(99, s);
 
-  size_t w_mask = -((x > 0)          | (100 == 256));
-  printf("w_mask %i\n", w_mask);
-
   // point in the middle
   x = 50;
   y = 1;
