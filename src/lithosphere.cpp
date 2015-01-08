@@ -77,7 +77,7 @@ static uint32_t nearest_pow(uint32_t num)
 
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
-    if (!useSimplex && tmpDim.getWidth()!=tmpDim.getHeight()){        
+    if (!useSimplex){        
         size_t side = tmpDim.getMax();
         side = nearest_pow(side)+1;
         float* squareTmp = new float[side*side];
@@ -90,12 +90,8 @@ void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool use
             memcpy(&tmp[y*tmpDim.getWidth()],&squareTmp[y*side],sizeof(float)*tmpDim.getWidth());
         }
         delete[] squareTmp;
-    } else if (useSimplex) {
-        simplexnoise(_randsource(), tmp, 
-            tmpDim.getWidth(), 
-            tmpDim.getHeight(), 
-            SQRDMD_ROUGHNESS);
-    } else if (sqrdmd(_randsource(), tmp, tmpDim.getWidth(), SQRDMD_ROUGHNESS) < 0)
+    } 
+    else if (sqrdmd(_randsource(), tmp, tmpDim.getWidth(), SQRDMD_ROUGHNESS) < 0)
     {
         delete[] tmp;
         throw invalid_argument("Failed to generate height map.");
