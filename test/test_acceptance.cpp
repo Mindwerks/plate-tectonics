@@ -41,15 +41,15 @@ TEST(PlatecGlobalGeneration, SameResultAsPlatec)
   }
   const float* heightmap = platec_api_get_heightmap(p);
 
-  EXPECT_FLOAT_EQ(1.2422295f, heightmap[0]);
-  EXPECT_FLOAT_EQ(0.3690159f, heightmap[100]);
-  EXPECT_FLOAT_EQ(0.28161737f, heightmap[200]);
-  EXPECT_FLOAT_EQ(0.075023964f,  heightmap[1000]);
-  EXPECT_FLOAT_EQ(0.075023964f, heightmap[5000]);
-  EXPECT_FLOAT_EQ(0.075023964f, heightmap[50000]);
-  EXPECT_FLOAT_EQ(0.075023964f,  heightmap[100000]);
+  EXPECT_FLOAT_EQ(1.3064451f, heightmap[0]);
+  EXPECT_FLOAT_EQ(0.36267674f, heightmap[100]);
+  EXPECT_FLOAT_EQ(0.42225796f, heightmap[200]);
+  EXPECT_FLOAT_EQ(0.077147357f,  heightmap[1000]);
+  EXPECT_FLOAT_EQ(0.077147357f, heightmap[5000]);
+  EXPECT_FLOAT_EQ(0.077147357f, heightmap[50000]);
+  EXPECT_FLOAT_EQ(0.077147357f,  heightmap[100000]);
   EXPECT_FLOAT_EQ(1.8573395f,  heightmap[150000]);
-  EXPECT_FLOAT_EQ(0.075023964f, heightmap[200000]);
-  EXPECT_FLOAT_EQ(0.38869289f, heightmap[250000]);
-  EXPECT_FLOAT_EQ(0.075023964f, heightmap[262143]);
+  EXPECT_FLOAT_EQ(0.077147357f, heightmap[200000]);
+  EXPECT_FLOAT_EQ(0.38723284f, heightmap[250000]);
+  EXPECT_FLOAT_EQ(0.077147357f, heightmap[262143]);
 }
