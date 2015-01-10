@@ -53,6 +53,13 @@ PyObject *makelist(float array[], size_t size) {
     return l;
 }
 
+PyObject *makelist_int(size_t array[], size_t size) {
+    PyObject *l = PyList_New(size);
+    for (size_t i = 0; i != size; ++i) {
+        PyList_SET_ITEM(l, i, Py_BuildValue("i",array[i]));
+    }
+    return l;
+}
 
 static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
 {
@@ -66,6 +73,22 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
     size_t height = lithosphere_getMapHeight(litho);
 
     PyObject* res =  makelist(hm,width*height);
+    Py_INCREF(res);
+    return res;
+}
+
+static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
+{
+    size_t id;
+    void *litho;
+    if (!PyArg_ParseTuple(args, "l", &litho))
+        return NULL; 
+    size_t *hm = platec_api_get_platesmap(litho);
+
+    size_t width = lithosphere_getMapWidth(litho);
+    size_t height = lithosphere_getMapHeight(litho);
+
+    PyObject* res =  makelist_int(hm,width*height);
     Py_INCREF(res);
     return res;
 }
@@ -87,6 +110,8 @@ static PyMethodDef PlatecMethods[] = {
      "Release the data for the simulation."},
     {"get_heightmap",  platec_get_heightmap, METH_VARARGS,
      "Get current heightmap."},
+    {"get_platesmap",  platec_get_platesmap, METH_VARARGS,
+     "Get current plates map."},     
     {"step", platec_step, METH_VARARGS,
      "Perform next step of the simulation."},     
     {"is_finished",  platec_is_finished, METH_VARARGS,

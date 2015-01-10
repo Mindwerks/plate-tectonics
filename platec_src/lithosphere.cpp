@@ -1037,3 +1037,7 @@ size_t lithosphere::getHeight() const
     return _worldDimension.getHeight();
 }
 
+size_t* lithosphere::getPlatesMap() const throw()
+{
+    return imap;
+}
