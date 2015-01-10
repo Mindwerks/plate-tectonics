@@ -33,6 +33,7 @@ void *  platec_api_create(
 void    platec_api_destroy(void*);
 const size_t* platec_api_get_agemap(size_t);
 float* platec_api_get_heightmap(void*);
+size_t* platec_api_get_platesmap(void*);
 size_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
 

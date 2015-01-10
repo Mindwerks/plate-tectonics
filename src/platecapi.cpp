@@ -83,6 +83,13 @@ float* platec_api_get_heightmap(void *pointer)
 	return res;
 }
 
+size_t* platec_api_get_platesmap(void *pointer)
+{
+	lithosphere* litho = (lithosphere*)pointer;
+	size_t *res = litho->getPlatesMap();
+	return res;
+}
+
 lithosphere* platec_api_get_lithosphere(size_t id)
 {
 	for (size_t i = 0; i < lithospheres.size(); ++i)

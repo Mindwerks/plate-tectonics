@@ -84,6 +84,7 @@ class lithosphere
 	size_t getPlateCount() const throw(); ///< Return number of plates.
 	const size_t* getAgemap() const throw(); ///< Return surface age map.
 	float* getTopography() const throw(); ///< Return height map.
+	size_t* getPlatesMap() const throw(); ///< Return a map of the plates owning eaach point
 	void update(); ///< Simulate one step of plate tectonics.	
 	size_t getWidth() const;
 	size_t getHeight() const;
