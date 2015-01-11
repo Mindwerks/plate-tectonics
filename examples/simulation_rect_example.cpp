@@ -47,11 +47,11 @@ void drawMap(const float* heightmap)
 int main(int argc, char* argv[])
 {
     int seed = 10;
-    int width = 1000;
-    int height = 250;
+    int width = 800;
+    int height = 600;
     printf("Generating a map with seed %d\n", seed);
 
-    void* p = platec_api_create(seed, width, height, 0.65,60,0.02,1000000,0.33,2,10);
+    void* p = platec_api_create(seed, width, height, 0.65, 60, 0.02,1000000, 0.33, 2, 10);
     printf(" * initial map created\n");
 
     int step = 0;
