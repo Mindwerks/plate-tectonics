@@ -48,6 +48,4 @@ void normalize(float* map, int size);
  */
 int sqrdmd(long seed, float* map, const int size, float rgh);
 
-int sqrdmd(long seed, float* map, const int width, const int height, float rgh);
-
 #endif

@@ -1,9 +1,11 @@
 #include <stdio.h>
-#include "sqrdmd.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <il.h>
 #include <ilu.h>
+
+#include "noise.hpp"
+#include "sqrdmd.hpp"
 
 ILuint GenerateSingleImage(void) 
 {
@@ -25,21 +27,27 @@ void drawMap(const float* heightmap)
 {
     ILubyte* bytes = ilGetData(); 
     ILuint width,height;
-    width  = ilGetInteger(IL_IMAGE_WIDTH);
-    height = ilGetInteger(IL_IMAGE_HEIGHT);
+    width  = ilGetInteger(IL_IMAGE_WIDTH) / 2;
+    height = ilGetInteger(IL_IMAGE_HEIGHT) / 2;
 
     for (int y = 0; y < height; y++)
     {
        for (int x = 0; x < width; x++)
        {
-          float h = heightmap[(y*width + x)];
+          float h = heightmap[(y*width + x)];          
+          float res = 0.0f;
           if (h <= 0.0f) {
-            bytes[(y*width + x)] = 0;
+            res = 0;
           } else if (h >= 1.0f) {
-            bytes[(y*width + x)] = 255;
+            res = 255;
           } else {
-            bytes[(y*width + x)] = (ILubyte)(h * 255.0);
-          }          
+            res = (ILubyte)(h * 255.0f);
+          }
+          //printf("h= %f res=%i\n", h, res);
+          bytes[(y+0)*width*2 + (x+0)] = res;
+          bytes[(y+0)*width*2 + (x+width)] = res;
+          bytes[(y+height)*width*2 + (x+0)] = res;
+          bytes[(y+height)*width*2 + (x+width)] = res;
        }
     }
 }
@@ -50,7 +58,7 @@ void save_image(float* heightmap, int width, int height, const char* filename)
     CheckForErrors();
     ilBindImage(imageName);    
     CheckForErrors();
-    iluScale(width, height, 32);
+    iluScale(width * 2, height * 2, 32);
     CheckForErrors();
 
     drawMap(heightmap);   
@@ -61,23 +69,24 @@ void save_image(float* heightmap, int width, int height, const char* filename)
     CheckForErrors();
 }
 
-void generate(long seed, float* heightmap, int side)
+void generate(long seed, float* heightmap, int width, int height)
 {
-    memset(heightmap, 0, sizeof(float) * side * side);
-    sqrdmd(seed, heightmap, side, 0.7f);
-    normalize(heightmap, side * side);
+  mt19937 randsource(seed);
+  memset(heightmap, 0, sizeof(float) * width * height);
+  createNoise(heightmap, WorldDimension(width, height), randsource, false);
+  normalize(heightmap, width * height);
 }
 
 int main(int argc, char* argv[])
 {
     int seed = 10;
-    printf("Generating a square-diamond noise map with seed %d\n", seed);
+    printf("Generating adapted_sqrdmd_rect noise with seed %d\n", seed);
 
-    float heightmap_square[513 * 513];
-    generate(seed, heightmap_square, 513);
+    float heightmap_large[800 * 600];
+    generate(seed, heightmap_large, 513, 129);
 
     ilInit();
     iluInit();
 
-    save_image(heightmap_square, 513, 513, "sqrdmd_square.png");
+    save_image(heightmap_large, 513, 129, "adapted_sqrdmd_rect.png");
 }
