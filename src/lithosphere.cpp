@@ -85,7 +85,8 @@ lithosphere::lithosphere(long seed, size_t width, size_t height, float sea_level
     max_plates(0), 
     num_plates(0),
     _worldDimension(width, height),
-    _randsource(seed)
+    _randsource(seed),
+    _steps(0)
 {
     WorldDimension tmpDim = WorldDimension(width+1, height+1);
     const size_t A = tmpDim.getArea();
@@ -330,9 +331,15 @@ float* lithosphere::getTopography() const throw()
     return hmap.raw_data();
 }
 
+bool lithosphere::isFinished() const 
+{
+    return (_steps>1000) || (getPlateCount() == 0);
+}
+
 void lithosphere::update()
 {
 try {
+    _steps++;
     float totalVelocity = 0;
     float systemKineticEnergy = 0;
 
@@ -713,7 +720,7 @@ try {
     cycle_count += max_cycles > 0; // No increment if running for ever.
     if (cycle_count > max_cycles)
         return;
-
+    
     // Update height map to include all recent changes.
     hmap.set_all(0);
     for (size_t i = 0; i < num_plates; ++i)
@@ -922,6 +929,10 @@ try {
         h_highest = h_highest > hmap[i] ? h_highest : hmap[i];
     }
 
+    /*
+    Removing this piece of code because is causing a regular grid of dots
+    polluting square maps not using a side which is a power of 2
+    -----------------------------------------------
     for (size_t y = 0; y < _worldDimension.getHeight(); y += 4)
     {
         for (size_t x = 0; x < _worldDimension.getWidth(); x += 4)
@@ -955,7 +966,7 @@ try {
         }
 
         memset(&hmap[_worldDimension.lineIndex((y+3) % _worldDimension.getHeight())], 0, line_size);
-    }
+    }*/
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
@@ -984,6 +995,7 @@ try {
                 hmap[_worldDimension.indexOf(x, y)] = tmp[tmpDim.indexOf(x, y)];
             else
                 hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
+                
 } catch (const exception& e){
     std::string msg = "Problem during restart: ";
     msg = msg + e.what();
