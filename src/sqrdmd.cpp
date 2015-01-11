@@ -94,43 +94,31 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 	temp = size - 1;
 	// MUST EQUAL TO 2^x + 1!
 	if (temp & (temp - 1) || temp & 3) {
-		return (-1);
+		throw invalid_argument("Side should be 2**n +1");
 	}
 	temp = size;
 	slope = rgh;
 	step = size & ~1;
-	#define CALC_SUM(a, b, c, d)\
-		do {\
-			sum = ((a) + (b) + (c) + (d)) * 0.25f;\
-			sum = sum + slope * ((_randsource() << 1) - RAND_MAX);\
-		} while (0)
-	#define SAVE_SUM(a)\
-		do {\
-			masked = !((int)map[a]);\
-			map[a] = map[a] * !masked + sum * masked;\
-		} while (0)
 	
 	/* Calculate midpoint ("diamond step"). */
 	dy = step * size;
-	CALC_SUM(map[0], map[step], map[dy], map[dy + step]);
+	CALC_SUM(map[0], map[step], map[dy], map[dy + step], _randsource());
 	SAVE_SUM(i);
 	center_sum = sum;
 	
 	/* Calculate each sub diamonds' center points ("square step"). */
 	/* Top row. */
 	p0 = step >> 1;
-	CALC_SUM(map[0], map[step], center_sum, center_sum);
+	CALC_SUM(map[0], map[step], center_sum, center_sum, _randsource());
 	SAVE_SUM(p0);
 	/* Left column. */
 	p1 = p0 * size;
-	CALC_SUM(map[0], map[dy], center_sum, center_sum);
+	CALC_SUM(map[0], map[dy], center_sum, center_sum, _randsource());
 	SAVE_SUM(p1);
 	map[full_size + p0 - size] = map[p0]; /* Copy top val into btm row. */
 	map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
 	slope *= rgh;
 	step >>= 1;
-	#undef SAVE_SUM
-	#undef CALC_SUM
 	
 	while (step > 1) /* Enter the main loop. */
 	{
