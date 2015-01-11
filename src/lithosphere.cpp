@@ -852,7 +852,7 @@ try {
     }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); y += 8)
-    {
+    {        
         for (size_t x = 0; x < _worldDimension.getWidth(); x += 8)
         {
             size_t i = _worldDimension.indexOf(x, y);
