@@ -808,7 +808,7 @@ try {
     // This is the LAST cycle! ////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
-    WorldDimension tmpDim = WorldDimension(_worldDimension.getWidth() + 1, _worldDimension.getHeight() + 1);
+    /*WorldDimension tmpDim = WorldDimension(_worldDimension.getWidth() + 1, _worldDimension.getHeight() + 1);
     HeightMap tmp(tmpDim.getWidth(), tmpDim.getHeight());
     float* original = new float[tmpDim.getArea()];
     const size_t line_size = _worldDimension.getWidth() * sizeof(float);
@@ -929,7 +929,7 @@ try {
         h_highest = h_highest > hmap[i] ? h_highest : hmap[i];
     }
 
-    /*
+    
     Removing this piece of code because is causing a regular grid of dots
     polluting square maps not using a side which is a power of 2
     -----------------------------------------------
@@ -966,7 +966,7 @@ try {
         }
 
         memset(&hmap[_worldDimension.lineIndex((y+3) % _worldDimension.getHeight())], 0, line_size);
-    }*/
+    }
 
     for (size_t y = 0; y < _worldDimension.getHeight(); ++y) // Copy map into fractal buffer.
     {
@@ -994,7 +994,7 @@ try {
             if (original[_worldDimension.indexOf(x, y)] < CONTINENTAL_BASE)
                 hmap[_worldDimension.indexOf(x, y)] = tmp[tmpDim.indexOf(x, y)];
             else
-                hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];
+                hmap[_worldDimension.indexOf(x, y)] = original[_worldDimension.indexOf(x, y)];*/
                 
 } catch (const exception& e){
     std::string msg = "Problem during restart: ";
