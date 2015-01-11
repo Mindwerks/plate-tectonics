@@ -5,6 +5,7 @@ add_executable(simulation simulation_example.cpp)
 add_executable(simulation_rect simulation_rect_example.cpp)
 add_executable(sqrdmd sqrdmd_example.cpp)
 add_executable(simplex simplex_example.cpp)
+add_executable(noise noise_example.cpp)
 
 if (WITH_EXAMPLE)
 	find_package(DevIL)
@@ -20,3 +21,5 @@ target_link_libraries(simulation_rect PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRA
 target_link_libraries(sqrdmd PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
 
 target_link_libraries(simplex PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+
+target_link_libraries(noise PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
