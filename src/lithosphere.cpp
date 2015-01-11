@@ -20,6 +20,7 @@
 #include "plate.hpp"
 #include "sqrdmd.hpp"
 #include "simplexnoise.hpp"
+#include "noise.hpp"
 
 #include <cfloat>
 #include <cmath>
@@ -49,7 +50,6 @@ class plateArea
     size_t hgt; ///< Height of area in pixels.
 };
 
-static const float SQRDMD_ROUGHNESS = 0.5f;
 static const float SUBDUCT_RATIO = 0.5f;
  
 static const float BUOYANCY_BONUS_X = 3;
@@ -64,45 +64,9 @@ size_t findBound(const size_t* map, size_t length, size_t x0, size_t y0,
                  int dx, int dy);
 size_t findPlate(plate** plates, float x, float y, size_t num_plates);
 
-static uint32_t nearest_pow(uint32_t num)
-{
-    uint32_t n = 1;
-
-    while (n < num){
-        n <<= 1;
-    }
-
-    return n;
-}
-
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
-try {
-    if (useSimplex) {
-        simplexnoise(_randsource(), tmp, 
-            tmpDim.getWidth(), 
-            tmpDim.getHeight(), 
-            SQRDMD_ROUGHNESS);
-    } else {        
-        size_t side = tmpDim.getMax();
-        side = nearest_pow(side)+1;
-        float* squareTmp = new float[side*side];
-        memset(squareTmp, 0, sizeof(float)*side*side);
-        for (int y=0; y<tmpDim.getHeight(); y++){
-            memcpy(&squareTmp[y*side],&tmp[y*tmpDim.getWidth()],sizeof(float)*tmpDim.getWidth());
-        }
-        sqrdmd(_randsource(), squareTmp, side, SQRDMD_ROUGHNESS);
-        for (int y=0; y<tmpDim.getHeight(); y++){
-            memcpy(&tmp[y*tmpDim.getWidth()],&squareTmp[y*side],sizeof(float)*tmpDim.getWidth());
-        }
-        delete[] squareTmp;
-    }    
-} catch (const exception& e){
-    std::string msg = "Problem during lithosphere::createNoise, tmpDim+=";
-    msg = msg + to_string(tmpDim.getWidth()) + "x" + to_string(tmpDim.getHeight()) + " ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
+    ::createNoise(tmp, tmpDim, _randsource, useSimplex);
 }
 
 lithosphere::lithosphere(long seed, size_t width, size_t height, float sea_level,
