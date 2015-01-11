@@ -88,6 +88,7 @@ class lithosphere
 	void update(); ///< Simulate one step of plate tectonics.	
 	size_t getWidth() const;
 	size_t getHeight() const;
+	bool isFinished() const;
 
   protected:
   private:
@@ -146,6 +147,7 @@ class lithosphere
 
 	const WorldDimension _worldDimension;
 	mt19937 _randsource;
+	int _steps;
 };
 
 

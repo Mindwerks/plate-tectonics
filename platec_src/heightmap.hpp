@@ -10,7 +10,7 @@ using namespace std;
 template <typename Value>
 class Matrix
 {
-	public:
+public:
 
     Matrix(unsigned int width, unsigned int height)
         : _width(width), _height(height)
@@ -39,9 +39,10 @@ class Matrix
 
     const void set_all(const Value& value)
     {
-        for (int x=0; x<_width;x++){
-            for (int y=0; y<_height;y++){
-                set(x,y,value);
+        // we cannot use memset to make it very general
+        for (int x=0; x<_width; x++){
+            for (int y=0; y<_height; y++){
+                set(x, y, value);
             }
         }
     }
@@ -63,7 +64,7 @@ class Matrix
         return _data[y * _width + x];
     }
 
-    Matrix<Value> & operator=(const Matrix<Value>& other)
+    Matrix<Value>& operator=(const Matrix<Value>& other)
     {
         if (this != &other) // prevent self-assignment
         {
@@ -71,9 +72,9 @@ class Matrix
             _height = other._height;
             delete[] _data;
             _data = new Value[_width * _height];
-            for (int x=0; x<_width;x++){
-                for (int y=0; y<_height;y++){
-                    set(x,y,other.get(x,y));
+            for (int x=0; x<_width; x++){
+                for (int y=0; y<_height; y++){
+                    set(x, y, other.get(x,y));
                 }
             }
         }
@@ -106,8 +107,8 @@ class Matrix
     }
 
     bool equals(Value* other)
-    {
-        for (int i=0; i<(_width*_height);i++){
+    {                
+        for (int i=0; i< (_width *_height); i++){
             if (_data[i] != other[i]){
                 return false;
             }
@@ -127,15 +128,21 @@ class Matrix
 
     int xMod(int x) const
     {
-        return (x + _width) % _width;
+        while (x < 0) {
+            x += _width;
+        }
+        return x % _width;
     }
 
     int yMod(int y) const
     {
-        return (y + _height) % _height;
+        while (y < 0) {
+            y += _height;
+        }
+        return y % _height;
     }    
 
-	private:
+private:
 
     Value* _data;
     unsigned int _width;

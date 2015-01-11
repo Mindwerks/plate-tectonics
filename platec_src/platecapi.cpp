@@ -102,8 +102,11 @@ lithosphere* platec_api_get_lithosphere(size_t id)
 size_t platec_api_is_finished(void *pointer)
 {
 	lithosphere* litho = (lithosphere*)pointer;
-
-	return litho->getPlateCount() == 0;
+	if (litho->isFinished()) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 void platec_api_step(void *pointer)
