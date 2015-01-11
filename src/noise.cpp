@@ -2,7 +2,7 @@
 #include "sqrdmd.hpp"
 #include "simplexnoise.hpp"
 
-static const float SQRDMD_ROUGHNESS = 0.75f;
+static const float SQRDMD_ROUGHNESS = 0.35f;
 
 static uint32_t nearest_pow(uint32_t num)
 {
