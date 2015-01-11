@@ -333,7 +333,7 @@ float* lithosphere::getTopography() const throw()
 
 bool lithosphere::isFinished() const 
 {
-    return (_steps>1000) || (getPlateCount() == 0);
+    return getPlateCount() == 0;
 }
 
 void lithosphere::update()
