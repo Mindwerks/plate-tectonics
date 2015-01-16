@@ -22,6 +22,10 @@
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
+#ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
+#undef __STRICT_ANSI__
+#endif
+#include <cmath>
 #include <random>
 #include "heightmap.hpp"
 #include "rectangle.hpp"

@@ -18,6 +18,9 @@
 
 #define _USE_MATH_DEFINES // Winblow$.
 #include <cfloat>    // FT_EPSILON
+#ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
+#undef __STRICT_ANSI__
+#endif
 #include <cmath>     // sin, cos
 #include <cstdlib>   // rand
 #include <vector>
@@ -422,6 +425,8 @@ try {
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
 } catch (const exception& e){
     std::string msg = "Problem during plate::calculateCrust (width: ";
+    // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
+    #ifndef __MINGW32__
     msg = msg + to_string(width)
             + ", height: " + to_string(height) 
             + ", left: " + to_string(left) 
@@ -429,6 +434,7 @@ try {
             + ", x: " + to_string(x)
             + ", y:" + to_string(y) + ") :"
             + e.what();
+    #endif
     throw runtime_error(msg.c_str());
 }
 }
