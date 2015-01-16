@@ -1,5 +1,9 @@
-#include <Python.h>
 #include "platecapi.hpp"
+#ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
+#undef __STRICT_ANSI__
+#endif
+#include <cmath>
+#include <Python.h>
 
 static PyObject * platec_create(PyObject *self, PyObject *args)
 {
