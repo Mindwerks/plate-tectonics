@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension
+from setuptools import setup, Extension, Command
 
 extra_compile_args = "-std=c++11"
 
@@ -23,4 +23,18 @@ setup (name = 'PyPlatec',
        author_email = "f.tomassetti@gmail.com",
        url = "https://github.com/ftomassetti/pyplatec",
        description = 'Plates simulation library',
-       ext_modules = [pyplatec])
+       ext_modules = [pyplatec],
+      include_package_data=True,
+       classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ])
