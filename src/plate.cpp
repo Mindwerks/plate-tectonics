@@ -49,12 +49,6 @@ plate::plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y
     if (w <= 0 || h <= 0) {
         throw invalid_argument("width and height of the plate should be greater than zero");
     }
-    if (_x < 0 || _y <0) {
-        throw invalid_argument("coordinates of the plate should be greater or equal to zero");
-    }
-    if (plate_age < 0) {
-        throw invalid_argument("age of the plate should be greater or equal to zero");
-    }
 
     const size_t plate_area = w * h;
     const double angle = 2 * M_PI * _randsource() / (double)_randsource.max();

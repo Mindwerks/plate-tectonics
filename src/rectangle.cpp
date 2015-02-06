@@ -34,13 +34,6 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
 
-    if (x < 0) {
-        throw std::invalid_argument("failure x");
-    }
-    if (y < 0) {
-        throw std::invalid_argument("failure y");
-    }
-
     if (xOk && yOk) {
         *px = x;
         *py = y;
