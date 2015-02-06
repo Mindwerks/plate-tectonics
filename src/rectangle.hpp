@@ -57,7 +57,7 @@ public:
 
     bool contains(const size_t x, const size_t y) const
     {
-        return (x >= 0 && x < _width && y >= 0 && y < _height);
+        return (x < _width && y < _height);
     }
 
     void normalize(size_t& x, size_t& y) const
@@ -73,7 +73,7 @@ public:
 
     size_t lineIndex(const size_t y) const
     {
-        if (y<0 || y>=_height){
+        if (y>=_height){
             throw invalid_argument("WorldDimension::line_index: y is not valid");
         }
         return indexOf(0, y);
