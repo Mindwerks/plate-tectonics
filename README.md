@@ -2,7 +2,6 @@ plate-tectonics
 ===============
 [![Build Status](https://travis-ci.org/ftomassetti/plate-tectonics.svg?branch=master)](https://travis-ci.org/ftomassetti/plate-tectonics)
 
-
 This is a library to simulate plate tectonics.
 
 You can see a simulation using the library at work at: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
@@ -15,11 +14,25 @@ It permits to define how to build the project in a platform independent
 way. To build it on Linux you can run:
 
 ```
-cmake . -G "Unix Makefiles"
+cmake .
 make
 ```
 
 This should produce a library (libPlateTectonics.a).
+
+Not that this command will build the library in the same directory where the source files are hosted. Some prefer to build out of tree the library (i.e., in a separate dir). For example in this scenario:
+
+```
+-- plate-tectonics
+\- build-directory
+```
+
+You can enter build-directory and type:
+
+```
+cmake ../plate-tectonics
+make
+```
 
 To compile on other platforms please run:
 
