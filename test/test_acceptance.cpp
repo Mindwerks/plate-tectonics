@@ -19,17 +19,17 @@ TEST(PlatecCreate, SameResultAsPlatec)
   void* p = platec_api_create(seed, 512, 512, 0.65,60,0.02,1000000,0.33,2,10);
   const float* heightmap = platec_api_get_heightmap(p);
 
-  EXPECT_FLOAT_EQ(1.6116085f,  heightmap[0]);
-  EXPECT_FLOAT_EQ(0.1f,  heightmap[100]);
+  EXPECT_FLOAT_EQ(1.6303145f,  heightmap[0]);
+  EXPECT_FLOAT_EQ(1.5651948f,  heightmap[100]);
   EXPECT_FLOAT_EQ(0.1f, heightmap[200]);
   EXPECT_FLOAT_EQ(0.1f,   heightmap[1000]);
-  EXPECT_FLOAT_EQ(1.617878f,  heightmap[5000]);
+  EXPECT_FLOAT_EQ(0.1f,  heightmap[5000]);
   EXPECT_FLOAT_EQ(0.1f, heightmap[50000]);
   EXPECT_FLOAT_EQ(0.1f, heightmap[100000]);
-  EXPECT_FLOAT_EQ(1.6023537f, heightmap[150000]);
-  EXPECT_FLOAT_EQ(1.6812361f,  heightmap[200000]);
+  EXPECT_FLOAT_EQ(1.5906698f, heightmap[150000]);
+  EXPECT_FLOAT_EQ(1.7254744f,  heightmap[200000]);
   EXPECT_FLOAT_EQ(0.1f, heightmap[250000]);
-  EXPECT_FLOAT_EQ(1.6694528f,  heightmap[262143]);
+  EXPECT_FLOAT_EQ(1.6749345f,  heightmap[262143]);
 }
 
 TEST(PlatecGlobalGeneration, SameResultAsPlatec)
@@ -41,15 +41,15 @@ TEST(PlatecGlobalGeneration, SameResultAsPlatec)
   }
   const float* heightmap = platec_api_get_heightmap(p);
 
-  EXPECT_FLOAT_EQ(1.3064451f, heightmap[0]);
-  EXPECT_FLOAT_EQ(0.36267674f, heightmap[100]);
-  EXPECT_FLOAT_EQ(0.42225796f, heightmap[200]);
-  EXPECT_FLOAT_EQ(0.077147357f,  heightmap[1000]);
-  EXPECT_FLOAT_EQ(0.077147357f, heightmap[5000]);
-  EXPECT_FLOAT_EQ(0.077147357f, heightmap[50000]);
-  EXPECT_FLOAT_EQ(0.077147357f,  heightmap[100000]);
-  EXPECT_FLOAT_EQ(1.8573395f,  heightmap[150000]);
-  EXPECT_FLOAT_EQ(0.077147357f, heightmap[200000]);
-  EXPECT_FLOAT_EQ(0.38723284f, heightmap[250000]);
-  EXPECT_FLOAT_EQ(0.077147357f, heightmap[262143]);
+  EXPECT_FLOAT_EQ(1.1350174f, heightmap[0]);
+  EXPECT_FLOAT_EQ(1.0035408f, heightmap[100]);
+  EXPECT_FLOAT_EQ(1.2325575f, heightmap[200]);
+  EXPECT_FLOAT_EQ(1.7264656f,  heightmap[1000]);
+  EXPECT_FLOAT_EQ(0.098315857f, heightmap[5000]);
+  EXPECT_FLOAT_EQ(0.093855403f, heightmap[50000]);
+  EXPECT_FLOAT_EQ(0.25f,  heightmap[100000]);
+  EXPECT_FLOAT_EQ(0.1f,  heightmap[150000]);
+  EXPECT_FLOAT_EQ(0.10590123f, heightmap[200000]);
+  EXPECT_FLOAT_EQ(1.3252633f, heightmap[250000]);
+  EXPECT_FLOAT_EQ(1.1439542f, heightmap[262143]);
 }
