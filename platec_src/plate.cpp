@@ -57,12 +57,12 @@ plate::plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y
     }
 
     const size_t plate_area = w * h;
-    const double angle = 2 * M_PI * _randsource() / (double)_randsource.max();
+    const double angle = 2 * M_PI * _randsource.next() / (double)_randsource.maximum();
 
     segment = new size_t[plate_area];
 
     velocity = 1;
-    rot_dir = _randsource() & 1 ? 1 : -1;
+    rot_dir = _randsource.next() & 1 ? 1 : -1;
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
     memset(segment, 255, plate_area * sizeof(size_t));
@@ -146,8 +146,8 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
     dx -= this->vx * (dot > 0);
     dy -= this->vy * (dot > 0);
 
-    float offset = (float)_randsource() / (float)_randsource.max();
-    offset *= offset * offset * (2 * (_randsource() & 1) - 1);
+    float offset = (float)_randsource.next() / (float)_randsource.maximum();
+    offset *= offset * offset * (2 * (_randsource.next() & 1) - 1);
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset;
 
@@ -546,7 +546,7 @@ try {
   // Add random noise (10 %) to heightmap.
   for (size_t i = 0; i < width*height; ++i)
   {
-    float alpha = 0.2 * _randsource() / (float)_randsource.max();
+    float alpha = 0.2 * _randsource.next() / (float)_randsource.maximum();
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 

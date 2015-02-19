@@ -27,6 +27,7 @@ public:
 	SimpleRandom(uint32_t seed);
 	~SimpleRandom();
 	uint32_t next();
+	uint32_t maximum();
 private:
 	SimpleRandomCong_t* internal;
 };

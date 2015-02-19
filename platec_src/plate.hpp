@@ -21,7 +21,7 @@
 
 #include <cstring> // for size_t
 #include <vector>
-#include <random>
+#include "simplerandom.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 
@@ -218,7 +218,7 @@ class plate
 	protected:
 	private:
 
-	mt19937 _randsource;    
+	SimpleRandom _randsource;    
 
 	ContinentId getContinentAt(int x, int y) const;
 

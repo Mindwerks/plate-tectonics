@@ -18,10 +18,20 @@ SimpleRandom::SimpleRandom(uint32_t seed)
 {
     this->internal = new SimpleRandomCong_t();
 }
+
+SimpleRandom::~SimpleRandom()
+{
+    delete this->internal;
+}
     
 uint32_t SimpleRandom::next()
 {
+    return 1;
+}
 
+uint32_t SimpleRandom::maximum()
+{
+    return 100;
 }
 
 
