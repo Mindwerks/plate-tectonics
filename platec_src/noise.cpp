@@ -15,11 +15,11 @@ static uint32_t nearest_pow(uint32_t num)
     return n;
 }
 
-void createNoise(float* tmp, const WorldDimension& tmpDim, mt19937 randsource, bool useSimplex)
+void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom randsource, bool useSimplex)
 {
 try {
     if (useSimplex) {
-        simplexnoise(randsource(), tmp, 
+        simplexnoise(randsource.next(), tmp, 
             tmpDim.getWidth(), 
             tmpDim.getHeight(), 
             SQRDMD_ROUGHNESS);
@@ -49,7 +49,7 @@ try {
         	}
         }        
 
-        sqrdmd(randsource(), squareTmp, side, SQRDMD_ROUGHNESS);
+        sqrdmd(randsource.next(), squareTmp, side, SQRDMD_ROUGHNESS);
 
         // Calcuate deltas (noise introduced)
         float* deltas = new float[tmpDim.getWidth()*tmpDim.getHeight()];
