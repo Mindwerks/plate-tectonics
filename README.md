@@ -1,11 +1,8 @@
 PyPlatec
 ========
 
-Linux build
-[![Build Status](https://travis-ci.org/Mindwerks/pyplatec.svg?branch=master)](https://travis-ci.org/Mindwerks/pyplatec)
-
-Windows build
-[![Build status](https://ci.appveyor.com/api/projects/status/3qh8txg5bhf41fxv?svg=true)](https://ci.appveyor.com/project/ftomassetti/pyplatec)
+_Travis_
+[![Build Status](https://travis-ci.org/Mindwerks/pyplatec.svg?branch=master)](https://travis-ci.org/Mindwerks/pyplatec) _AppVeyor_ [![Build status](https://ci.appveyor.com/api/projects/status/3qh8txg5bhf41fxv?svg=true)](https://ci.appveyor.com/project/ftomassetti/pyplatec)
 
 
 Plate simulation for python (wrapper of an existing C/C++ library).
