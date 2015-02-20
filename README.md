@@ -1,7 +1,12 @@
 PyPlatec
 ========
 
+Linux build
 [![Build Status](https://travis-ci.org/ftomassetti/pyplatec.svg?branch=master)](https://travis-ci.org/ftomassetti/pyplatec)
+
+Windows build
+[![Build status](https://ci.appveyor.com/api/projects/status/3qh8txg5bhf41fxv?svg=true)](https://ci.appveyor.com/project/ftomassetti/pyplatec)
+
 
 Plate simulation for python (wrapper of an existing C/C++ library).
 
@@ -20,8 +25,6 @@ Supported versions:
 * Python 3.2
 * Python 3.3
 * Python 3.4
-
-C++ compiler supporting C++11
 
 Compile
 =======
@@ -54,4 +57,11 @@ Enjoy!
 Projects using it
 =================
 
-I created this wrapper for using this fantastic piece of code in [lands](http://github.com/ftomassetti/lands)
+I created this wrapper for using this fantastic piece of code in [worldengine](http://github.com/Mindwerks/worldengine)
+
+Supporting windows wheels
+=========================
+
+Through AppVeyor we build the binary distributions for windows (several python versions, both win32 and win64).
+However they need to be downloaded from AppVeyor and uploaded to Pypi manually.
+
