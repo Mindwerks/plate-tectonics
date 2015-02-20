@@ -2,7 +2,7 @@ PyPlatec
 ========
 
 Linux build
-[![Build Status](https://travis-ci.org/ftomassetti/pyplatec.svg?branch=master)](https://travis-ci.org/ftomassetti/pyplatec)
+[![Build Status](https://travis-ci.org/Mindwerks/pyplatec.svg?branch=master)](https://travis-ci.org/Mindwerks/pyplatec)
 
 Windows build
 [![Build status](https://ci.appveyor.com/api/projects/status/3qh8txg5bhf41fxv?svg=true)](https://ci.appveyor.com/project/ftomassetti/pyplatec)
