@@ -30,6 +30,7 @@
 #include "plate.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
+#include "utils.hpp"
 
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
@@ -425,20 +426,13 @@ try {
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
 } catch (const exception& e){
     std::string msg = "Problem during plate::calculateCrust (width: ";
-    // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
-    #ifndef __MINGW32__
-    #ifndef _WIN32
-    #ifndef _WIN64
-    msg = msg + to_string(width)
-            + ", height: " + to_string(height) 
-            + ", left: " + to_string(left) 
-            + ", top: " + to_string(top) 
-            + ", x: " + to_string(x)
-            + ", y:" + to_string(y) + ") :"
-            + e.what();
-    #endif
-    #endif
-    #endif            
+    msg = msg + Platec::to_string(width)
+            + ", height: " + Platec::to_string(height) 
+            + ", left: " + Platec::to_string(left) 
+            + ", top: " + Platec::to_string(top) 
+            + ", x: " + Platec::to_string(x)
+            + ", y:" + Platec::to_string(y) + ") :"
+            + e.what();           
     throw runtime_error(msg.c_str());
 }
 }

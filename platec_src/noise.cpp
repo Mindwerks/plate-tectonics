@@ -1,7 +1,8 @@
+#include <string>
 #include "noise.hpp"
 #include "sqrdmd.hpp"
 #include "simplexnoise.hpp"
-#include <string>
+#include "utils.hpp"
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
 
@@ -77,14 +78,7 @@ try {
     }    
 } catch (const exception& e){
     std::string msg = "Problem during lithosphere::createNoise, tmpDim+=";
-    // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
-    #ifndef __MINGW32__
-    #ifndef _WIN32
-    #ifndef _WIN64
-    msg = msg + to_string(tmpDim.getWidth()) + "x" + to_string(tmpDim.getHeight()) + " ";
-    #endif
-    #endif
-    #endif
+    msg = msg + Platec::to_string(tmpDim.getWidth()) + "x" + Platec::to_string(tmpDim.getHeight()) + " ";
     msg = msg + e.what();
     throw runtime_error(msg.c_str());
 }

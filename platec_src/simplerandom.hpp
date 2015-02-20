@@ -9,12 +9,7 @@
 #ifndef SIMPLE_RANDOM_HPP
 #define SIMPLE_RANDOM_HPP
 
-#if _WIN32 || _WIN64
-#include <Windows.h>
-typedef UINT32 uint32_t;
-#else
-#include <cstdint>
-#endif
+#include "utils.hpp"
 
 typedef struct
 {
