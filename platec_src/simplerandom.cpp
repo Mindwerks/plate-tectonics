@@ -29,7 +29,20 @@ SimpleRandom::~SimpleRandom()
     
 uint32_t SimpleRandom::next()
 {
-    return simplerandom_cong_next(this->internal);
+    uint32_t res = simplerandom_cong_next(this->internal);
+    
+    return res;
+}
+
+double SimpleRandom::next_double()
+{
+    return ((double)next() / (double)maximum());
+}
+
+int32_t SimpleRandom::next_signed()
+{
+    int32_t value = (int32_t)next();
+    return value;
 }
 
 uint32_t SimpleRandom::maximum()
