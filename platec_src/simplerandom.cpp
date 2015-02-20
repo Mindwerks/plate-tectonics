@@ -14,6 +14,10 @@
 #include "simplerandom.hpp"
 #include <stddef.h>
 
+#ifndef UINT32_C
+#define UINT32_C(val) val##ui32
+#endif
+
 SimpleRandom::SimpleRandom(uint32_t seed)
 {
     this->internal = new SimpleRandomCong_t();

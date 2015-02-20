@@ -427,6 +427,8 @@ try {
     std::string msg = "Problem during plate::calculateCrust (width: ";
     // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
     #ifndef __MINGW32__
+    #ifndef _WIN32
+    #ifndef _WIN64
     msg = msg + to_string(width)
             + ", height: " + to_string(height) 
             + ", left: " + to_string(left) 
@@ -435,6 +437,8 @@ try {
             + ", y:" + to_string(y) + ") :"
             + e.what();
     #endif
+    #endif
+    #endif            
     throw runtime_error(msg.c_str());
 }
 }
@@ -948,7 +952,7 @@ try {
     }
 
     size_t lines_processed;
-    Rectangle r = Rectangle(_worldDimension, x, x, y, y);
+    Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
     segmentData data(r, 0);
 
     std::vector<size_t>* spans_todo = new std::vector<size_t>[height];
@@ -1141,7 +1145,7 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
     const size_t irgt = ilft + width;
     const size_t ibtm = itop + height;
 
-    Rectangle rect = Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
+    Platec::Rectangle rect = Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
     return rect.getMapIndex(px, py);
 }
 

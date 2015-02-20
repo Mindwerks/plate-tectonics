@@ -115,6 +115,8 @@ private:
     const size_t _height;
 };
 
+namespace Platec {
+
 class Rectangle {
 public:
     Rectangle(const WorldDimension& worldDimension,
@@ -195,6 +197,8 @@ private:
     const WorldDimension _worldDimension;
     size_t _left, _right;
     size_t _top, _bottom;
+};
+
 };
 
 #endif

@@ -226,7 +226,7 @@ class plate
 	class segmentData
 	{
 	  public:
-		segmentData(Rectangle& rectangle,
+		segmentData(Platec::Rectangle& rectangle,
 		            size_t _area) : _rectangle(rectangle),
 		                          area(_area), coll_count(0) {};
 
@@ -289,7 +289,7 @@ class plate
 		size_t coll_count; ///< Number of collisions on this segment.
 
       private:
-        Rectangle _rectangle;
+        Platec::Rectangle _rectangle;
 	};
 
 	/// Separate a continent at (X, Y) to its own partition.

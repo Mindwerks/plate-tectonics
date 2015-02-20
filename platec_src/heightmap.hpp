@@ -87,10 +87,14 @@ public:
             string s("invalid index: ");
             // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
             #ifndef __MINGW32__
+            #ifndef _WIN32
+            #ifndef _WIN64
             s = s + to_string(index) 
                 + ", width " + to_string(_width)
                 + ", height " + to_string(_height);
             #endif
+            #endif
+            #endif    
             throw invalid_argument(s);
         }
         return this->_data[index];

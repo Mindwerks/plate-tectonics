@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include "rectangle.hpp"
 
+namespace Platec {
+
 size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 {
 	size_t x = *px % _worldDimension.getWidth();
@@ -64,4 +66,6 @@ void Rectangle::enlarge_to_contain(size_t x, size_t y)
     if (x > _right) {
         _right = x;
     }
+}
+
 }
