@@ -6,17 +6,17 @@
  * Available on GitHub https://github.com/cmcqueen/simplerandom
  */
 
-
-/*****************************************************************************
- * Includes
- ****************************************************************************/
-
 #include "simplerandom.hpp"
 #include <stddef.h>
 
 #ifndef UINT32_C
 #define UINT32_C(val) val##ui32
 #endif
+
+void simplerandom_cong_seed(SimpleRandomCong_t * p_cong, uint32_t seed);
+void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, size_t num_data);
+uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong);
+
 
 SimpleRandom::SimpleRandom(uint32_t seed)
 {
@@ -30,25 +30,13 @@ SimpleRandom::~SimpleRandom()
     
 uint32_t SimpleRandom::next()
 {
-    return 1;
+    return simplerandom_cong_next(this->internal);
 }
 
 uint32_t SimpleRandom::maximum()
 {
-    return 100;
+    return 2 >> 32 - 1;
 }
-
-
-/*****************************************************************************
- * Functions
- ****************************************************************************/
-
-/*********
- * Cong
- ********/
-
-void simplerandom_cong_seed(SimpleRandomCong_t * p_cong, uint32_t seed);
-void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, size_t num_data);
 
 size_t simplerandom_cong_num_seeds(const SimpleRandomCong_t * p_cong)
 {
