@@ -69,4 +69,5 @@ artifacts:
   - path: dist\*
 
 on_success:
+  - "%WITH_COMPILER% %PYTHON%/python -m pip install twine"
   - "%PYTHON%/Scripts/twine upload -u %USER% -p %PASS% -r pypitest dist/*"
