@@ -20,6 +20,7 @@ uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong);
 SimpleRandom::SimpleRandom(uint32_t seed)
 {
     this->internal = new SimpleRandomCong_t();
+    simplerandom_cong_seed(this->internal, seed);
 }
 
 SimpleRandom::~SimpleRandom()
