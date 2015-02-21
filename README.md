@@ -57,6 +57,8 @@ cd examples
 How to run tests
 ================
 
+To run tests you need to install DevIL
+
 We use googletest (which is included in the project). After building the library:
 
 ```

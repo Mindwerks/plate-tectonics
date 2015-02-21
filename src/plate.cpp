@@ -30,6 +30,7 @@
 #include "plate.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
+#include "utils.hpp"
 
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
@@ -49,14 +50,20 @@ plate::plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y
     if (w <= 0 || h <= 0) {
         throw invalid_argument("width and height of the plate should be greater than zero");
     }
+    if (_x < 0 || _y <0) {
+        throw invalid_argument("coordinates of the plate should be greater or equal to zero");
+    }
+    if (plate_age < 0) {
+        throw invalid_argument("age of the plate should be greater or equal to zero");
+    }
 
     const size_t plate_area = w * h;
-    const double angle = 2 * M_PI * _randsource() / (double)_randsource.max();
+    const double angle = 2 * M_PI * _randsource.next_double();
 
     segment = new size_t[plate_area];
 
     velocity = 1;
-    rot_dir = _randsource() & 1 ? 1 : -1;
+    rot_dir = _randsource.next() & 1 ? 1 : -1;
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
     memset(segment, 255, plate_area * sizeof(size_t));
@@ -140,8 +147,8 @@ void plate::addCrustBySubduction(size_t x, size_t y, float z, size_t t,
     dx -= this->vx * (dot > 0);
     dy -= this->vy * (dot > 0);
 
-    float offset = (float)_randsource() / (float)_randsource.max();
-    offset *= offset * offset * (2 * (_randsource() & 1) - 1);
+    float offset = (float)_randsource.next_double();
+    offset *= offset * offset * (2 * (_randsource.next() & 1) - 1);
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset;
 
@@ -419,16 +426,13 @@ try {
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
 } catch (const exception& e){
     std::string msg = "Problem during plate::calculateCrust (width: ";
-    // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
-    #ifndef __MINGW32__
-    msg = msg + to_string(width)
-            + ", height: " + to_string(height) 
-            + ", left: " + to_string(left) 
-            + ", top: " + to_string(top) 
-            + ", x: " + to_string(x)
-            + ", y:" + to_string(y) + ") :"
-            + e.what();
-    #endif
+    msg = msg + Platec::to_string(width)
+            + ", height: " + Platec::to_string(height) 
+            + ", left: " + Platec::to_string(left) 
+            + ", top: " + Platec::to_string(top) 
+            + ", x: " + Platec::to_string(x)
+            + ", y:" + Platec::to_string(y) + ") :"
+            + e.what();           
     throw runtime_error(msg.c_str());
 }
 }
@@ -540,7 +544,7 @@ try {
   // Add random noise (10 %) to heightmap.
   for (size_t i = 0; i < width*height; ++i)
   {
-    float alpha = 0.2 * _randsource() / (float)_randsource.max();
+    float alpha = 0.2 * (float)_randsource.next_double();
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 
@@ -942,7 +946,7 @@ try {
     }
 
     size_t lines_processed;
-    Rectangle r = Rectangle(_worldDimension, x, x, y, y);
+    Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
     segmentData data(r, 0);
 
     std::vector<size_t>* spans_todo = new std::vector<size_t>[height];
@@ -1135,7 +1139,7 @@ size_t plate::getMapIndex(size_t* px, size_t* py) const throw()
     const size_t irgt = ilft + width;
     const size_t ibtm = itop + height;
 
-    Rectangle rect = Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
+    Platec::Rectangle rect = Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
     return rect.getMapIndex(px, py);
 }
 

@@ -2,6 +2,8 @@
 #include <cstdio>
 #include "gtest/gtest.h"
 
+using Platec::Rectangle;
+
 TEST(Rectangle, MapIndexInsideRectNotWrapping)
 {
     Rectangle r = Rectangle(WorldDimension(50, 30), 42, 48, 8, 15);

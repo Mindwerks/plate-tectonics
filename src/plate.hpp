@@ -21,7 +21,7 @@
 
 #include <cstring> // for size_t
 #include <vector>
-#include <random>
+#include "simplerandom.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 
@@ -209,7 +209,7 @@ class plate
 	bool contains(size_t x, size_t y) const;
 
 	// visible for testing
-	void calculateCrust(size_t x, size_t y, size_t index,
+	inline void calculateCrust(size_t x, size_t y, size_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
     		size_t& w, size_t& e, size_t& n, size_t& s);
 	size_t xMod(size_t x) const;
@@ -218,7 +218,7 @@ class plate
 	protected:
 	private:
 
-	mt19937 _randsource;    
+	SimpleRandom _randsource;    
 
 	ContinentId getContinentAt(int x, int y) const;
 
@@ -226,7 +226,7 @@ class plate
 	class segmentData
 	{
 	  public:
-		segmentData(Rectangle& rectangle,
+		segmentData(Platec::Rectangle& rectangle,
 		            size_t _area) : _rectangle(rectangle),
 		                          area(_area), coll_count(0) {};
 
@@ -289,7 +289,7 @@ class plate
 		size_t coll_count; ///< Number of collisions on this segment.
 
       private:
-        Rectangle _rectangle;
+        Platec::Rectangle _rectangle;
 	};
 
 	/// Separate a continent at (X, Y) to its own partition.

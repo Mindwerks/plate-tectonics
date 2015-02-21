@@ -26,9 +26,9 @@
 #undef __STRICT_ANSI__
 #endif
 #include <cmath>
-#include <random>
 #include "heightmap.hpp"
 #include "rectangle.hpp"
+#include "simplerandom.hpp"
 
 using namespace std;
 
@@ -150,7 +150,7 @@ class lithosphere
 	size_t last_coll_count; ///< Iterations since last cont. collision.
 
 	const WorldDimension _worldDimension;
-	mt19937 _randsource;
+	SimpleRandom _randsource;
 	int _steps;
 };
 

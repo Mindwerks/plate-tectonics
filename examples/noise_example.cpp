@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <cstring>
-#include <il.h>
-#include <ilu.h>
+#include <png.h>
 
 #include "noise.hpp"
 #include "sqrdmd.hpp"
+#include "simplerandom.hpp"
 
 ILuint GenerateSingleImage(void) 
 {
@@ -71,7 +71,7 @@ void save_image(float* heightmap, int width, int height, const char* filename)
 
 void generate(long seed, float* heightmap, int width, int height)
 {
-  mt19937 randsource(seed);
+  SimpleRandom randsource(seed);
   memset(heightmap, 0, sizeof(float) * width * height);
   createNoise(heightmap, WorldDimension(width, height), randsource, false);
   normalize(heightmap, width * height);

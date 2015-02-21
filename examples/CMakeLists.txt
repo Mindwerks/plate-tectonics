@@ -7,19 +7,18 @@ add_executable(sqrdmd sqrdmd_example.cpp)
 add_executable(simplex simplex_example.cpp)
 add_executable(noise noise_example.cpp)
 
-if (WITH_EXAMPLE)
-	find_package(DevIL)
-endif (WITH_EXAMPLE)
 
-include_directories("../src" ${IL_INCLUDE_DIR})
+find_package(DevIL)
+
+include_directories("../src" ${PNG_INCLUDE_DIRS})
 
 # Extra linking for the project.
-target_link_libraries(simulation PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+target_link_libraries(simulation PlateTectonics ${PNGLIBRARIES})
 
-target_link_libraries(simulation_rect PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+target_link_libraries(simulation_rect PlateTectonics ${PNG_LIBRARIES})
 
-target_link_libraries(sqrdmd PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+target_link_libraries(sqrdmd PlateTectonics ${PNG_LIBRARIES})
 
-target_link_libraries(simplex PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+target_link_libraries(simplex PlateTectonics ${PNG_LIBRARIES})
 
-target_link_libraries(noise PlateTectonics ${IL_LIBRARIES} ${ILU_LIBRARIES})
+target_link_libraries(noise PlateTectonics ${PNG_LIBRARIES})

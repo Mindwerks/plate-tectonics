@@ -1,14 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
 project (PlateTectonics)
-add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/rectangle.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp)
+add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/rectangle.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp src/utils.cpp src/simplerandom.cpp)
 
 include_directories("src")
 set(CMAKE_C_FLAGS "-std=c99")
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "")
 
-option(WITH_EXAMPLE "compile also the example" OFF)
+option(WITH_EXAMPLES "compile also the example" OFF)
+option(WITH_TESTS "compile also the tests" ON)
 
-add_subdirectory (test)
-IF(WITH_EXAMPLE)
+IF(WITH_TESTS)
+	add_subdirectory (test)
+ENDIF(WITH_TESTS)
+IF(WITH_EXAMPLES)
 	add_subdirectory (examples)
-ENDIF(WITH_EXAMPLE)
+ENDIF(WITH_EXAMPLES)

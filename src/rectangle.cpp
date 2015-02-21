@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include "rectangle.hpp"
 
+namespace Platec {
+
 size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 {
 	size_t x = *px % _worldDimension.getWidth();
@@ -34,6 +36,13 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
 
+    if (x < 0) {
+        throw std::invalid_argument("failure x");
+    }
+    if (y < 0) {
+        throw std::invalid_argument("failure y");
+    }
+
     if (xOk && yOk) {
         *px = x;
         *py = y;
@@ -57,4 +66,6 @@ void Rectangle::enlarge_to_contain(size_t x, size_t y)
     if (x > _right) {
         _right = x;
     }
+}
+
 }

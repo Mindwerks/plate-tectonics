@@ -29,7 +29,7 @@
 #ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
 #undef __STRICT_ANSI__
 #endif
-#include <random>
+#include "simplerandom.hpp"
 
 #include "sqrdmd.hpp"
 
@@ -38,7 +38,7 @@ using namespace std;
 #define CALC_SUM(a, b, c, d, rnd)\
 {\
 	sum = ((a) + (b) + (c) + (d)) * 0.25f;\
-	sum = sum + slope * ((rnd << 1) - _randsource.max());\
+	sum = sum + slope * rnd;\
 }
 
 #define SAVE_SUM(a)\
@@ -83,7 +83,7 @@ private:
 
 int sqrdmd(long seed, float* map, int size, float rgh)
 {
-	mt19937 _randsource(seed);
+	SimpleRandom _randsource(seed);
 	
 	const int full_size = size * size;
 	
@@ -105,18 +105,18 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 	
 	/* Calculate midpoint ("diamond step"). */
 	dy = step * size;
-	CALC_SUM(map[0], map[step], map[dy], map[dy + step], _randsource());
+	CALC_SUM(map[0], map[step], map[dy], map[dy + step], _randsource.next_float_signed());
 	SAVE_SUM(i);
 	center_sum = sum;
 	
 	/* Calculate each sub diamonds' center points ("square step"). */
 	/* Top row. */
 	p0 = step >> 1;
-	CALC_SUM(map[0], map[step], center_sum, center_sum, _randsource());
+	CALC_SUM(map[0], map[step], center_sum, center_sum, _randsource.next_float_signed());
 	SAVE_SUM(p0);
 	/* Left column. */
 	p1 = p0 * size;
-	CALC_SUM(map[0], map[dy], center_sum, center_sum, _randsource());
+	CALC_SUM(map[0], map[dy], center_sum, center_sum, _randsource.next_float_signed());
 	SAVE_SUM(p1);
 	map[full_size + p0 - size] = map[p0]; /* Copy top val into btm row. */
 	map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
@@ -138,7 +138,7 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 			{
 				sum = (map[y0+x0] + map[y0+x1] +
 				map[y1+x0] + map[y1+x1]) * 0.25f;
-				sum = sum + slope * ((_randsource() << 1) - RAND_MAX);
+				sum = sum + slope * _randsource.next_float_signed();
 				masked = !((int)map[i]);
 				map[i] = map[i] * !masked + sum * masked;
 			}
@@ -167,7 +167,7 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 		while (p0 < size)
 		{
 			sum = (map[p0] + map[p1] + map[p2] + map[p3]) * 0.25f;
-			sum = sum + slope * ((_randsource() << 1) - RAND_MAX);
+			sum = sum + slope * _randsource.next_float_signed();
 			masked = !((int)map[i]);
 			map[i] = map[i] * !masked + sum * masked;
 			/* Copy it into bottom row. */
@@ -202,7 +202,7 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 			{
 				sum = (map[p0] + map[p1] +
 				map[p2] + map[p3]) * 0.25f;
-				sum = sum + slope * ((_randsource() << 1) - RAND_MAX);
+				sum = sum + slope * _randsource.next_float_signed();
 				masked = !((int)map[i]);
 				map[i] = map[i] * !masked + sum * masked;
 				p0 += step;

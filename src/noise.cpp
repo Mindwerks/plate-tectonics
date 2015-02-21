@@ -1,6 +1,8 @@
+#include <string>
 #include "noise.hpp"
 #include "sqrdmd.hpp"
 #include "simplexnoise.hpp"
+#include "utils.hpp"
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
 
@@ -15,11 +17,11 @@ static uint32_t nearest_pow(uint32_t num)
     return n;
 }
 
-void createNoise(float* tmp, const WorldDimension& tmpDim, mt19937 randsource, bool useSimplex)
+void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom randsource, bool useSimplex)
 {
 try {
     if (useSimplex) {
-        simplexnoise(randsource(), tmp, 
+        simplexnoise(randsource.next(), tmp, 
             tmpDim.getWidth(), 
             tmpDim.getHeight(), 
             SQRDMD_ROUGHNESS);
@@ -49,7 +51,7 @@ try {
         	}
         }        
 
-        sqrdmd(randsource(), squareTmp, side, SQRDMD_ROUGHNESS);
+        sqrdmd(randsource.next(), squareTmp, side, SQRDMD_ROUGHNESS);
 
         // Calcuate deltas (noise introduced)
         float* deltas = new float[tmpDim.getWidth()*tmpDim.getHeight()];
@@ -76,10 +78,7 @@ try {
     }    
 } catch (const exception& e){
     std::string msg = "Problem during lithosphere::createNoise, tmpDim+=";
-    // avoid Mingw32 bug (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015)
-    #ifndef __MINGW32__
-    msg = msg + to_string(tmpDim.getWidth()) + "x" + to_string(tmpDim.getHeight()) + " ";
-    #endif
+    msg = msg + Platec::to_string(tmpDim.getWidth()) + "x" + Platec::to_string(tmpDim.getHeight()) + " ";
     msg = msg + e.what();
     throw runtime_error(msg.c_str());
 }

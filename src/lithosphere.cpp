@@ -178,7 +178,7 @@ try {
     for (size_t i = 0; i < num_plates; ++i)
     {
         // Randomly select an unused plate origin.
-        const size_t p = imap[(size_t)_randsource() % (map_area - i)];
+        const size_t p = imap[(size_t)_randsource.next() % (map_area - i)];
         const size_t y = _worldDimension.yFromIndex(p);
         const size_t x = _worldDimension.xFromIndex(p);
 
@@ -207,7 +207,7 @@ try {
             if (N == 0)
                 continue;
 
-            const size_t j = _randsource() % N;
+            const size_t j = _randsource.next() % N;
             const size_t p = area[i].border[j];
             const size_t cy = _worldDimension.yFromIndex(p);
             const size_t cx = _worldDimension.xFromIndex(p);
@@ -301,7 +301,7 @@ try {
             }
 
         // Create plate.
-        plates[i] = new plate(_randsource(), plt, width, height, x0, y0, i, _worldDimension);
+        plates[i] = new plate(_randsource.next(), plt, width, height, x0, y0, i, _worldDimension);
         delete[] plt;
     }
 

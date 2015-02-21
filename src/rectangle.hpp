@@ -57,7 +57,7 @@ public:
 
     bool contains(const size_t x, const size_t y) const
     {
-        return (x < _width && y < _height);
+        return (x >= 0 && x < _width && y >= 0 && y < _height);
     }
 
     void normalize(size_t& x, size_t& y) const
@@ -73,7 +73,7 @@ public:
 
     size_t lineIndex(const size_t y) const
     {
-        if (y>=_height){
+        if (y<0 || y>=_height){
             throw invalid_argument("WorldDimension::line_index: y is not valid");
         }
         return indexOf(0, y);
@@ -114,6 +114,8 @@ private:
     const size_t _width;
     const size_t _height;
 };
+
+namespace Platec {
 
 class Rectangle {
 public:
@@ -195,6 +197,8 @@ private:
     const WorldDimension _worldDimension;
     size_t _left, _right;
     size_t _top, _bottom;
+};
+
 };
 
 #endif
