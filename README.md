@@ -1,6 +1,6 @@
 plate-tectonics
 ===============
-[![Build Status](https://travis-ci.org/ftomassetti/plate-tectonics.svg?branch=master)](https://travis-ci.org/ftomassetti/plate-tectonics)
+[![Build Status](https://travis-ci.org/Mindwerks/plate-tectonics.svg?branch=master)](https://travis-ci.org/Mindweks/plate-tectonics)
 
 This is a library to simulate plate tectonics.
 
