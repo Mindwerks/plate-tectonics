@@ -2,46 +2,11 @@
 #include "platecapi.hpp"
 #include "sqrdmd.hpp"
 #include <cstdlib>
-#include <il.h>
-#include <ilu.h>
+#include "map_drawing.hpp"
 
-ILuint GenerateSingleImage(void) 
+void produce_image(float* heightmap, int width, int height, const char* filename)
 {
-    ILuint ImageName; // The image name to return.
-    ilGenImages(1, &ImageName); // Grab a new image name.
-    return ImageName; // Go wild with the return value.
-} 
-
-void CheckForErrors()
-{
-    ILenum Error;
-    while ((Error = ilGetError()) != IL_NO_ERROR) { 
-        printf("%d/n", Error); 
-        exit(1);
-    } 
-}
-
-void drawMap(const float* heightmap)
-{
-    ILubyte* bytes = ilGetData(); 
-    ILuint width,height;
-    width  = ilGetInteger(IL_IMAGE_WIDTH);
-    height = ilGetInteger(IL_IMAGE_HEIGHT);
-
-    for (int y = 0; y < height; y++)
-    {
-       for (int x = 0; x < width; x++)
-       {
-          float h = heightmap[(y*width + x)];
-          if (h <= 0.0f) {
-            bytes[(y*width + x)] = 0;
-          } else if (h >= 1.0f) {
-            bytes[(y*width + x)] = 255;
-          } else {
-            bytes[(y*width + x)] = (ILubyte)(h*255.0f);
-          }          
-       }
-    }
+    writeImage((char*)filename, width, height, heightmap, "FOO");
 }
 
 int main(int argc, char* argv[])
@@ -70,21 +35,5 @@ int main(int argc, char* argv[])
     memcpy(copy, heightmap, sizeof(float)*width*height);
     printf(" * heightmap obtained\n");
 
-    ilInit();
-    iluInit();
-
-    ILuint imageName = GenerateSingleImage();    
-    CheckForErrors();
-    ilBindImage(imageName);    
-    CheckForErrors();
-    iluScale(width, height, 32);
-    CheckForErrors();
-
-    normalize(copy, width * height);
-    drawMap(copy);   
-
-    ilEnable(IL_FILE_OVERWRITE);
-    CheckForErrors();
-    ilSaveImage("map_rect.png"); 
-    CheckForErrors();
+    produce_image(copy, width, height, "simulation_rect.png");
 }
