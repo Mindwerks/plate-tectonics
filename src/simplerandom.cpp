@@ -43,7 +43,7 @@ double SimpleRandom::next_double()
 float SimpleRandom::next_float_signed()
 {
     float value = next_double();
-    return next_double - 0.5f;
+    return next_double() - 0.5f;
 }
 
 int32_t SimpleRandom::next_signed()

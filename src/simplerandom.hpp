@@ -24,6 +24,7 @@ public:
 	uint32_t next();
 	int32_t next_signed();
 	double next_double();
+	float next_float_signed();
 	uint32_t maximum();
 private:
 	SimpleRandomCong_t* internal;
