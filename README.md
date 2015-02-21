@@ -90,10 +90,10 @@ Bindings
 ========
 
 I am working on these bindings:
-* Python [pyplatec](http://github.com/ftomassetti/pyplatec)
+* Python [pyplatec](http://github.com/Mindwerks/pyplatec)
 * Haskell [hplatec](http://github.com/ftomassetti/hplatec)
 
 Projects using plate-tectonics
 ==============================
 
-[Lands](http://github.com/ftomassetti/lands), a world generator
+[WorldEngine](http://github.com/Mindwerks/worldengine), a world generator
