@@ -19,18 +19,30 @@ uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong);
 
 SimpleRandom::SimpleRandom(uint32_t seed)
 {
-    this->internal = new SimpleRandomCong_t();
-    simplerandom_cong_seed(this->internal, seed);
+    internal = new SimpleRandomCong_t();
+    simplerandom_cong_seed(internal, seed);
+}
+
+SimpleRandom::SimpleRandom(SimpleRandom& other)
+{
+    internal = new SimpleRandomCong_t();
+    internal->cong = other.internal->cong;
+}
+
+SimpleRandom::SimpleRandom(const SimpleRandom& other)
+{
+    internal = new SimpleRandomCong_t();
+    internal->cong = other.internal->cong;
 }
 
 SimpleRandom::~SimpleRandom()
 {
-    delete this->internal;
+    delete internal;
 }
     
 uint32_t SimpleRandom::next()
 {
-    uint32_t res = simplerandom_cong_next(this->internal);
+    uint32_t res = simplerandom_cong_next(internal);
     
     return res;
 }
