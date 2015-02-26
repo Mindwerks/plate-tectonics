@@ -122,7 +122,7 @@ public:
         return _data;
     }
 
-    size_t area() const
+    uint32_t area() const
     {
         return _width * _height;
     }
@@ -151,6 +151,6 @@ private:
 };
 
 typedef Matrix<float>  HeightMap;
-typedef Matrix<size_t> AgeMap;
+typedef Matrix<uint32_t> AgeMap;
 
 #endif

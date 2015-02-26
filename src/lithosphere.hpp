@@ -65,11 +65,11 @@ class lithosphere
 	 *           	is not a power of two and greater than three.
 	 */
 	lithosphere(long seed, 
-		size_t width, size_t height, 
+		uint32_t width, uint32_t height, 
 		float sea_level,
-		size_t _erosion_period, float _folding_ratio,
-		size_t aggr_ratio_abs, float aggr_ratio_rel,
-		size_t num_cycles) throw(std::invalid_argument);
+		uint32_t _erosion_period, float _folding_ratio,
+		uint32_t aggr_ratio_abs, float aggr_ratio_rel,
+		uint32_t num_cycles) throw(std::invalid_argument);
 
 	~lithosphere() throw(); ///< Standard destructor.
 
@@ -80,18 +80,18 @@ class lithosphere
 	 *
 	 * @param num_plates Number of areas the surface is divided into.
 	 */
-	void createPlates(size_t num_plates);
+	void createPlates(uint32_t num_plates);
 
-	size_t getCycleCount() const throw() { return cycle_count; }
-	size_t getIterationCount() const throw() { return iter_count; }
+	uint32_t getCycleCount() const throw() { return cycle_count; }
+	uint32_t getIterationCount() const throw() { return iter_count; }
 	const WorldDimension& getWorldDimension() const throw() { return _worldDimension; }
-	size_t getPlateCount() const throw(); ///< Return number of plates.
-	const size_t* getAgemap() const throw(); ///< Return surface age map.
+	uint32_t getPlateCount() const throw(); ///< Return number of plates.
+	const uint32_t* getAgemap() const throw(); ///< Return surface age map.
 	float* getTopography() const throw(); ///< Return height map.
-	size_t* getPlatesMap() const throw(); ///< Return a map of the plates owning eaach point
+	uint32_t* getPlatesMap() const throw(); ///< Return a map of the plates owning eaach point
 	void update(); ///< Simulate one step of plate tectonics.	
-	size_t getWidth() const;
-	size_t getHeight() const;
+	uint32_t getWidth() const;
+	uint32_t getHeight() const;
 	bool isFinished() const;
 
   protected:
@@ -118,36 +118,36 @@ class lithosphere
 	{
 	  public:
 
-		plateCollision(size_t _index, size_t x, size_t y, float z)
+		plateCollision(uint32_t _index, uint32_t x, uint32_t y, float z)
 			throw() : index(_index), wx(x), wy(y), crust(z) {}
 
-		size_t index; ///< Index of the other plate involved in the event.
-		size_t wx, wy; ///< Coordinates of collision in world space.
+		uint32_t index; ///< Index of the other plate involved in the event.
+		uint32_t wx, wy; ///< Coordinates of collision in world space.
 		float crust; ///< Amount of crust that will deform/subduct.
 	};
 
 	void restart(); //< Replace plates with a new population.
 
 	HeightMap hmap; ///< Height map representing the topography of system.
-	size_t* imap; ///< Plate index map of the "owner" of each map point.
+	uint32_t* imap; ///< Plate index map of the "owner" of each map point.
 	AgeMap amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.
 
-	size_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
+	uint32_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
 	float  aggr_overlap_rel; ///< % of overlapping area -> aggregation.
-	size_t cycle_count; ///< Number of times the system's been restarted.
-	size_t erosion_period; ///< # of iterations between global erosion.
+	uint32_t cycle_count; ///< Number of times the system's been restarted.
+	uint32_t erosion_period; ///< # of iterations between global erosion.
 	float  folding_ratio; ///< Percent of overlapping crust that's folded.
-	size_t iter_count; ///< Iteration count. Used to timestamp new crust.
-	size_t max_cycles; ///< Max n:o of times the system'll be restarted.
-	size_t max_plates; ///< Number of plates in the initial setting.
-	size_t num_plates; ///< Number of plates in the current setting.
+	uint32_t iter_count; ///< Iteration count. Used to timestamp new crust.
+	uint32_t max_cycles; ///< Max n:o of times the system'll be restarted.
+	uint32_t max_plates; ///< Number of plates in the initial setting.
+	uint32_t num_plates; ///< Number of plates in the current setting.
 
 	std::vector<std::vector<plateCollision> > collisions;
 	std::vector<std::vector<plateCollision> > subductions;
 
 	float peak_Ek; ///< Max total kinetic energy in the system so far.
-	size_t last_coll_count; ///< Iterations since last cont. collision.
+	uint32_t last_coll_count; ///< Iterations since last cont. collision.
 
 	const WorldDimension _worldDimension;
 	SimpleRandom _randsource;

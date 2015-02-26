@@ -25,9 +25,9 @@ TEST(Plate, calculateCrust)
 {
   const float *heightmap = new float[256 * 128];
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));	
-  size_t x, y, index;
+  uint32_t x, y, index;
   float w_crust, e_crust, n_crust, s_crust;
-  size_t w, e, n, s;
+  uint32_t w, e, n, s;
 
   // top left corner
   x = 0;
