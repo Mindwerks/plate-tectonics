@@ -5,21 +5,20 @@
 
 using namespace std;
 
-TEST(Randomness, Sequence)
+TEST(Randomness, SequenceDoubles)
 {
   long seed = 3;
   SimpleRandom randsource(seed);
 
-  EXPECT_FLOAT_EQ(2.3656589e+09,  randsource.next());
-  EXPECT_FLOAT_EQ(3.0376106e+08,  randsource.next());
-  EXPECT_FLOAT_EQ(3.0414717e+09,  randsource.next());
+  EXPECT_FLOAT_EQ(5.1118433e-05, randsource.next_double());
+  EXPECT_FLOAT_EQ(0.53070194, randsource.next_double());
+  EXPECT_FLOAT_EQ(0.053402752, randsource.next_double());
 }
 
-TEST(Randomness, Max)
+TEST(Randomness, Maximum)
 {
   long seed = 3;
   SimpleRandom randsource(seed);
 
-  EXPECT_FLOAT_EQ(4.2949673e+09,  randsource.maximum());
+  EXPECT_FLOAT_EQ(4.2949673e+09, randsource.maximum());
 }
-
