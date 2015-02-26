@@ -7,6 +7,7 @@
  */
 
 #include "simplerandom.hpp"
+#include <stdint.h>
 #include <stddef.h>
 
 #ifndef UINT32_C
