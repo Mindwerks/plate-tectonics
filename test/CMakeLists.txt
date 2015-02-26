@@ -9,7 +9,7 @@ find_package(PNG REQUIRED)
 
 include_directories("../src" "googletest/include" ${PNG_INCLUDE_DIR})
 
- # Standard linking to gtest stuff.
+# Standard linking to gtest stuff.
 target_link_libraries(PlateTectonicsTests gtest gtest_main)
 
 # Extra linking for the project.

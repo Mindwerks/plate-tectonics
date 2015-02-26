@@ -3,7 +3,10 @@ project (PlateTectonics)
 add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/rectangle.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp src/utils.cpp src/simplerandom.cpp)
 
 include_directories("src")
-set(CMAKE_C_FLAGS "-std=c99")
+
+# -fp-model disable floating point optimization, for the sake of having
+# reproducible results across platforms 
+set(CMAKE_C_FLAGS "-std=c99 -fp-model")
 set(CMAKE_CXX_FLAGS "")
 
 option(WITH_EXAMPLES "compile also the example" OFF)
