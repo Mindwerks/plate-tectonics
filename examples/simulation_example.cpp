@@ -12,9 +12,11 @@ void produce_image(float* heightmap, int width, int height, const char* filename
 int main(int argc, char* argv[])
 {
     int seed = 10;
+    int width = 512;
+    int height = 512;
     printf("Generating a map with seed %d\n", seed);
 
-    void* p = platec_api_create(seed, 512, 512, 0.65,60,0.02,1000000,0.33,2,10);
+    void* p = platec_api_create(seed, width, height, 0.65,60,0.02,1000000,0.33,2,10);
     printf(" * initial map created\n");
 
     int step = 0;
@@ -29,12 +31,11 @@ int main(int argc, char* argv[])
 
     printf(" * simulation completed\n");
     const float* heightmap = platec_api_get_heightmap(p);
-    float copy[512 * 512];
-    memcpy(copy, heightmap, sizeof(float)*512*512);
+    float copy[width * height];
+    memcpy(copy, heightmap, sizeof(float)*width*height);
     printf(" * heightmap obtained\n");
 
+    //normalize(copy, width * height);
 
-    normalize(copy, 512 * 512);
-
-    produce_image(copy, 512, 512, "simulation.png");
+    produce_image(copy, width, height, "simulation.png");
 }
