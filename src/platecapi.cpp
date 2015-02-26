@@ -26,23 +26,23 @@
 class platec_api_list_elem
 {
   public:
-	platec_api_list_elem(size_t _id, lithosphere* _data) :
+	platec_api_list_elem(uint32_t _id, lithosphere* _data) :
 		data(_data), id(_id) { }
 
 	lithosphere* data;
-	size_t id;
+	uint32_t id;
 };
 
-extern lithosphere* platec_api_get_lithosphere(size_t);
+extern lithosphere* platec_api_get_lithosphere(uint32_t);
 
 static std::vector<platec_api_list_elem> lithospheres;
-static size_t last_id = 1;
+static uint32_t last_id = 1;
 
 
-void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
-                         size_t erosion_period, float folding_ratio,
-                         size_t aggr_overlap_abs, float aggr_overlap_rel,
-                         size_t cycle_count, size_t num_plates)
+void* platec_api_create(long seed, uint32_t width, uint32_t height, float sea_level,
+                         uint32_t erosion_period, float folding_ratio,
+                         uint32_t aggr_overlap_abs, float aggr_overlap_rel,
+                         uint32_t cycle_count, uint32_t num_plates)
 {
 	/* Miten nykyisen opengl-mainin koodit refaktoroidaan tänne?
 	 *    parametrien tarkistus, kommentit eli dokumentointi, muuta? */
@@ -60,14 +60,14 @@ void* platec_api_create(long seed, size_t width, size_t height, float sea_level,
 
 void platec_api_destroy(void* litho)
 {	
-	for (size_t i = 0; i < lithospheres.size(); ++i)
+	for (uint32_t i = 0; i < lithospheres.size(); ++i)
 		if (lithospheres[i].data == litho) {
 			lithospheres.erase(lithospheres.begin()+i);
 			break;
 		}
 }
 
-const size_t* platec_api_get_agemap(size_t id)
+const uint32_t* platec_api_get_agemap(uint32_t id)
 {
 	lithosphere* litho = platec_api_get_lithosphere(id);
 	if (!litho)
@@ -83,23 +83,23 @@ float* platec_api_get_heightmap(void *pointer)
 	return res;
 }
 
-size_t* platec_api_get_platesmap(void *pointer)
+uint32_t* platec_api_get_platesmap(void *pointer)
 {
 	lithosphere* litho = (lithosphere*)pointer;
-	size_t *res = litho->getPlatesMap();
+	uint32_t *res = litho->getPlatesMap();
 	return res;
 }
 
-lithosphere* platec_api_get_lithosphere(size_t id)
+lithosphere* platec_api_get_lithosphere(uint32_t id)
 {
-	for (size_t i = 0; i < lithospheres.size(); ++i)
+	for (uint32_t i = 0; i < lithospheres.size(); ++i)
 		if (lithospheres[i].id == id)
 			return lithospheres[i].data;
 
 	return NULL;
 }
 
-size_t platec_api_is_finished(void *pointer)
+uint32_t platec_api_is_finished(void *pointer)
 {
 	lithosphere* litho = (lithosphere*)pointer;
 	if (litho->isFinished()) {
@@ -116,12 +116,12 @@ void platec_api_step(void *pointer)
 }
 
 
-size_t lithosphere_getMapWidth ( void* object)
+uint32_t lithosphere_getMapWidth ( void* object)
 {
     return static_cast<lithosphere*>( object)->getWidth();
 }
 
-size_t lithosphere_getMapHeight ( void* object)
+uint32_t lithosphere_getMapHeight ( void* object)
 {
     return static_cast<lithosphere*>( object)->getHeight();
 }

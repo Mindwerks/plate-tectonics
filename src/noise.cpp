@@ -26,7 +26,7 @@ try {
             tmpDim.getHeight(), 
             SQRDMD_ROUGHNESS);
     } else {        
-        size_t side = tmpDim.getMax();
+        uint32_t side = tmpDim.getMax();
         side = nearest_pow(side)+1;
         float* squareTmp = new float[side*side];
         memset(squareTmp, 0, sizeof(float)*side*side);

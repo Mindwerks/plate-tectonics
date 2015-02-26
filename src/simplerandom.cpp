@@ -14,7 +14,7 @@
 #endif
 
 void simplerandom_cong_seed(SimpleRandomCong_t * p_cong, uint32_t seed);
-void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, size_t num_data);
+void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, uint32_t num_data);
 uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong);
 
 SimpleRandom::SimpleRandom(uint32_t seed)
@@ -69,17 +69,17 @@ uint32_t SimpleRandom::maximum()
     return 4294967295;
 }
 
-size_t simplerandom_cong_num_seeds(const SimpleRandomCong_t * p_cong)
+uint32_t simplerandom_cong_num_seeds(const SimpleRandomCong_t * p_cong)
 {
     (const void *)p_cong;   /* We only use this parameter for type checking. */
 
     return 1u;
 }
 
-size_t simplerandom_cong_seed_array(SimpleRandomCong_t * p_cong, const uint32_t * p_seeds, size_t num_seeds, bool mix_extras)
+uint32_t simplerandom_cong_seed_array(SimpleRandomCong_t * p_cong, const uint32_t * p_seeds, uint32_t num_seeds, bool mix_extras)
 {
     uint32_t    seed = 0;
-    size_t      num_seeds_used = 0;
+    uint32_t      num_seeds_used = 0;
 
     if (num_seeds >= 1u && p_seeds != NULL)
     {
@@ -118,7 +118,7 @@ uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong)
     return cong;
 }
 
-void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, size_t num_data)
+void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, uint32_t num_data)
 {
     if (p_data != NULL)
     {

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     memcpy(copy, heightmap, sizeof(float)*width*height);
     printf(" * heightmap obtained\n");
 
-    normalize(copy, 2idth * height);
+    normalize(copy, width * height);
 
     produce_image(copy, width, height, "simulation_rect.png");
 }

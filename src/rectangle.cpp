@@ -3,15 +3,15 @@
 
 namespace Platec {
 
-size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
+uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const throw()
 {
-	size_t x = *px % _worldDimension.getWidth();
-	size_t y = *py % _worldDimension.getHeight();
+	uint32_t x = *px % _worldDimension.getWidth();
+	uint32_t y = *py % _worldDimension.getHeight();
 
-	const size_t ilft = (size_t)(int)_left;
-	const size_t itop = (size_t)(int)_top;
-	const size_t irgt = (size_t)(int)_right  + (((size_t)(int)_right  < ilft) ? (size_t)(int)_worldDimension.getWidth()  : 0);
-	const size_t ibtm = (size_t)(int)_bottom + (((size_t)(int)_bottom < itop)  ? (size_t)(int)_worldDimension.getHeight() : 0);
+	const uint32_t ilft = (uint32_t)(int)_left;
+	const uint32_t itop = (uint32_t)(int)_top;
+	const uint32_t irgt = (uint32_t)(int)_right  + (((uint32_t)(int)_right  < ilft) ? (uint32_t)(int)_worldDimension.getWidth()  : 0);
+	const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)_worldDimension.getHeight() : 0);
 	const int width = irgt - ilft;
 	if (width < 0) {
 	    throw std::invalid_argument("FAIL");
@@ -22,13 +22,13 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
 	// smart as HELL to debug it!
 	///////////////////////////////////////////////////////////////////////
 
-	const size_t xOkA = (x >= ilft) && (x < irgt);
-	const size_t xOkB = (x + _worldDimension.getWidth() >= ilft) && (x + _worldDimension.getWidth() < irgt);
-	const size_t xOk = xOkA || xOkB;
+	const uint32_t xOkA = (x >= ilft) && (x < irgt);
+	const uint32_t xOkB = (x + _worldDimension.getWidth() >= ilft) && (x + _worldDimension.getWidth() < irgt);
+	const uint32_t xOk = xOkA || xOkB;
 
-	const size_t yOkA = (y >= itop) && (y < ibtm);
-	const size_t yOkB = (y + _worldDimension.getHeight() >= itop) && (y + _worldDimension.getHeight() < ibtm);
-	const size_t yOk = yOkA || yOkB;
+	const uint32_t yOkA = (y >= itop) && (y < ibtm);
+	const uint32_t yOkB = (y + _worldDimension.getHeight() >= itop) && (y + _worldDimension.getHeight() < ibtm);
+	const uint32_t yOk = yOkA || yOkB;
 
 	x += (x < ilft) ? _worldDimension.getWidth() : 0; // Point is within plate's map: wrap
 	y += (y < itop) ? _worldDimension.getHeight() : 0; // it around world edges if necessary.
@@ -52,7 +52,7 @@ size_t Rectangle::getMapIndex(size_t* px, size_t* py) const throw()
     }
 }
 
-void Rectangle::enlarge_to_contain(size_t x, size_t y)
+void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y)
 {
     if (y < _top) {
         _top = y;

@@ -27,7 +27,7 @@
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
-typedef size_t ContinentId;
+typedef uint32_t ContinentId;
 
 class plate
 {
@@ -41,8 +41,8 @@ class plate
 	/// @param	_x	           X of height map's left-top corner on world map.
 	/// @param	_y	           Y of height map's left-top corner on world map.
 	/// @param	worldDimension Dimension of world map's either side in pixels.
-	plate(long seed, const float* m, size_t w, size_t h, size_t _x, size_t _y,
-	      size_t plate_age, WorldDimension worldDimension);
+	plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
+	      uint32_t plate_age, WorldDimension worldDimension);
 
 	~plate() throw(); ///< Default destructor for plate.
 
@@ -51,7 +51,7 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Surface area of the collided continent (HACK!)
-	size_t addCollision(size_t wx, size_t wy);
+	uint32_t addCollision(uint32_t wx, uint32_t wy);
 
 	/// Add crust to plate as result of continental collision.
 	///
@@ -60,7 +60,7 @@ class plate
 	/// @param	z	Amount of crust to add.
 	/// @param	t	Time of creation of new crust.
 	/// @param activeContinent Segment ID of the continent that's processed.
-	void addCrustByCollision(size_t x, size_t y, float z, size_t t, ContinentId activeContinent);
+	void addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t t, ContinentId activeContinent);
 
 	/// Simulates subduction of oceanic plate under this plate.
 	///
@@ -75,7 +75,7 @@ class plate
 	/// @param	t	Time of creation of new crust.
 	/// @param	dx	Direction of the subducting plate (X).
 	/// @param	dy	Direction of the subducting plate (Y).
-	void addCrustBySubduction(size_t x, size_t y, float z, size_t t,
+	void addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 		float dx, float dy);
 
 	/// Add continental crust from this plate as part of other plate.
@@ -93,7 +93,7 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Amount of crust aggregated to destination plate.
-	float aggregateCrust(plate* p, size_t wx, size_t wy);
+	float aggregateCrust(plate* p, uint32_t wx, uint32_t wy);
 
 	/// Decrease the speed of plate amount relative to its total mass.
 	///
@@ -117,7 +117,7 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @param	coll_mass Amount of colliding mass from source plate.
-	void collide(plate& p, size_t xw, size_t wy, float coll_mass);
+	void collide(plate& p, uint32_t xw, uint32_t wy, float coll_mass);
 
 	/// Apply plate wide erosion algorithm.
 	///
@@ -132,7 +132,7 @@ class plate
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @param[in, out] count Destination for the count of collisions.
 	/// @param[in, out] count Destination for the % of area that collided.
-	void getCollisionInfo(size_t wx, size_t wy, size_t* count,
+	void getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count,
 	                        float* ratio) const;
 
 	/// Retrieve the surface area of continent lying at desired location.
@@ -140,14 +140,14 @@ class plate
 	/// @param	wx	X coordinate of collision point on world map.
 	/// @param	wy	Y coordinate of collision point on world map.
 	/// @return	Area of continent at desired location or 0 if none.
-	size_t getContinentArea(size_t wx, size_t wy) const;
+	uint32_t getContinentArea(uint32_t wx, uint32_t wy) const;
 
 	/// Get the amount of plate's crustal material at some location.
 	///
 	/// @param	x	Offset on the global world map along X axis.
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @return		Amount of crust at requested location.
-	float getCrust(size_t x, size_t y) const;
+	float getCrust(uint32_t x, uint32_t y) const;
 
 	/// Get the timestamp of plate's crustal material at some location.
 	///
@@ -155,13 +155,13 @@ class plate
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @return		Timestamp of creation of crust at the location.
 	///                     Zero is returned if location contains no crust.
-	size_t getCrustTimestamp(size_t x, size_t y) const;
+	uint32_t getCrustTimestamp(uint32_t x, uint32_t y) const;
 
 	/// Get pointers to plate's data.
 	///
 	/// @param	c	Adress of crust height map is stored here.
 	/// @param	t	Adress of crust timestamp map is stored here.
-	void getMap(const float** c, const size_t** t) const;
+	void getMap(const float** c, const uint32_t** t) const;
 
 	void move(); ///< Moves plate along it's trajectory.
 
@@ -183,7 +183,7 @@ class plate
 	/// @param	coll_x	Origin of collision on global world map (X).
 	/// @param	coll_y	Origin of collision on global world map (Y).
 	/// @return the Id of the continent being processed
-	ContinentId selectCollisionSegment(size_t coll_x, size_t coll_y);
+	ContinentId selectCollisionSegment(uint32_t coll_x, uint32_t coll_y);
 
 	/// Set the amount of plate's crustal material at some location.
 	///
@@ -193,27 +193,27 @@ class plate
 	/// @param	y	Offset on the global world map along Y axis.
 	/// @param	z	Amount of crust at given location.
 	/// @param	t	Time of creation of new crust.
-	void setCrust(size_t x, size_t y, float z, size_t t);
+	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
 	float getMass() const throw() { return mass; }
 	float getMomentum() const throw() { return mass * velocity; }
-	size_t getHeight() const throw() { return height; }
+	uint32_t getHeight() const throw() { return height; }
 	float  getLeft() const throw() { return left; }
 	float  getTop() const throw() { return top; }
 	float getVelocity() const throw() { return velocity; }
 	float getVelX() const throw() { return vx; }
 	float getVelY() const throw() { return vy; }
-	size_t getWidth() const throw() { return width; }
+	uint32_t getWidth() const throw() { return width; }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
-	bool contains(size_t x, size_t y) const;
+	bool contains(uint32_t x, uint32_t y) const;
 
 	// visible for testing
-	inline void calculateCrust(size_t x, size_t y, size_t index, 
+	inline void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
-    		size_t& w, size_t& e, size_t& n, size_t& s);
-	size_t xMod(size_t x) const;
-	size_t yMod(size_t y) const;
+    		uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
+	uint32_t xMod(uint32_t x) const;
+	uint32_t yMod(uint32_t y) const;
 
 	protected:
 	private:
@@ -227,55 +227,55 @@ class plate
 	{
 	  public:
 		segmentData(Platec::Rectangle& rectangle,
-		            size_t _area) : _rectangle(rectangle),
+		            uint32_t _area) : _rectangle(rectangle),
 		                          area(_area), coll_count(0) {};
 
-        void enlarge_to_contain(size_t x, size_t y)
+        void enlarge_to_contain(uint32_t x, uint32_t y)
         {
             _rectangle.enlarge_to_contain(x, y);
         };
 
-        size_t getLeft() const
+        uint32_t getLeft() const
         {
             return _rectangle.getLeft();
         };
 
-        size_t getRight() const
+        uint32_t getRight() const
         {
             return _rectangle.getRight();
         };
 
-        size_t getTop() const
+        uint32_t getTop() const
         {
             return _rectangle.getTop();
         };
 
-        size_t getBottom() const
+        uint32_t getBottom() const
         {
             return _rectangle.getBottom();
         };
 
-        void shift(size_t dx, size_t dy)
+        void shift(uint32_t dx, uint32_t dy)
         {
             _rectangle.shift(dx, dy);
         };
 
-        void setLeft(size_t v)
+        void setLeft(uint32_t v)
         {
             _rectangle.setLeft(v);
         };
 
-        void setRight(size_t v)
+        void setRight(uint32_t v)
         {
             _rectangle.setRight(v);
         };
 
-        void setTop(size_t v)
+        void setTop(uint32_t v)
         {
             _rectangle.setTop(v);
         };
 
-        void setBottom(size_t v)
+        void setBottom(uint32_t v)
         {
             _rectangle.setBottom(v);
         };
@@ -285,8 +285,8 @@ class plate
             return area == 0;
         };
 
-		size_t area; ///< Number of locations this area consists of.
-		size_t coll_count; ///< Number of collisions on this segment.
+		uint32_t area; ///< Number of locations this area consists of.
+		uint32_t coll_count; ///< Number of collisions on this segment.
 
       private:
         Platec::Rectangle _rectangle;
@@ -300,7 +300,7 @@ class plate
 	/// @param	x	Offset on the local height map along X axis.
 	/// @param	y	Offset on the local height map along Y axis.
 	/// @return	ID of created segment on success, otherwise -1.
-	size_t createSegment(size_t wx, size_t wy) throw();
+	uint32_t createSegment(uint32_t wx, uint32_t wy) throw();
 
 	/// Translate world coordinates into offset within plate's height map.
 	///
@@ -312,11 +312,11 @@ class plate
 	/// @param[in, out] x	Offset on the global world map along X axis.
 	/// @param[in, out] y	Offset on the global world map along Y axis.
 	/// @return		Offset in height map or -1 on error.
-	size_t getMapIndex(size_t* x, size_t* y) const throw();
+	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const throw();
 
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-	size_t width, height; ///< Height map's dimensions along X and Y axis.
+	uint32_t width, height; ///< Height map's dimensions along X and Y axis.
 
 	const WorldDimension _worldDimension;
 

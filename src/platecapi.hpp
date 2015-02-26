@@ -20,24 +20,25 @@
 #define PLATECAPI_H
 
 #include <string.h> // For size_t.
+#include "utils.hpp"
 
 void *  platec_api_create(
 	    long seed,
-        size_t width,
-        size_t height,
+        uint32_t width,
+        uint32_t height,
         float sea_level,
-        size_t erosion_period, float folding_ratio,
-        size_t aggr_overlap_abs, float aggr_overlap_rel,
-        size_t cycle_count, size_t num_plates);
+        uint32_t erosion_period, float folding_ratio,
+        uint32_t aggr_overlap_abs, float aggr_overlap_rel,
+        uint32_t cycle_count, uint32_t num_plates);
 
 void    platec_api_destroy(void*);
-const size_t* platec_api_get_agemap(size_t);
+const uint32_t* platec_api_get_agemap(uint32_t);
 float* platec_api_get_heightmap(void*);
-size_t* platec_api_get_platesmap(void*);
-size_t  platec_api_is_finished(void*);
+uint32_t* platec_api_get_platesmap(void*);
+uint32_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
 
-size_t lithosphere_getMapWidth ( void* object);
-size_t lithosphere_getMapHeight ( void* object);
+uint32_t lithosphere_getMapWidth ( void* object);
+uint32_t lithosphere_getMapHeight ( void* object);
 
 #endif
