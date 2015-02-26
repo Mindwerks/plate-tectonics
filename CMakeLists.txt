@@ -6,8 +6,8 @@ include_directories("src")
 
 # -fp-model disable floating point optimization, for the sake of having
 # reproducible results across platforms 
-set(CMAKE_C_FLAGS "-std=c99 -fp-model")
-set(CMAKE_CXX_FLAGS "")
+set(CMAKE_C_FLAGS "-std=c99 -O0")
+set(CMAKE_CXX_FLAGS "-O0")
 
 option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)
