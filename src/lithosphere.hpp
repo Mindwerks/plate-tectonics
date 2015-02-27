@@ -98,6 +98,9 @@ class lithosphere
   private:
 
   	void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
+  	void updateHeightAndPlateIndexMaps(const uint32_t& map_area, 
+  			uint32_t& oceanic_collisions,
+    		uint32_t& continental_collisions);
 
 	/**
 	 * Container for collision details between two plates.

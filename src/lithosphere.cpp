@@ -343,6 +343,166 @@ bool lithosphere::isFinished() const
     return getPlateCount() == 0;
 }
 
+// Update height and plate index maps.
+// Doing it plate by plate is much faster than doing it index wise:
+// Each plate's map's memory area is accessed sequentially and only
+// once as opposed to calculating "num_plates" indices within plate
+// maps in order to find out which plate(s) own current location.
+void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
+    uint32_t& oceanic_collisions,
+    uint32_t& continental_collisions)
+{
+    hmap.set_all(0);
+    memset(imap, 255, map_area * sizeof(uint32_t));
+    for (uint32_t i = 0; i < num_plates; ++i)
+    {
+      const uint32_t x0 = (uint32_t)plates[i]->getLeft();
+      const uint32_t y0 = (uint32_t)plates[i]->getTop();
+      const uint32_t x1 = x0 + plates[i]->getWidth();
+      const uint32_t y1 = y0 + plates[i]->getHeight();
+
+      const float*  this_map;
+      const uint32_t* this_age;
+      plates[i]->getMap(&this_map, &this_age);
+
+      // Copy first part of plate onto world map.
+      for (uint32_t y = y0, j = 0; y < y1; ++y)
+      {
+        for (uint32_t x = x0; x < x1; ++x, ++j)
+        {
+            const uint32_t x_mod = _worldDimension.xMod(x);
+            const uint32_t y_mod = _worldDimension.yMod(y);
+
+            const uint32_t k = _worldDimension.indexOf(x_mod, y_mod);
+
+            if (this_map[j] < 2 * FLT_EPSILON) // No crust here...
+                continue;
+
+            if (imap[k] >= num_plates) // No one here yet?
+            {
+                // This plate becomes the "owner" of current location
+                // if it is the first plate to have crust on it.
+                hmap[k] = this_map[j];
+                imap[k] = i;
+                amap[k] = this_age[j];
+
+                continue;
+            }
+
+            // DO NOT ACCEPT HEIGHT EQUALITY! Equality leads to subduction
+            // of shore that 's barely above sea level. It's a lot less
+            // serious problem to treat very shallow waters as continent...
+            const bool prev_is_oceanic = hmap[k] < CONTINENTAL_BASE;
+            const bool this_is_oceanic = this_map[j] < CONTINENTAL_BASE;
+
+            const uint32_t prev_timestamp = plates[imap[k]]->
+                getCrustTimestamp(x_mod, y_mod);
+            const uint32_t this_timestamp = this_age[j];
+            const uint32_t prev_is_bouyant = (hmap[k] > this_map[j]) |
+                ((hmap[k] + 2 * FLT_EPSILON > this_map[j]) &
+                 (hmap[k] < 2 * FLT_EPSILON + this_map[j]) &
+                 (prev_timestamp >= this_timestamp));
+
+            // Handle subduction of oceanic crust as special case.
+            if (this_is_oceanic & prev_is_bouyant)
+            {
+                // This plate will be the subducting one.
+                // The level of effect that subduction has
+                // is directly related to the amount of water
+                // on top of the subducting plate.
+                const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
+                    (CONTINENTAL_BASE - this_map[j]) /
+                    CONTINENTAL_BASE;
+
+                // Save collision to the receiving plate's list.
+                plateCollision coll(i, x_mod, y_mod, sediment);
+                subductions[imap[k]].push_back(coll);
+                ++oceanic_collisions;
+
+                // Remove subducted oceanic lithosphere from plate.
+                // This is crucial for
+                // a) having correct amount of colliding crust (below)
+                // b) protecting subducted locations from receiving
+                //    crust from other subductions/collisions.
+                plates[i]->setCrust(x_mod, y_mod, this_map[j] -
+                    OCEANIC_BASE, this_timestamp);
+
+                if (this_map[j] <= 0)
+                    continue; // Nothing more to collide.
+            }
+            else if (prev_is_oceanic)
+            {
+                const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
+                    (CONTINENTAL_BASE - hmap[k]) /
+                    CONTINENTAL_BASE;
+
+                plateCollision coll(imap[k], x_mod, y_mod, sediment);
+                subductions[i].push_back(coll);
+                ++oceanic_collisions;
+
+                plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k] -
+                    OCEANIC_BASE, prev_timestamp);
+                hmap[k] -= OCEANIC_BASE;
+
+                if (hmap[k] <= 0)
+                {
+                    imap[k] = i;
+                    hmap[k] = this_map[j];
+                    amap[k] = this_age[j];
+
+                    continue;
+                }
+            }
+
+            // Record collisions to both plates. This also creates
+            // continent segment at the collided location to plates.
+            uint32_t this_area = plates[i]->addCollision(x_mod, y_mod);
+            uint32_t prev_area = plates[imap[k]]->addCollision(x_mod, y_mod);
+
+            // At least two plates are at same location. 
+            // Move some crust from the SMALLER plate onto LARGER one.
+            if (this_area < prev_area)
+            {
+                plateCollision coll(imap[k], x_mod, y_mod,
+                    this_map[j] * folding_ratio);
+
+                // Give some...
+                hmap[k] += coll.crust;
+                plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k],
+                    this_age[j]);
+
+                // And take some.
+                plates[i]->setCrust(x_mod, y_mod, this_map[j] *
+                    (1.0 - folding_ratio), this_age[j]);
+
+                // Add collision to the earlier plate's list.
+                collisions[i].push_back(coll);
+                ++continental_collisions;
+            }
+            else
+            {
+                plateCollision coll(i, x_mod, y_mod,
+                    hmap[k] * folding_ratio);
+
+                plates[i]->setCrust(x_mod, y_mod,
+                    this_map[j]+coll.crust, amap[k]);
+
+                plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k]
+                    * (1.0 - folding_ratio), amap[k]);
+
+                collisions[imap[k]].push_back(coll);
+                ++continental_collisions;
+
+                // Give the location to the larger plate.
+                hmap[k] = this_map[j];
+                imap[k] = i;
+                amap[k] = this_age[j];
+            }
+        }
+      }
+    }
+}
+
 void lithosphere::update()
 {
 try {
@@ -391,158 +551,7 @@ try {
     uint32_t oceanic_collisions = 0;
     uint32_t continental_collisions = 0;
 
-    // Update height and plate index maps.
-    // Doing it plate by plate is much faster than doing it index wise:
-    // Each plate's map's memory area is accessed sequentially and only
-    // once as opposed to calculating "num_plates" indices within plate
-    // maps in order to find out which plate(s) own current location.
-    hmap.set_all(0);
-    memset(imap, 255, map_area * sizeof(uint32_t));
-    for (uint32_t i = 0; i < num_plates; ++i)
-    {
-      const uint32_t x0 = (uint32_t)plates[i]->getLeft();
-      const uint32_t y0 = (uint32_t)plates[i]->getTop();
-      const uint32_t x1 = x0 + plates[i]->getWidth();
-      const uint32_t y1 = y0 + plates[i]->getHeight();
-
-      const float*  this_map;
-      const uint32_t* this_age;
-      plates[i]->getMap(&this_map, &this_age);
-
-      // Copy first part of plate onto world map.
-      for (uint32_t y = y0, j = 0; y < y1; ++y)
-        for (uint32_t x = x0; x < x1; ++x, ++j)
-        {
-        const uint32_t x_mod = _worldDimension.xMod(x);
-        const uint32_t y_mod = _worldDimension.yMod(y);
-
-        const uint32_t k = _worldDimension.indexOf(x_mod, y_mod);
-
-        if (this_map[j] < 2 * FLT_EPSILON) // No crust here...
-            continue;
-
-        if (imap[k] >= num_plates) // No one here yet?
-        {
-            // This plate becomes the "owner" of current location
-            // if it is the first plate to have crust on it.
-            hmap[k] = this_map[j];
-            imap[k] = i;
-            amap[k] = this_age[j];
-
-            continue;
-        }
-
-        // DO NOT ACCEPT HEIGHT EQUALITY! Equality leads to subduction
-        // of shore that 's barely above sea level. It's a lot less
-        // serious problem to treat very shallow waters as continent...
-        const bool prev_is_oceanic = hmap[k] < CONTINENTAL_BASE;
-        const bool this_is_oceanic = this_map[j] < CONTINENTAL_BASE;
-
-        const uint32_t prev_timestamp = plates[imap[k]]->
-            getCrustTimestamp(x_mod, y_mod);
-        const uint32_t this_timestamp = this_age[j];
-        const uint32_t prev_is_bouyant = (hmap[k] > this_map[j]) |
-            ((hmap[k] + 2 * FLT_EPSILON > this_map[j]) &
-             (hmap[k] < 2 * FLT_EPSILON + this_map[j]) &
-             (prev_timestamp >= this_timestamp));
-
-        // Handle subduction of oceanic crust as special case.
-        if (this_is_oceanic & prev_is_bouyant)
-        {
-            // This plate will be the subducting one.
-            // The level of effect that subduction has
-            // is directly related to the amount of water
-            // on top of the subducting plate.
-            const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
-                (CONTINENTAL_BASE - this_map[j]) /
-                CONTINENTAL_BASE;
-
-            // Save collision to the receiving plate's list.
-            plateCollision coll(i, x_mod, y_mod, sediment);
-            subductions[imap[k]].push_back(coll);
-            ++oceanic_collisions;
-
-            // Remove subducted oceanic lithosphere from plate.
-            // This is crucial for
-            // a) having correct amount of colliding crust (below)
-            // b) protecting subducted locations from receiving
-            //    crust from other subductions/collisions.
-            plates[i]->setCrust(x_mod, y_mod, this_map[j] -
-                OCEANIC_BASE, this_timestamp);
-
-            if (this_map[j] <= 0)
-                continue; // Nothing more to collide.
-        }
-        else if (prev_is_oceanic)
-        {
-            const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
-                (CONTINENTAL_BASE - hmap[k]) /
-                CONTINENTAL_BASE;
-
-            plateCollision coll(imap[k], x_mod, y_mod, sediment);
-            subductions[i].push_back(coll);
-            ++oceanic_collisions;
-
-            plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k] -
-                OCEANIC_BASE, prev_timestamp);
-            hmap[k] -= OCEANIC_BASE;
-
-            if (hmap[k] <= 0)
-            {
-                imap[k] = i;
-                hmap[k] = this_map[j];
-                amap[k] = this_age[j];
-
-                continue;
-            }
-        }
-
-        // Record collisions to both plates. This also creates
-        // continent segment at the collided location to plates.
-        uint32_t this_area = plates[i]->addCollision(x_mod, y_mod);
-        uint32_t prev_area = plates[imap[k]]->addCollision(x_mod, y_mod);
-
-        // At least two plates are at same location. 
-        // Move some crust from the SMALLER plate onto LARGER one.
-        if (this_area < prev_area)
-        {
-            plateCollision coll(imap[k], x_mod, y_mod,
-                this_map[j] * folding_ratio);
-
-            // Give some...
-            hmap[k] += coll.crust;
-            plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k],
-                this_age[j]);
-
-            // And take some.
-            plates[i]->setCrust(x_mod, y_mod, this_map[j] *
-                (1.0 - folding_ratio), this_age[j]);
-
-            // Add collision to the earlier plate's list.
-            collisions[i].push_back(coll);
-            ++continental_collisions;
-        }
-        else
-        {
-            plateCollision coll(i, x_mod, y_mod,
-                hmap[k] * folding_ratio);
-
-            plates[i]->setCrust(x_mod, y_mod,
-                this_map[j]+coll.crust, amap[k]);
-
-            plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k]
-                * (1.0 - folding_ratio), amap[k]);
-
-            collisions[imap[k]].push_back(coll);
-            ++continental_collisions;
-
-            // Give the location to the larger plate.
-            hmap[k] = this_map[j];
-            imap[k] = i;
-            amap[k] = this_age[j];
-        }
-        }
-    }
+    updateHeightAndPlateIndexMaps(map_area, oceanic_collisions, continental_collisions);
 
     // Update the counter of iterations since last continental collision.
     last_coll_count = (last_coll_count + 1) &
@@ -634,7 +643,7 @@ try {
         }
 
         collisions[i].clear();
-      }
+    }
 
     uint32_t* indexFound = new uint32_t[num_plates];
     memset(indexFound, 0, sizeof(uint32_t)*num_plates);
