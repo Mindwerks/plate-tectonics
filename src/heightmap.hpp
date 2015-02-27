@@ -5,6 +5,7 @@
 #include <cstring>
 #include <string>
 #include "utils.hpp"
+#include "rectangle.hpp"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ public:
     Position(const Position& other);
     unsigned int x() const;
     unsigned int y() const;
+    unsigned int toIndex(const WorldDimension&) const;
 private:
     unsigned int _x;
     unsigned int _y;

@@ -27,3 +27,8 @@ unsigned int Position::y() const
 {
     return _y;
 };
+
+unsigned int Position::toIndex(const WorldDimension& dim) const
+{
+    return _y * dim.getWidth() + _x;
+};
