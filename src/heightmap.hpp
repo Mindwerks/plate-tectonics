@@ -8,13 +8,26 @@
 
 using namespace std;
 
+class Position
+{
+public:
+    Position(unsigned int x, unsigned int y);
+    Position(const Position& other);
+    unsigned int x() const;
+    unsigned int y() const;
+private:
+    unsigned int _x;
+    unsigned int _y;
+};
+
 template <typename Value>
 class Matrix
 {
 public:
 
     Matrix(unsigned int width, unsigned int height)
-        : _width(width), _height(height)
+        : _width(width), 
+          _height(height)
     {
         if (width == 0 || height == 0) {
             throw invalid_argument("width and height should be greater than zero");
@@ -23,7 +36,8 @@ public:
     };
 
     Matrix( const Matrix<Value>& other )
-        : _width(other._width), _height(other._height)
+        : _width(other._width), 
+          _height(other._height)
     {
         _data = new Value[_width * _height];
         for (int x=0; x<_width;x++){
@@ -41,8 +55,8 @@ public:
     const void set_all(const Value& value)
     {
         // we cannot use memset to make it very general
-        for (int x=0; x<_width; x++){
-            for (int y=0; y<_height; y++){
+        for (int x=0; x<_width; x++) {
+            for (int y=0; y<_height; y++) {
                 set(x, y, value);
             }
         }
@@ -86,12 +100,27 @@ public:
     {
         if (index >= (_width*_height)) {
             string s("invalid index: ");
-            s = s + Platec::to_string(index) 
+            s = s + Platec::to_string(index)s
                 + ", width " + Platec::to_string(_width)
                 + ", height " + Platec::to_string(_height);
             throw invalid_argument(s);
         }
         return this->_data[index];
+    }
+
+    Value& operator[](const Position& pos) const
+    {
+        if (pos.x() >= _width || pos.y() >= _height) {
+            string s("invalid index: ");
+            s = s
+                + Platec::to_string(pos.x())
+                + ", "
+                + Platec::to_string(pos.y())
+                + ", width " + Platec::to_string(_width)
+                + ", height " + Platec::to_string(_height);
+            throw invalid_argument(s);
+        }
+        return this->_data[pos.y() * _width + pos.y()];
     }
 
     void copy_raw_to(Value*& dst, bool allocate = false) const
