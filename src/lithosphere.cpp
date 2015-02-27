@@ -214,8 +214,8 @@ try {
             if (N == 0)
                 continue;
 
-            const Position j = randomPosition();
-            const uint32_t p = area[i].border[j.toIndex(_worldDimension)];
+            const uint32_t j = _randsource.next() % N;
+            const uint32_t p = area[i].border[j];
             const uint32_t cy = _worldDimension.yFromIndex(p);
             const uint32_t cx = _worldDimension.xFromIndex(p);
 
@@ -278,7 +278,7 @@ try {
             }
 
             // Overwrite processed point with unprocessed one.
-            area[i].border[j.toIndex(_worldDimension)] = area[i].border.back();
+            area[i].border[j] = area[i].border.back();
             area[i].border.pop_back();
         }
     }
