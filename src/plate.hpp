@@ -221,6 +221,7 @@ class plate
 
 	ContinentId getContinentAt(int x, int y) const;
 	void findRiverSources(float lower_bound, vector<uint32_t>* sources);
+	void flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp);
 
 	/// Container for details about a segmented crust area on this plate.
 	class segmentData
