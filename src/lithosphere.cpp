@@ -348,6 +348,56 @@ bool lithosphere::isFinished() const
     return getPlateCount() == 0;
 }
 
+// At least two plates are at same location. 
+// Move some crust from the SMALLER plate onto LARGER one.
+void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
+        const uint32_t& x_mod, const uint32_t& y_mod,
+        const float*& this_map, const uint32_t*& this_age, uint32_t& continental_collisions)
+{
+    // Record collisions to both plates. This also creates
+    // continent segment at the collided location to plates.
+    uint32_t this_area = plates[i]->addCollision(x_mod, y_mod);
+    uint32_t prev_area = plates[imap[k]]->addCollision(x_mod, y_mod);
+
+    if (this_area < prev_area)
+    {
+        plateCollision coll(imap[k], x_mod, y_mod,
+            this_map[j] * folding_ratio);
+
+        // Give some...
+        hmap[k] += coll.crust;
+        plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k],
+            this_age[j]);
+
+        // And take some.
+        plates[i]->setCrust(x_mod, y_mod, this_map[j] *
+            (1.0 - folding_ratio), this_age[j]);
+
+        // Add collision to the earlier plate's list.
+        collisions[i].push_back(coll);
+        ++continental_collisions;
+    }
+    else
+    {
+        plateCollision coll(i, x_mod, y_mod,
+            hmap[k] * folding_ratio);
+
+        plates[i]->setCrust(x_mod, y_mod,
+            this_map[j]+coll.crust, amap[k]);
+
+        plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k]
+            * (1.0 - folding_ratio), amap[k]);
+
+        collisions[imap[k]].push_back(coll);
+        ++continental_collisions;
+
+        // Give the location to the larger plate.
+        hmap[k] = this_map[j];
+        imap[k] = i;
+        amap[k] = this_age[j];
+    }
+}
+
 // Update height and plate index maps.
 // Doing it plate by plate is much faster than doing it index wise:
 // Each plate's map's memory area is accessed sequentially and only
@@ -459,50 +509,8 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                 }
             }
 
-            // Record collisions to both plates. This also creates
-            // continent segment at the collided location to plates.
-            uint32_t this_area = plates[i]->addCollision(x_mod, y_mod);
-            uint32_t prev_area = plates[imap[k]]->addCollision(x_mod, y_mod);
-
-            // At least two plates are at same location. 
-            // Move some crust from the SMALLER plate onto LARGER one.
-            if (this_area < prev_area)
-            {
-                plateCollision coll(imap[k], x_mod, y_mod,
-                    this_map[j] * folding_ratio);
-
-                // Give some...
-                hmap[k] += coll.crust;
-                plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k],
-                    this_age[j]);
-
-                // And take some.
-                plates[i]->setCrust(x_mod, y_mod, this_map[j] *
-                    (1.0 - folding_ratio), this_age[j]);
-
-                // Add collision to the earlier plate's list.
-                collisions[i].push_back(coll);
-                ++continental_collisions;
-            }
-            else
-            {
-                plateCollision coll(i, x_mod, y_mod,
-                    hmap[k] * folding_ratio);
-
-                plates[i]->setCrust(x_mod, y_mod,
-                    this_map[j]+coll.crust, amap[k]);
-
-                plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k]
-                    * (1.0 - folding_ratio), amap[k]);
-
-                collisions[imap[k]].push_back(coll);
-                ++continental_collisions;
-
-                // Give the location to the larger plate.
-                hmap[k] = this_map[j];
-                imap[k] = i;
-                amap[k] = this_age[j];
-            }
+            resolveJuxtapositions(i, j, k, x_mod, y_mod,
+                this_map, this_age, continental_collisions);
         }
       }
     }
