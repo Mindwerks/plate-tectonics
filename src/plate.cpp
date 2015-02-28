@@ -102,8 +102,8 @@ plate::~plate() throw()
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 {
     ContinentId seg = getContinentAt(wx, wy);
-    ++seg_data[seg].coll_count;
-    return seg_data[seg].area;
+    seg_data[seg].incCollCount();
+    return seg_data[seg].area();
 }
 
 void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, ContinentId activeContinent)
@@ -116,7 +116,7 @@ void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, 
     segment[index] = activeContinent;
     SegmentData& data = seg_data[activeContinent];
 
-    ++data.area;
+    data.incArea();
     data.enlarge_to_contain(x, y);
 }
 
@@ -231,7 +231,7 @@ try {
       }
     }
 
-    seg_data[seg_id].area = 0; // Mark segment as non-existent
+    seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
     return old_mass - mass;
 } catch (const exception& e){
     std::string msg = "Problem during plate::aggregateCrust: ";
@@ -653,9 +653,9 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
     *count = 0;
     *ratio = 0;
 
-    *count = seg_data[seg].coll_count;
-    *ratio = (float)seg_data[seg].coll_count /
-        (float)(1 + seg_data[seg].area); // +1 avoids DIV with zero.
+    *count = seg_data[seg].collCount();
+    *ratio = (float)seg_data[seg].collCount() /
+        (float)(1 + seg_data[seg].area()); // +1 avoids DIV with zero.
 }
 
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
@@ -664,7 +664,7 @@ uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 
     assert(segment[index] < seg_data.size());
 
-    return seg_data[segment[index]].area;
+    return seg_data[segment[index]].area();
 }
 
 float plate::getCrust(uint32_t x, uint32_t y) const
@@ -958,7 +958,7 @@ try {
     if (nbour_id < ID)
     {
         segment[origin_index] = nbour_id;
-        ++seg_data[nbour_id].area;
+        seg_data[nbour_id].incArea();
 
         seg_data[nbour_id].enlarge_to_contain(x, y);
 
@@ -1044,7 +1044,7 @@ try {
             // Count volume of pixel...
         }
 
-        data.area += 1 + end - start; // Update segment area counter.
+        data.incArea(1 + end - start); // Update segment area counter.
 
         // Record any changes in extreme dimensions.
         if (line < data.getTop()) data.setTop(line);
