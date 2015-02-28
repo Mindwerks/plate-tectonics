@@ -105,6 +105,7 @@ class lithosphere
     		uint32_t& continental_collisions);
   	void updateCollisions();
   	void growPlates(plateArea*& area, uint32_t*& owner);
+  	void removeEmptyPlates(uint32_t*& indexFound);
 
 	/**
 	 * Container for collision details between two plates.

@@ -573,6 +573,32 @@ void lithosphere::updateCollisions()
     }
 }
 
+// Remove empty plates from the system.
+void lithosphere::removeEmptyPlates(uint32_t*& indexFound)
+{    
+    for (uint32_t i = 0; i < num_plates; ++i)
+    {
+        if (num_plates == 1)
+            puts("ONLY ONE PLATE LEFT!");
+        else if (indexFound[i] == 0)
+        {
+            delete plates[i];
+            plates[i] = plates[num_plates - 1];
+            indexFound[i] = indexFound[num_plates - 1];
+
+            // Life is seldom as simple as seems at first.
+            // Replace the moved plate's index in the index map
+            // to match its current position in the array!
+            for (uint32_t j = 0; j < _worldDimension.getArea(); ++j)
+                if (imap[j] == num_plates - 1)
+                    imap[j] = i;
+
+            --num_plates;
+            --i;
+        }
+    }
+}
+
 void lithosphere::update()
 {
 try {
@@ -653,10 +679,9 @@ try {
     memset(indexFound, 0, sizeof(uint32_t)*num_plates);
 
     // Fill divergent boundaries with new crustal material, molten magma.
-    for (uint32_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * _worldDimension.getHeight(); ++y)
-      for (uint32_t x = 0; x < _worldDimension.getWidth(); ++x, ++i)
-        if (imap[i] >= num_plates)
-        {
+    for (uint32_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * _worldDimension.getHeight(); ++y) {
+      for (uint32_t x = 0; x < _worldDimension.getWidth(); ++x, ++i) {
+        if (imap[i] >= num_plates) {
             // The owner of this new crust is that neighbour plate
             // who was located at this point before plates moved.
             imap[i] = prev_imap[i];
@@ -673,33 +698,14 @@ try {
             plates[imap[i]]->setCrust(x, y, OCEANIC_BASE,
                 iter_count);
 
-        }
-        else if (++indexFound[imap[i]] && hmap[i] <= 0)
-        {
+        } else if (++indexFound[imap[i]] && hmap[i] <= 0){
             puts("Occupied point has no land mass!");
             exit(1);
         }
+      }
+    }
 
-    // Remove empty plates from the system.
-    for (uint32_t i = 0; i < num_plates; ++i)
-        if (num_plates == 1)
-            puts("ONLY ONE PLATE LEFT!");
-        else if (indexFound[i] == 0)
-        {
-            delete plates[i];
-            plates[i] = plates[num_plates - 1];
-            indexFound[i] = indexFound[num_plates - 1];
-
-            // Life is seldom as simple as seems at first.
-            // Replace the moved plate's index in the index map
-            // to match its current position in the array!
-            for (uint32_t j = 0; j < _worldDimension.getArea(); ++j)
-                if (imap[j] == num_plates - 1)
-                    imap[j] = i;
-
-            --num_plates;
-            --i;
-        }
+    removeEmptyPlates(indexFound);
 
     delete[] indexFound;
 
