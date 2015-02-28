@@ -223,6 +223,8 @@ class plate
 	void findRiverSources(float lower_bound, vector<uint32_t>* sources);
 	void flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp);
 	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
+	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
+    		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
 
 	/// Container for details about a segmented crust area on this plate.
 	class segmentData

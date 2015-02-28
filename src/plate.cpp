@@ -907,6 +907,42 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
     return nbour_id;
 }
 
+void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
+    std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done)
+{
+    do // Find an unscanned span on this line.
+    {
+        end = spans_todo[line].back();
+        spans_todo[line].pop_back();
+
+        start = spans_todo[line].back();
+        spans_todo[line].pop_back();
+
+        // Reduce any done spans from this span.
+        for (uint32_t j = 0; j < spans_done[line].size();
+             j += 2)
+        {
+            // Saved coordinates are AT the point
+            // that was included last to the span.
+            // That's why equalities matter.
+
+            if (start >= spans_done[line][j] &&
+                start <= spans_done[line][j+1])
+                start = spans_done[line][j+1] + 1;
+
+            if (end >= spans_done[line][j] &&
+                end <= spans_done[line][j+1])
+                end = spans_done[line][j] - 1;
+        }
+
+        // Unsigned-ness hacking!
+        // Required to fix the underflow of end - 1.
+        start |= -(end >= width);
+        end -= (end >= width);
+
+    } while (start > end && spans_todo[line].size());
+}
+
 uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
 try {    
@@ -950,37 +986,7 @@ try {
         if (spans_todo[line].size() == 0)
             continue;
 
-        do // Find an unscanned span on this line.
-        {
-            end = spans_todo[line].back();
-            spans_todo[line].pop_back();
-
-            start = spans_todo[line].back();
-            spans_todo[line].pop_back();
-
-            // Reduce any done spans from this span.
-            for (uint32_t j = 0; j < spans_done[line].size();
-                 j += 2)
-            {
-                // Saved coordinates are AT the point
-                // that was included last to the span.
-                // That's why equalities matter.
-
-                if (start >= spans_done[line][j] &&
-                    start <= spans_done[line][j+1])
-                    start = spans_done[line][j+1] + 1;
-
-                if (end >= spans_done[line][j] &&
-                    end <= spans_done[line][j+1])
-                    end = spans_done[line][j] - 1;
-            }
-
-            // Unsigned-ness hacking!
-            // Required to fix the underflow of end - 1.
-            start |= -(end >= width);
-            end -= (end >= width);
-
-        } while (start > end && spans_todo[line].size());
+        scanSpans(line, start, end, spans_todo, spans_done);
 
         if (start > end) // Nothing to do here anymore...
             continue;
@@ -1046,57 +1052,59 @@ try {
         if (start < data.getLeft()) data.setLeft(start);
         if (end > data.getRight()) data.setRight(end);
 
-        if (line > 0 || height == _worldDimension.getHeight())
-        for (uint32_t j = start; j <= end; ++j)
-          if (segment[line_above + j] > ID &&
-              map[line_above + j] >= CONT_BASE)
-          {
-            uint32_t a = j;
-            segment[line_above + a] = ID;
-
-            // Count volume of pixel...
-
-            while (++j < width &&
-                   segment[line_above + j] > ID &&
-                   map[line_above + j] >= CONT_BASE)
-            {
-                segment[line_above + j] = ID;
+        if (line > 0 || height == _worldDimension.getHeight()) {
+            for (uint32_t j = start; j <= end; ++j)
+              if (segment[line_above + j] > ID &&
+                  map[line_above + j] >= CONT_BASE)
+              {
+                uint32_t a = j;
+                segment[line_above + a] = ID;
 
                 // Count volume of pixel...
-            }
 
-            uint32_t b = --j; // Last point is invalid.
+                while (++j < width &&
+                       segment[line_above + j] > ID &&
+                       map[line_above + j] >= CONT_BASE)
+                {
+                    segment[line_above + j] = ID;
 
-            spans_todo[row_above].push_back(a);
-            spans_todo[row_above].push_back(b);
-            ++j; // Skip the last scanned point.
-          }
+                    // Count volume of pixel...
+                }
 
-        if (line < height - 1 || height == _worldDimension.getHeight())
-        for (uint32_t j = start; j <= end; ++j)
-          if (segment[line_below + j] > ID &&
-              map[line_below + j] >= CONT_BASE)
-          {
-            uint32_t a = j;
-            segment[line_below + a] = ID;
+                uint32_t b = --j; // Last point is invalid.
 
-            // Count volume of pixel...
+                spans_todo[row_above].push_back(a);
+                spans_todo[row_above].push_back(b);
+                ++j; // Skip the last scanned point.
+              }
+        }
 
-            while (++j < width &&
-                   segment[line_below + j] > ID &&
-                   map[line_below + j] >= CONT_BASE)
-            {
-                segment[line_below + j] = ID;
+        if (line < height - 1 || height == _worldDimension.getHeight()) {
+            for (uint32_t j = start; j <= end; ++j)
+              if (segment[line_below + j] > ID &&
+                  map[line_below + j] >= CONT_BASE)
+              {
+                uint32_t a = j;
+                segment[line_below + a] = ID;
 
                 // Count volume of pixel...
-            }
 
-            uint32_t b = --j; // Last point is invalid.
+                while (++j < width &&
+                       segment[line_below + j] > ID &&
+                       map[line_below + j] >= CONT_BASE)
+                {
+                    segment[line_below + j] = ID;
 
-            spans_todo[row_below].push_back(a);
-            spans_todo[row_below].push_back(b);
-            ++j; // Skip the last scanned point.
-          }
+                    // Count volume of pixel...
+                }
+
+                uint32_t b = --j; // Last point is invalid.
+
+                spans_todo[row_below].push_back(a);
+                spans_todo[row_below].push_back(b);
+                ++j; // Skip the last scanned point.
+              }
+        }
 
         spans_done[line].push_back(start);
         spans_done[line].push_back(end);
