@@ -23,6 +23,7 @@
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
+#include "segment_data.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
@@ -225,76 +226,6 @@ class plate
 	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
 	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
     		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
-
-	/// Container for details about a segmented crust area on this plate.
-	class segmentData
-	{
-	  public:
-		segmentData(Platec::Rectangle& rectangle,
-		            uint32_t _area) : _rectangle(rectangle),
-		                          area(_area), coll_count(0) {};
-
-        void enlarge_to_contain(uint32_t x, uint32_t y)
-        {
-            _rectangle.enlarge_to_contain(x, y);
-        };
-
-        uint32_t getLeft() const
-        {
-            return _rectangle.getLeft();
-        };
-
-        uint32_t getRight() const
-        {
-            return _rectangle.getRight();
-        };
-
-        uint32_t getTop() const
-        {
-            return _rectangle.getTop();
-        };
-
-        uint32_t getBottom() const
-        {
-            return _rectangle.getBottom();
-        };
-
-        void shift(uint32_t dx, uint32_t dy)
-        {
-            _rectangle.shift(dx, dy);
-        };
-
-        void setLeft(uint32_t v)
-        {
-            _rectangle.setLeft(v);
-        };
-
-        void setRight(uint32_t v)
-        {
-            _rectangle.setRight(v);
-        };
-
-        void setTop(uint32_t v)
-        {
-            _rectangle.setTop(v);
-        };
-
-        void setBottom(uint32_t v)
-        {
-            _rectangle.setBottom(v);
-        };
-
-        bool isEmpty() const
-        {
-            return area == 0;
-        };
-
-		uint32_t area; ///< Number of locations this area consists of.
-		uint32_t coll_count; ///< Number of collisions on this segment.
-
-      private:
-        Platec::Rectangle _rectangle;
-	};
 
 	/// Separate a continent at (X, Y) to its own partition.
 	///
