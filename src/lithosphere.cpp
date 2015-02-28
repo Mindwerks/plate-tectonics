@@ -157,52 +157,8 @@ lithosphere::~lithosphere() throw()
     delete[] imap;   imap = 0;
 }
 
-void lithosphere::createPlates(uint32_t num_plates)
+void lithosphere::growPlates(plateArea*& area, uint32_t*& owner)
 {
-try {    
-    const uint32_t map_area = _worldDimension.getArea();
-    this->max_plates = this->num_plates = num_plates;
-
-    std::vector<plateCollision> vec;
-    vec.reserve(_worldDimension.largerSize()*4); // == map's circumference.
-
-    collisions.reserve(num_plates);
-    subductions.reserve(num_plates);
-
-    for (uint32_t i = 0; i < num_plates; ++i)
-    {
-        collisions.push_back(vec);
-        subductions.push_back(vec);
-    }
-
-    // Initialize "Free plate center position" lookup table.
-    // This way two plate centers will never be identical.
-    for (uint32_t i = 0; i < map_area; ++i)
-        imap[i] = i;
-
-    // Select N plate centers from the global map.
-    plateArea* area = new plateArea[num_plates];
-    for (uint32_t i = 0; i < num_plates; ++i)
-    {
-        // Randomly select an unused plate origin.
-        const uint32_t p = imap[(uint32_t)_randsource.next() % (map_area - i)];
-        const uint32_t y = _worldDimension.yFromIndex(p);
-        const uint32_t x = _worldDimension.xFromIndex(p);
-
-        area[i].lft = area[i].rgt = x; // Save origin...
-        area[i].top = area[i].btm = y;
-        area[i].wdt = area[i].hgt = 1;
-
-        area[i].border.reserve(8);
-        area[i].border.push_back(p); // ...and mark it as border.
-
-        // Overwrite used entry with last unused entry in array.
-        imap[p] = imap[map_area - i - 1];
-    }
-
-    uint32_t* owner = imap; // Create an alias.
-    memset(owner, 255, map_area * sizeof(uint32_t));
-
     // "Grow" plates from their origins until surface is fully populated.
     uint32_t max_border = 1;
     uint32_t i;
@@ -282,6 +238,55 @@ try {
             area[i].border.pop_back();
         }
     }
+}
+
+void lithosphere::createPlates(uint32_t num_plates)
+{
+try {    
+    const uint32_t map_area = _worldDimension.getArea();
+    this->max_plates = this->num_plates = num_plates;
+
+    std::vector<plateCollision> vec;
+    vec.reserve(_worldDimension.largerSize()*4); // == map's circumference.
+
+    collisions.reserve(num_plates);
+    subductions.reserve(num_plates);
+
+    for (uint32_t i = 0; i < num_plates; ++i)
+    {
+        collisions.push_back(vec);
+        subductions.push_back(vec);
+    }
+
+    // Initialize "Free plate center position" lookup table.
+    // This way two plate centers will never be identical.
+    for (uint32_t i = 0; i < map_area; ++i)
+        imap[i] = i;
+
+    // Select N plate centers from the global map.
+    plateArea* area = new plateArea[num_plates];
+    for (uint32_t i = 0; i < num_plates; ++i)
+    {
+        // Randomly select an unused plate origin.
+        const uint32_t p = imap[(uint32_t)_randsource.next() % (map_area - i)];
+        const uint32_t y = _worldDimension.yFromIndex(p);
+        const uint32_t x = _worldDimension.xFromIndex(p);
+
+        area[i].lft = area[i].rgt = x; // Save origin...
+        area[i].top = area[i].btm = y;
+        area[i].wdt = area[i].hgt = 1;
+
+        area[i].border.reserve(8);
+        area[i].border.push_back(p); // ...and mark it as border.
+
+        // Overwrite used entry with last unused entry in array.
+        imap[p] = imap[map_area - i - 1];
+    }
+
+    uint32_t* owner = imap; // Create an alias.
+    memset(owner, 255, map_area * sizeof(uint32_t));
+
+    growPlates(area, owner);
 
     plates = new plate*[num_plates];
 
@@ -503,7 +508,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
     }
 }
 
-void lithosphere::updateColissions()
+void lithosphere::updateCollisions()
 {
     for (uint32_t i = 0; i < num_plates; ++i)
     {
@@ -648,7 +653,7 @@ try {
         subductions[i].clear();
     }
 
-    updateColissions();
+    updateCollisions();
 
     uint32_t* indexFound = new uint32_t[num_plates];
     memset(indexFound, 0, sizeof(uint32_t)*num_plates);

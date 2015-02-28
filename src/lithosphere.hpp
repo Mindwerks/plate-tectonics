@@ -37,6 +37,8 @@ using namespace std;
 
 class plate;
 
+class plateArea;
+
 /**
  * Lithosphere is the rigid outermost shell of a rocky planet.
  *
@@ -101,7 +103,8 @@ class lithosphere
   	void updateHeightAndPlateIndexMaps(const uint32_t& map_area, 
   			uint32_t& oceanic_collisions,
     		uint32_t& continental_collisions);
-  	void updateColissions();
+  	void updateCollisions();
+  	void growPlates(plateArea*& area, uint32_t*& owner);
 
 	/**
 	 * Container for collision details between two plates.
