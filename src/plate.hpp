@@ -220,6 +220,7 @@ class plate
 	SimpleRandom _randsource;    
 
 	ContinentId getContinentAt(int x, int y) const;
+	void findRiverSources(float lower_bound, vector<uint32_t>* sources);
 
 	/// Container for details about a segmented crust area on this plate.
 	class segmentData

@@ -403,17 +403,8 @@ void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index,
         _worldDimension, map, width, height);
 }
 
-void plate::erode(float lower_bound)
+void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
 {
-try {    
-  vector<uint32_t> sources_data;
-  vector<uint32_t> sinks_data;
-  vector<uint32_t>* sources = &sources_data;
-  vector<uint32_t>* sinks = &sinks_data;
-
-  float* tmp = new float[width*height];
-  map.copy_raw_to(tmp);
-
   // Find all tops.
   for (uint32_t y = 0; y < height; ++y) {
     for (uint32_t x = 0; x < width; ++x) {
@@ -437,6 +428,20 @@ try {
         sources->push_back(index);
     }
   }
+}
+
+void plate::erode(float lower_bound)
+{
+try {    
+  vector<uint32_t> sources_data;
+  vector<uint32_t> sinks_data;
+  vector<uint32_t>* sources = &sources_data;
+  vector<uint32_t>* sinks = &sinks_data;
+
+  float* tmp = new float[width*height];
+  map.copy_raw_to(tmp);
+
+  findRiverSources(lower_bound, sources);
 
   uint32_t* isDone = new uint32_t[width*height];
   memset(isDone, 0, width*height*sizeof(uint32_t));
