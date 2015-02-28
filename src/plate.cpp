@@ -883,16 +883,8 @@ ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 /// Private methods ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
+uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID)
 {
-try {    
-    const uint32_t origin_index = y * width + x;
-    const uint32_t ID = seg_data.size();
-
-    if (segment[origin_index] < ID) {
-        return segment[origin_index];
-    }
-
     uint32_t canGoLeft  = x > 0          && map[origin_index - 1]     >= CONT_BASE;
     uint32_t canGoRight = x < width - 1  && map[origin_index+1]       >= CONT_BASE;
     uint32_t canGoUp    = y > 0          && map[origin_index - width] >= CONT_BASE;
@@ -911,6 +903,21 @@ try {
     } else if (canGoDown && segment[origin_index + width] < ID) {
         nbour_id = segment[origin_index + width];
     }
+
+    return nbour_id;
+}
+
+uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
+{
+try {    
+    const uint32_t origin_index = y * width + x;
+    const uint32_t ID = seg_data.size();
+
+    if (segment[origin_index] < ID) {
+        return segment[origin_index];
+    }
+
+    uint32_t nbour_id = calcDirection(x, y, origin_index, ID);
 
     if (nbour_id < ID)
     {
