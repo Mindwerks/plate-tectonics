@@ -114,7 +114,7 @@ void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, 
     uint32_t index = getMapIndex(&x, &y);
 
     segment[index] = activeContinent;
-    segmentData& data = seg_data[activeContinent];
+    SegmentData& data = seg_data[activeContinent];
 
     ++data.area;
     data.enlarge_to_contain(x, y);
@@ -967,7 +967,7 @@ try {
 
     uint32_t lines_processed;
     Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
-    segmentData data(r, 0);
+    SegmentData data(r, 0);
 
     std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[height];
     std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[height];

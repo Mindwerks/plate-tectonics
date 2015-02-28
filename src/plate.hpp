@@ -264,7 +264,7 @@ class plate
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 
-	std::vector<segmentData> seg_data; ///< Details of each crust segment.
+	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
 };
 
