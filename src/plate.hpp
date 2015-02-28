@@ -19,7 +19,6 @@
 #ifndef PLATE_HPP
 #define PLATE_HPP
 
-#include <cstring> // for size_t
 #include <vector>
 #include "simplerandom.hpp"
 #include "heightmap.hpp"

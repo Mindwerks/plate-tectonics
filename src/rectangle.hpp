@@ -48,12 +48,12 @@ public:
 
     uint32_t xMod(uint32_t x) const
     {
-        return x % getWidth();
+        return (x + _width) % getWidth();
     }
 
     uint32_t yMod(uint32_t y) const
     {
-        return y % getHeight();
+        return (y + _height) % getHeight();
     }    
 
     bool contains(const uint32_t x, const uint32_t y) const
