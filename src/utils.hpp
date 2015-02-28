@@ -17,4 +17,6 @@ std::string to_string(uint32_t value);
 
 }
 
+void p_assert(bool condition, const std::string& message);
+
 #endif
