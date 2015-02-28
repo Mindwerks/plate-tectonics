@@ -101,6 +101,7 @@ class lithosphere
   	void updateHeightAndPlateIndexMaps(const uint32_t& map_area, 
   			uint32_t& oceanic_collisions,
     		uint32_t& continental_collisions);
+  	void updateColissions();
 
 	/**
 	 * Container for collision details between two plates.

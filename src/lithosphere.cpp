@@ -503,6 +503,71 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
     }
 }
 
+void lithosphere::updateColissions()
+{
+    for (uint32_t i = 0; i < num_plates; ++i)
+    {
+        for (uint32_t j = 0; j < collisions[i].size(); ++j)
+        {
+            const plateCollision& coll = collisions[i][j];
+            uint32_t coll_count, coll_count_i, coll_count_j;
+            float coll_ratio, coll_ratio_i, coll_ratio_j;
+
+            #ifdef DEBUG
+            if (i == coll.index)
+            {
+                puts("when colliding: SRC == DEST!");
+                exit(1);
+            }
+            #endif
+
+            // Collision causes friction. Apply it to both plates.
+            plates[i]->applyFriction(coll.crust);
+            plates[coll.index]->applyFriction(coll.crust);
+
+            plates[i]->getCollisionInfo(coll.wx, coll.wy,
+                &coll_count_i, &coll_ratio_i);
+            plates[coll.index]->getCollisionInfo(coll.wx,
+                coll.wy, &coll_count_j, &coll_ratio_j);
+
+            // Find the minimum count of collisions between two
+            // continents on different plates.
+            // It's minimum because large plate will get collisions
+            // from all over where as smaller plate will get just
+            // a few. It's those few that matter between these two
+            // plates, not what the big plate has with all the
+            // other plates around it.
+            coll_count = coll_count_i;
+            coll_count -= (coll_count - coll_count_j) &
+                -(coll_count > coll_count_j);
+
+            // Find maximum amount of collided surface area between
+            // two continents on different plates.
+            // Like earlier, it's the "experience" of the smaller
+            // plate that matters here.
+            coll_ratio = coll_ratio_i;
+            coll_ratio += (coll_ratio_j - coll_ratio) *
+                (coll_ratio_j > coll_ratio);
+
+            if ((coll_count > aggr_overlap_abs) |
+                (coll_ratio > aggr_overlap_rel))
+            {
+                float amount = plates[i]->aggregateCrust(
+                        plates[coll.index],
+                        coll.wx, coll.wy);
+
+                // Calculate new direction and speed for the
+                // merged plate system, that is, for the
+                // receiving plate!
+                plates[coll.index]->collide(*plates[i],
+                    coll.wx, coll.wy, amount);
+            }
+        }
+
+        collisions[i].clear();
+    }
+}
+
 void lithosphere::update()
 {
 try {
@@ -583,67 +648,7 @@ try {
         subductions[i].clear();
     }
 
-    for (uint32_t i = 0; i < num_plates; ++i)
-    {
-        for (uint32_t j = 0; j < collisions[i].size(); ++j)
-        {
-            const plateCollision& coll = collisions[i][j];
-            uint32_t coll_count, coll_count_i, coll_count_j;
-            float coll_ratio, coll_ratio_i, coll_ratio_j;
-
-            #ifdef DEBUG
-            if (i == coll.index)
-            {
-                puts("when colliding: SRC == DEST!");
-                exit(1);
-            }
-            #endif
-
-            // Collision causes friction. Apply it to both plates.
-            plates[i]->applyFriction(coll.crust);
-            plates[coll.index]->applyFriction(coll.crust);
-
-            plates[i]->getCollisionInfo(coll.wx, coll.wy,
-                &coll_count_i, &coll_ratio_i);
-            plates[coll.index]->getCollisionInfo(coll.wx,
-                coll.wy, &coll_count_j, &coll_ratio_j);
-
-            // Find the minimum count of collisions between two
-            // continents on different plates.
-            // It's minimum because large plate will get collisions
-            // from all over where as smaller plate will get just
-            // a few. It's those few that matter between these two
-            // plates, not what the big plate has with all the
-            // other plates around it.
-            coll_count = coll_count_i;
-            coll_count -= (coll_count - coll_count_j) &
-                -(coll_count > coll_count_j);
-
-            // Find maximum amount of collided surface area between
-            // two continents on different plates.
-            // Like earlier, it's the "experience" of the smaller
-            // plate that matters here.
-            coll_ratio = coll_ratio_i;
-            coll_ratio += (coll_ratio_j - coll_ratio) *
-                (coll_ratio_j > coll_ratio);
-
-            if ((coll_count > aggr_overlap_abs) |
-                (coll_ratio > aggr_overlap_rel))
-            {
-                float amount = plates[i]->aggregateCrust(
-                        plates[coll.index],
-                        coll.wx, coll.wy);
-
-                // Calculate new direction and speed for the
-                // merged plate system, that is, for the
-                // receiving plate!
-                plates[coll.index]->collide(*plates[i],
-                    coll.wx, coll.wy, amount);
-            }
-        }
-
-        collisions[i].clear();
-    }
+    updateColissions();
 
     uint32_t* indexFound = new uint32_t[num_plates];
     memset(indexFound, 0, sizeof(uint32_t)*num_plates);
