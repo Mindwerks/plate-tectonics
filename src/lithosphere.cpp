@@ -633,13 +633,7 @@ try {
         {
             const plateCollision& coll = subductions[i][j];
 
-            #ifdef DEBUG
-            if (i == coll.index)
-            {
-                puts("when subducting: SRC == DEST!");
-                exit(1);
-            }
-            #endif
+            p_assert(i != coll.index, "when subducting: SRC == DEST!");
 
             // Do not apply friction to oceanic plates.
             // This is a very cheap way to emulate slab pull.
@@ -667,13 +661,7 @@ try {
             // who was located at this point before plates moved.
             imap[i] = prev_imap[i];
 
-            #ifdef DEBUG
-            if (imap[i] >= num_plates)
-            {
-                puts("Previous index map has no owner!");
-                exit(1);
-            }
-            #endif
+            p_assert(imap[i] < num_plates, "Previous index map has no owner!");
 
             // If this is oceanic crust then add buoyancy to it.
             // Magma that has just crystallized into oceanic crust
