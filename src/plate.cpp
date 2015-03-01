@@ -108,6 +108,7 @@ uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 
 void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, ContinentId activeContinent)
 {
+try {    
     // Add crust. Extend plate if necessary.
     setCrust(x, y, getCrust(x, y) + z, time);
 
@@ -118,11 +119,17 @@ void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, 
 
     data.incArea();
     data.enlarge_to_contain(x, y);
+} catch (const exception& e){
+    std::string msg = "Problem during plate::addCrustByCollision: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}
 }
 
 void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     float dx, float dy)
 {
+try {
     // TODO: Create an array of coordinate changes that would create
     //       a circle around current point. Array is static and it is
     //       initialized at the first call to this function.
@@ -172,6 +179,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
         map[index] += z;
         mass += z;
     }
+} catch (const exception& e){
+    std::string msg = "Problem during plate::addCrustBySubduction: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}    
 }
 
 float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
@@ -660,23 +672,41 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 {
+try {
     const uint32_t index = getMapIndex(&wx, &wy);
 
     assert(segment[index] < seg_data.size());
 
     return seg_data[segment[index]].area();
+} catch (const exception& e){
+    std::string msg = "Problem during plate::getContinentArea: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}    
 }
 
 float plate::getCrust(uint32_t x, uint32_t y) const
 {
+try {
     const uint32_t index = getMapIndex(&x, &y);
     return index < (uint32_t)(-1) ? map[index] : 0;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::getCrust: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}        
 }
 
 uint32_t plate::getCrustTimestamp(uint32_t x, uint32_t y) const
 {
+try {
     const uint32_t index = getMapIndex(&x, &y);
     return index < (uint32_t)(-1) ? age_map[index] : 0;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::getCrustTimestamp: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}     
 }
 
 void plate::getMap(const float** c, const uint32_t** t) const
@@ -874,9 +904,15 @@ try {
 
 ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
+try {    
     uint32_t index = getMapIndex(&coll_x, &coll_y);
     ContinentId activeContinent = segment[index];
     return activeContinent;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::selectCollisionSegment: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1136,13 +1172,20 @@ Platec::Rectangle plate::getBounds() const
 }
 
 // TODO move this method to a separate class
-uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const throw()
+uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const
 {
+try {
     return getBounds().getMapIndex(px, py);
+} catch (const exception& e){
+    std::string msg = "Problem during plate::getMapIndex: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}        
 }
 
 ContinentId plate::getContinentAt(int x, int y) const
 {
+try {
     uint32_t lx = x, ly = y;
     uint32_t index = getMapIndex(&lx, &ly);
     ContinentId seg = segment[index];
@@ -1159,4 +1202,9 @@ ContinentId plate::getContinentAt(int x, int y) const
         throw invalid_argument("Could not create segment");
     }
     return seg;
+} catch (const exception& e){
+    std::string msg = "Problem during plate::getContinentAt: ";
+    msg = msg + e.what();
+    throw runtime_error(msg.c_str());
+}      
 }
