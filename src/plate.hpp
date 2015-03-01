@@ -215,6 +215,10 @@ class plate
 	uint32_t xMod(uint32_t x) const;
 	uint32_t yMod(uint32_t y) const;
 
+	// Visible because of testing
+	/// Position of the plate in the world map
+	Platec::Rectangle getBounds() const;
+
 	protected:
 	private:
 
@@ -226,7 +230,7 @@ class plate
 	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
 	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
     		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
-	Platec::Rectangle getBounds() const;
+	
 
 	/// Separate a continent at (X, Y) to its own partition.
 	///

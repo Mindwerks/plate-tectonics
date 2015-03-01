@@ -65,6 +65,12 @@ public:
     {
     };
 
+    bool operator==(const WorldDimension& other) const
+    {
+        return getWidth()==other.getWidth()
+            && getHeight()==other.getHeight();
+    };
+
     uint32_t getMax() const
     {
         return _width > _height ? _width : _height;
@@ -172,6 +178,15 @@ public:
     bool isInside(const uint32_t px, const uint32_t py) const;
     uint32_t getMapIndex(uint32_t* px, uint32_t* py) const;
     void enlarge_to_contain(uint32_t x, uint32_t y);
+
+    bool operator==(const Rectangle& other) const
+    {
+        return _worldDimension==other._worldDimension
+            && _left == other._left
+            && _right == other._right
+            && _top == other._top
+            && _bottom == other._bottom;
+    }
 
     uint32_t getLeft() const
     {

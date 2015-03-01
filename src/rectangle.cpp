@@ -46,6 +46,7 @@ bool Rectangle::isInside(const uint32_t px, const uint32_t py) const
     return (xOk && yOk);
 }
 
+// TODO reuse code from isInside
 uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
 {
 	uint32_t x = *px % _worldDimension.getWidth();

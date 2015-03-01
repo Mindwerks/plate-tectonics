@@ -1,5 +1,8 @@
 #include "plate.hpp"
 #include "gtest/gtest.h"
+#include "rectangle.hpp"
+
+using namespace Platec;
 
 TEST(CreatePlate, SquareDoesNotExplode)
 {
@@ -15,16 +18,29 @@ TEST(CreatePlate, NotSquareDoesNotExplode)
 
 TEST(Plate, contains)
 {
-	const float *heightmap = new float[256 * 128];
+    const float *heightmap = new float[256 * 128];
     plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
-	EXPECT_EQ(true, p.contains(148, 25));
+    EXPECT_EQ(true, p.contains(148, 25));
+}
+
+TEST(Plate, getBounds)
+{
+    const WorldDimension wd = WorldDimension(256, 128);
+    const float *heightmap = new float[wd.getArea()];
+    plate p = plate(123, heightmap, 
+        100, 80, // width, height
+        50, 23, // x, y
+        18, // plate age
+        wd);
+    Rectangle expected = Rectangle(wd, UINT32_C(50), UINT32_C(150), UINT32_C(23), UINT32_C(103));
+    EXPECT_EQ(expected, p.getBounds());  
 }
 
 // TODO test also when plate is large as world
 TEST(Plate, calculateCrust)
 {
   const float *heightmap = new float[256 * 128];
-  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));	
+  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));    
   uint32_t x, y, index;
   float w_crust, e_crust, n_crust, s_crust;
   uint32_t w, e, n, s;
