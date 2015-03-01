@@ -1124,7 +1124,7 @@ try {
 }
 }
 
-uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const throw()
+Platec::Rectangle plate::getBounds() const
 {
     p_assert(left >= 0.0f && top >= 0.0f, "Left and top must be positive");  
     const uint32_t ilft = (uint32_t)left;
@@ -1132,8 +1132,13 @@ uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const throw()
     const uint32_t irgt = ilft + _dimension.getWidth();
     const uint32_t ibtm = itop + _dimension.getHeight();
 
-    Platec::Rectangle rect = Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);
-    return rect.getMapIndex(px, py);
+    return Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);     
+}
+
+// TODO move this method to a separate class
+uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const throw()
+{
+    return getBounds().getMapIndex(px, py);
 }
 
 ContinentId plate::getContinentAt(int x, int y) const

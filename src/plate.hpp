@@ -226,6 +226,7 @@ class plate
 	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
 	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
     		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
+	Platec::Rectangle getBounds() const;
 
 	/// Separate a continent at (X, Y) to its own partition.
 	///
