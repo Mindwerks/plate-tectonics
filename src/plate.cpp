@@ -1126,8 +1126,9 @@ try {
 
 uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const throw()
 {
-    const uint32_t ilft = (uint32_t)(int)left;
-    const uint32_t itop = (uint32_t)(int)top;
+    p_assert(left >= 0.0f && top >= 0.0f, "Left and top must be positive");  
+    const uint32_t ilft = (uint32_t)left;
+    const uint32_t itop = (uint32_t)top;
     const uint32_t irgt = ilft + width;
     const uint32_t ibtm = itop + height;
 
