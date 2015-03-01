@@ -3,6 +3,30 @@
 #include "sqrdmd.hpp"
 #include <cstdlib>
 #include "map_drawing.hpp"
+#include <stdio.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
+
+#include <execinfo.h>
+
+
+void handler() {
+  printf("\nException caused failure\n\n");
+  void *trace_elems[20];
+    int trace_elem_count(backtrace( trace_elems, 20 ));
+    char **stack_syms(backtrace_symbols( trace_elems, trace_elem_count ));
+    for ( int i = 0 ; i < trace_elem_count ; ++i )
+    {
+        std::cout << stack_syms[i] << "\n";
+    }
+    free( stack_syms );
+  exit(1);
+}
 
 void produce_image(float* heightmap, int width, int height, const char* filename)
 {
@@ -11,6 +35,8 @@ void produce_image(float* heightmap, int width, int height, const char* filename
 
 int main(int argc, char* argv[])
 {
+    //std::set_terminate( handler );
+
     int seed = 10;
     int width = 800;
     int height = 600;
