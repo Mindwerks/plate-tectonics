@@ -22,6 +22,7 @@ public:
 
     WorldDimension operator=(const WorldDimension& original)
     {
+        // FIXME
         WorldDimension wd(original);
         return wd;
     };
