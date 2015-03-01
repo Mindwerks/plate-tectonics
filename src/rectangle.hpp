@@ -7,15 +7,14 @@
 
 using namespace std;
 
-class WorldDimension {
+class Dimension {
 public:
-
-    WorldDimension(uint32_t width, uint32_t height) :
+    Dimension(uint32_t width, uint32_t height) :
         _width(width), _height(height)
     {
     };
 
-    WorldDimension(const WorldDimension& original) :
+    Dimension(const Dimension& original) :
         _width(original.getWidth()), _height(original.getHeight())
     {
     };
@@ -30,14 +29,34 @@ public:
         return _height;
     };
 
-    uint32_t getMax() const
-    {
-        return _width > _height ? _width : _height;
-    }
-
     uint32_t getArea() const
     {
         return _width * _height;
+    }
+
+    bool contains(const uint32_t x, const uint32_t y) const
+    {
+        return (x >= 0 && x < _width && y >= 0 && y < _height);
+    }
+protected:
+    const uint32_t _width;
+    const uint32_t _height;
+};
+
+class WorldDimension : public Dimension {
+public:
+
+    WorldDimension(uint32_t width, uint32_t height) : Dimension(width, height)
+    {
+    };
+
+    WorldDimension(const WorldDimension& original) : Dimension(original)
+    {
+    };
+
+    uint32_t getMax() const
+    {
+        return _width > _height ? _width : _height;
     }
 
     uint32_t xMod(uint32_t x) const
@@ -49,11 +68,6 @@ public:
     {
         return (y + _height) % getHeight();
     }    
-
-    bool contains(const uint32_t x, const uint32_t y) const
-    {
-        return (x >= 0 && x < _width && y >= 0 && y < _height);
-    }
 
     void normalize(uint32_t& x, uint32_t& y) const
     {
@@ -106,8 +120,7 @@ public:
     }
 
 private:
-    const uint32_t _width;
-    const uint32_t _height;
+
 };
 
 namespace Platec {
