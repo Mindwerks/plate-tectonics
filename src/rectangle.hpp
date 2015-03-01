@@ -38,9 +38,20 @@ public:
     {
         return (x >= 0 && x < _width && y >= 0 && y < _height);
     }
+
+    void growWidth(uint32_t amount)
+    {
+        _width += amount;
+    }
+
+    void growHeight(uint32_t amount)
+    {
+        _height += amount;
+    }
+
 protected:
-    const uint32_t _width;
-    const uint32_t _height;
+    uint32_t _width;
+    uint32_t _height;
 };
 
 class WorldDimension : public Dimension {
