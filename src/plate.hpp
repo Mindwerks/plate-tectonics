@@ -248,7 +248,7 @@ class plate
 	/// @param[in, out] x	Offset on the global world map along X axis.
 	/// @param[in, out] y	Offset on the global world map along Y axis.
 	/// @return		Offset in height map or -1 on error.
-	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const throw();
+	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.

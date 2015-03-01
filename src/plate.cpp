@@ -777,7 +777,7 @@ void plate::resetSegments()
     seg_data.clear();
 }
 
-void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
+void plate::setCrust(const uint32_t x, const uint32_t y, float z, uint32_t t)
 {
 try {    
     if (z < 0) { // Do not accept negative values.
@@ -786,9 +786,8 @@ try {
 
     uint32_t _x = x;
     uint32_t _y = y;
-    uint32_t index = getMapIndex(&_x, &_y);
 
-    if (index >= _dimension.getWidth()*_dimension.getHeight())
+    if (!getBounds().isInside(_x, _y))
     {
         // Extending plate for nothing!
         assert(z>0);
@@ -798,13 +797,13 @@ try {
         const uint32_t irgt = ilft + _dimension.getWidth() - 1;
         const uint32_t ibtm = itop + _dimension.getHeight() - 1;
 
-        _worldDimension.normalize(x, y);
+        _worldDimension.normalize(_x, _y);
 
         // Calculate distance of new point from plate edges.
-        const uint32_t _lft = ilft - x;
-        const uint32_t _rgt = (_worldDimension.getWidth() & -(x < ilft)) + x - irgt;
-        const uint32_t _top = itop - y;
-        const uint32_t _btm = (_worldDimension.getHeight() & -(y < itop)) + y - ibtm;
+        const uint32_t _lft = ilft - _x;
+        const uint32_t _rgt = (_worldDimension.getWidth() & -(x < ilft)) + _x - irgt;
+        const uint32_t _top = itop - _y;
+        const uint32_t _btm = (_worldDimension.getHeight() & -(y < itop)) + _y - ibtm;
 
         // Set larger of horizontal/vertical distance to zero.
         // A valid distance is NEVER larger than world's side's length!
@@ -854,16 +853,14 @@ try {
         memset(tmps, 255, _dimension.getWidth()*_dimension.getHeight()*sizeof(uint32_t));
 
         // copy old plate into new.
-        for (uint32_t j = 0; j < old_height; ++j)
-        {
-            const uint32_t dest_i = (d_top + j) * _dimension.getWidth() + d_lft;
-            const uint32_t src_i = j * old_width;
-            memcpy(&tmph[dest_i], &map[src_i], old_width *
-                sizeof(float));
-            memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
-                sizeof(uint32_t));
-            memcpy(&tmps[dest_i], &segment[src_i], old_width *
-                sizeof(uint32_t));
+        for (uint32_t oy = 0; oy < old_height; ++oy) {
+            for (uint32_t ox = 0; ox < old_width; ++ox) {
+                const uint32_t dest_i = (d_top + oy) * _dimension.getWidth() + d_lft + ox;
+                const uint32_t src_i = oy * old_width + ox;
+                tmph[dest_i] = map[src_i];
+                tmpa[dest_i] = age_map[src_i];
+                tmps[dest_i] = segment[src_i];
+            }
         }
 
         delete[] segment;
@@ -877,12 +874,10 @@ try {
             seg_data[s].shift(d_lft, d_top);
         }
 
-        _x = x, _y = y;
-        index = getMapIndex(&_x, &_y);
-
-        assert(index < _dimension.getWidth() * _dimension.getHeight());
+        p_assert(getBounds().isInside(_x, _y), "After enlarging the continent it should contained the crust point");
     }
 
+    uint32_t index = getMapIndex(&_x, &_y);
     // Update crust's age.
     // If old crust exists, new age is mean of original and supplied ages.
     // If no new crust is added, original time remains intact.
