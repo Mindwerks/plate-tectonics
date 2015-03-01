@@ -20,13 +20,6 @@ public:
     {
     };
 
-    WorldDimension operator=(const WorldDimension& original)
-    {
-        // FIXME
-        WorldDimension wd(original);
-        return wd;
-    };
-
     uint32_t getWidth() const
     {
         return _width;
