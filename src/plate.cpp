@@ -411,15 +411,15 @@ void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index,
 {
     ::calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
         w, e, n, s, 
-        _worldDimension, map, _bounds._dimension.getWidth(), _bounds._dimension.getHeight());
+        _worldDimension, map, _bounds.width(), _bounds.height());
 }
 
 void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
 {
   // Find all tops.
-  for (uint32_t y = 0; y < _bounds._dimension.getHeight(); ++y) {
-    for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x) {
-        const uint32_t index = y * _bounds._dimension.getWidth() + x;
+  for (uint32_t y = 0; y < _bounds.height(); ++y) {
+    for (uint32_t x = 0; x < _bounds.width(); ++x) {
+        const uint32_t index = _bounds.index(x, y);
 
         if (map[index] < lower_bound) {
             continue;
@@ -447,14 +447,14 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
   vector<uint32_t>* sinks = &sinks_data;
 
   uint32_t* isDone = new uint32_t[_bounds.area()];
-  memset(isDone, 0, _bounds.area()*sizeof(uint32_t));
+  memset(isDone, 0, _bounds.area() * sizeof(uint32_t));
 
   // From each top, start flowing water along the steepest slope.
   while (!sources->empty()) {
     while (!sources->empty()) {
         const uint32_t index = sources->back();
-        const uint32_t y = index / _bounds._dimension.getWidth();
-        const uint32_t x = index - y * _bounds._dimension.getWidth();
+        const uint32_t y = index / _bounds.width();
+        const uint32_t x = index - y * _bounds.width();
 
         sources->pop_back();
 
@@ -488,12 +488,12 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
 
         if (n_crust < lowest_crust) {
             lowest_crust = n_crust;
-            dest = index - _bounds._dimension.getWidth();
+            dest = index - _bounds.width();
         }
 
         if (s_crust < lowest_crust) {
             lowest_crust = s_crust;
-            dest = index + _bounds._dimension.getWidth();
+            dest = index + _bounds.width();
         }
 
         // if it's not handled yet, add it as new sink.
@@ -541,10 +541,10 @@ try {
   mass = 0;
   cx = cy = 0;
 
-  for (uint32_t y = 0; y < _bounds._dimension.getHeight(); ++y)
-    for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x)
+  for (uint32_t y = 0; y < _bounds.height(); ++y)
+    for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
-    const uint32_t index = y * _bounds._dimension.getWidth() + x;
+    const uint32_t index = y * _bounds.width() + x;
     mass += map[index];
     tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
 
@@ -752,11 +752,7 @@ try {
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    assert(_worldDimension.contains(_bounds._position));
-
-    _bounds._position.grow(vx * velocity, vy * velocity, _worldDimension);
-
-    assert(_worldDimension.contains(_bounds._position));
+    _bounds.grow(vx * velocity, vy * velocity, _worldDimension);
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();

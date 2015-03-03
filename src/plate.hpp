@@ -24,6 +24,7 @@
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 #include "segment_data.hpp"
+#include "utils.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 
@@ -63,6 +64,10 @@ public:
 	uint32_t yMod(uint32_t y) const
 	{
 	    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
+	}
+	void grow(float dx, float dy, const WorldDimension& _worldDimension){
+		_position.grow(dx, dy, _worldDimension);
+		p_assert(_worldDimension.contains(_position), "");
 	}
 	FloatPoint _position;
 	Dimension _dimension;	
