@@ -119,7 +119,10 @@ public:
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
-	float vx, vy;         ///< X and Y components of plate's direction unit vector.	
+	float vx, vy;         ///< X and Y components of plate's direction unit vector.
+	void collide(plate& thisPlate, plate& p, Movement& thisMovement, Movement& otherMovement, uint32_t wx, uint32_t wy, float coll_mass);
+	void decDx(float delta) { dx -= delta; }
+	void decDy(float delta) { dy -= delta; }
 private:
 	SimpleRandom _randsource;
 	const WorldDimension _worldDimension;
@@ -301,6 +304,10 @@ class plate
 	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return mass <= 0; }
+	float getCx() const { return cx; }
+	float getCy() const { return cy; }
+	void decDx(float delta) { _movement.decDx(delta); }
+	void decDy(float delta) { _movement.decDy(delta); }
 
 	bool contains(uint32_t x, uint32_t y) const;
 
