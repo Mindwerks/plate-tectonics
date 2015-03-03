@@ -130,15 +130,6 @@ public:
         return _width > _height ? _width : _height;
     }
 
-    std::string to_string() const
-    {
-        std::string s("WorldDimension[");
-        s = s + "width=" + Platec::to_string(getWidth());
-        s = s + ", height=" + Platec::to_string(getHeight());
-        s = s + "]";
-        return s;
-    }
-
 private:
 
 };
@@ -169,8 +160,7 @@ public:
         return r;
     };
 
-    bool isInside(const uint32_t px, const uint32_t py) const;
-    uint32_t getMapIndex(uint32_t* px, uint32_t* py) const;
+    uint32_t getMapIndex(uint32_t* px, uint32_t* py) const throw();
     void enlarge_to_contain(uint32_t x, uint32_t y);
 
     uint32_t getLeft() const
@@ -219,18 +209,6 @@ public:
         _right  += dx;
         _top    += dy;
         _bottom += dy;
-    }
-
-    std::string to_string()
-    {
-        std::string s("Rectangle[");
-        s = s + "left=" + Platec::to_string(_left);
-        s = s + ", right=" + Platec::to_string(_right);
-        s = s + ", top=" + Platec::to_string(_top);
-        s = s + ", bottom=" + Platec::to_string(_bottom);
-        s = s + ", worldDim=" + _worldDimension.to_string();
-        s = s + "]";
-        return s;
     }
 
 private:
