@@ -252,13 +252,7 @@ void plate::applyFriction(float deformed_mass)
     // energy: F - dF = ma - dF => a = dF/m.
     if (mass > 0)
     {
-        float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
-        vel_dec = vel_dec < _movement.velocity ? vel_dec : _movement.velocity;
-
-        // Altering the source variable causes the order of calls to
-        // this function to have difference when it shouldn't!
-        // However, it's a hack well worth the outcome. :)
-        _movement.velocity -= vel_dec;
+        _movement.applyFriction(deformed_mass, mass);
     }
 }
 

@@ -47,6 +47,16 @@ public:
 	    vx = cos(angle) * INITIAL_SPEED_X;
 	    vy = sin(angle) * INITIAL_SPEED_X;
 	}
+	void applyFriction(float deformed_mass, float mass)
+	{
+		float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
+        vel_dec = vel_dec < velocity ? vel_dec : velocity;
+
+        // Altering the source variable causes the order of calls to
+        // this function to have difference when it shouldn't!
+        // However, it's a hack well worth the outcome. :)
+        velocity -= vel_dec;
+	}
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
