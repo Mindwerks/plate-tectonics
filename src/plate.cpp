@@ -72,7 +72,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds.height(); ++y) {
-        for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x, ++k) {
+        for (uint32_t x = 0; x < _bounds.width(); ++x, ++k) {
             // Clone map data and count crust mass.
             mass += map[k] = m[k];
 
@@ -164,8 +164,8 @@ try {
     x = (uint32_t)((int)x + dx);
     y = (uint32_t)((int)y + dy);
 
-    if (_bounds._dimension.getWidth() == _worldDimension.getWidth()) {
-        x %= _bounds._dimension.getWidth();
+    if (_bounds.width() == _worldDimension.getWidth()) {
+        x %= _bounds.width();
     }
     if (_bounds.height() == _worldDimension.getHeight()) {
         y %= _bounds.height();
@@ -233,7 +233,7 @@ try {
     {
       for (uint32_t x = seg_data[seg_id].getLeft(); x <= seg_data[seg_id].getRight(); ++x)
       {
-        const uint32_t i = y * _bounds._dimension.getWidth() + x;
+        const uint32_t i = y * _bounds.width() + x;
         if ((segment[i] == seg_id) && (map[i] > 0))
         {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
@@ -1147,13 +1147,7 @@ try {
 
 Platec::Rectangle plate::getBounds() const
 {
-    p_assert(_bounds._position.getX() >= 0.0f && _bounds._position.getY() >= 0.0f, "Left and top must be positive");  
-    const uint32_t ilft = (uint32_t)_bounds._position.getX();
-    const uint32_t itop = (uint32_t)_bounds._position.getY();
-    const uint32_t irgt = ilft + _bounds._dimension.getWidth();
-    const uint32_t ibtm = itop + _bounds._dimension.getHeight();
-
-    return Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);     
+    return _bounds.asRect();    
 }
 
 // TODO move this method to a separate class

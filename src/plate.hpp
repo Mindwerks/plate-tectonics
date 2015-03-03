@@ -87,10 +87,20 @@ public:
 	void growHeight(int d){
 		_dimension.growHeight(d);
 	}	
-	FloatPoint _position;
-	Dimension _dimension;	
+	Platec::Rectangle asRect() const
+	{
+	    p_assert(_position.getX() >= 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
+	    const uint32_t ilft = (uint32_t)_position.getX();
+	    const uint32_t itop = (uint32_t)_position.getY();
+	    const uint32_t irgt = ilft + _dimension.getWidth();
+	    const uint32_t ibtm = itop + _dimension.getHeight();
+
+	    return Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);     
+	}
 private:
 	const WorldDimension _worldDimension;
+	FloatPoint _position;
+	Dimension _dimension;	
 };
 
 class plate
@@ -261,13 +271,13 @@ class plate
 
 	float getMass() const throw() { return mass; }
 	float getMomentum() const throw() { return mass * velocity; }
-	uint32_t getHeight() const throw() { return _bounds._dimension.getHeight(); }
-	float  getLeft() const throw() { return _bounds._position.getX(); }
-	float  getTop() const throw() { return _bounds._position.getY(); }
+	uint32_t getHeight() const throw() { return _bounds.height(); }
+	float  getLeft() const throw() { return _bounds.left(); }
+	float  getTop() const throw() { return _bounds.top(); }
 	float getVelocity() const throw() { return velocity; }
 	float getVelX() const throw() { return vx; }
 	float getVelY() const throw() { return vy; }
-	uint32_t getWidth() const throw() { return _bounds._dimension.getWidth(); }
+	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
 	bool contains(uint32_t x, uint32_t y) const;
