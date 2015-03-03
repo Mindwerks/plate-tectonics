@@ -252,7 +252,6 @@ class plate
 
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-	//uint32_t width, height; ///< Height map's dimensions along X and Y axis.	
 	Dimension _dimension;
 
 	const WorldDimension _worldDimension;
