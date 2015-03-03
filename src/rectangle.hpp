@@ -7,6 +7,8 @@
 
 using namespace std;
 
+#define BAD_INDEX 0xFFFFFFFF
+
 class Dimension {
 public:
     Dimension(uint32_t width, uint32_t height) :

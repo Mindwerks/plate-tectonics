@@ -3,6 +3,7 @@
 
 namespace Platec {
 
+/// Return a valid index or BAD_INDEX
 uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const throw()
 {
 	uint32_t x = *px % _worldDimension.getWidth();
@@ -48,7 +49,7 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const throw()
         *py = y;
         return (y * width + x);
     } else {
-        return -1;
+        return BAD_INDEX;
     }
 }
 
