@@ -37,11 +37,12 @@ typedef uint32_t ContinentId;
 class Movement
 {
 public:
-	Movement(SimpleRandom randsource)
+	Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
 		: _randsource(randsource),
 		  velocity(1),
 		  rot_dir(randsource.next() % 2 ? 1 : -1),
-		  dx(0), dy(0)
+		  dx(0), dy(0),
+		  _worldDimension(worldDimension)
 	{
 		const double angle = 2 * M_PI * _randsource.next_double();
 	    vx = cos(angle) * INITIAL_SPEED_X;
@@ -57,12 +58,43 @@ public:
         // However, it's a hack well worth the outcome. :)
         velocity -= vel_dec;
 	}
+	void move()
+	{
+		float len;
+		
+		// Apply any new impulses to the plate's trajectory.
+	    vx += dx;
+	    vy += dy;
+	    dx = 0;
+	    dy = 0;
+
+	    // Force direction of plate to be unit vector.
+	    // Update velocity so that the distance of movement doesn't change.
+	    len = sqrt(vx*vx+vy*vy);
+	    vx /= len;
+	    vy /= len;
+	    velocity += len - 1.0;
+	    velocity *= velocity > 0; // Round negative values to zero.
+
+	    // Apply some circular motion to the plate.
+	    // Force the radius of the circle to remain fixed by adjusting
+	    // angular velocity (which depends on plate's velocity).
+	    uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
+	    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
+	    float _cos = cos(alpha * velocity);
+	    float _sin = sin(alpha * velocity);
+	    float _vx = vx * _cos - vy * _sin;
+	    float _vy = vy * _cos + vx * _sin;
+	    vx = _vx;
+	    vy = _vy;
+	}
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
 	float vx, vy;         ///< X and Y components of plate's direction unit vector.	
 private:
 	SimpleRandom _randsource;
+	const WorldDimension _worldDimension;
 };
 
 class plate

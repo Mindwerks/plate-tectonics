@@ -42,7 +42,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              cx(0), cy(0),
              _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
              map(w, h), age_map(w, h), _worldDimension(worldDimension),
-             _movement(_randsource)
+             _movement(_randsource, worldDimension)
 {
     if (NULL == m) {
         throw invalid_argument("the given heightmap should not be null");
@@ -707,34 +707,8 @@ void plate::getMap(const float** c, const uint32_t** t) const
 void plate::move()
 {
 try {    
-    float len;
-
-    // Apply any new impulses to the plate's trajectory.
-    _movement.vx += _movement.dx;
-    _movement.vy += _movement.dy;
-    _movement.dx = 0;
-    _movement.dy = 0;
-
-    // Force direction of plate to be unit vector.
-    // Update velocity so that the distance of movement doesn't change.
-    len = sqrt(_movement.vx*_movement.vx+_movement.vy*_movement.vy);
-    _movement.vx /= len;
-    _movement.vy /= len;
-    _movement.velocity += len - 1.0;
-    _movement.velocity *= _movement.velocity > 0; // Round negative values to zero.
-
-    // Apply some circular motion to the plate.
-    // Force the radius of the circle to remain fixed by adjusting
-    // angular velocity (which depends on plate's velocity).
-    uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
-    float alpha = _movement.rot_dir * _movement.velocity / (world_avg_side * 0.33);
-    float _cos = cos(alpha * _movement.velocity);
-    float _sin = sin(alpha * _movement.velocity);
-    float _vx = _movement.vx * _cos - _movement.vy * _sin;
-    float _vy = _movement.vy * _cos + _movement.vx * _sin;
-    _movement.vx = _vx;
-    _movement.vy = _vy;
-
+    _movement.move();
+    
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
