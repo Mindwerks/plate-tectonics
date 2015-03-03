@@ -782,10 +782,10 @@ try {
         // Extending plate for nothing!
         assert(z>0);
 
-        const uint32_t ilft = _bounds._position.getX();
-        const uint32_t itop = _bounds._position.getY();
-        const uint32_t irgt = ilft + _bounds._dimension.getWidth() - 1;
-        const uint32_t ibtm = itop + _bounds._dimension.getHeight() - 1;
+        const uint32_t ilft = _bounds.left();
+        const uint32_t itop = _bounds.top();
+        const uint32_t irgt = _bounds.right();
+        const uint32_t ibtm = _bounds.bottom();
 
         _worldDimension.normalize(x, y);
 

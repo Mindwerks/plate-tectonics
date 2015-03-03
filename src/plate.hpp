@@ -49,7 +49,19 @@ public:
 	}
 	uint32_t height() const {
 		return _dimension.getHeight();
+	}
+	float left() const {
+		return _position.getX();
+	}
+	float top() const {
+		return _position.getY();
 	}	
+	float right() const {
+		return left() + width() - 1;
+	}
+	float bottom() const {
+		return top() + height() - 1;
+	}
 	bool contains(uint32_t x, uint32_t y) const{
 		uint32_t cleanX = xMod(x);
     	uint32_t cleanY = yMod(y);
