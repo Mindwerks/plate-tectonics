@@ -9,6 +9,23 @@ using namespace std;
 
 #define BAD_INDEX 0xFFFFFFFF
 
+class FloatPoint {
+public:
+    FloatPoint(float x, float y)
+        : _x(x), _y(y)
+    { };
+    float getX() const
+    {
+        return _x;
+    };
+    float getY() const
+    {
+        return _y;
+    };
+private:
+    float _x, _y;
+};
+
 class Dimension {
 public:
     Dimension(uint32_t width, uint32_t height) :
