@@ -7,7 +7,7 @@ class SegmentData
   public:
     SegmentData(Platec::Rectangle& rectangle,
                 uint32_t area) : _rectangle(rectangle),
-                              _area(_area), _coll_count(0) {};
+                              _area(area), _coll_count(0) {};
 
     void enlarge_to_contain(uint32_t x, uint32_t y)
     {
