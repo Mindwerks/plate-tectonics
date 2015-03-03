@@ -43,7 +43,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              _randsource(seed),
              mass(0), 
              cx(0), cy(0), dx(0), dy(0),
-             _bounds(FloatPoint(_x, _y), Dimension(w, h)),
+             _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
              map(w, h), age_map(w, h), _worldDimension(worldDimension)
 {
     if (NULL == m) {
@@ -171,8 +171,8 @@ try {
         y %= _bounds._dimension.getHeight();
     }
 
-    index = y * _bounds._dimension.getWidth() + x;
-    if (index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight() && map[index] > 0)
+    index = _bounds.index(x, y);
+    if (index < _bounds.area() && map[index] > 0)
     {
         t = (map[index] * age_map[index] + z * t) / (map[index] + z);
         age_map[index] = t * (z > 0);
@@ -299,7 +299,7 @@ try {
     uint32_t p_index = p.getValidMapIndex(&bpx, &bpy);
 
     // out of colliding map's bounds!
-    assert(index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
+    assert(index < _bounds.area());
     assert(p_index < p.getWidth() * p.getHeight());
 
     ap_dx = (int)apx - (int)cx;
@@ -450,8 +450,8 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
   vector<uint32_t> sinks_data;
   vector<uint32_t>* sinks = &sinks_data;
 
-  uint32_t* isDone = new uint32_t[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
-  memset(isDone, 0, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(uint32_t));
+  uint32_t* isDone = new uint32_t[_bounds.area()];
+  memset(isDone, 0, _bounds.area()*sizeof(uint32_t));
 
   // From each top, start flowing water along the steepest slope.
   while (!sources->empty()) {
@@ -501,7 +501,7 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
         }
 
         // if it's not handled yet, add it as new sink.
-        if (dest < _bounds._dimension.getWidth() * _bounds._dimension.getHeight() && !isDone[dest]) {
+        if (dest < _bounds.area() && !isDone[dest]) {
             sinks->push_back(dest);
             isDone[dest] = 1;
         }
@@ -526,7 +526,7 @@ try {
   vector<uint32_t> sources_data;  
   vector<uint32_t>* sources = &sources_data;  
 
-  float* tmp = new float[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
+  float* tmp = new float[_bounds.area()];
   map.copy_raw_to(tmp);
 
   findRiverSources(lower_bound, sources);
@@ -534,14 +534,14 @@ try {
   flowRivers(lower_bound, sources, tmp);
 
   // Add random noise (10 %) to heightmap.
-  for (uint32_t i = 0; i < _bounds._dimension.getWidth()*_bounds._dimension.getHeight(); ++i)
+  for (uint32_t i = 0; i < _bounds.area(); ++i)
   {
     float alpha = 0.2 * (float)_randsource.next_double();
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 
-  memcpy(map.raw_data(), tmp, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(float));
-  memset(tmp, 0, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(float));
+  memcpy(map.raw_data(), tmp, _bounds.area()*sizeof(float));
+  memset(tmp, 0, _bounds.area()*sizeof(float));
   mass = 0;
   cx = cy = 0;
 
@@ -770,7 +770,7 @@ try {
 
 void plate::resetSegments()
 {
-    memset(segment, -1, sizeof(uint32_t) * _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
+    memset(segment, -1, sizeof(uint32_t) * _bounds.area());
     seg_data.clear();
 }
 
@@ -841,10 +841,10 @@ try {
 
         HeightMap tmph = HeightMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
         AgeMap    tmpa = AgeMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
-        uint32_t* tmps = new uint32_t[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
+        uint32_t* tmps = new uint32_t[_bounds.area()];
         tmph.set_all(0);
         tmpa.set_all(0);
-        memset(tmps, 255, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(uint32_t));
+        memset(tmps, 255, _bounds.area()*sizeof(uint32_t));
 
         // copy old plate into new.
         for (uint32_t j = 0; j < old_height; ++j)
@@ -873,7 +873,7 @@ try {
         _x = x, _y = y;
         index = getValidMapIndex(&_x, &_y);
 
-        assert(index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
+        assert(index < _bounds.area());
     }
 
     // Update crust's age.

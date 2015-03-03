@@ -31,13 +31,22 @@ typedef uint32_t ContinentId;
 
 class Bounds {
 public:
-	Bounds(const FloatPoint& position, const Dimension& dimension)
-		: _position(position), _dimension(dimension)
-	{
+	Bounds(const WorldDimension& worldDimension, const FloatPoint& position, const Dimension& dimension)
+		: _worldDimension(worldDimension), 
+		  _position(position), 
+		  _dimension(dimension) {
 
-	}	
+	};
+	uint32_t index(uint32_t x, uint32_t y){
+		return y * _dimension.getWidth() + x;
+	} 	
+	uint32_t area(){
+		return _dimension.getArea();
+	}
 	FloatPoint _position;
 	Dimension _dimension;	
+private:
+	const WorldDimension _worldDimension;
 };
 
 class plate
