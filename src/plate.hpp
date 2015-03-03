@@ -31,6 +31,34 @@
 
 typedef uint32_t ContinentId;
 
+class Mass
+{
+public:
+	Mass(const float* m, const Bounds& bounds)
+		: mass(0), 
+          cx(0), cy(0)
+    {
+	    uint32_t k;
+	    for (uint32_t y = k = 0; y < bounds.height(); ++y) {
+	        for (uint32_t x = 0; x < bounds.width(); ++x, ++k) {
+	            // Clone map data and count crust mass.
+	            mass += m[k];
+
+	            // Calculate center coordinates weighted by mass.
+	            cx += x * m[k];
+	            cy += y * m[k];
+	        }
+	    }
+
+	    // Normalize center of mass coordinates.
+	    cx /= mass;
+	    cy /= mass;
+	}
+	float mass;           ///< Amount of crust that constitutes the plate.
+	float cx, cy;         ///< X and Y components of the center of mass of plate.	
+private:
+};
+
 class plate
 {
 	public:
@@ -197,8 +225,8 @@ class plate
 	/// @param	t	Time of creation of new crust.
 	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
-	float getMass() const throw() { return mass; }
-	float getMomentum() const throw() { return _movement.momentum(mass); }
+	float getMass() const throw() { return _mass.mass; }
+	float getMomentum() const throw() { return _movement.momentum(_mass.mass); }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
 	float  getLeft() const throw() { return _bounds.left(); }
 	float  getTop() const throw() { return _bounds.top(); }
@@ -206,9 +234,9 @@ class plate
 	float getVelX() const throw() { return _movement.velX(); }
 	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
-	bool   isEmpty() const throw() { return mass <= 0; }
-	float getCx() const { return cx; }
-	float getCy() const { return cy; }
+	bool   isEmpty() const throw() { return _mass.mass <= 0; }
+	float getCx() const { return _mass.cx; }
+	float getCy() const { return _mass.cy; }
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
@@ -246,10 +274,7 @@ class plate
 
 	const WorldDimension _worldDimension;
 	Bounds _bounds;
-
-	float mass;           ///< Amount of crust that constitutes the plate.
-	float cx, cy;         ///< X and Y components of the center of mass of plate.
-
+	Mass _mass;
 	Movement _movement;	
 
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
