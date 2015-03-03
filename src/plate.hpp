@@ -37,12 +37,14 @@ public:
 	Movement(SimpleRandom randsource)
 		: _randsource(randsource),
 		  velocity(1),
-		  rot_dir(randsource.next() % 2 ? 1 : -1)
+		  rot_dir(randsource.next() % 2 ? 1 : -1),
+		  dx(0), dy(0)
 	{
 		_randsource.next();
 	}
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
+	float dx, dy;         ///< X and Y components of plate's acceleration vector.
 private:
 	SimpleRandom _randsource;
 };
@@ -265,8 +267,7 @@ class plate
 	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
 	Movement _movement;
-	float vx, vy;         ///< X and Y components of plate's direction unit vector.
-	float dx, dy;         ///< X and Y components of plate's acceleration vector.
+	float vx, vy;         ///< X and Y components of plate's direction unit vector.	
 
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.

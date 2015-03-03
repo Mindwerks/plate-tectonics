@@ -42,7 +42,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              uint32_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
              mass(0), 
-             cx(0), cy(0), dx(0), dy(0),
+             cx(0), cy(0),
              _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
              map(w, h), age_map(w, h), _worldDimension(worldDimension),
              _movement(_randsource)
@@ -341,10 +341,10 @@ try {
     // Compute final change of trajectory.
     // The plate that is the "giver" of the impulse should receive a
     // force according to its pre-collision mass, not the current mass!
-    dx += nx * J / mass;
-    dy += ny * J / mass;
-    p.dx -= nx * J / (coll_mass + p.mass);
-    p.dy -= ny * J / (coll_mass + p.mass);
+    _movement.dx += nx * J / mass;
+    _movement.dy += ny * J / mass;
+    p._movement.dx -= nx * J / (coll_mass + p.mass);
+    p._movement.dy -= ny * J / (coll_mass + p.mass);
 
     // In order to prove that the code above works correctly, here is an
     // example calculation with ball A (mass 10) moving right at velocity
@@ -723,10 +723,10 @@ try {
     float len;
 
     // Apply any new impulses to the plate's trajectory.
-    vx += dx;
-    vy += dy;
-    dx = 0;
-    dy = 0;
+    vx += _movement.dx;
+    vy += _movement.dy;
+    _movement.dx = 0;
+    _movement.dy = 0;
 
     // Force direction of plate to be unit vector.
     // Update velocity so that the distance of movement doesn't change.
