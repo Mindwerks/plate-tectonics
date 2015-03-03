@@ -44,7 +44,8 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              mass(0), 
              cx(0), cy(0), dx(0), dy(0),
              _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
-             map(w, h), age_map(w, h), _worldDimension(worldDimension)
+             map(w, h), age_map(w, h), _worldDimension(worldDimension),
+             _movement()
 {
     if (NULL == m) {
         throw invalid_argument("the given heightmap should not be null");
@@ -64,7 +65,6 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
     segment = new uint32_t[plate_area];
 
-    velocity = 1;
     rot_dir = _randsource.next() & 1 ? 1 : -1;
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
@@ -261,12 +261,12 @@ void plate::applyFriction(float deformed_mass)
     if (mass > 0)
     {
         float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
-        vel_dec = vel_dec < velocity ? vel_dec : velocity;
+        vel_dec = vel_dec < _movement.velocity ? vel_dec : _movement.velocity;
 
         // Altering the source variable causes the order of calls to
         // this function to have difference when it shouldn't!
         // However, it's a hack well worth the outcome. :)
-        velocity -= vel_dec;
+        _movement.velocity -= vel_dec;
     }
 }
 
@@ -734,16 +734,16 @@ try {
     len = sqrt(vx*vx+vy*vy);
     vx /= len;
     vy /= len;
-    velocity += len - 1.0;
-    velocity *= velocity > 0; // Round negative values to zero.
+    _movement.velocity += len - 1.0;
+    _movement.velocity *= _movement.velocity > 0; // Round negative values to zero.
 
     // Apply some circular motion to the plate.
     // Force the radius of the circle to remain fixed by adjusting
     // angular velocity (which depends on plate's velocity).
     uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
-    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
-    float _cos = cos(alpha * velocity);
-    float _sin = sin(alpha * velocity);
+    float alpha = rot_dir * _movement.velocity / (world_avg_side * 0.33);
+    float _cos = cos(alpha * _movement.velocity);
+    float _sin = sin(alpha * _movement.velocity);
     float _vx = vx * _cos - vy * _sin;
     float _vy = vy * _cos + vx * _sin;
     vx = _vx;
@@ -752,7 +752,7 @@ try {
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds.grow(vx * velocity, vy * velocity);
+    _bounds.grow(vx * _movement.velocity, vy * _movement.velocity);
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();

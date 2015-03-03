@@ -31,6 +31,18 @@
 
 typedef uint32_t ContinentId;
 
+class Movement
+{
+public:
+	Movement()
+		: velocity(1)
+	{
+
+	}
+	float velocity;       ///< Plate's velocity.	
+private:
+};
+
 class plate
 {
 	public:
@@ -198,11 +210,11 @@ class plate
 	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
 	float getMass() const throw() { return mass; }
-	float getMomentum() const throw() { return mass * velocity; }
+	float getMomentum() const throw() { return mass * _movement.velocity; }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
 	float  getLeft() const throw() { return _bounds.left(); }
 	float  getTop() const throw() { return _bounds.top(); }
-	float getVelocity() const throw() { return velocity; }
+	float getVelocity() const throw() { return _movement.velocity; }
 	float getVelX() const throw() { return vx; }
 	float getVelY() const throw() { return vy; }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
@@ -248,7 +260,7 @@ class plate
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
-	float velocity;       ///< Plate's velocity.
+	Movement _movement;
 	float vx, vy;         ///< X and Y components of plate's direction unit vector.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
