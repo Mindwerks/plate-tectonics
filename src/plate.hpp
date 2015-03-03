@@ -218,8 +218,6 @@ class plate
 	inline void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
     		uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
-	uint32_t xMod(uint32_t x) const;
-	uint32_t yMod(uint32_t y) const;
 
 	protected:
 	private:

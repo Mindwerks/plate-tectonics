@@ -261,16 +261,6 @@ void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
     _movement.collide(*this, p, this->_movement, p._movement, wx, wy, coll_mass);
 }
 
-uint32_t plate::xMod(uint32_t x) const
-{
-    return (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
-}
-
-uint32_t plate::yMod(uint32_t y) const
-{
-    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
-}
-
 bool plate::contains(uint32_t x, uint32_t y) const
 {
     return _bounds.contains(x, y);
