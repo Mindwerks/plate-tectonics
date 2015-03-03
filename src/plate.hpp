@@ -34,6 +34,8 @@
 
 typedef uint32_t ContinentId;
 
+class plate;
+
 class Movement
 {
 public:
@@ -88,26 +90,28 @@ public:
 	    vx = _vx;
 	    vy = _vy;
 	}
-	float velocityOnX()
+	float velocityOnX() const
 	{
 		return vx * velocity;
 	}
-	float velocityOnY()
+	float velocityOnY() const
 	{
 		return vy * velocity;
 	}	
-	float velocityOnX(float length)
+	float velocityOnX(float length) const
 	{
 		return vx * length;
 	}
-	float velocityOnY(float length)
+	float velocityOnY(float length) const
 	{
 		return vy * length;
 	}		
-	float dot(float dx_, float dy_)
+	float dot(float dx_, float dy_) const
 	{
 		return vx * dx_ + vy * dy_;
 	}
+	float relativeUnitVelocityOnX(const Movement& m) const;
+	float relativeUnitVelocityOnY(const Movement& m) const;
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.

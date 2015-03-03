@@ -35,6 +35,16 @@
 
 using namespace std;
 
+float Movement::relativeUnitVelocityOnX(const Movement& m) const
+{
+    return vx - m.vx;
+}
+
+float Movement::relativeUnitVelocityOnY(const Movement& m) const
+{
+    return vy - m.vy;
+}
+
 plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
@@ -306,8 +316,8 @@ try {
 
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    const float rel_vx = _movement.vx - p._movement.vx;
-    const float rel_vy = _movement.vy - p._movement.vy;
+    const float rel_vx = _movement.relativeUnitVelocityOnX(p._movement);
+    const float rel_vy = _movement.relativeUnitVelocityOnY(p._movement);
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
