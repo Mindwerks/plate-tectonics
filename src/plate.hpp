@@ -34,13 +34,17 @@ typedef uint32_t ContinentId;
 class Movement
 {
 public:
-	Movement()
-		: velocity(1)
+	Movement(SimpleRandom randsource)
+		: _randsource(randsource),
+		  velocity(1),
+		  rot_dir(randsource.next() % 2 ? 1 : -1)
 	{
-
+		_randsource.next();
 	}
-	float velocity;       ///< Plate's velocity.	
+	float velocity;       ///< Plate's velocity.
+	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 private:
+	SimpleRandom _randsource;
 };
 
 class plate
@@ -263,7 +267,6 @@ class plate
 	Movement _movement;
 	float vx, vy;         ///< X and Y components of plate's direction unit vector.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
-	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.

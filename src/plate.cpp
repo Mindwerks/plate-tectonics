@@ -45,7 +45,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              cx(0), cy(0), dx(0), dy(0),
              _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
              map(w, h), age_map(w, h), _worldDimension(worldDimension),
-             _movement()
+             _movement(_randsource)
 {
     if (NULL == m) {
         throw invalid_argument("the given heightmap should not be null");
@@ -65,7 +65,6 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
     segment = new uint32_t[plate_area];
 
-    rot_dir = _randsource.next() & 1 ? 1 : -1;
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
     memset(segment, 255, plate_area * sizeof(uint32_t));
@@ -741,7 +740,7 @@ try {
     // Force the radius of the circle to remain fixed by adjusting
     // angular velocity (which depends on plate's velocity).
     uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
-    float alpha = rot_dir * _movement.velocity / (world_avg_side * 0.33);
+    float alpha = _movement.rot_dir * _movement.velocity / (world_avg_side * 0.33);
     float _cos = cos(alpha * _movement.velocity);
     float _sin = sin(alpha * _movement.velocity);
     float _vx = vx * _cos - vy * _sin;
