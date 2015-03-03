@@ -41,10 +41,9 @@ using namespace std;
 plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
-             _dimension(w, h),
              mass(0), 
-             _position(_x, _y),
              cx(0), cy(0), dx(0), dy(0),
+             _bounds(FloatPoint(_x, _y), Dimension(w, h)),
              map(w, h), age_map(w, h), _worldDimension(worldDimension)
 {
     if (NULL == m) {
@@ -72,8 +71,8 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
     memset(segment, 255, plate_area * sizeof(uint32_t));
 
     uint32_t k;
-    for (uint32_t y = k = 0; y < _dimension.getHeight(); ++y) {
-        for (uint32_t x = 0; x < _dimension.getWidth(); ++x, ++k) {
+    for (uint32_t y = k = 0; y < _bounds._dimension.getHeight(); ++y) {
+        for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x, ++k) {
             // Clone map data and count crust mass.
             mass += map[k] = m[k];
 
@@ -165,15 +164,15 @@ try {
     x = (uint32_t)((int)x + dx);
     y = (uint32_t)((int)y + dy);
 
-    if (_dimension.getWidth() == _worldDimension.getWidth()) {
-        x %= _dimension.getWidth();
+    if (_bounds._dimension.getWidth() == _worldDimension.getWidth()) {
+        x %= _bounds._dimension.getWidth();
     }
-    if (_dimension.getHeight() == _worldDimension.getHeight()) {
-        y %= _dimension.getHeight();
+    if (_bounds._dimension.getHeight() == _worldDimension.getHeight()) {
+        y %= _bounds._dimension.getHeight();
     }
 
-    index = y * _dimension.getWidth() + x;
-    if (index < _dimension.getWidth() * _dimension.getHeight() && map[index] > 0)
+    index = y * _bounds._dimension.getWidth() + x;
+    if (index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight() && map[index] > 0)
     {
         t = (map[index] * age_map[index] + z * t) / (map[index] + z);
         age_map[index] = t * (z > 0);
@@ -234,7 +233,7 @@ try {
     {
       for (uint32_t x = seg_data[seg_id].getLeft(); x <= seg_data[seg_id].getRight(); ++x)
       {
-        const uint32_t i = y * _dimension.getWidth() + x;
+        const uint32_t i = y * _bounds._dimension.getWidth() + x;
         if ((segment[i] == seg_id) && (map[i] > 0))
         {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
@@ -300,7 +299,7 @@ try {
     uint32_t p_index = p.getValidMapIndex(&bpx, &bpy);
 
     // out of colliding map's bounds!
-    assert(index < _dimension.getWidth() * _dimension.getHeight());
+    assert(index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
     assert(p_index < p.getWidth() * p.getHeight());
 
     ap_dx = (int)apx - (int)cx;
@@ -406,8 +405,8 @@ bool plate::contains(uint32_t x, uint32_t y) const
     uint32_t cleanX = xMod(x);
     uint32_t cleanY = yMod(y);
 
-    return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
-        && cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
+    return cleanX >= _bounds._position.getX() && cleanX<(_bounds._position.getX() + _bounds._dimension.getWidth()) 
+        && cleanY >= _bounds._position.getY() && cleanY<(_bounds._position.getY() + _bounds._dimension.getHeight());
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
@@ -416,15 +415,15 @@ void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index,
 {
     ::calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
         w, e, n, s, 
-        _worldDimension, map, _dimension.getWidth(), _dimension.getHeight());
+        _worldDimension, map, _bounds._dimension.getWidth(), _bounds._dimension.getHeight());
 }
 
 void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
 {
   // Find all tops.
-  for (uint32_t y = 0; y < _dimension.getHeight(); ++y) {
-    for (uint32_t x = 0; x < _dimension.getWidth(); ++x) {
-        const uint32_t index = y * _dimension.getWidth() + x;
+  for (uint32_t y = 0; y < _bounds._dimension.getHeight(); ++y) {
+    for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x) {
+        const uint32_t index = y * _bounds._dimension.getWidth() + x;
 
         if (map[index] < lower_bound) {
             continue;
@@ -451,15 +450,15 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
   vector<uint32_t> sinks_data;
   vector<uint32_t>* sinks = &sinks_data;
 
-  uint32_t* isDone = new uint32_t[_dimension.getWidth()*_dimension.getHeight()];
-  memset(isDone, 0, _dimension.getWidth()*_dimension.getHeight()*sizeof(uint32_t));
+  uint32_t* isDone = new uint32_t[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
+  memset(isDone, 0, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(uint32_t));
 
   // From each top, start flowing water along the steepest slope.
   while (!sources->empty()) {
     while (!sources->empty()) {
         const uint32_t index = sources->back();
-        const uint32_t y = index / _dimension.getWidth();
-        const uint32_t x = index - y * _dimension.getWidth();
+        const uint32_t y = index / _bounds._dimension.getWidth();
+        const uint32_t x = index - y * _bounds._dimension.getWidth();
 
         sources->pop_back();
 
@@ -493,16 +492,16 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
 
         if (n_crust < lowest_crust) {
             lowest_crust = n_crust;
-            dest = index - _dimension.getWidth();
+            dest = index - _bounds._dimension.getWidth();
         }
 
         if (s_crust < lowest_crust) {
             lowest_crust = s_crust;
-            dest = index + _dimension.getWidth();
+            dest = index + _bounds._dimension.getWidth();
         }
 
         // if it's not handled yet, add it as new sink.
-        if (dest < _dimension.getWidth() * _dimension.getHeight() && !isDone[dest]) {
+        if (dest < _bounds._dimension.getWidth() * _bounds._dimension.getHeight() && !isDone[dest]) {
             sinks->push_back(dest);
             isDone[dest] = 1;
         }
@@ -527,7 +526,7 @@ try {
   vector<uint32_t> sources_data;  
   vector<uint32_t>* sources = &sources_data;  
 
-  float* tmp = new float[_dimension.getWidth()*_dimension.getHeight()];
+  float* tmp = new float[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
   map.copy_raw_to(tmp);
 
   findRiverSources(lower_bound, sources);
@@ -535,21 +534,21 @@ try {
   flowRivers(lower_bound, sources, tmp);
 
   // Add random noise (10 %) to heightmap.
-  for (uint32_t i = 0; i < _dimension.getWidth()*_dimension.getHeight(); ++i)
+  for (uint32_t i = 0; i < _bounds._dimension.getWidth()*_bounds._dimension.getHeight(); ++i)
   {
     float alpha = 0.2 * (float)_randsource.next_double();
     tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
   }
 
-  memcpy(map.raw_data(), tmp, _dimension.getWidth()*_dimension.getHeight()*sizeof(float));
-  memset(tmp, 0, _dimension.getWidth()*_dimension.getHeight()*sizeof(float));
+  memcpy(map.raw_data(), tmp, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(float));
+  memset(tmp, 0, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(float));
   mass = 0;
   cx = cy = 0;
 
-  for (uint32_t y = 0; y < _dimension.getHeight(); ++y)
-    for (uint32_t x = 0; x < _dimension.getWidth(); ++x)
+  for (uint32_t y = 0; y < _bounds._dimension.getHeight(); ++y)
+    for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x)
     {
-    const uint32_t index = y * _dimension.getWidth() + x;
+    const uint32_t index = y * _bounds._dimension.getWidth() + x;
     mass += map[index];
     tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
 
@@ -757,11 +756,11 @@ try {
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    assert(_worldDimension.contains(_position));
+    assert(_worldDimension.contains(_bounds._position));
 
-    _position.grow(vx * velocity, vy * velocity, _worldDimension);
+    _bounds._position.grow(vx * velocity, vy * velocity, _worldDimension);
 
-    assert(_worldDimension.contains(_position));
+    assert(_worldDimension.contains(_bounds._position));
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();
@@ -771,7 +770,7 @@ try {
 
 void plate::resetSegments()
 {
-    memset(segment, -1, sizeof(uint32_t) * _dimension.getWidth() * _dimension.getHeight());
+    memset(segment, -1, sizeof(uint32_t) * _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
     seg_data.clear();
 }
 
@@ -791,10 +790,10 @@ try {
         // Extending plate for nothing!
         assert(z>0);
 
-        const uint32_t ilft = _position.getX();
-        const uint32_t itop = _position.getY();
-        const uint32_t irgt = ilft + _dimension.getWidth() - 1;
-        const uint32_t ibtm = itop + _dimension.getHeight() - 1;
+        const uint32_t ilft = _bounds._position.getX();
+        const uint32_t itop = _bounds._position.getY();
+        const uint32_t irgt = ilft + _bounds._dimension.getWidth() - 1;
+        const uint32_t ibtm = itop + _bounds._dimension.getHeight() - 1;
 
         _worldDimension.normalize(x, y);
 
@@ -818,39 +817,39 @@ try {
         d_btm = ((d_btm > 0) + (d_btm >> 3)) << 3;
 
         // Make sure plate doesn't grow bigger than the system it's in!
-        if (_dimension.getWidth() + d_lft + d_rgt > _worldDimension.getWidth())
+        if (_bounds._dimension.getWidth() + d_lft + d_rgt > _worldDimension.getWidth())
         {
             d_lft = 0;
-            d_rgt = _worldDimension.getWidth() - _dimension.getWidth();
+            d_rgt = _worldDimension.getWidth() - _bounds._dimension.getWidth();
         }
 
-        if (_dimension.getHeight() + d_top + d_btm > _worldDimension.getHeight())
+        if (_bounds._dimension.getHeight() + d_top + d_btm > _worldDimension.getHeight())
         {
             d_top = 0;
-            d_btm = _worldDimension.getHeight() - _dimension.getHeight();
+            d_btm = _worldDimension.getHeight() - _bounds._dimension.getHeight();
         }
 
         // Index out of bounds, but nowhere to grow!
         assert(d_lft + d_rgt + d_top + d_btm != 0);
 
-        const uint32_t old_width  = _dimension.getWidth();
-        const uint32_t old_height = _dimension.getHeight();
+        const uint32_t old_width  = _bounds._dimension.getWidth();
+        const uint32_t old_height = _bounds._dimension.getHeight();
         
-        _position.grow(-1.0*d_lft, -1.0*d_top, _worldDimension);
-        _dimension.growWidth(d_lft + d_rgt);
-        _dimension.growHeight(d_top + d_btm);
+        _bounds._position.grow(-1.0*d_lft, -1.0*d_top, _worldDimension);
+        _bounds._dimension.growWidth(d_lft + d_rgt);
+        _bounds._dimension.growHeight(d_top + d_btm);
 
-        HeightMap tmph = HeightMap(_dimension.getWidth(), _dimension.getHeight());
-        AgeMap    tmpa = AgeMap(_dimension.getWidth(), _dimension.getHeight());
-        uint32_t* tmps = new uint32_t[_dimension.getWidth()*_dimension.getHeight()];
+        HeightMap tmph = HeightMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
+        AgeMap    tmpa = AgeMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
+        uint32_t* tmps = new uint32_t[_bounds._dimension.getWidth()*_bounds._dimension.getHeight()];
         tmph.set_all(0);
         tmpa.set_all(0);
-        memset(tmps, 255, _dimension.getWidth()*_dimension.getHeight()*sizeof(uint32_t));
+        memset(tmps, 255, _bounds._dimension.getWidth()*_bounds._dimension.getHeight()*sizeof(uint32_t));
 
         // copy old plate into new.
         for (uint32_t j = 0; j < old_height; ++j)
         {
-            const uint32_t dest_i = (d_top + j) * _dimension.getWidth() + d_lft;
+            const uint32_t dest_i = (d_top + j) * _bounds._dimension.getWidth() + d_lft;
             const uint32_t src_i = j * old_width;
             memcpy(&tmph[dest_i], &map[src_i], old_width *
                 sizeof(float));
@@ -874,7 +873,7 @@ try {
         _x = x, _y = y;
         index = getValidMapIndex(&_x, &_y);
 
-        assert(index < _dimension.getWidth() * _dimension.getHeight());
+        assert(index < _bounds._dimension.getWidth() * _bounds._dimension.getHeight());
     }
 
     // Update crust's age.
@@ -916,9 +915,9 @@ try {
 uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID)
 {
     uint32_t canGoLeft  = x > 0          && map[origin_index - 1]     >= CONT_BASE;
-    uint32_t canGoRight = x < _dimension.getWidth() - 1  && map[origin_index+1]       >= CONT_BASE;
-    uint32_t canGoUp    = y > 0          && map[origin_index - _dimension.getWidth()] >= CONT_BASE;
-    uint32_t canGoDown  = y < _dimension.getHeight() - 1 && map[origin_index + _dimension.getWidth()] >= CONT_BASE;
+    uint32_t canGoRight = x < _bounds._dimension.getWidth() - 1  && map[origin_index+1]       >= CONT_BASE;
+    uint32_t canGoUp    = y > 0          && map[origin_index - _bounds._dimension.getWidth()] >= CONT_BASE;
+    uint32_t canGoDown  = y < _bounds._dimension.getHeight() - 1 && map[origin_index + _bounds._dimension.getWidth()] >= CONT_BASE;
     uint32_t nbour_id = ID;
 
     // This point belongs to no segment yet.
@@ -928,10 +927,10 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
         nbour_id = segment[origin_index - 1];
     } else if (canGoRight && segment[origin_index + 1] < ID) {
         nbour_id = segment[origin_index + 1];
-    } else if (canGoUp && segment[origin_index - _dimension.getWidth()] < ID) {
-        nbour_id = segment[origin_index - _dimension.getWidth()];
-    } else if (canGoDown && segment[origin_index + _dimension.getWidth()] < ID) {
-        nbour_id = segment[origin_index + _dimension.getWidth()];
+    } else if (canGoUp && segment[origin_index - _bounds._dimension.getWidth()] < ID) {
+        nbour_id = segment[origin_index - _bounds._dimension.getWidth()];
+    } else if (canGoDown && segment[origin_index + _bounds._dimension.getWidth()] < ID) {
+        nbour_id = segment[origin_index + _bounds._dimension.getWidth()];
     }
 
     return nbour_id;
@@ -967,8 +966,8 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 
         // Unsigned-ness hacking!
         // Required to fix the underflow of end - 1.
-        start |= -(end >= _dimension.getWidth());
-        end -= (end >= _dimension.getWidth());
+        start |= -(end >= _bounds._dimension.getWidth());
+        end -= (end >= _bounds._dimension.getWidth());
 
     } while (start > end && spans_todo[line].size());
 }
@@ -976,7 +975,7 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
 try {    
-    const uint32_t origin_index = y * _dimension.getWidth() + x;
+    const uint32_t origin_index = y * _bounds._dimension.getWidth() + x;
     const uint32_t ID = seg_data.size();
 
     if (segment[origin_index] < ID) {
@@ -999,8 +998,8 @@ try {
     Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
     SegmentData data(r, 0);
 
-    std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_dimension.getHeight()];
-    std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_dimension.getHeight()];
+    std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds._dimension.getHeight()];
+    std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds._dimension.getHeight()];
 
     segment[origin_index] = ID;
     spans_todo[y].push_back(x);
@@ -1009,7 +1008,7 @@ try {
     do
     {
       lines_processed = 0;
-      for (uint32_t line = 0; line < _dimension.getHeight(); ++line)
+      for (uint32_t line = 0; line < _bounds._dimension.getHeight(); ++line)
       {
         uint32_t start, end;
 
@@ -1023,11 +1022,11 @@ try {
 
         // Calculate line indices. Allow wrapping around map edges.
         const uint32_t row_above = ((line - 1) & -(line > 0)) |
-            ((_dimension.getHeight() - 1) & -(line == 0));
-        const uint32_t row_below = (line + 1) & -(line < _dimension.getHeight() - 1);
-        const uint32_t line_here = line * _dimension.getWidth();
-        const uint32_t line_above = row_above * _dimension.getWidth();
-        const uint32_t line_below = row_below * _dimension.getWidth();
+            ((_bounds._dimension.getHeight() - 1) & -(line == 0));
+        const uint32_t row_below = (line + 1) & -(line < _bounds._dimension.getHeight() - 1);
+        const uint32_t line_here = line * _bounds._dimension.getWidth();
+        const uint32_t line_above = row_above * _bounds._dimension.getWidth();
+        const uint32_t line_below = row_below * _bounds._dimension.getWidth();
 
         // Extend the beginning of line.
         while (start > 0 && segment[line_here+start-1] > ID &&
@@ -1040,7 +1039,7 @@ try {
         }
 
         // Extend the end of line.
-        while (end < _dimension.getWidth() - 1 &&
+        while (end < _bounds._dimension.getWidth() - 1 &&
             segment[line_here + end + 1] > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
@@ -1051,19 +1050,19 @@ try {
         }
 
         // Check if should wrap around left edge.
-        if (_dimension.getWidth() == _worldDimension.getWidth() && start == 0 &&
-            segment[line_here+_dimension.getWidth()-1] > ID &&
-            map[line_here+_dimension.getWidth()-1] >= CONT_BASE)
+        if (_bounds._dimension.getWidth() == _worldDimension.getWidth() && start == 0 &&
+            segment[line_here+_bounds._dimension.getWidth()-1] > ID &&
+            map[line_here+_bounds._dimension.getWidth()-1] >= CONT_BASE)
         {
-            segment[line_here + _dimension.getWidth() - 1] = ID;
-            spans_todo[line].push_back(_dimension.getWidth() - 1);
-            spans_todo[line].push_back(_dimension.getWidth() - 1);
+            segment[line_here + _bounds._dimension.getWidth() - 1] = ID;
+            spans_todo[line].push_back(_bounds._dimension.getWidth() - 1);
+            spans_todo[line].push_back(_bounds._dimension.getWidth() - 1);
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around right edge.
-        if (_dimension.getWidth() == _worldDimension.getWidth() && end == _dimension.getWidth() - 1 &&
+        if (_bounds._dimension.getWidth() == _worldDimension.getWidth() && end == _bounds._dimension.getWidth() - 1 &&
             segment[line_here+0] > ID &&
             map[line_here+0] >= CONT_BASE)
         {
@@ -1082,7 +1081,7 @@ try {
         if (start < data.getLeft()) data.setLeft(start);
         if (end > data.getRight()) data.setRight(end);
 
-        if (line > 0 || _dimension.getHeight() == _worldDimension.getHeight()) {
+        if (line > 0 || _bounds._dimension.getHeight() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (segment[line_above + j] > ID &&
                   map[line_above + j] >= CONT_BASE)
@@ -1092,7 +1091,7 @@ try {
 
                 // Count volume of pixel...
 
-                while (++j < _dimension.getWidth() &&
+                while (++j < _bounds._dimension.getWidth() &&
                        segment[line_above + j] > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
@@ -1109,7 +1108,7 @@ try {
               }
         }
 
-        if (line < _dimension.getHeight() - 1 || _dimension.getHeight() == _worldDimension.getHeight()) {
+        if (line < _bounds._dimension.getHeight() - 1 || _bounds._dimension.getHeight() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (segment[line_below + j] > ID &&
                   map[line_below + j] >= CONT_BASE)
@@ -1119,7 +1118,7 @@ try {
 
                 // Count volume of pixel...
 
-                while (++j < _dimension.getWidth() &&
+                while (++j < _bounds._dimension.getWidth() &&
                        segment[line_below + j] > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
@@ -1156,11 +1155,11 @@ try {
 
 Platec::Rectangle plate::getBounds() const
 {
-    p_assert(_position.getX() >= 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
-    const uint32_t ilft = (uint32_t)_position.getX();
-    const uint32_t itop = (uint32_t)_position.getY();
-    const uint32_t irgt = ilft + _dimension.getWidth();
-    const uint32_t ibtm = itop + _dimension.getHeight();
+    p_assert(_bounds._position.getX() >= 0.0f && _bounds._position.getY() >= 0.0f, "Left and top must be positive");  
+    const uint32_t ilft = (uint32_t)_bounds._position.getX();
+    const uint32_t itop = (uint32_t)_bounds._position.getY();
+    const uint32_t irgt = ilft + _bounds._dimension.getWidth();
+    const uint32_t ibtm = itop + _bounds._dimension.getHeight();
 
     return Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);     
 }

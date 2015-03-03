@@ -29,6 +29,17 @@
 
 typedef uint32_t ContinentId;
 
+class Bounds {
+public:
+	Bounds(const FloatPoint& position, const Dimension& dimension)
+		: _position(position), _dimension(dimension)
+	{
+
+	}	
+	FloatPoint _position;
+	Dimension _dimension;	
+};
+
 class plate
 {
 	public:
@@ -197,13 +208,13 @@ class plate
 
 	float getMass() const throw() { return mass; }
 	float getMomentum() const throw() { return mass * velocity; }
-	uint32_t getHeight() const throw() { return _dimension.getHeight(); }
-	float  getLeft() const throw() { return _position.getX(); }
-	float  getTop() const throw() { return _position.getY(); }
+	uint32_t getHeight() const throw() { return _bounds._dimension.getHeight(); }
+	float  getLeft() const throw() { return _bounds._position.getX(); }
+	float  getTop() const throw() { return _bounds._position.getY(); }
 	float getVelocity() const throw() { return velocity; }
 	float getVelX() const throw() { return vx; }
 	float getVelY() const throw() { return vy; }
-	uint32_t getWidth() const throw() { return _dimension.getWidth(); }
+	uint32_t getWidth() const throw() { return _bounds._dimension.getWidth(); }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
 	bool contains(uint32_t x, uint32_t y) const;
@@ -254,12 +265,11 @@ class plate
 
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-	Dimension _dimension;
 
 	const WorldDimension _worldDimension;
+	Bounds _bounds;
 
 	float mass;           ///< Amount of crust that constitutes the plate.
-	FloatPoint _position;
 	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
 	float velocity;       ///< Plate's velocity.
