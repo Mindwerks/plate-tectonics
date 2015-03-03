@@ -77,10 +77,16 @@ public:
 	{
 	    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
 	}
-	void grow(float dx, float dy, const WorldDimension& _worldDimension){
+	void grow(float dx, float dy){
 		_position.grow(dx, dy, _worldDimension);
 		p_assert(_worldDimension.contains(_position), "");
 	}
+	void growWidth(int d){
+		_dimension.growWidth(d);
+	}
+	void growHeight(int d){
+		_dimension.growHeight(d);
+	}	
 	FloatPoint _position;
 	Dimension _dimension;	
 private:

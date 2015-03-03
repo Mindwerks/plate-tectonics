@@ -752,7 +752,7 @@ try {
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds.grow(vx * velocity, vy * velocity, _worldDimension);
+    _bounds.grow(vx * velocity, vy * velocity);
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();
@@ -809,27 +809,27 @@ try {
         d_btm = ((d_btm > 0) + (d_btm >> 3)) << 3;
 
         // Make sure plate doesn't grow bigger than the system it's in!
-        if (_bounds._dimension.getWidth() + d_lft + d_rgt > _worldDimension.getWidth())
+        if (_bounds.width() + d_lft + d_rgt > _worldDimension.getWidth())
         {
             d_lft = 0;
-            d_rgt = _worldDimension.getWidth() - _bounds._dimension.getWidth();
+            d_rgt = _worldDimension.getWidth() - _bounds.width();
         }
 
-        if (_bounds._dimension.getHeight() + d_top + d_btm > _worldDimension.getHeight())
+        if (_bounds.height() + d_top + d_btm > _worldDimension.getHeight())
         {
             d_top = 0;
-            d_btm = _worldDimension.getHeight() - _bounds._dimension.getHeight();
+            d_btm = _worldDimension.getHeight() - _bounds.height();
         }
 
         // Index out of bounds, but nowhere to grow!
         assert(d_lft + d_rgt + d_top + d_btm != 0);
 
-        const uint32_t old_width  = _bounds._dimension.getWidth();
-        const uint32_t old_height = _bounds._dimension.getHeight();
+        const uint32_t old_width  = _bounds.width();
+        const uint32_t old_height = _bounds.height();
         
-        _bounds._position.grow(-1.0*d_lft, -1.0*d_top, _worldDimension);
-        _bounds._dimension.growWidth(d_lft + d_rgt);
-        _bounds._dimension.growHeight(d_top + d_btm);
+        _bounds.grow(-1.0*d_lft, -1.0*d_top);
+        _bounds.growWidth(d_lft + d_rgt);
+        _bounds.growHeight(d_top + d_btm);
 
         HeightMap tmph = HeightMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
         AgeMap    tmpa = AgeMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
