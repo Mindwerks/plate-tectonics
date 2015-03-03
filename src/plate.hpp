@@ -96,6 +96,14 @@ public:
 	{
 		return vy * velocity;
 	}	
+	float velocityOnX(float length)
+	{
+		return vx * length;
+	}
+	float velocityOnY(float length)
+	{
+		return vy * length;
+	}		
 	float dot(float dx_, float dy_)
 	{
 		return vx * dx_ + vy * dy_;

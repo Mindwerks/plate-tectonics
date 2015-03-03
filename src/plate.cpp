@@ -145,8 +145,8 @@ try {
     // Use of "this" pointer is not necessary, but it make code clearer.
     // Cursed be those who use "m_" prefix in member names! >(
     float dot = _movement.dot(dx, dy);
-    dx -= this->_movement.vx * (dot > 0);
-    dy -= this->_movement.vy * (dot > 0);
+    dx -= _movement.velocityOnX(dot > 0);
+    dy -= _movement.velocityOnY(dot > 0);
 
     float offset = (float)_randsource.next_double();
     offset *= offset * offset * (2 * (_randsource.next() & 1) - 1);
