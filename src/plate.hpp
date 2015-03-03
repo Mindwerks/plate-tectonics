@@ -238,6 +238,8 @@ class plate
 	/// @return	ID of created segment on success, otherwise -1.
 	uint32_t createSegment(uint32_t wx, uint32_t wy) throw();
 
+	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
+
 	/// Translate world coordinates into offset within plate's height map.
 	///
 	/// Iff the global world map coordinates are within plate's height map,
