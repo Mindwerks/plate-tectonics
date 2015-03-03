@@ -9,6 +9,7 @@
 #include "simplerandom.hpp"
 #include <stdint.h>
 #include <stddef.h>
+#include "utils.hpp"
 
 #ifndef UINT32_C
 #define UINT32_C(val) val##ui32

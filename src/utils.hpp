@@ -2,6 +2,8 @@
 #define UTILS_HPP
 
 #include <string>
+#define __STDC_CONSTANT_MACROS
+#include <stdint.h>
 
 #if _WIN32 || _WIN64
 #include <Windows.h>
