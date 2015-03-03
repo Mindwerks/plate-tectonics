@@ -37,11 +37,32 @@ public:
 		  _dimension(dimension) {
 
 	};
-	uint32_t index(uint32_t x, uint32_t y){
+	uint32_t index(uint32_t x, uint32_t y) const{
 		return y * _dimension.getWidth() + x;
 	} 	
-	uint32_t area(){
+	uint32_t area() const{
 		return _dimension.getArea();
+	}
+	uint32_t width() const {
+		return _dimension.getWidth();
+	}
+	uint32_t height() const {
+		return _dimension.getHeight();
+	}	
+	bool contains(uint32_t x, uint32_t y) const{
+		uint32_t cleanX = xMod(x);
+    	uint32_t cleanY = yMod(y);
+		return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
+        	&& cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
+	}
+	uint32_t xMod(uint32_t x) const
+	{
+	    return (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
+	}
+
+	uint32_t yMod(uint32_t y) const
+	{
+	    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
 	}
 	FloatPoint _position;
 	Dimension _dimension;	

@@ -71,7 +71,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
     memset(segment, 255, plate_area * sizeof(uint32_t));
 
     uint32_t k;
-    for (uint32_t y = k = 0; y < _bounds._dimension.getHeight(); ++y) {
+    for (uint32_t y = k = 0; y < _bounds.height(); ++y) {
         for (uint32_t x = 0; x < _bounds._dimension.getWidth(); ++x, ++k) {
             // Clone map data and count crust mass.
             mass += map[k] = m[k];
@@ -167,8 +167,8 @@ try {
     if (_bounds._dimension.getWidth() == _worldDimension.getWidth()) {
         x %= _bounds._dimension.getWidth();
     }
-    if (_bounds._dimension.getHeight() == _worldDimension.getHeight()) {
-        y %= _bounds._dimension.getHeight();
+    if (_bounds.height() == _worldDimension.getHeight()) {
+        y %= _bounds.height();
     }
 
     index = _bounds.index(x, y);
@@ -402,11 +402,7 @@ uint32_t plate::yMod(uint32_t y) const
 
 bool plate::contains(uint32_t x, uint32_t y) const
 {
-    uint32_t cleanX = xMod(x);
-    uint32_t cleanY = yMod(y);
-
-    return cleanX >= _bounds._position.getX() && cleanX<(_bounds._position.getX() + _bounds._dimension.getWidth()) 
-        && cleanY >= _bounds._position.getY() && cleanY<(_bounds._position.getY() + _bounds._dimension.getHeight());
+    return _bounds.contains(x, y);
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
