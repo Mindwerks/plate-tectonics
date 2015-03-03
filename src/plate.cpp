@@ -33,9 +33,6 @@
 #include "utils.hpp"
 #include "plate_functions.hpp"
 
-#define INITIAL_SPEED_X 1
-#define DEFORMATION_WEIGHT 2
-
 using namespace std;
 
 plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
@@ -61,12 +58,8 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
     }
 
     const uint32_t plate_area = w * h;
-    const double angle = 2 * M_PI * _randsource.next_double();
 
     segment = new uint32_t[plate_area];
-
-    vx = cos(angle) * INITIAL_SPEED_X;
-    vy = sin(angle) * INITIAL_SPEED_X;
     memset(segment, 255, plate_area * sizeof(uint32_t));
 
     uint32_t k;
@@ -151,9 +144,9 @@ try {
     //
     // Use of "this" pointer is not necessary, but it make code clearer.
     // Cursed be those who use "m_" prefix in member names! >(
-    float dot = this->vx * dx + this->vy * dy;
-    dx -= this->vx * (dot > 0);
-    dy -= this->vy * (dot > 0);
+    float dot = this->_movement.vx * dx + this->_movement.vy * dy;
+    dx -= this->_movement.vx * (dot > 0);
+    dy -= this->_movement.vy * (dot > 0);
 
     float offset = (float)_randsource.next_double();
     offset *= offset * offset * (2 * (_randsource.next() & 1) - 1);
@@ -319,8 +312,8 @@ try {
 
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    const float rel_vx = vx - p.vx;
-    const float rel_vy = vy - p.vy;
+    const float rel_vx = _movement.vx - p._movement.vx;
+    const float rel_vy = _movement.vy - p._movement.vy;
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
@@ -723,16 +716,16 @@ try {
     float len;
 
     // Apply any new impulses to the plate's trajectory.
-    vx += _movement.dx;
-    vy += _movement.dy;
+    _movement.vx += _movement.dx;
+    _movement.vy += _movement.dy;
     _movement.dx = 0;
     _movement.dy = 0;
 
     // Force direction of plate to be unit vector.
     // Update velocity so that the distance of movement doesn't change.
-    len = sqrt(vx*vx+vy*vy);
-    vx /= len;
-    vy /= len;
+    len = sqrt(_movement.vx*_movement.vx+_movement.vy*_movement.vy);
+    _movement.vx /= len;
+    _movement.vy /= len;
     _movement.velocity += len - 1.0;
     _movement.velocity *= _movement.velocity > 0; // Round negative values to zero.
 
@@ -743,15 +736,15 @@ try {
     float alpha = _movement.rot_dir * _movement.velocity / (world_avg_side * 0.33);
     float _cos = cos(alpha * _movement.velocity);
     float _sin = sin(alpha * _movement.velocity);
-    float _vx = vx * _cos - vy * _sin;
-    float _vy = vy * _cos + vx * _sin;
-    vx = _vx;
-    vy = _vy;
+    float _vx = _movement.vx * _cos - _movement.vy * _sin;
+    float _vy = _movement.vy * _cos + _movement.vx * _sin;
+    _movement.vx = _vx;
+    _movement.vy = _vy;
 
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds.grow(vx * _movement.velocity, vy * _movement.velocity);
+    _bounds.grow(_movement.vx * _movement.velocity, _movement.vy * _movement.velocity);
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();

@@ -20,6 +20,7 @@
 #define PLATE_HPP
 
 #include <vector>
+#include <cmath>     // sin, cos
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
@@ -28,6 +29,8 @@
 #include "bounds.hpp"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
+#define INITIAL_SPEED_X 1
+#define DEFORMATION_WEIGHT 2
 
 typedef uint32_t ContinentId;
 
@@ -40,11 +43,14 @@ public:
 		  rot_dir(randsource.next() % 2 ? 1 : -1),
 		  dx(0), dy(0)
 	{
-		_randsource.next();
+		const double angle = 2 * M_PI * _randsource.next_double();
+	    vx = cos(angle) * INITIAL_SPEED_X;
+	    vy = sin(angle) * INITIAL_SPEED_X;
 	}
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
+	float vx, vy;         ///< X and Y components of plate's direction unit vector.	
 private:
 	SimpleRandom _randsource;
 };
@@ -221,8 +227,8 @@ class plate
 	float  getLeft() const throw() { return _bounds.left(); }
 	float  getTop() const throw() { return _bounds.top(); }
 	float getVelocity() const throw() { return _movement.velocity; }
-	float getVelX() const throw() { return vx; }
-	float getVelY() const throw() { return vy; }
+	float getVelX() const throw() { return _movement.vx; }
+	float getVelY() const throw() { return _movement.vy; }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
@@ -266,8 +272,7 @@ class plate
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
-	Movement _movement;
-	float vx, vy;         ///< X and Y components of plate's direction unit vector.	
+	Movement _movement;	
 
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
