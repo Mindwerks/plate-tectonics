@@ -112,6 +112,10 @@ public:
 	}
 	float relativeUnitVelocityOnX(const Movement& m) const;
 	float relativeUnitVelocityOnY(const Movement& m) const;
+	float momentum(float mass) const throw() { return mass * velocity; }
+	float getVelocity() const { return velocity; };
+	float velX() const throw() { return vx; }
+	float velY() const throw() { return vy; }
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
 	float dx, dy;         ///< X and Y components of plate's acceleration vector.
@@ -288,13 +292,13 @@ class plate
 	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
 	float getMass() const throw() { return mass; }
-	float getMomentum() const throw() { return mass * _movement.velocity; }
+	float getMomentum() const throw() { return _movement.momentum(mass); }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
 	float  getLeft() const throw() { return _bounds.left(); }
 	float  getTop() const throw() { return _bounds.top(); }
-	float getVelocity() const throw() { return _movement.velocity; }
-	float getVelX() const throw() { return _movement.vx; }
-	float getVelY() const throw() { return _movement.vy; }
+	float getVelocity() const throw() { return _movement.getVelocity(); }
+	float getVelX() const throw() { return _movement.velX(); }
+	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return mass <= 0; }
 
