@@ -113,7 +113,7 @@ try {
     // Add crust. Extend plate if necessary.
     setCrust(x, y, getCrust(x, y) + z, time);
 
-    uint32_t index = getValidMapIndex(&x, &y);
+    uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
     segment[index] = activeContinent;
     SegmentData& data = seg_data[activeContinent];
@@ -145,7 +145,7 @@ try {
     //       Drawbacks:
     //           Additional logic required
     //           Might place crust on other continent on same plate!
-    uint32_t index = getValidMapIndex(&x, &y);
+    uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
     // Take vector difference only between plates that move more or less
     // to same direction. This makes subduction direction behave better.
@@ -191,7 +191,7 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
 {
 try {    
     uint32_t lx = wx, ly = wy;
-    const uint32_t index = getValidMapIndex(&lx, &ly);
+    const uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
 
     const ContinentId seg_id = segment[index];
 
@@ -295,8 +295,8 @@ try {
     // happen in the overlapping region of the two plates.
     uint32_t apx = wx, apy = wy, bpx = wx, bpy = wy;
     float ap_dx, ap_dy, bp_dx, bp_dy, nx, ny;
-    uint32_t index   =   getValidMapIndex(&apx, &apy);
-    uint32_t p_index = p.getValidMapIndex(&bpx, &bpy);
+    uint32_t index   =   _bounds.getValidMapIndex(&apx, &apy);
+    uint32_t p_index = p._bounds.getValidMapIndex(&bpx, &bpy);
 
     // out of colliding map's bounds!
     assert(index < _bounds.area());
@@ -672,7 +672,7 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 {
 try {
-    const uint32_t index = getValidMapIndex(&wx, &wy);
+    const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
 
     assert(segment[index] < seg_data.size());
 
@@ -687,7 +687,7 @@ try {
 float plate::getCrust(uint32_t x, uint32_t y) const
 {
 try {
-    const uint32_t index = getMapIndex(&x, &y);
+    const uint32_t index = _bounds.getMapIndex(&x, &y);
     return index != BAD_INDEX ? map[index] : 0;
 } catch (const exception& e){
     std::string msg = "Problem during plate::getCrust: ";
@@ -699,7 +699,7 @@ try {
 uint32_t plate::getCrustTimestamp(uint32_t x, uint32_t y) const
 {
 try {
-    const uint32_t index = getMapIndex(&x, &y);
+    const uint32_t index = _bounds.getMapIndex(&x, &y);
     return index != BAD_INDEX ? age_map[index] : 0;
 } catch (const exception& e){
     std::string msg = "Problem during plate::getCrustTimestamp: ";
@@ -775,7 +775,7 @@ try {
 
     uint32_t _x = x;
     uint32_t _y = y;
-    uint32_t index = getMapIndex(&_x, &_y);
+    uint32_t index = _bounds.getMapIndex(&_x, &_y);
 
     if (index == BAD_INDEX)
     {
@@ -863,7 +863,7 @@ try {
         }
 
         _x = x, _y = y;
-        index = getValidMapIndex(&_x, &_y);
+        index = _bounds.getValidMapIndex(&_x, &_y);
 
         assert(index < _bounds.area());
     }
@@ -890,7 +890,7 @@ try {
 ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
 try {    
-    uint32_t index = getValidMapIndex(&coll_x, &coll_y);
+    uint32_t index = _bounds.getValidMapIndex(&coll_x, &coll_y);
     ContinentId activeContinent = segment[index];
     return activeContinent;
 } catch (const exception& e){
@@ -1145,31 +1145,11 @@ try {
 }
 }
 
-Platec::Rectangle plate::getBounds() const
-{
-    return _bounds.asRect();    
-}
-
-// TODO move this method to a separate class
-uint32_t plate::getMapIndex(uint32_t* px, uint32_t* py) const
-{
-    return getBounds().getMapIndex(px, py);       
-}
-
-uint32_t plate::getValidMapIndex(uint32_t* px, uint32_t* py) const
-{
-    uint32_t res = getBounds().getMapIndex(px, py);
-    if (res == BAD_INDEX) {
-        throw runtime_error("BAD INDEX found");
-    }
-    return res;
-}
-
 ContinentId plate::getContinentAt(int x, int y) const
 {
 try {
     uint32_t lx = x, ly = y;
-    uint32_t index = getValidMapIndex(&lx, &ly);
+    uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
     ContinentId seg = segment[index];
 
     if (seg >= seg_data.size()) {

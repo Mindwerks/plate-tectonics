@@ -74,6 +74,21 @@ public:
 
 	    return Platec::Rectangle(_worldDimension, ilft, irgt, itop, ibtm);     
 	}
+
+	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
+
+	/// Translate world coordinates into offset within plate's height map.
+	///
+	/// Iff the global world map coordinates are within plate's height map,
+	/// the values of passed coordinates will be altered to contain the
+	/// X and y offset within the plate's height map. Otherwise values are
+	/// left intact.
+	///
+	/// @param[in, out] x	Offset on the global world map along X axis.
+	/// @param[in, out] y	Offset on the global world map along Y axis.
+	/// @return		Offset in height map or BAD_INDEX on error.
+	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
+	
 private:
 	const WorldDimension _worldDimension;
 	FloatPoint _position;

@@ -228,7 +228,6 @@ class plate
 	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
 	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
     		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
-	Platec::Rectangle getBounds() const;
 
 	/// Separate a continent at (X, Y) to its own partition.
 	///
@@ -239,20 +238,6 @@ class plate
 	/// @param	y	Offset on the local height map along Y axis.
 	/// @return	ID of created segment on success, otherwise -1.
 	uint32_t createSegment(uint32_t wx, uint32_t wy) throw();
-
-	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
-
-	/// Translate world coordinates into offset within plate's height map.
-	///
-	/// Iff the global world map coordinates are within plate's height map,
-	/// the values of passed coordinates will be altered to contain the
-	/// X and y offset within the plate's height map. Otherwise values are
-	/// left intact.
-	///
-	/// @param[in, out] x	Offset on the global world map along X axis.
-	/// @param[in, out] y	Offset on the global world map along Y axis.
-	/// @return		Offset in height map or BAD_INDEX on error.
-	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 
 	HeightMap map;        ///< Bitmap of plate's structure/height.
 	AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
