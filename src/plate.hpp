@@ -61,7 +61,7 @@ public:
 	void move()
 	{
 		float len;
-		
+
 		// Apply any new impulses to the plate's trajectory.
 	    vx += dx;
 	    vy += dy;
@@ -87,6 +87,18 @@ public:
 	    float _vy = vy * _cos + vx * _sin;
 	    vx = _vx;
 	    vy = _vy;
+	}
+	float velocityOnX()
+	{
+		return vx * velocity;
+	}
+	float velocityOnY()
+	{
+		return vy * velocity;
+	}	
+	float dot(float dx_, float dy_)
+	{
+		return vx * dx_ + vy * dy_;
 	}
 	float velocity;       ///< Plate's velocity.
 	float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.

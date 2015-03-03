@@ -144,7 +144,7 @@ try {
     //
     // Use of "this" pointer is not necessary, but it make code clearer.
     // Cursed be those who use "m_" prefix in member names! >(
-    float dot = this->_movement.vx * dx + this->_movement.vy * dy;
+    float dot = _movement.dot(dx, dy);
     dx -= this->_movement.vx * (dot > 0);
     dy -= this->_movement.vy * (dot > 0);
 
@@ -708,11 +708,11 @@ void plate::move()
 {
 try {    
     _movement.move();
-    
+
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds.grow(_movement.vx * _movement.velocity, _movement.vy * _movement.velocity);
+    _bounds.grow(_movement.velocityOnX(), _movement.velocityOnY());
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();
