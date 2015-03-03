@@ -54,6 +54,25 @@ public:
 	    cx /= mass;
 	    cy /= mass;
 	}
+	void incMass(float delta) { mass += delta; }
+	float getMass() { return mass; }
+	void clear()
+	{
+		mass = 0.0f;
+		cx = 0.0f;
+		cy = 0.0f;
+	}
+	void addPoint(uint32_t x, uint32_t y, float value)
+	{
+		incMass( value );
+		cx += x * value;
+    	cy += y * value;
+	}
+	void redistribute()
+	{
+		cx /= mass;
+    	cy /= mass;
+	}
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 private:

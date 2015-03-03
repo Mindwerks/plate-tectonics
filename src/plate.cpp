@@ -161,7 +161,7 @@ try {
         age_map[index] = t * (z > 0);
 
         map[index] += z;
-        _mass.mass += z;
+        _mass.incMass(z);
     }
 } catch (const exception& e){
     std::string msg = "Problem during plate::addCrustBySubduction: ";
@@ -209,7 +209,7 @@ try {
     //      seg_data[seg_id].x1, seg_data[seg_id].y1,
     //      _dimension.getWidth(), _dimension.getHeight(), lx, ly);
 
-    float old_mass = _mass.mass;
+    float old_mass = _mass.getMass();
 
     // Add all of the collided continent's crust to destination plate.
     for (uint32_t y = seg_data[seg_id].getTop(); y <= seg_data[seg_id].getBottom(); ++y)
@@ -222,14 +222,14 @@ try {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
                 map[i], age_map[i], activeContinent);
 
-            _mass.mass -= map[i];
+            _mass.incMass(-1.0f * map[i]);
             map[i] = 0;
         }
       }
     }
 
     seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
-    return old_mass - _mass.mass;
+    return old_mass - _mass.getMass();
 } catch (const exception& e){
     std::string msg = "Problem during plate::aggregateCrust: ";
     msg = msg + e.what();
@@ -241,9 +241,9 @@ void plate::applyFriction(float deformed_mass)
 {
     // Remove the energy that deformation consumed from plate's kinetic
     // energy: F - dF = ma - dF => a = dF/m.
-    if (_mass.mass > 0)
+    if (_mass.getMass() > 0)
     {
-        _movement.applyFriction(deformed_mass, _mass.mass);
+        _movement.applyFriction(deformed_mass, _mass.getMass());
     }
 }
 
@@ -390,19 +390,16 @@ try {
 
   memcpy(map.raw_data(), tmp, _bounds.area()*sizeof(float));
   memset(tmp, 0, _bounds.area()*sizeof(float));
-  _mass.mass = 0;
-  _mass.cx = _mass.cy = 0;
+  _mass.clear();
 
   for (uint32_t y = 0; y < _bounds.height(); ++y)
     for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
     const uint32_t index = y * _bounds.width() + x;
-    _mass.mass += map[index];
     tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
 
     // Update the center coordinates weighted by mass.
-    _mass.cx += x * map[index];
-    _mass.cy += y * map[index];
+    _mass.addPoint(x, y, map[index]);
 
     if (map[index] < lower_bound)
         continue;
@@ -499,8 +496,7 @@ try {
 
   if (_mass.mass > 0)
   {
-    _mass.cx /= _mass.mass;
-    _mass.cy /= _mass.mass;
+    _mass.redistribute();
   }
 } catch (const exception& e){
     std::string msg = "Problem during plate::erode: ";
@@ -703,9 +699,8 @@ try {
         (map[index] + z)) & old_crust);
     age_map[index] = (t & new_crust) | (age_map[index] & ~new_crust);
 
-    _mass.mass -= map[index];
+    _mass.incMass(z - map[index]);
     map[index] = z;     // Set new crust height to desired location.
-    _mass.mass += z;      // Update mass counter.
 } catch (const exception& e){
     std::string msg = "Problem during plate::setCrust: ";
     msg = msg + e.what();
