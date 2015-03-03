@@ -9,6 +9,8 @@ using namespace std;
 
 #define BAD_INDEX 0xFFFFFFFF
 
+class WorldDimension;
+
 class FloatPoint {
 public:
     FloatPoint(float x, float y)
@@ -22,6 +24,7 @@ public:
     {
         return _y;
     };
+    void grow(float dx, float dy, const WorldDimension& _worldDimension);
 private:
     float _x, _y;
 };
@@ -56,6 +59,16 @@ public:
     bool contains(const uint32_t x, const uint32_t y) const
     {
         return (x >= 0 && x < _width && y >= 0 && y < _height);
+    }
+
+    bool contains(const float x, const float y) const
+    {
+        return (x >= 0 && x < _width && y >= 0 && y < _height);
+    }
+
+    bool contains(const FloatPoint& p) const
+    {
+        return (p.getX() >= 0 && p.getX() < _width && p.getY() >= 0 && p.getY() < _height);
     }
 
     void growWidth(uint32_t amount)

@@ -42,7 +42,9 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              uint32_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
              _dimension(w, h),
-             mass(0), left(_x), top(_y), cx(0), cy(0), dx(0), dy(0),
+             mass(0), 
+             _position(_x, _y),
+             cx(0), cy(0), dx(0), dy(0),
              map(w, h), age_map(w, h), _worldDimension(worldDimension)
 {
     if (NULL == m) {
@@ -404,7 +406,8 @@ bool plate::contains(uint32_t x, uint32_t y) const
     uint32_t cleanX = xMod(x);
     uint32_t cleanY = yMod(y);
 
-    return cleanX>=left && cleanX<(left+_dimension.getWidth()) && cleanY>=top && cleanY<(top+_dimension.getHeight());
+    return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
+        && cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
@@ -754,17 +757,11 @@ try {
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    assert(_worldDimension.contains(left, top));
+    assert(_worldDimension.contains(_position));
 
-    left += vx * velocity;
-    left += left > 0 ? 0 : _worldDimension.getWidth();
-    left -= left < _worldDimension.getWidth() ? 0 : _worldDimension.getWidth();
+    _position.grow(vx * velocity, vy * velocity, _worldDimension);
 
-    top += vy * velocity;
-    top += top > 0 ? 0 : _worldDimension.getHeight();
-    top -= top < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
-
-    assert(_worldDimension.contains(left, top));
+    assert(_worldDimension.contains(_position));
 } catch (const exception& e){
     std::string msg = "Problem during plate::move: ";
     msg = msg + e.what();
@@ -794,8 +791,8 @@ try {
         // Extending plate for nothing!
         assert(z>0);
 
-        const uint32_t ilft = left;
-        const uint32_t itop = top;
+        const uint32_t ilft = _position.getX();
+        const uint32_t itop = _position.getY();
         const uint32_t irgt = ilft + _dimension.getWidth() - 1;
         const uint32_t ibtm = itop + _dimension.getHeight() - 1;
 
@@ -839,12 +836,8 @@ try {
         const uint32_t old_width  = _dimension.getWidth();
         const uint32_t old_height = _dimension.getHeight();
         
-        left -= d_lft;
-        left += left >= 0 ? 0 : _worldDimension.getWidth();
+        _position.grow(-1.0*d_lft, -1.0*d_top, _worldDimension);
         _dimension.growWidth(d_lft + d_rgt);
-
-        top -= d_top;
-        top += top >= 0 ? 0 : _worldDimension.getHeight();
         _dimension.growHeight(d_top + d_btm);
 
         HeightMap tmph = HeightMap(_dimension.getWidth(), _dimension.getHeight());
@@ -1163,9 +1156,9 @@ try {
 
 Platec::Rectangle plate::getBounds() const
 {
-    p_assert(left >= 0.0f && top >= 0.0f, "Left and top must be positive");  
-    const uint32_t ilft = (uint32_t)left;
-    const uint32_t itop = (uint32_t)top;
+    p_assert(_position.getX() >= 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
+    const uint32_t ilft = (uint32_t)_position.getX();
+    const uint32_t itop = (uint32_t)_position.getY();
     const uint32_t irgt = ilft + _dimension.getWidth();
     const uint32_t ibtm = itop + _dimension.getHeight();
 

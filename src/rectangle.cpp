@@ -1,5 +1,19 @@
 #include <stdexcept>
 #include "rectangle.hpp"
+#include "utils.hpp"
+
+void FloatPoint::grow(float dx, float dy, const WorldDimension& _worldDimension)
+{
+    _x += dx;
+    _x += _x > 0 ? 0 : _worldDimension.getWidth();
+    _x -= _x < _worldDimension.getWidth() ? 0 : _worldDimension.getWidth();
+
+    _y += dy;
+    _y += _y > 0 ? 0 : _worldDimension.getHeight();
+    _y -= _y < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
+
+    p_assert(_worldDimension.contains(*this), "");
+}
 
 namespace Platec {
 

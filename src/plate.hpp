@@ -198,8 +198,8 @@ class plate
 	float getMass() const throw() { return mass; }
 	float getMomentum() const throw() { return mass * velocity; }
 	uint32_t getHeight() const throw() { return _dimension.getHeight(); }
-	float  getLeft() const throw() { return left; }
-	float  getTop() const throw() { return top; }
+	float  getLeft() const throw() { return _position.getX(); }
+	float  getTop() const throw() { return _position.getY(); }
 	float getVelocity() const throw() { return velocity; }
 	float getVelX() const throw() { return vx; }
 	float getVelY() const throw() { return vy; }
@@ -259,7 +259,7 @@ class plate
 	const WorldDimension _worldDimension;
 
 	float mass;           ///< Amount of crust that constitutes the plate.
-	float left, top;      ///< Height map's left-top corner in world coords.
+	FloatPoint _position;
 	float cx, cy;         ///< X and Y components of the center of mass of plate.
 
 	float velocity;       ///< Plate's velocity.
