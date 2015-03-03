@@ -831,8 +831,8 @@ try {
         _bounds.growWidth(d_lft + d_rgt);
         _bounds.growHeight(d_top + d_btm);
 
-        HeightMap tmph = HeightMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
-        AgeMap    tmpa = AgeMap(_bounds._dimension.getWidth(), _bounds._dimension.getHeight());
+        HeightMap tmph = HeightMap(_bounds.width(), _bounds.height());
+        AgeMap    tmpa = AgeMap(_bounds.width(), _bounds.height());
         uint32_t* tmps = new uint32_t[_bounds.area()];
         tmph.set_all(0);
         tmpa.set_all(0);
@@ -841,7 +841,7 @@ try {
         // copy old plate into new.
         for (uint32_t j = 0; j < old_height; ++j)
         {
-            const uint32_t dest_i = (d_top + j) * _bounds._dimension.getWidth() + d_lft;
+            const uint32_t dest_i = (d_top + j) * _bounds.width() + d_lft;
             const uint32_t src_i = j * old_width;
             memcpy(&tmph[dest_i], &map[src_i], old_width *
                 sizeof(float));
@@ -907,9 +907,9 @@ try {
 uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID)
 {
     uint32_t canGoLeft  = x > 0          && map[origin_index - 1]     >= CONT_BASE;
-    uint32_t canGoRight = x < _bounds._dimension.getWidth() - 1  && map[origin_index+1]       >= CONT_BASE;
-    uint32_t canGoUp    = y > 0          && map[origin_index - _bounds._dimension.getWidth()] >= CONT_BASE;
-    uint32_t canGoDown  = y < _bounds._dimension.getHeight() - 1 && map[origin_index + _bounds._dimension.getWidth()] >= CONT_BASE;
+    uint32_t canGoRight = x < _bounds.width() - 1  && map[origin_index+1]       >= CONT_BASE;
+    uint32_t canGoUp    = y > 0          && map[origin_index - _bounds.width()] >= CONT_BASE;
+    uint32_t canGoDown  = y < _bounds.height() - 1 && map[origin_index + _bounds.width()] >= CONT_BASE;
     uint32_t nbour_id = ID;
 
     // This point belongs to no segment yet.
@@ -919,10 +919,10 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
         nbour_id = segment[origin_index - 1];
     } else if (canGoRight && segment[origin_index + 1] < ID) {
         nbour_id = segment[origin_index + 1];
-    } else if (canGoUp && segment[origin_index - _bounds._dimension.getWidth()] < ID) {
-        nbour_id = segment[origin_index - _bounds._dimension.getWidth()];
-    } else if (canGoDown && segment[origin_index + _bounds._dimension.getWidth()] < ID) {
-        nbour_id = segment[origin_index + _bounds._dimension.getWidth()];
+    } else if (canGoUp && segment[origin_index - _bounds.width()] < ID) {
+        nbour_id = segment[origin_index - _bounds.width()];
+    } else if (canGoDown && segment[origin_index + _bounds.width()] < ID) {
+        nbour_id = segment[origin_index + _bounds.width()];
     }
 
     return nbour_id;
@@ -958,8 +958,8 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 
         // Unsigned-ness hacking!
         // Required to fix the underflow of end - 1.
-        start |= -(end >= _bounds._dimension.getWidth());
-        end -= (end >= _bounds._dimension.getWidth());
+        start |= -(end >= _bounds.width());
+        end -= (end >= _bounds.width());
 
     } while (start > end && spans_todo[line].size());
 }
@@ -967,7 +967,7 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
 try {    
-    const uint32_t origin_index = y * _bounds._dimension.getWidth() + x;
+    const uint32_t origin_index = _bounds.index(x, y);
     const uint32_t ID = seg_data.size();
 
     if (segment[origin_index] < ID) {
@@ -990,8 +990,8 @@ try {
     Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
     SegmentData data(r, 0);
 
-    std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds._dimension.getHeight()];
-    std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds._dimension.getHeight()];
+    std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
+    std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
 
     segment[origin_index] = ID;
     spans_todo[y].push_back(x);
@@ -1000,7 +1000,7 @@ try {
     do
     {
       lines_processed = 0;
-      for (uint32_t line = 0; line < _bounds._dimension.getHeight(); ++line)
+      for (uint32_t line = 0; line < _bounds.height(); ++line)
       {
         uint32_t start, end;
 
@@ -1014,11 +1014,11 @@ try {
 
         // Calculate line indices. Allow wrapping around map edges.
         const uint32_t row_above = ((line - 1) & -(line > 0)) |
-            ((_bounds._dimension.getHeight() - 1) & -(line == 0));
-        const uint32_t row_below = (line + 1) & -(line < _bounds._dimension.getHeight() - 1);
-        const uint32_t line_here = line * _bounds._dimension.getWidth();
-        const uint32_t line_above = row_above * _bounds._dimension.getWidth();
-        const uint32_t line_below = row_below * _bounds._dimension.getWidth();
+            ((_bounds.height() - 1) & -(line == 0));
+        const uint32_t row_below = (line + 1) & -(line < _bounds.height() - 1);
+        const uint32_t line_here = line * _bounds.width();
+        const uint32_t line_above = row_above * _bounds.width();
+        const uint32_t line_below = row_below * _bounds.width();
 
         // Extend the beginning of line.
         while (start > 0 && segment[line_here+start-1] > ID &&
@@ -1031,7 +1031,7 @@ try {
         }
 
         // Extend the end of line.
-        while (end < _bounds._dimension.getWidth() - 1 &&
+        while (end < _bounds.width() - 1 &&
             segment[line_here + end + 1] > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
@@ -1042,19 +1042,19 @@ try {
         }
 
         // Check if should wrap around left edge.
-        if (_bounds._dimension.getWidth() == _worldDimension.getWidth() && start == 0 &&
-            segment[line_here+_bounds._dimension.getWidth()-1] > ID &&
-            map[line_here+_bounds._dimension.getWidth()-1] >= CONT_BASE)
+        if (_bounds.width() == _worldDimension.getWidth() && start == 0 &&
+            segment[line_here+_bounds.width()-1] > ID &&
+            map[line_here+_bounds.width()-1] >= CONT_BASE)
         {
-            segment[line_here + _bounds._dimension.getWidth() - 1] = ID;
-            spans_todo[line].push_back(_bounds._dimension.getWidth() - 1);
-            spans_todo[line].push_back(_bounds._dimension.getWidth() - 1);
+            segment[line_here + _bounds.width() - 1] = ID;
+            spans_todo[line].push_back(_bounds.width() - 1);
+            spans_todo[line].push_back(_bounds.width() - 1);
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around right edge.
-        if (_bounds._dimension.getWidth() == _worldDimension.getWidth() && end == _bounds._dimension.getWidth() - 1 &&
+        if (_bounds.width() == _worldDimension.getWidth() && end == _bounds.width() - 1 &&
             segment[line_here+0] > ID &&
             map[line_here+0] >= CONT_BASE)
         {
@@ -1073,7 +1073,7 @@ try {
         if (start < data.getLeft()) data.setLeft(start);
         if (end > data.getRight()) data.setRight(end);
 
-        if (line > 0 || _bounds._dimension.getHeight() == _worldDimension.getHeight()) {
+        if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (segment[line_above + j] > ID &&
                   map[line_above + j] >= CONT_BASE)
@@ -1083,7 +1083,7 @@ try {
 
                 // Count volume of pixel...
 
-                while (++j < _bounds._dimension.getWidth() &&
+                while (++j < _bounds.width() &&
                        segment[line_above + j] > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
@@ -1100,7 +1100,7 @@ try {
               }
         }
 
-        if (line < _bounds._dimension.getHeight() - 1 || _bounds._dimension.getHeight() == _worldDimension.getHeight()) {
+        if (line < _bounds.height() - 1 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (segment[line_below + j] > ID &&
                   map[line_below + j] >= CONT_BASE)
@@ -1110,7 +1110,7 @@ try {
 
                 // Count volume of pixel...
 
-                while (++j < _bounds._dimension.getWidth() &&
+                while (++j < _bounds.width() &&
                        segment[line_below + j] > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
