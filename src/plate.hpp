@@ -35,11 +35,17 @@ typedef uint32_t ContinentId;
 class Segments
 {
 public:
-	Segments()
+	Segments(uint32_t plate_area)
 	{
+		_area = plate_area;
+    	segment = new uint32_t[plate_area];
+    	memset(segment, 255, plate_area * sizeof(uint32_t));
 	}
 	~Segments()
 	{	
+		delete[] segment;
+    	segment = NULL;
+    	_area = 0;
 	}
 	void shift(uint32_t d_lft, uint32_t d_top)
 	{
