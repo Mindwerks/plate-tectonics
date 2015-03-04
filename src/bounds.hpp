@@ -58,14 +58,6 @@ public:
         	&& cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
 	}
 
-	/*uint32_t xMod(uint32_t x) const {
-	    return (x + _worldDimension.getWidth()) % _worldDimension.getWidth();
-	}
-
-	uint32_t yMod(uint32_t y) const {
-	    return (y + _worldDimension.getHeight()) % _worldDimension.getHeight();
-	}*/
-
 	void grow(float dx, float dy) {
 		_position.grow(dx, dy, _worldDimension);
 		p_assert(_worldDimension.contains(_position), "");
