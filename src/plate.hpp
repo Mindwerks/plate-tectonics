@@ -42,6 +42,10 @@ public:
             seg_data[s].shift(d_lft, d_top);
         }
 	}
+	uint32_t size() const
+	{
+		return seg_data.size();
+	}
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
 	int _area; /// Should be the same as the bounds area of the plate

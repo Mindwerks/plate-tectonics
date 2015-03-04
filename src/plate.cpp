@@ -517,7 +517,7 @@ uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 try {
     const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
 
-    assert(_segments.segment[index] < _segments.seg_data.size());
+    assert(_segments.segment[index] < _segments.size());
 
     return _segments.seg_data[_segments.segment[index]].area();
 } catch (const exception& e){
@@ -782,7 +782,7 @@ uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
 try {    
     const uint32_t origin_index = _bounds.index(x, y);
-    const uint32_t ID = _segments.seg_data.size();
+    const uint32_t ID = _segments.size();
 
     if (_segments.segment[origin_index] < ID) {
         return _segments.segment[origin_index];
@@ -966,14 +966,14 @@ try {
     uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
     ContinentId seg = _segments.segment[index];
 
-    if (seg >= _segments.seg_data.size()) {
+    if (seg >= _segments.size()) {
         // in this case, we consider as const this call because we calculate
         // something that we would calculate anyway, so the segments are
         // a sort of cache
         seg = const_cast<plate*>(this)->createSegment(lx, ly);
     }
 
-    if (seg >= _segments.seg_data.size())
+    if (seg >= _segments.size())
     {
         throw invalid_argument("Could not create segment");
     }
