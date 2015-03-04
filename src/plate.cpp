@@ -58,8 +58,8 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
     const uint32_t plate_area = w * h;
 
-    segment = new uint32_t[plate_area];
-    memset(segment, 255, plate_area * sizeof(uint32_t));
+    _segments.segment = new uint32_t[plate_area];
+    memset(_segments.segment, 255, plate_area * sizeof(uint32_t));
 
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds.height(); ++y) {
@@ -79,15 +79,15 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
 plate::~plate() throw()
 {
-    delete[] segment;
-    segment = NULL;
+    delete[] _segments.segment;
+    _segments.segment = NULL;
 }
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 {
     ContinentId seg = getContinentAt(wx, wy);
-    seg_data[seg].incCollCount();
-    return seg_data[seg].area();
+    _segments.seg_data[seg].incCollCount();
+    return _segments.seg_data[seg].area();
 }
 
 void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, ContinentId activeContinent)
@@ -98,8 +98,8 @@ try {
 
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
-    segment[index] = activeContinent;
-    SegmentData& data = seg_data[activeContinent];
+    _segments.segment[index] = activeContinent;
+    SegmentData& data = _segments.seg_data[activeContinent];
 
     data.incArea();
     data.enlarge_to_contain(x, y);
@@ -176,7 +176,7 @@ try {
     uint32_t lx = wx, ly = wy;
     const uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
 
-    const ContinentId seg_id = segment[index];
+    const ContinentId seg_id = _segments.segment[index];
 
     // This check forces the caller to do things in proper order!
     //
@@ -194,7 +194,7 @@ try {
     // causes continent to aggregate then all successive collisions and
     // attempts of aggregation would necessarily change nothing at all,
     // because the continent was removed from this plate earlier!
-    if (seg_data[seg_id].isEmpty()) {
+    if (_segments.seg_data[seg_id].isEmpty()) {
         return 0;   // Do not process empty continents.
     }
 
@@ -212,12 +212,12 @@ try {
     float old_mass = _mass.getMass();
 
     // Add all of the collided continent's crust to destination plate.
-    for (uint32_t y = seg_data[seg_id].getTop(); y <= seg_data[seg_id].getBottom(); ++y)
+    for (uint32_t y = _segments.seg_data[seg_id].getTop(); y <= _segments.seg_data[seg_id].getBottom(); ++y)
     {
-      for (uint32_t x = seg_data[seg_id].getLeft(); x <= seg_data[seg_id].getRight(); ++x)
+      for (uint32_t x = _segments.seg_data[seg_id].getLeft(); x <= _segments.seg_data[seg_id].getRight(); ++x)
       {
         const uint32_t i = y * _bounds.width() + x;
-        if ((segment[i] == seg_id) && (map[i] > 0))
+        if ((_segments.segment[i] == seg_id) && (map[i] > 0))
         {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
                 map[i], age_map[i], activeContinent);
@@ -228,7 +228,7 @@ try {
       }
     }
 
-    seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
+    _segments.seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
     return old_mass - _mass.getMass();
 } catch (const exception& e){
     std::string msg = "Problem during plate::aggregateCrust: ";
@@ -507,9 +507,9 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
     *count = 0;
     *ratio = 0;
 
-    *count = seg_data[seg].collCount();
-    *ratio = (float)seg_data[seg].collCount() /
-        (float)(1 + seg_data[seg].area()); // +1 avoids DIV with zero.
+    *count = _segments.seg_data[seg].collCount();
+    *ratio = (float)_segments.seg_data[seg].collCount() /
+        (float)(1 + _segments.seg_data[seg].area()); // +1 avoids DIV with zero.
 }
 
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
@@ -517,9 +517,9 @@ uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 try {
     const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
 
-    assert(segment[index] < seg_data.size());
+    assert(_segments.segment[index] < _segments.seg_data.size());
 
-    return seg_data[segment[index]].area();
+    return _segments.seg_data[_segments.segment[index]].area();
 } catch (const exception& e){
     std::string msg = "Problem during plate::getContinentArea: ";
     msg = msg + e.what();
@@ -579,8 +579,8 @@ try {
 
 void plate::resetSegments()
 {
-    memset(segment, -1, sizeof(uint32_t) * _bounds.area());
-    seg_data.clear();
+    memset(_segments.segment, -1, sizeof(uint32_t) * _bounds.area());
+    _segments.seg_data.clear();
 }
 
 void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
@@ -664,19 +664,19 @@ try {
                 sizeof(float));
             memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
                 sizeof(uint32_t));
-            memcpy(&tmps[dest_i], &segment[src_i], old_width *
+            memcpy(&tmps[dest_i], &_segments.segment[src_i], old_width *
                 sizeof(uint32_t));
         }
 
-        delete[] segment;
+        delete[] _segments.segment;
         map     = tmph;
         age_map = tmpa;
-        segment = tmps;
+        _segments.segment = tmps;
 
         // Shift all segment data to match new coordinates.
-        for (uint32_t s = 0; s < seg_data.size(); ++s)
+        for (uint32_t s = 0; s < _segments.seg_data.size(); ++s)
         {
-            seg_data[s].shift(d_lft, d_top);
+            _segments.seg_data[s].shift(d_lft, d_top);
         }
 
         _x = x, _y = y;
@@ -708,7 +708,7 @@ ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
 try {    
     uint32_t index = _bounds.getValidMapIndex(&coll_x, &coll_y);
-    ContinentId activeContinent = segment[index];
+    ContinentId activeContinent = _segments.segment[index];
     return activeContinent;
 } catch (const exception& e){
     std::string msg = "Problem during plate::selectCollisionSegment: ";
@@ -732,14 +732,14 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
     // This point belongs to no segment yet.
     // However it might be a neighbour to some segment created earlier.
     // If such neighbour is found, associate this point with it.
-    if (canGoLeft && segment[origin_index - 1] < ID) {
-        nbour_id = segment[origin_index - 1];
-    } else if (canGoRight && segment[origin_index + 1] < ID) {
-        nbour_id = segment[origin_index + 1];
-    } else if (canGoUp && segment[origin_index - _bounds.width()] < ID) {
-        nbour_id = segment[origin_index - _bounds.width()];
-    } else if (canGoDown && segment[origin_index + _bounds.width()] < ID) {
-        nbour_id = segment[origin_index + _bounds.width()];
+    if (canGoLeft && _segments.segment[origin_index - 1] < ID) {
+        nbour_id = _segments.segment[origin_index - 1];
+    } else if (canGoRight && _segments.segment[origin_index + 1] < ID) {
+        nbour_id = _segments.segment[origin_index + 1];
+    } else if (canGoUp && _segments.segment[origin_index - _bounds.width()] < ID) {
+        nbour_id = _segments.segment[origin_index - _bounds.width()];
+    } else if (canGoDown && _segments.segment[origin_index + _bounds.width()] < ID) {
+        nbour_id = _segments.segment[origin_index + _bounds.width()];
     }
 
     return nbour_id;
@@ -785,20 +785,20 @@ uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
 try {    
     const uint32_t origin_index = _bounds.index(x, y);
-    const uint32_t ID = seg_data.size();
+    const uint32_t ID = _segments.seg_data.size();
 
-    if (segment[origin_index] < ID) {
-        return segment[origin_index];
+    if (_segments.segment[origin_index] < ID) {
+        return _segments.segment[origin_index];
     }
 
     uint32_t nbour_id = calcDirection(x, y, origin_index, ID);
 
     if (nbour_id < ID)
     {
-        segment[origin_index] = nbour_id;
-        seg_data[nbour_id].incArea();
+        _segments.segment[origin_index] = nbour_id;
+        _segments.seg_data[nbour_id].incArea();
 
-        seg_data[nbour_id].enlarge_to_contain(x, y);
+        _segments.seg_data[nbour_id].enlarge_to_contain(x, y);
 
         return nbour_id;
     }
@@ -810,7 +810,7 @@ try {
     std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
     std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
 
-    segment[origin_index] = ID;
+    _segments.segment[origin_index] = ID;
     spans_todo[y].push_back(x);
     spans_todo[y].push_back(x);
 
@@ -838,32 +838,32 @@ try {
         const uint32_t line_below = row_below * _bounds.width();
 
         // Extend the beginning of line.
-        while (start > 0 && segment[line_here+start-1] > ID &&
+        while (start > 0 && _segments.segment[line_here+start-1] > ID &&
             map[line_here+start-1] >= CONT_BASE)
         {
             --start;
-            segment[line_here + start] = ID;
+            _segments.segment[line_here + start] = ID;
 
             // Count volume of pixel...
         }
 
         // Extend the end of line.
         while (end < _bounds.width() - 1 &&
-            segment[line_here + end + 1] > ID &&
+            _segments.segment[line_here + end + 1] > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
             ++end;
-            segment[line_here + end] = ID;
+            _segments.segment[line_here + end] = ID;
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around left edge.
         if (_bounds.width() == _worldDimension.getWidth() && start == 0 &&
-            segment[line_here+_bounds.width()-1] > ID &&
+            _segments.segment[line_here+_bounds.width()-1] > ID &&
             map[line_here+_bounds.width()-1] >= CONT_BASE)
         {
-            segment[line_here + _bounds.width() - 1] = ID;
+            _segments.segment[line_here + _bounds.width() - 1] = ID;
             spans_todo[line].push_back(_bounds.width() - 1);
             spans_todo[line].push_back(_bounds.width() - 1);
 
@@ -872,10 +872,10 @@ try {
 
         // Check if should wrap around right edge.
         if (_bounds.width() == _worldDimension.getWidth() && end == _bounds.width() - 1 &&
-            segment[line_here+0] > ID &&
+            _segments.segment[line_here+0] > ID &&
             map[line_here+0] >= CONT_BASE)
         {
-            segment[line_here + 0] = ID;
+            _segments.segment[line_here + 0] = ID;
             spans_todo[line].push_back(0);
             spans_todo[line].push_back(0);
 
@@ -892,19 +892,19 @@ try {
 
         if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (segment[line_above + j] > ID &&
+              if (_segments.segment[line_above + j] > ID &&
                   map[line_above + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                segment[line_above + a] = ID;
+                _segments.segment[line_above + a] = ID;
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       segment[line_above + j] > ID &&
+                       _segments.segment[line_above + j] > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
-                    segment[line_above + j] = ID;
+                    _segments.segment[line_above + j] = ID;
 
                     // Count volume of pixel...
                 }
@@ -919,19 +919,19 @@ try {
 
         if (line < _bounds.height() - 1 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (segment[line_below + j] > ID &&
+              if (_segments.segment[line_below + j] > ID &&
                   map[line_below + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                segment[line_below + a] = ID;
+                _segments.segment[line_below + a] = ID;
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       segment[line_below + j] > ID &&
+                       _segments.segment[line_below + j] > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
-                    segment[line_below + j] = ID;
+                    _segments.segment[line_below + j] = ID;
 
                     // Count volume of pixel...
                 }
@@ -952,7 +952,7 @@ try {
 
     delete[] spans_todo;
     delete[] spans_done;
-    seg_data.push_back(data);
+    _segments.seg_data.push_back(data);
 
     return ID;
 } catch (const exception& e){
@@ -967,16 +967,16 @@ ContinentId plate::getContinentAt(int x, int y) const
 try {
     uint32_t lx = x, ly = y;
     uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
-    ContinentId seg = segment[index];
+    ContinentId seg = _segments.segment[index];
 
-    if (seg >= seg_data.size()) {
+    if (seg >= _segments.seg_data.size()) {
         // in this case, we consider as const this call because we calculate
         // something that we would calculate anyway, so the segments are
         // a sort of cache
         seg = const_cast<plate*>(this)->createSegment(lx, ly);
     }
 
-    if (seg >= seg_data.size())
+    if (seg >= _segments.seg_data.size())
     {
         throw invalid_argument("Could not create segment");
     }

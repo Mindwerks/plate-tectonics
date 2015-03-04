@@ -32,6 +32,13 @@
 
 typedef uint32_t ContinentId;
 
+class Segments
+{
+public:
+	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
+	ContinentId* segment;              ///< Segment ID of each piece of continental crust.	
+};
+
 class plate
 {
 	public:
@@ -248,10 +255,8 @@ class plate
 	const WorldDimension _worldDimension;
 	Bounds _bounds;
 	Mass _mass;
-	Movement _movement;	
-
-	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
-	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
+	Movement _movement;
+	Segments _segments;
 };
 
 #endif
