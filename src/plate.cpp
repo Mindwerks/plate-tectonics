@@ -86,8 +86,8 @@ plate::~plate() throw()
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 {
     ContinentId seg = getContinentAt(wx, wy);
-    _segments.seg_data[seg].incCollCount();
-    return _segments.seg_data[seg].area();
+    _segments[seg].incCollCount();
+    return _segments[seg].area();
 }
 
 void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, ContinentId activeContinent)
@@ -99,7 +99,7 @@ try {
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
     _segments.segment[index] = activeContinent;
-    SegmentData& data = _segments.seg_data[activeContinent];
+    SegmentData& data = _segments[activeContinent];
 
     data.incArea();
     data.enlarge_to_contain(x, y);
@@ -194,7 +194,7 @@ try {
     // causes continent to aggregate then all successive collisions and
     // attempts of aggregation would necessarily change nothing at all,
     // because the continent was removed from this plate earlier!
-    if (_segments.seg_data[seg_id].isEmpty()) {
+    if (_segments[seg_id].isEmpty()) {
         return 0;   // Do not process empty continents.
     }
 
@@ -212,9 +212,9 @@ try {
     float old_mass = _mass.getMass();
 
     // Add all of the collided continent's crust to destination plate.
-    for (uint32_t y = _segments.seg_data[seg_id].getTop(); y <= _segments.seg_data[seg_id].getBottom(); ++y)
+    for (uint32_t y = _segments[seg_id].getTop(); y <= _segments[seg_id].getBottom(); ++y)
     {
-      for (uint32_t x = _segments.seg_data[seg_id].getLeft(); x <= _segments.seg_data[seg_id].getRight(); ++x)
+      for (uint32_t x = _segments[seg_id].getLeft(); x <= _segments[seg_id].getRight(); ++x)
       {
         const uint32_t i = y * _bounds.width() + x;
         if ((_segments.segment[i] == seg_id) && (map[i] > 0))
@@ -228,7 +228,7 @@ try {
       }
     }
 
-    _segments.seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
+    _segments[seg_id].markNonExistent(); // Mark segment as non-existent
     return old_mass - _mass.getMass();
 } catch (const exception& e){
     std::string msg = "Problem during plate::aggregateCrust: ";
@@ -507,9 +507,9 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
     *count = 0;
     *ratio = 0;
 
-    *count = _segments.seg_data[seg].collCount();
-    *ratio = (float)_segments.seg_data[seg].collCount() /
-        (float)(1 + _segments.seg_data[seg].area()); // +1 avoids DIV with zero.
+    *count = _segments[seg].collCount();
+    *ratio = (float)_segments[seg].collCount() /
+        (float)(1 + _segments[seg].area()); // +1 avoids DIV with zero.
 }
 
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
@@ -519,7 +519,7 @@ try {
 
     assert(_segments.segment[index] < _segments.size());
 
-    return _segments.seg_data[_segments.segment[index]].area();
+    return _segments[_segments.segment[index]].area();
 } catch (const exception& e){
     std::string msg = "Problem during plate::getContinentArea: ";
     msg = msg + e.what();
@@ -793,9 +793,9 @@ try {
     if (nbour_id < ID)
     {
         _segments.segment[origin_index] = nbour_id;
-        _segments.seg_data[nbour_id].incArea();
+        _segments[nbour_id].incArea();
 
-        _segments.seg_data[nbour_id].enlarge_to_contain(x, y);
+        _segments[nbour_id].enlarge_to_contain(x, y);
 
         return nbour_id;
     }
