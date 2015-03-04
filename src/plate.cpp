@@ -161,7 +161,7 @@ try {
         age_map[index] = t * (z > 0);
 
         map[index] += z;
-        _mass.mass += z;
+        _mass.incMass(z);
     }
 } catch (const exception& e){
     std::string msg = "Problem during plate::addCrustBySubduction: ";
@@ -209,7 +209,7 @@ try {
     //      seg_data[seg_id].x1, seg_data[seg_id].y1,
     //      _dimension.getWidth(), _dimension.getHeight(), lx, ly);
 
-    float old_mass = _mass.mass;
+    float old_mass = _mass.getMass();
 
     // Add all of the collided continent's crust to destination plate.
     for (uint32_t y = seg_data[seg_id].getTop(); y <= seg_data[seg_id].getBottom(); ++y)
@@ -222,7 +222,7 @@ try {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
                 map[i], age_map[i], activeContinent);
 
-            _mass.mass -= map[i];
+            _mass.incMass(-1.0f * map[i]);
             map[i] = 0;
         }
       }

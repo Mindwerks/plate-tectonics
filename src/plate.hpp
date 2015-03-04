@@ -54,6 +54,14 @@ public:
 	    cx /= mass;
 	    cy /= mass;
 	}
+	void incMass(float delta)
+	{
+		mass += delta;
+	}
+	float getMass()
+	{
+		return mass;
+	}
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 private:
