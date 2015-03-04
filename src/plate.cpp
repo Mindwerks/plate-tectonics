@@ -178,7 +178,7 @@ try {
     uint32_t lx = wx, ly = wy;
     const uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
 
-    const ContinentId seg_id = _segments.segment[index];
+    const ContinentId seg_id = _segments.id(index);
 
     // This check forces the caller to do things in proper order!
     //
@@ -219,7 +219,7 @@ try {
       for (uint32_t x = _segments[seg_id].getLeft(); x <= _segments[seg_id].getRight(); ++x)
       {
         const uint32_t i = y * _bounds.width() + x;
-        if ((_segments.segment[i] == seg_id) && (map[i] > 0))
+        if ((_segments.id(i) == seg_id) && (map[i] > 0))
         {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
                 map[i], age_map[i], activeContinent);
@@ -519,9 +519,9 @@ uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 try {
     const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
 
-    assert(_segments.segment[index] < _segments.size());
+    assert(_segments.id(index) < _segments.size());
 
-    return _segments[_segments.segment[index]].area();
+    return _segments[_segments.id(index)].area();
 } catch (const exception& e){
     std::string msg = "Problem during plate::getContinentArea: ";
     msg = msg + e.what();
@@ -708,7 +708,7 @@ ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
 try {    
     uint32_t index = _bounds.getValidMapIndex(&coll_x, &coll_y);
-    ContinentId activeContinent = _segments.segment[index];
+    ContinentId activeContinent = _segments.id(index);
     return activeContinent;
 } catch (const exception& e){
     std::string msg = "Problem during plate::selectCollisionSegment: ";
@@ -732,14 +732,14 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
     // This point belongs to no segment yet.
     // However it might be a neighbour to some segment created earlier.
     // If such neighbour is found, associate this point with it.
-    if (canGoLeft && _segments.segment[origin_index - 1] < ID) {
-        nbour_id = _segments.segment[origin_index - 1];
-    } else if (canGoRight && _segments.segment[origin_index + 1] < ID) {
-        nbour_id = _segments.segment[origin_index + 1];
-    } else if (canGoUp && _segments.segment[origin_index - _bounds.width()] < ID) {
-        nbour_id = _segments.segment[origin_index - _bounds.width()];
-    } else if (canGoDown && _segments.segment[origin_index + _bounds.width()] < ID) {
-        nbour_id = _segments.segment[origin_index + _bounds.width()];
+    if (canGoLeft && _segments.id(origin_index - 1) < ID) {
+        nbour_id = _segments.id(origin_index - 1);
+    } else if (canGoRight && _segments.id(origin_index + 1) < ID) {
+        nbour_id = _segments.id(origin_index + 1);
+    } else if (canGoUp && _segments.id(origin_index - _bounds.width()) < ID) {
+        nbour_id = _segments.id(origin_index - _bounds.width());
+    } else if (canGoDown && _segments.id(origin_index + _bounds.width()) < ID) {
+        nbour_id = _segments.id(origin_index + _bounds.width());
     }
 
     return nbour_id;
