@@ -78,10 +78,12 @@ public:
 	}
 
 	void growWidth(int d){
+		if (d<0) throw runtime_error("negative value");
 		_dimension.growWidth(d);
 	}
 
 	void growHeight(int d){
+		if (d<0) throw runtime_error("negative value");
 		_dimension.growHeight(d);
 	}	
 
