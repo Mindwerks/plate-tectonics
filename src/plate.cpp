@@ -575,8 +575,8 @@ try {
 
 void plate::resetSegments()
 {
-    memset(_segments.segment, -1, sizeof(uint32_t) * _bounds.area());
-    _segments.seg_data.clear();
+    p_assert(_bounds.area()==_segments.area(), "Segments has not the expected area");
+    _segments.reset();
 }
 
 void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
