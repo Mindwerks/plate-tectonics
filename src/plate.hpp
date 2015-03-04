@@ -35,8 +35,16 @@ typedef uint32_t ContinentId;
 class Segments
 {
 public:
+	void shift(uint32_t d_lft, uint32_t d_top)
+	{
+		for (uint32_t s = 0; s < seg_data.size(); ++s)
+        {
+            seg_data[s].shift(d_lft, d_top);
+        }
+	}
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
-	ContinentId* segment;              ///< Segment ID of each piece of continental crust.	
+	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
+	int _area; /// Should be the same as the bounds area of the plate
 };
 
 class plate

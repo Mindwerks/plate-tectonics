@@ -674,10 +674,7 @@ try {
         _segments.segment = tmps;
 
         // Shift all segment data to match new coordinates.
-        for (uint32_t s = 0; s < _segments.seg_data.size(); ++s)
-        {
-            _segments.seg_data[s].shift(d_lft, d_top);
-        }
+        _segments.shift(d_lft, d_top);
 
         _x = x, _y = y;
         index = _bounds.getValidMapIndex(&_x, &_y);
