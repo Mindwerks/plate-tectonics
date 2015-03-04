@@ -35,6 +35,12 @@ typedef uint32_t ContinentId;
 class Segments
 {
 public:
+	Segments()
+	{
+	}
+	~Segments()
+	{	
+	}
 	void shift(uint32_t d_lft, uint32_t d_top)
 	{
 		for (uint32_t s = 0; s < seg_data.size(); ++s)

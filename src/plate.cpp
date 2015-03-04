@@ -919,19 +919,19 @@ try {
 
         if (line < _bounds.height() - 1 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (_segments.segment[line_below + j] > ID &&
+              if (_segments.id(line_below + j) > ID &&
                   map[line_below + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                _segments.segment[line_below + a] = ID;
+                _segments.setId(line_below + a, ID);
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       _segments.segment[line_below + j] > ID &&
+                       _segments.id(line_below + j) > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
-                    _segments.segment[line_below + j] = ID;
+                    _segments.setId(line_below + j, ID);
 
                     // Count volume of pixel...
                 }
@@ -967,7 +967,7 @@ ContinentId plate::getContinentAt(int x, int y) const
 try {
     uint32_t lx = x, ly = y;
     uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
-    ContinentId seg = _segments.segment[index];
+    ContinentId seg = _segments.id(index);
 
     if (seg >= _segments.size()) {
         // in this case, we consider as const this call because we calculate
