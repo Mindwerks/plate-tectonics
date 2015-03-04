@@ -56,6 +56,12 @@ public:
 		memset(segment, -1, sizeof(uint32_t) * _area);
     	seg_data.clear();
 	}
+	void reassign(uint32_t newarea, uint32_t* tmps)
+	{
+		delete[] segment;
+        _area = newarea;
+        segment = tmps;
+	}
 	void shift(uint32_t d_lft, uint32_t d_top)
 	{
 		for (uint32_t s = 0; s < seg_data.size(); ++s)

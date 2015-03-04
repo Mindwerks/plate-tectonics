@@ -663,12 +663,10 @@ try {
             memcpy(&tmps[dest_i], &_segments.segment[src_i], old_width *
                 sizeof(uint32_t));
         }
-
-        delete[] _segments.segment;
+        
         map     = tmph;
         age_map = tmpa;
-        _segments._area = _bounds.area();
-        _segments.segment = tmps;
+        _segments.reassign(_bounds.area(), tmps);
 
         // Shift all segment data to match new coordinates.
         _segments.shift(d_lft, d_top);
