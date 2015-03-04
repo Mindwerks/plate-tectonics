@@ -62,6 +62,15 @@ public:
 	{
 		return mass;
 	}
+	bool notNull()
+	{
+		return mass > 0;
+	}
+	void reset()
+	{
+		mass = 0;
+  		cx = cy = 0;
+	}
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 private:

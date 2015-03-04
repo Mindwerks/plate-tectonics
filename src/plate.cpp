@@ -229,7 +229,7 @@ try {
     }
 
     seg_data[seg_id].markNonExistent(); // Mark segment as non-existent
-    return old_mass - _mass.mass;
+    return old_mass - _mass.getMass();
 } catch (const exception& e){
     std::string msg = "Problem during plate::aggregateCrust: ";
     msg = msg + e.what();
@@ -241,9 +241,9 @@ void plate::applyFriction(float deformed_mass)
 {
     // Remove the energy that deformation consumed from plate's kinetic
     // energy: F - dF = ma - dF => a = dF/m.
-    if (_mass.mass > 0)
+    if (_mass.notNull())
     {
-        _movement.applyFriction(deformed_mass, _mass.mass);
+        _movement.applyFriction(deformed_mass, _mass.getMass());
     }
 }
 
@@ -390,8 +390,7 @@ try {
 
   memcpy(map.raw_data(), tmp, _bounds.area()*sizeof(float));
   memset(tmp, 0, _bounds.area()*sizeof(float));
-  _mass.mass = 0;
-  _mass.cx = _mass.cy = 0;
+  _mass.reset();
 
   for (uint32_t y = 0; y < _bounds.height(); ++y)
     for (uint32_t x = 0; x < _bounds.width(); ++x)
