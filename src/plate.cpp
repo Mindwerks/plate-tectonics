@@ -58,6 +58,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
 
     const uint32_t plate_area = w * h;
 
+    _segments._area = plate_area;
     _segments.segment = new uint32_t[plate_area];
     memset(_segments.segment, 255, plate_area * sizeof(uint32_t));
 
@@ -81,6 +82,7 @@ plate::~plate() throw()
 {
     delete[] _segments.segment;
     _segments.segment = NULL;
+    _segments._area = 0;
 }
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
@@ -671,6 +673,7 @@ try {
         delete[] _segments.segment;
         map     = tmph;
         age_map = tmpa;
+        _segments._area = _bounds.area();
         _segments.segment = tmps;
 
         // Shift all segment data to match new coordinates.

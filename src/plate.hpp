@@ -57,6 +57,21 @@ public:
 	void add(const SegmentData& data){
 		seg_data.push_back(data);
 	}
+	ContinentId id(uint32_t index) const {
+		if (index>=_area) {
+			throw runtime_error("unvalid index");
+		}
+		return segment[index];
+	}
+	void setId(uint32_t index, ContinentId id) const {
+		if (index>=_area) {
+			throw runtime_error("unvalid index");
+		}
+		if (id>=seg_data.size()){
+			throw runtime_error("unvalid id");	
+		}
+		segment[index] = id;
+	}
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
 	int _area; /// Should be the same as the bounds area of the plate
