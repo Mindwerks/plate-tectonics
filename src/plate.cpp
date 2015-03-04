@@ -492,11 +492,7 @@ try {
 
   map.from(tmp);
 
-  if (_mass.mass > 0)
-  {
-    _mass.cx /= _mass.mass;
-    _mass.cy /= _mass.mass;
-  }
+  _mass.redistribute();
 } catch (const exception& e){
     std::string msg = "Problem during plate::erode: ";
     msg = msg + e.what();
