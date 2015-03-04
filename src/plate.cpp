@@ -787,15 +787,15 @@ try {
     const uint32_t origin_index = _bounds.index(x, y);
     const uint32_t ID = _segments.size();
 
-    if (_segments.segment[origin_index] < ID) {
-        return _segments.segment[origin_index];
+    if (_segments.id(origin_index) < ID) {
+        return _segments.id(origin_index);
     }
 
     uint32_t nbour_id = calcDirection(x, y, origin_index, ID);
 
     if (nbour_id < ID)
     {
-        _segments.segment[origin_index] = nbour_id;
+        _segments.setId(origin_index, nbour_id);
         _segments[nbour_id].incArea();
 
         _segments[nbour_id].enlarge_to_contain(x, y);
@@ -810,7 +810,7 @@ try {
     std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
     std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
 
-    _segments.segment[origin_index] = ID;
+    _segments.setId(origin_index, ID);
     spans_todo[y].push_back(x);
     spans_todo[y].push_back(x);
 
@@ -838,32 +838,32 @@ try {
         const uint32_t line_below = row_below * _bounds.width();
 
         // Extend the beginning of line.
-        while (start > 0 && _segments.segment[line_here+start-1] > ID &&
+        while (start > 0 && _segments.id(line_here+start-1) > ID &&
             map[line_here+start-1] >= CONT_BASE)
         {
             --start;
-            _segments.segment[line_here + start] = ID;
+            _segments.setId(line_here + start, ID);
 
             // Count volume of pixel...
         }
 
         // Extend the end of line.
         while (end < _bounds.width() - 1 &&
-            _segments.segment[line_here + end + 1] > ID &&
+            _segments.id(line_here + end + 1) > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
             ++end;
-            _segments.segment[line_here + end] = ID;
+            _segments.setId(line_here + end, ID);
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around left edge.
         if (_bounds.width() == _worldDimension.getWidth() && start == 0 &&
-            _segments.segment[line_here+_bounds.width()-1] > ID &&
+            _segments.id(line_here+_bounds.width()-1) > ID &&
             map[line_here+_bounds.width()-1] >= CONT_BASE)
         {
-            _segments.segment[line_here + _bounds.width() - 1] = ID;
+            _segments.setId(line_here + _bounds.width() - 1, ID);
             spans_todo[line].push_back(_bounds.width() - 1);
             spans_todo[line].push_back(_bounds.width() - 1);
 
@@ -872,10 +872,10 @@ try {
 
         // Check if should wrap around right edge.
         if (_bounds.width() == _worldDimension.getWidth() && end == _bounds.width() - 1 &&
-            _segments.segment[line_here+0] > ID &&
+            _segments.id(line_here+0) > ID &&
             map[line_here+0] >= CONT_BASE)
         {
-            _segments.segment[line_here + 0] = ID;
+            _segments.setId(line_here + 0, ID);
             spans_todo[line].push_back(0);
             spans_todo[line].push_back(0);
 
@@ -892,19 +892,19 @@ try {
 
         if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (_segments.segment[line_above + j] > ID &&
+              if (_segments.id(line_above + j) > ID &&
                   map[line_above + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                _segments.segment[line_above + a] = ID;
+                _segments.setId(line_above + a, ID);
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       _segments.segment[line_above + j] > ID &&
+                       _segments.id(line_above + j) > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
-                    _segments.segment[line_above + j] = ID;
+                    _segments.setId(line_above + j, ID);
 
                     // Count volume of pixel...
                 }

@@ -67,9 +67,9 @@ public:
 		if (index>=_area) {
 			throw runtime_error("unvalid index");
 		}
-		if (id>=seg_data.size()){
+		/*if (id>=seg_data.size()){
 			throw runtime_error("unvalid id");	
-		}
+		}*/
 		segment[index] = id;
 	}
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
