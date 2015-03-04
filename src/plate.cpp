@@ -100,7 +100,7 @@ try {
 
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
-    _segments.segment[index] = activeContinent;
+    _segments.setId(index, activeContinent);
     SegmentData& data = _segments[activeContinent];
 
     data.incArea();
