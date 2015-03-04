@@ -86,28 +86,20 @@ uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 
 void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, ContinentId activeContinent)
 {
-try {    
     // Add crust. Extend plate if necessary.
     setCrust(x, y, getCrust(x, y) + z, time);
 
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
-
     _segments.setId(index, activeContinent);
-    SegmentData& data = _segments[activeContinent];
 
+    SegmentData& data = _segments[activeContinent];
     data.incArea();
     data.enlarge_to_contain(x, y);
-} catch (const exception& e){
-    std::string msg = "Problem during plate::addCrustByCollision: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     float dx, float dy)
 {
-try {
     // TODO: Create an array of coordinate changes that would create
     //       a circle around current point. Array is static and it is
     //       initialized at the first call to this function.
@@ -157,16 +149,10 @@ try {
         map[index] += z;
         _mass.incMass(z);
     }
-} catch (const exception& e){
-    std::string msg = "Problem during plate::addCrustBySubduction: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}    
 }
 
 float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
-{
-try {    
+{ 
     uint32_t lx = wx, ly = wy;
     const uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
 
@@ -224,11 +210,6 @@ try {
 
     _segments[seg_id].markNonExistent(); // Mark segment as non-existent
     return old_mass - _mass.getMass();
-} catch (const exception& e){
-    std::string msg = "Problem during plate::aggregateCrust: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 void plate::applyFriction(float deformed_mass)
@@ -364,7 +345,6 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
 
 void plate::erode(float lower_bound)
 {
-try {    
   vector<uint32_t> sources_data;  
   vector<uint32_t>* sources = &sources_data;  
 
@@ -487,11 +467,6 @@ try {
   map.from(tmp);
 
   _mass.redistribute();
-} catch (const exception& e){
-    std::string msg = "Problem during plate::erode: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* ratio) const
@@ -508,41 +483,21 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 {
-try {
     const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
-
     assert(_segments.id(index) < _segments.size());
-
-    return _segments[_segments.id(index)].area();
-} catch (const exception& e){
-    std::string msg = "Problem during plate::getContinentArea: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}    
+    return _segments[_segments.id(index)].area(); 
 }
 
 float plate::getCrust(uint32_t x, uint32_t y) const
 {
-try {
     const uint32_t index = _bounds.getMapIndex(&x, &y);
-    return index != BAD_INDEX ? map[index] : 0;
-} catch (const exception& e){
-    std::string msg = "Problem during plate::getCrust: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}        
+    return index != BAD_INDEX ? map[index] : 0;        
 }
 
 uint32_t plate::getCrustTimestamp(uint32_t x, uint32_t y) const
 {
-try {
     const uint32_t index = _bounds.getMapIndex(&x, &y);
-    return index != BAD_INDEX ? age_map[index] : 0;
-} catch (const exception& e){
-    std::string msg = "Problem during plate::getCrustTimestamp: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}     
+    return index != BAD_INDEX ? age_map[index] : 0; 
 }
 
 void plate::getMap(const float** c, const uint32_t** t) const
@@ -557,18 +512,12 @@ void plate::getMap(const float** c, const uint32_t** t) const
 
 void plate::move()
 {
-try {    
     _movement.move();
 
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
     _bounds.grow(_movement.velocityOnX(), _movement.velocityOnY());
-} catch (const exception& e){
-    std::string msg = "Problem during plate::move: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 void plate::resetSegments()
@@ -579,7 +528,6 @@ void plate::resetSegments()
 
 void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
 {
-try {    
     if (z < 0) { // Do not accept negative values.
         z = 0;
     }
@@ -687,24 +635,13 @@ try {
     _mass.incMass(-1.0f * map[index]);
     _mass.incMass(z);      // Update mass counter.
     map[index] = z;     // Set new crust height to desired location.    
-} catch (const exception& e){
-    std::string msg = "Problem during plate::setCrust: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
-try {    
     uint32_t index = _bounds.getValidMapIndex(&coll_x, &coll_y);
     ContinentId activeContinent = _segments.id(index);
-    return activeContinent;
-} catch (const exception& e){
-    std::string msg = "Problem during plate::selectCollisionSegment: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}    
+    return activeContinent;   
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -773,7 +710,6 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 
 uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 {
-try {    
     const uint32_t origin_index = _bounds.index(x, y);
     const uint32_t ID = _segments.size();
 
@@ -945,11 +881,6 @@ try {
     _segments.add(data);
 
     return ID;
-} catch (const exception& e){
-    std::string msg = "Problem during plate::createSegement: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}
 }
 
 ContinentId plate::getContinentAt(int x, int y) const
