@@ -660,7 +660,7 @@ try {
                 sizeof(float));
             memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
                 sizeof(uint32_t));
-            memcpy(&tmps[dest_i], &_segments.segment[src_i], old_width *
+            memcpy(&tmps[dest_i], &_segments.id(src_i), old_width *
                 sizeof(uint32_t));
         }
         
