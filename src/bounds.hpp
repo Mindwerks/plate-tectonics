@@ -7,6 +7,8 @@
 #include "segment_data.hpp"
 #include "utils.hpp"
 
+#include <stdio.h>
+
 /// Plate bounds.
 class Bounds {
 public:
@@ -19,7 +21,13 @@ public:
 
 	};
 
-	uint32_t index(uint32_t x, uint32_t y) const{
+	uint32_t index(uint32_t x, uint32_t y) const {
+		if (x >= _dimension.getWidth()) {
+			throw runtime_error("Bounds::Index: unvalid x coordinate");
+		}
+		if (y >= _dimension.getHeight()) {
+			throw runtime_error("Bounds::Index: unvalid y coordinate");
+		}
 		return y * _dimension.getWidth() + x;
 	} 	
 
@@ -56,6 +64,12 @@ public:
     	uint32_t cleanY = _worldDimension.yMod(y);
 		return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
         	&& cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
+	}
+
+	bool isInLimits(float x, float y) const {
+		if (x<0) return false;
+		if (y<0) return false;
+		return x<=_dimension.getWidth() && y<=_dimension.getHeight();
 	}
 
 	void grow(float dx, float dy) {

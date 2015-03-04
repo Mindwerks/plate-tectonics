@@ -126,28 +126,25 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     dy -= _movement.velocityOnY(dot > 0);
 
     float offset = (float)_randsource.next_double();
-    offset *= offset * offset * (2 * (_randsource.next() & 1) - 1);
+    float offset_sign = 2 * (int)(_randsource.next() % 2) - 1;
+    offset *= offset * offset * offset_sign;
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset;
 
-    x = (uint32_t)((int)x + dx);
-    y = (uint32_t)((int)y + dy);
+    float fx = x + dx;
+    float fy = y + dy;
 
-    if (_bounds.width() == _worldDimension.getWidth()) {
-        x %= _bounds.width();
-    }
-    if (_bounds.height() == _worldDimension.getHeight()) {
-        y %= _bounds.height();
-    }
-
-    index = _bounds.index(x, y);
-    if (index < _bounds.area() && map[index] > 0)
+    if (_bounds.isInLimits(fx, fy))
     {
-        t = (map[index] * age_map[index] + z * t) / (map[index] + z);
-        age_map[index] = t * (z > 0);
+        index = _bounds.index(fx, fy);
+        if (map[index] > 0)
+        {
+            t = (map[index] * age_map[index] + z * t) / (map[index] + z);
+            age_map[index] = t * (z > 0);
 
-        map[index] += z;
-        _mass.incMass(z);
+            map[index] += z;
+            _mass.incMass(z);
+        }
     }
 }
 

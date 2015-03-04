@@ -35,7 +35,7 @@ void produce_image(float* heightmap, int width, int height, const char* filename
 
 int main(int argc, char* argv[])
 {
-    //std::set_terminate( handler );
+    std::set_terminate( handler );
 
     int seed = 10;
     int width = 800;
