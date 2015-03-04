@@ -396,12 +396,8 @@ try {
     for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
     const uint32_t index = y * _bounds.width() + x;
-    _mass.mass += map[index];
+    _mass.addPoint(x, y, map[index]);    
     tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
-
-    // Update the center coordinates weighted by mass.
-    _mass.cx += x * map[index];
-    _mass.cy += y * map[index];
 
     if (map[index] < lower_bound)
         continue;

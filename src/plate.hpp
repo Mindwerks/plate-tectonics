@@ -71,6 +71,14 @@ public:
 		mass = 0;
   		cx = cy = 0;
 	}
+	void addPoint(uint32_t x, uint32_t y, float crust)
+	{
+		if (crust < 0) throw runtime_error("Crust should be not negative");
+		mass += crust;
+	    // Update the center coordinates weighted by mass.
+	    cx += x * crust;
+	    cy += y * crust;
+	}
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 private:
