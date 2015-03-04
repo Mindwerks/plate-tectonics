@@ -694,9 +694,9 @@ try {
         (map[index] + z)) & old_crust);
     age_map[index] = (t & new_crust) | (age_map[index] & ~new_crust);
 
-    _mass.mass -= map[index];
-    map[index] = z;     // Set new crust height to desired location.
-    _mass.mass += z;      // Update mass counter.
+    _mass.incMass(-1.0f * map[index]);
+    _mass.incMass(z);      // Update mass counter.
+    map[index] = z;     // Set new crust height to desired location.    
 } catch (const exception& e){
     std::string msg = "Problem during plate::setCrust: ";
     msg = msg + e.what();
