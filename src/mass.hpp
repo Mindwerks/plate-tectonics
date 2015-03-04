@@ -38,11 +38,19 @@ public:
 	{
 		mass += delta;
 	}
-	float getMass()
+	float getMass() const
 	{
 		return mass;
 	}
-	bool notNull()
+	float getCx() const
+	{
+		return cx;
+	}
+	float getCy() const
+	{
+		return cx;
+	}
+	bool notNull() const
 	{
 		return mass > 0;
 	}
@@ -66,9 +74,9 @@ public:
 	    	cy /= mass;
 	  	}
 	}
-	float mass;           ///< Amount of crust that constitutes the plate.
-	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 private:
+	float mass;           ///< Amount of crust that constitutes the plate.
+	float cx, cy;         ///< X and Y components of the center of mass of plate.		
 };
 
 #endif

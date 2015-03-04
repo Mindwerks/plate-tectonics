@@ -198,8 +198,8 @@ class plate
 	/// @param	t	Time of creation of new crust.
 	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
-	float getMass() const throw() { return _mass.mass; }
-	float getMomentum() const throw() { return _movement.momentum(_mass.mass); }
+	float getMass() const throw() { return _mass.getMass(); }
+	float getMomentum() const throw() { return _movement.momentum(_mass.getMass()); }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
 	float  getLeft() const throw() { return _bounds.left(); }
 	float  getTop() const throw() { return _bounds.top(); }
@@ -207,9 +207,9 @@ class plate
 	float getVelX() const throw() { return _movement.velX(); }
 	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
-	bool   isEmpty() const throw() { return _mass.mass <= 0; }
-	float getCx() const { return _mass.cx; }
-	float getCy() const { return _mass.cy; }
+	bool   isEmpty() const throw() { return !_mass.notNull(); }
+	float getCx() const { return _mass.getCx(); }
+	float getCy() const { return _mass.getCy(); }
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
