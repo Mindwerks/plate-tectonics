@@ -949,7 +949,7 @@ try {
 
     delete[] spans_todo;
     delete[] spans_done;
-    _segments.seg_data.push_back(data);
+    _segments.add(data);
 
     return ID;
 } catch (const exception& e){

@@ -54,6 +54,9 @@ public:
 	{
 		return seg_data[index];
 	}
+	void add(const SegmentData& data){
+		seg_data.push_back(data);
+	}
 	std::vector<SegmentData> seg_data; ///< Details of each crust segment.
 	ContinentId* segment;              ///< Segment ID of each piece of continental crust.
 	int _area; /// Should be the same as the bounds area of the plate
