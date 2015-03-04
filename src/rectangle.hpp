@@ -102,6 +102,16 @@ public:
         return _width > _height ? _width : _height;
     }
 
+    uint32_t xMod(int x) const
+    {
+        return (x + _width) % getWidth();
+    }
+
+    uint32_t yMod(int y) const
+    {
+        return (y + _height) % getHeight();
+    }
+
     uint32_t xMod(uint32_t x) const
     {
         return (x + _width) % getWidth();
