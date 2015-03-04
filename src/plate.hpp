@@ -46,8 +46,6 @@ class plate
 	plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
 	      uint32_t plate_age, WorldDimension worldDimension);
 
-	~plate() throw(); ///< Default destructor for plate.
-
 	/// Increment collision counter of the continent at given location.
 	///
 	/// @param	wx	X coordinate of collision point on world map.

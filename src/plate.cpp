@@ -40,7 +40,9 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              _randsource(seed),
              _mass(m, Bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h))),
              _bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h)),
-             map(w, h), age_map(w, h), _worldDimension(worldDimension),
+             map(w, h), 
+             age_map(w, h), 
+             _worldDimension(worldDimension),
              _movement(_randsource, worldDimension),
              _segments(w * h)
 {
@@ -73,10 +75,6 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
             age_map.set(x, y, plate_age & -(m[k] > 0));
         }
     }
-}
-
-plate::~plate() throw()
-{
 }
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
@@ -956,7 +954,6 @@ try {
 
 ContinentId plate::getContinentAt(int x, int y) const
 {
-try {
     uint32_t lx = x, ly = y;
     uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
     ContinentId seg = _segments.id(index);
@@ -972,10 +969,5 @@ try {
     {
         throw invalid_argument("Could not create segment");
     }
-    return seg;
-} catch (const exception& e){
-    std::string msg = "Problem during plate::getContinentAt: ";
-    msg = msg + e.what();
-    throw runtime_error(msg.c_str());
-}      
+    return seg;  
 }
