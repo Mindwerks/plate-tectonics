@@ -1,6 +1,94 @@
 #include "movement.hpp"
 #include "plate.hpp"
 
+Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
+    : _randsource(randsource),
+      velocity(1),
+      rot_dir(randsource.next() % 2 ? 1 : -1),
+      dx(0), dy(0),
+      _worldDimension(worldDimension)
+{
+    const double angle = 2 * M_PI * _randsource.next_double();
+    vx = cos(angle) * INITIAL_SPEED_X;
+    vy = sin(angle) * INITIAL_SPEED_X;
+}
+
+void Movement::applyFriction(float deformed_mass, float mass)
+{
+    if (deformed_mass < 0 || mass < 0) {
+        throw runtime_error("(Movement::applyFriction) negative masses make not sense");
+    }
+    float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
+    vel_dec = vel_dec < velocity ? vel_dec : velocity;
+
+    // Altering the source variable causes the order of calls to
+    // this function to have difference when it shouldn't!
+    // However, it's a hack well worth the outcome. :)
+    velocity -= vel_dec;
+}
+
+void Movement::move()
+{
+    float len;
+
+    // Apply any new impulses to the plate's trajectory.
+    vx += dx;
+    vy += dy;
+    dx = 0;
+    dy = 0;
+
+    // Force direction of plate to be unit vector.
+    // Update velocity so that the distance of movement doesn't change.
+    len = sqrt(vx*vx+vy*vy);
+    vx /= len;
+    vy /= len;
+    velocity += len - 1.0;
+    velocity *= velocity > 0; // Round negative values to zero.
+
+    // Apply some circular motion to the plate.
+    // Force the radius of the circle to remain fixed by adjusting
+    // angular velocity (which depends on plate's velocity).
+    uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
+    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
+    float _cos = cos(alpha * velocity);
+    float _sin = sin(alpha * velocity);
+    float _vx = vx * _cos - vy * _sin;
+    float _vy = vy * _cos + vx * _sin;
+    vx = _vx;
+    vy = _vy;
+}
+
+float Movement::velocityOnX() const
+{
+    return vx * velocity;
+}
+
+float Movement::velocityOnY() const
+{
+    return vy * velocity;
+}   
+
+float Movement::velocityOnX(float length) const
+{
+    if (length < 0) {
+        throw runtime_error("(Movement::velocityOnX) negative length makes not sense");
+    }
+    return vx * length;
+}
+
+float Movement::velocityOnY(float length) const
+{
+    if (length < 0) {
+        throw runtime_error("(Movement::velocityOnY) negative length makes not sense");
+    }
+    return vy * length;
+}
+
+float Movement::dot(float dx_, float dy_) const
+{
+    return vx * dx_ + vy * dy_;
+}
+
 float Movement::relativeUnitVelocityOnX(const Movement& m) const
 {
     return vx - m.vx;
