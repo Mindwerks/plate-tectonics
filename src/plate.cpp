@@ -509,7 +509,7 @@ void plate::move()
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds.grow(_movement.velocityOnX(), _movement.velocityOnY());
+    _bounds.shift(_movement.velocityOnX(), _movement.velocityOnY());
 }
 
 void plate::resetSegments()
@@ -578,7 +578,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_width  = _bounds.width();
         const uint32_t old_height = _bounds.height();
         
-        _bounds.grow(-1.0*d_lft, -1.0*d_top);
+        _bounds.shift(-1.0*d_lft, -1.0*d_top);
         _bounds.growWidth(d_lft + d_rgt);
         _bounds.growHeight(d_top + d_btm);
 

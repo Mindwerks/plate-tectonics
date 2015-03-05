@@ -24,7 +24,7 @@ public:
     {
         return _y;
     };
-    void grow(float dx, float dy, const WorldDimension& _worldDimension);
+    void shift(float dx, float dy, const WorldDimension& _worldDimension);
 private:
     float _x, _y;
 };

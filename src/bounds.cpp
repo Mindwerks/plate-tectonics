@@ -69,8 +69,8 @@ bool Bounds::isInLimits(float x, float y) const
 	return x<=_dimension.getWidth() && y<=_dimension.getHeight();
 }
 
-void Bounds::grow(float dx, float dy) {
-	_position.grow(dx, dy, _worldDimension);
+void Bounds::shift(float dx, float dy) {
+	_position.shift(dx, dy, _worldDimension);
 	p_assert(_worldDimension.contains(_position), "");
 }
 

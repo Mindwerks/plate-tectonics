@@ -2,7 +2,7 @@
 #include "rectangle.hpp"
 #include "utils.hpp"
 
-void FloatPoint::grow(float dx, float dy, const WorldDimension& _worldDimension)
+void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension)
 {
     _x += dx;
     _x += _x > 0 ? 0 : _worldDimension.getWidth();

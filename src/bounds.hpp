@@ -13,6 +13,9 @@
 class Bounds {
 public:
 
+	/// @param worldDimension dimension of the world containing the plate
+	/// @param position Position of the top left corner of the plae
+	/// @param dimension Dimension of the plate
 	Bounds(const WorldDimension& worldDimension, 
 		   const FloatPoint& position, 
 		   const Dimension& dimension);
@@ -39,7 +42,7 @@ public:
 	/// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
 	bool isInLimits(float x, float y) const;
 
-	void grow(float dx, float dy);
+	void shift(float dx, float dy);
 
 	void growWidth(int d);
 
