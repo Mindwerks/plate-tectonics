@@ -13,13 +13,6 @@ TEST(CreatePlate, NotSquareDoesNotExplode)
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 400));
 }
 
-TEST(Plate, containsWorldPoint)
-{
-	const float *heightmap = new float[256 * 128];
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
-	EXPECT_EQ(true, p.containsWorldPoint(148, 25));
-}
-
 // TODO test also when plate is large as world
 TEST(Plate, calculateCrust)
 {
