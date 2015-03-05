@@ -50,6 +50,15 @@ public:
 
 	void grow(int dx, int dy);
 
+	/// Translate world coordinates into offset within plate's height map.
+	///
+	/// If the global world map coordinates are within plate's height map,
+	/// the values of passed coordinates will be altered to contain the
+	/// X and y offset within the plate's height map. Otherwise an exception is thrown.
+	///
+	/// @param[in, out] x	Offset on the global world map along X axis.
+	/// @param[in, out] y	Offset on the global world map along Y axis.
+	/// @return		        Offset in height map or BAD_INDEX on error.
 	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
 
 	/// Translate world coordinates into offset within plate's height map.
@@ -61,7 +70,7 @@ public:
 	///
 	/// @param[in, out] x	Offset on the global world map along X axis.
 	/// @param[in, out] y	Offset on the global world map along Y axis.
-	/// @return		Offset in height map or BAD_INDEX on error.
+	/// @return		        Offset in height map
 	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 	
 private:

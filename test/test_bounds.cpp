@@ -137,3 +137,37 @@ TEST(Bounds, Grow)
   EXPECT_EQ(48, bounds2.topAsUint());
 }
 
+TEST(Bounds, GetMapIndex)
+{
+    uint32_t px, py, res;
+
+    px = 10;
+    py = 48;
+    res = b.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 0);
+    ASSERT_EQ(py, 0);
+    ASSERT_EQ(res, 0);
+
+    px = 510;
+    py =  48;
+    res = b.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 510);
+    ASSERT_EQ(py, 48);
+    ASSERT_EQ(res, BAD_INDEX);
+
+    px = 10;
+    py = 448;
+    res = b.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 10);
+    ASSERT_EQ(py, 448);
+    ASSERT_EQ(res, BAD_INDEX);
+
+    px = 110;
+    py = 98;
+    res = b.getMapIndex(&px, &py);
+    ASSERT_EQ(px, 100);
+    ASSERT_EQ(py, 50);
+    ASSERT_EQ(res, 25100);
+}
+
+
