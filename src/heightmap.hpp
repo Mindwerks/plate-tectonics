@@ -25,8 +25,7 @@ public:
     };
 
     Matrix(const Matrix<Value>& other)
-        : _width(other._width), 
-          _height(other._height)
+        : _width(other._width), _height(other._height)
     {
         _data = new Value[_width * _height];
         for (int x=0; x<_width;x++) {
@@ -40,6 +39,16 @@ public:
     {
         delete[] _data;
     }
+
+    const uint32_t width() const
+    {
+        return _width;
+    }
+
+    const uint32_t height() const
+    {
+        return _height;
+    }    
 
     const void set_all(const Value& value)
     {
@@ -109,37 +118,12 @@ public:
         return this->_data[index];
     }
 
-    const Value& operator[](const WorldPoint& pos) const
-    {
-        if (pos.x() >= _width || pos.y() >= _height) {
-            string s("invalid index: ");
-            s = s
-                + Platec::to_string(pos.x())
-                + ", "
-                + Platec::to_string(pos.y())
-                + ", width " + Platec::to_string(_width)
-                + ", height " + Platec::to_string(_height);
-            throw invalid_argument(s);
-        }
-        return this->_data[pos.y() * _width + pos.y()];
-    }
-
-    bool equals(Value* other)
-    {                
-        for (int i=0; i < area(); i++){
-            if (_data[i] != other[i]){
-                return false;
-            }
-        }
-        return true;
-    }
-
     Value* raw_data() const
     {
         return _data;
     }
 
-    uint32_t area() const
+    inline uint32_t area() const
     {
         return _width * _height;
     }   
@@ -151,7 +135,7 @@ private:
     unsigned int _height;
 };
 
-typedef Matrix<float>  HeightMap;
+typedef Matrix<float> HeightMap;
 typedef Matrix<uint32_t> AgeMap;
 
 #endif
