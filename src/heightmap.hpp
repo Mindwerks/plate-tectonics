@@ -124,11 +124,6 @@ public:
         return this->_data[pos.y() * _width + pos.y()];
     }
 
-    void from(Value* src)
-    {
-        memcpy(_data, src, sizeof(Value) * _width * _height);
-    }
-
     bool equals(Value* other)
     {                
         for (int i=0; i< (_width * _height); i++){
