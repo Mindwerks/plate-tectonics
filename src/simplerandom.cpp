@@ -57,6 +57,7 @@ double SimpleRandom::next_double()
 float SimpleRandom::next_float_signed()
 {
     float value = next_double();
+    p_assert(value >= 0.0f && value <= 1.0f, "(SimpleRandom::next_float_signed)");
     return next_double() - 0.5f;
 }
 
