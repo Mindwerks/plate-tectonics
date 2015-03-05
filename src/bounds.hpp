@@ -20,6 +20,8 @@ public:
 		   const FloatPoint& position, 
 		   const Dimension& dimension);
 
+	/// Accept plate relative coordinates and return the index inside the plate.
+	/// The index can be used with other classes to retrieve information about specific points.
 	uint32_t index(uint32_t x, uint32_t y) const;
 
 	uint32_t area() const;
