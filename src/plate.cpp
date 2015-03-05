@@ -350,12 +350,12 @@ void plate::erode(float lower_bound)
     tmpHm[i] += 0.1 * tmpHm[i] - alpha * tmpHm[i];
   }
 
+  map = tmpHm;
+  tmpHm.set_all(0.0f);
+  _mass.reset();
+
   float* tmp = new float[_bounds.area()];
   tmpHm.copy_raw_to(tmp);  
-
-  memcpy(map.raw_data(), tmp, _bounds.area()*sizeof(float));
-  memset(tmp, 0, _bounds.area()*sizeof(float));
-  _mass.reset();
 
   for (uint32_t y = 0; y < _bounds.height(); ++y)
   {
