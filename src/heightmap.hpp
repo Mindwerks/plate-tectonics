@@ -6,21 +6,9 @@
 #include <string>
 #include "utils.hpp"
 #include "rectangle.hpp"
+#include "world_point.hpp"
 
 using namespace std;
-
-class Position
-{
-public:
-    Position(unsigned int x, unsigned int y);
-    Position(const Position& other);
-    unsigned int x() const;
-    unsigned int y() const;
-    unsigned int toIndex(const WorldDimension&) const;
-private:
-    unsigned int _x;
-    unsigned int _y;
-};
 
 template <typename Value>
 class Matrix
