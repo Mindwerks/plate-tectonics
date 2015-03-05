@@ -60,7 +60,7 @@ public:
         return value;
     }
 
-    inline Value get(unsigned int x, unsigned y) const
+    inline const Value& get(unsigned int x, unsigned y) const
     {
         if (x >= _width || y >= _height) {
             throw invalid_argument("invalid coordinates");
@@ -87,7 +87,7 @@ public:
 
     Value& operator[](unsigned int index)
     {
-        if (index >= (_width*_height)) {
+        if (index >= (_width * _height)) {
             string s("invalid index: ");
             s = s + Platec::to_string(index)
                 + ", width " + Platec::to_string(_width)
@@ -99,7 +99,7 @@ public:
 
     const Value& operator[](unsigned int index) const
     {
-        if (index >= (_width*_height)) {
+        if (index >= (_width * _height)) {
             string s("invalid index: ");
             s = s + Platec::to_string(index)
                 + ", width " + Platec::to_string(_width)
@@ -139,7 +139,7 @@ public:
 
     bool equals(Value* other)
     {                
-        for (int i=0; i< (_width *_height); i++){
+        for (int i=0; i< (_width * _height); i++){
             if (_data[i] != other[i]){
                 return false;
             }
@@ -155,23 +155,7 @@ public:
     uint32_t area() const
     {
         return _width * _height;
-    }
-
-    int xMod(int x) const
-    {
-        while (x < 0) {
-            x += _width;
-        }
-        return x % _width;
-    }
-
-    int yMod(int y) const
-    {
-        while (y < 0) {
-            y += _height;
-        }
-        return y % _height;
-    }    
+    }   
 
 private:
 
