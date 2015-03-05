@@ -71,14 +71,10 @@ public:
         return (p.getX() >= 0 && p.getX() < _width && p.getY() >= 0 && p.getY() < _height);
     }
 
-    void growWidth(uint32_t amount)
+    void grow(uint32_t amountX, uint32_t amountY)
     {
-        _width += amount;
-    }
-
-    void growHeight(uint32_t amount)
-    {
-        _height += amount;
+        _width += amountX;
+        _height += amountY;
     }
 
 protected:

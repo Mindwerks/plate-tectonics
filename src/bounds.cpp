@@ -81,29 +81,23 @@ void Bounds::shift(float dx, float dy) {
     p_assert(_worldDimension.contains(_position), "");
 }
 
-void Bounds::growWidth(int d)
+void Bounds::grow(int dx, int dy)
 {
-    if (d<0) throw runtime_error("negative value");
-    _dimension.growWidth(d);
+    if (dx<0) throw runtime_error("negative value");
+    if (dy<0) throw runtime_error("negative value");
+    _dimension.grow(dx, dy);
 
     if (_dimension.getWidth() > _worldDimension.getWidth()) {
-        throw runtime_error("(Bounds::growWidth) Plate is larger than the world containing it");
+        throw runtime_error("(Bounds::grow) Plate is larger than the world containing it");
     }    
-}
-
-void Bounds::growHeight(int d)
-{
-    if (d<0) throw runtime_error("negative value");
-    _dimension.growHeight(d);
-
     if (_dimension.getHeight() > _worldDimension.getHeight()) {
-        string s("(Bounds::growHeight) Plate is taller than the world containing it:");
-        s += " delta=" + Platec::to_string(d);
+        string s("(Bounds::grow) Plate is taller than the world containing it:");
+        s += " delta=" + Platec::to_string(dy);
         s += " resulting plate height=" + Platec::to_string(_dimension.getHeight());
         s += " world height=" + Platec::to_string(_worldDimension.getHeight());
         throw runtime_error(s);
-    } 
-}   
+    }     
+}
 
 Platec::Rectangle Bounds::asRect() const 
 {

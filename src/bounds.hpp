@@ -48,9 +48,7 @@ public:
 	/// It preserves the dimension of the plate.
 	void shift(float dx, float dy);
 
-	void growWidth(int d);
-
-	void growHeight(int d);
+	void grow(int dx, int dy);
 
 	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
 

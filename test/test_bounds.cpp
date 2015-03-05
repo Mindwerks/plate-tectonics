@@ -114,10 +114,10 @@ TEST(Bounds, Shift)
   EXPECT_EQ(400, bounds.height());
 }
 
-TEST(Bounds, GrowWidth)
+TEST(Bounds, Grow)
 {
   Bounds bounds(wd, topLeft, plateDim);
-  bounds.growWidth(123);
+  bounds.grow(123, 0);
 
   EXPECT_EQ(623, bounds.width());
   // height should not be affected
@@ -125,17 +125,15 @@ TEST(Bounds, GrowWidth)
   // topLeft not be affected
   EXPECT_EQ(10, bounds.leftAsUint());
   EXPECT_EQ(48, bounds.topAsUint());
-}
 
-TEST(Bounds, GrowHeight)
-{
-  Bounds bounds(wd, topLeft, plateDim);
-  bounds.growHeight(123);
+  Bounds bounds2(wd, topLeft, plateDim);
+  bounds2.grow(0, 123);
 
-  EXPECT_EQ(523, bounds.height());
+  EXPECT_EQ(523, bounds2.height());
   // width should not be affected
-  EXPECT_EQ(500, bounds.width());
+  EXPECT_EQ(500, bounds2.width());
   // topLeft not be affected
-  EXPECT_EQ(10, bounds.leftAsUint());
-  EXPECT_EQ(48, bounds.topAsUint());
+  EXPECT_EQ(10, bounds2.leftAsUint());
+  EXPECT_EQ(48, bounds2.topAsUint());
 }
+

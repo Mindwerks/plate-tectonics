@@ -579,8 +579,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_height = _bounds.height();
         
         _bounds.shift(-1.0*d_lft, -1.0*d_top);
-        _bounds.growWidth(d_lft + d_rgt);
-        _bounds.growHeight(d_top + d_btm);
+        _bounds.grow(d_lft + d_rgt, d_top + d_btm);
 
         HeightMap tmph = HeightMap(_bounds.width(), _bounds.height());
         AgeMap    tmpa = AgeMap(_bounds.width(), _bounds.height());
