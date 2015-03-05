@@ -13,7 +13,7 @@
 /// the platforms, for now are used as guards against undesired changes.
 ///
 
-TEST(PlatecCreate, SameResultAsPlatec)
+/*TEST(PlatecCreate, SameResultAsPlatec)
 {
   long seed = 3;
   void* p = platec_api_create(seed, 512, 512, 0.65,60,0.02,1000000,0.33,2,10);
@@ -52,4 +52,4 @@ TEST(PlatecGlobalGeneration, SameResultAsPlatec)
   EXPECT_FLOAT_EQ(0.12073194f, heightmap[200000]);
   EXPECT_FLOAT_EQ(0.12088145f, heightmap[250000]);
   EXPECT_FLOAT_EQ(2.1296265f, heightmap[262143]);
-}
+}*/
