@@ -12,7 +12,7 @@ void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension
     _y += _y > 0 ? 0 : _worldDimension.getHeight();
     _y -= _y < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
 
-    p_assert(_worldDimension.contains(*this), "");
+    p_assert(_worldDimension.contains(*this), "(FloatPoint::shift)");
 }
 
 namespace Platec {
@@ -29,7 +29,7 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const throw()
 	const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)_worldDimension.getHeight() : 0);
 	const int width = irgt - ilft;
 	if (width < 0) {
-	    throw std::invalid_argument("FAIL");
+	    throw std::invalid_argument("(Rectangle::getMapIndex) negative width");
 	}
 
 	///////////////////////////////////////////////////////////////////////

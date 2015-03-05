@@ -1,10 +1,10 @@
 #include "bounds.hpp"
 #include "gtest/gtest.h"
 
-WorldDimension wd(800, 600);
-FloatPoint topLeft(10.2, 48.9);
-Dimension plateDim(500, 400);
-Bounds b(wd, topLeft, plateDim);
+const WorldDimension wd(800, 600);
+const FloatPoint topLeft(10.2, 48.9);
+const Dimension plateDim(500, 400);
+const Bounds b(wd, topLeft, plateDim);
 
 TEST(Bounds, Index)
 {
@@ -100,3 +100,14 @@ TEST(Bounds, IsInLimits)
   EXPECT_EQ(false, b.isInLimits(499, 400));
   EXPECT_EQ(false, b.isInLimits(500, 400));
 }
+
+TEST(Bounds, Shift)
+{
+  Bounds bounds(wd, topLeft, plateDim);
+  // topLeft = 10.2, 48.9
+  bounds.shift(10.7, 100.1);
+  // now topLeft should be = 20.9, 149.0
+  EXPECT_EQ(20, bounds.leftAsUint());
+  EXPECT_EQ(149, bounds.topAsUint());
+}
+
