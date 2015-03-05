@@ -27,11 +27,13 @@ float Mass::getMass() const
 
 float Mass::getCx() const
 {
+    if (null()) throw runtime_error("(Mass::getCx)");
     return cx;
 }
 
 float Mass::getCy() const
 {
+    if (null()) throw runtime_error("(Mass::getCy)");
     return cx;
 }
 
