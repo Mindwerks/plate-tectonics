@@ -354,16 +354,13 @@ void plate::erode(float lower_bound)
   tmpHm.set_all(0.0f);
   _mass.reset();
 
-  float* tmp = new float[_bounds.area()];
-  tmpHm.copy_raw_to(tmp);  
-
   for (uint32_t y = 0; y < _bounds.height(); ++y)
   {
     for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
         const uint32_t index = y * _bounds.width() + x;
         _mass.addPoint(x, y, map[index]);    
-        tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
+        tmpHm[index] += map[index]; // Careful not to overwrite earlier amounts.
 
         if (map[index] < lower_bound)
             continue;
@@ -422,11 +419,11 @@ void plate::erode(float lower_bound)
             // crust from this peak so that it would be as tall as its
             // tallest lower neighbour. Thus first step is make ALL
             // lower neighbours and this point equally tall.
-            tmp[w] += (w_diff - min_diff) * (w_crust > 0);
-            tmp[e] += (e_diff - min_diff) * (e_crust > 0);
-            tmp[n] += (n_diff - min_diff) * (n_crust > 0);
-            tmp[s] += (s_diff - min_diff) * (s_crust > 0);
-            tmp[index] -= min_diff;
+            tmpHm[w] += (w_diff - min_diff) * (w_crust > 0);
+            tmpHm[e] += (e_diff - min_diff) * (e_crust > 0);
+            tmpHm[n] += (n_diff - min_diff) * (n_crust > 0);
+            tmpHm[s] += (s_diff - min_diff) * (s_crust > 0);
+            tmpHm[index] -= min_diff;
 
             min_diff -= diff_sum;
 
@@ -434,11 +431,11 @@ void plate::erode(float lower_bound)
             min_diff /= 1 + (w_crust > 0) + (e_crust > 0) +
                 (n_crust > 0) + (s_crust > 0);
 
-            tmp[w] += min_diff * (w_crust > 0);
-            tmp[e] += min_diff * (e_crust > 0);
-            tmp[n] += min_diff * (n_crust > 0);
-            tmp[s] += min_diff * (s_crust > 0);
-            tmp[index] += min_diff;
+            tmpHm[w] += min_diff * (w_crust > 0);
+            tmpHm[e] += min_diff * (e_crust > 0);
+            tmpHm[n] += min_diff * (n_crust > 0);
+            tmpHm[s] += min_diff * (s_crust > 0);
+            tmpHm[index] += min_diff;
         }
         else
         {
@@ -446,18 +443,18 @@ void plate::erode(float lower_bound)
 
             // Remove all crust from this location making it as tall as
             // its tallest lower neighbour.
-            tmp[index] -= min_diff;
+            tmpHm[index] -= min_diff;
 
             // Spread all removed crust among all other lower neighbours.
-            tmp[w] += unit * (w_diff - min_diff) * (w_crust > 0);
-            tmp[e] += unit * (e_diff - min_diff) * (e_crust > 0);
-            tmp[n] += unit * (n_diff - min_diff) * (n_crust > 0);
-            tmp[s] += unit * (s_diff - min_diff) * (s_crust > 0);
+            tmpHm[w] += unit * (w_diff - min_diff) * (w_crust > 0);
+            tmpHm[e] += unit * (e_diff - min_diff) * (e_crust > 0);
+            tmpHm[n] += unit * (n_diff - min_diff) * (n_crust > 0);
+            tmpHm[s] += unit * (s_diff - min_diff) * (s_crust > 0);
         }
     }
   }
 
-  map.from(tmp);
+  map = tmpHm;
 
   _mass.redistribute();
 }
