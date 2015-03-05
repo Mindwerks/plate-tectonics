@@ -344,15 +344,14 @@ void plate::erode(float lower_bound)
   findRiverSources(lower_bound, sources);
   flowRivers(lower_bound, sources, tmpHm);
 
+  // Add random noise (10 %) to heightmap.
+  for (uint32_t i = 0; i < _bounds.area(); ++i){
+    float alpha = 0.2 * (float)_randsource.next_double();
+    tmpHm[i] += 0.1 * tmpHm[i] - alpha * tmpHm[i];
+  }
+
   float* tmp = new float[_bounds.area()];
   tmpHm.copy_raw_to(tmp);  
-
-  // Add random noise (10 %) to heightmap.
-  for (uint32_t i = 0; i < _bounds.area(); ++i)
-  {
-    float alpha = 0.2 * (float)_randsource.next_double();
-    tmp[i] += 0.1 * tmp[i] - alpha * tmp[i];
-  }
 
   memcpy(map.raw_data(), tmp, _bounds.area()*sizeof(float));
   memset(tmp, 0, _bounds.area()*sizeof(float));
