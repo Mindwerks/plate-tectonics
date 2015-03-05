@@ -47,3 +47,38 @@ TEST(Bounds, BottomAsUintNonInclusive)
 {
   EXPECT_EQ(447, b.bottomAsUintNonInclusive());
 }
+
+TEST(Bounds, ContainsWorldPoint)
+{
+  // world corners
+  EXPECT_EQ(false, b.containsWorldPoint(0, 0));
+  EXPECT_EQ(false, b.containsWorldPoint(799, 0));
+  EXPECT_EQ(false, b.containsWorldPoint(0, 599));
+  EXPECT_EQ(false, b.containsWorldPoint(799, 599));
+
+  // plate corners
+  EXPECT_EQ(true, b.containsWorldPoint(10,   48));
+  EXPECT_EQ(true, b.containsWorldPoint(509,  48));
+  EXPECT_EQ(true, b.containsWorldPoint(10,  447));
+  EXPECT_EQ(true, b.containsWorldPoint(509, 447));  
+
+  // inside plate
+  EXPECT_EQ(true, b.containsWorldPoint(10,  48));
+  EXPECT_EQ(true, b.containsWorldPoint(120, 100));
+  EXPECT_EQ(true, b.containsWorldPoint(400, 400));
+  EXPECT_EQ(true, b.containsWorldPoint(509, 447));    
+
+  // outside plate
+  EXPECT_EQ(false, b.containsWorldPoint(10, 0));
+  EXPECT_EQ(false, b.containsWorldPoint(10, 47));
+  EXPECT_EQ(false, b.containsWorldPoint(10, 448));
+  EXPECT_EQ(false, b.containsWorldPoint(10, 490));
+  EXPECT_EQ(false, b.containsWorldPoint(100, 0));
+  EXPECT_EQ(false, b.containsWorldPoint(100, 47));
+  EXPECT_EQ(false, b.containsWorldPoint(100, 448));
+  EXPECT_EQ(false, b.containsWorldPoint(100, 490));  
+  EXPECT_EQ(false, b.containsWorldPoint(509, 0));
+  EXPECT_EQ(false, b.containsWorldPoint(509, 47));
+  EXPECT_EQ(false, b.containsWorldPoint(509, 448));
+  EXPECT_EQ(false, b.containsWorldPoint(509, 490));    
+}

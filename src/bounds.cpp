@@ -66,8 +66,10 @@ bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const
 {
     uint32_t cleanX = _worldDimension.xMod(x);
     uint32_t cleanY = _worldDimension.yMod(y);
-    return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
-        && cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
+    if (cleanX < leftAsUint()) cleanX += _worldDimension.getWidth();
+    if (cleanY < topAsUint()) cleanY += _worldDimension.getHeight();
+    return cleanX >= leftAsUint() && cleanX <= rightAsUintNonInclusive() 
+        && cleanY >= topAsUint()  && cleanY <= bottomAsUintNonInclusive();
 }
 
 bool Bounds::isInLimits(float x, float y) const 
