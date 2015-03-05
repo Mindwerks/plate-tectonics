@@ -1,30 +1,30 @@
 #include "world_point.hpp"
 #include "rectangle.hpp"
 
-Position::Position(unsigned int x, unsigned int y)
+WorldPoint::WorldPoint(uint32_t x, uint32_t y)
     : _x(x),
       _y(y)
 {
 };
 
-Position::Position(const Position& other)
+WorldPoint::WorldPoint(const WorldPoint& other)
     : _x(other.x()),
       _y(other.y())
 {
 
 };
 
-unsigned int Position::x() const
+uint32_t WorldPoint::x() const
 {
     return _x;
 };
 
-unsigned int Position::y() const
+uint32_t WorldPoint::y() const
 {
     return _y;
 };
 
-unsigned int Position::toIndex(const WorldDimension& dim) const
+uint32_t WorldPoint::toIndex(const WorldDimension& dim) const
 {
     return _y * dim.getWidth() + _x;
 };

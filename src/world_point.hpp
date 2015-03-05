@@ -1,19 +1,22 @@
 #ifndef WORLD_POINT_HPP
 #define WORLD_POINT_HPP
 
+#include "utils.hpp"
+
 class WorldDimension;
 
-class Position
+/// Immutable point expressed in World coordinates
+class WorldPoint
 {
 public:
-    Position(unsigned int x, unsigned int y);
-    Position(const Position& other);
-    unsigned int x() const;
-    unsigned int y() const;
-    unsigned int toIndex(const WorldDimension&) const;
+    WorldPoint(uint32_t x, uint32_t y);
+    WorldPoint(const WorldPoint& other);
+    uint32_t x() const;
+    uint32_t y() const;
+    uint32_t toIndex(const WorldDimension&) const;
 private:
-    unsigned int _x;
-    unsigned int _y;
+    const uint32_t _x;
+    const uint32_t _y;
 };
 
 #endif

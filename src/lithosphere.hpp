@@ -138,7 +138,7 @@ class lithosphere
 	};
 
 	void restart(); //< Replace plates with a new population.
-	Position randomPosition();
+	WorldPoint randomPosition();
 
 	HeightMap hmap; ///< Height map representing the topography of system.
 	uint32_t* imap; ///< Plate index map of the "owner" of each map point.

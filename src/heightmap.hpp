@@ -98,7 +98,7 @@ public:
         return this->_data[index];
     }
 
-    Value& operator[](const Position& pos) const
+    Value& operator[](const WorldPoint& pos) const
     {
         if (pos.x() >= _width || pos.y() >= _height) {
             string s("invalid index: ");
