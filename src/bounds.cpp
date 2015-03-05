@@ -7,10 +7,10 @@ Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
       _dimension(dimension) 
 {
     if (_dimension.getWidth() >= _worldDimension.getWidth()) {
-        throw runtime_error("Plate is larger than the world containing it");
+        throw runtime_error("(Bounds::Bounds) Plate is larger than the world containing it");
     }
-    if (_dimension.getHeight() >= _worldDimension.getHeight()) {
-        throw runtime_error("Plate is taller than the world containing it");
+    if (_dimension.getHeight() > _worldDimension.getHeight()) {
+        throw runtime_error("(Bounds::Bounds) Plate is taller than the world containing it");
     }   
 }
 
@@ -85,8 +85,8 @@ void Bounds::growWidth(int d)
     if (d<0) throw runtime_error("negative value");
     _dimension.growWidth(d);
 
-    if (_dimension.getWidth() >= _worldDimension.getWidth()) {
-        throw runtime_error("Plate is larger than the world containing it");
+    if (_dimension.getWidth() > _worldDimension.getWidth()) {
+        throw runtime_error("(Bounds::growWidth) Plate is larger than the world containing it");
     }    
 }
 
@@ -95,14 +95,18 @@ void Bounds::growHeight(int d)
     if (d<0) throw runtime_error("negative value");
     _dimension.growHeight(d);
 
-    if (_dimension.getHeight() >= _worldDimension.getHeight()) {
-        throw runtime_error("Plate is taller than the world containing it");
+    if (_dimension.getHeight() > _worldDimension.getHeight()) {
+        string s("(Bounds::growHeight) Plate is taller than the world containing it:");
+        s += " delta=" + Platec::to_string(d);
+        s += " resulting plate height=" + Platec::to_string(_dimension.getHeight());
+        s += " world height=" + Platec::to_string(_worldDimension.getHeight());
+        throw runtime_error(s);
     } 
 }   
 
 Platec::Rectangle Bounds::asRect() const 
 {
-    p_assert(_position.getX() >= 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
+    p_assert(_position.getX() > 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
     const uint32_t ilft = (uint32_t)_position.getX();
     const uint32_t itop = (uint32_t)_position.getY();
     const uint32_t irgt = ilft + _dimension.getWidth();

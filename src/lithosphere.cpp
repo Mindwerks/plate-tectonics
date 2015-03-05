@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 #define BOOL_REGENERATE_CRUST   1
 
@@ -736,6 +737,7 @@ try {
 } catch (const exception& e){
     std::string msg = "Problem during update: ";
     msg = msg + e.what();
+    cerr << msg << endl;
     throw runtime_error(msg.c_str());
 }
 }
