@@ -11,9 +11,23 @@
 #include "bounds.hpp"
 #include "movement.hpp"
 
+class Mass;
+
+class MassBuilder
+{
+public:
+	MassBuilder(const float* m, const Bounds& bounds);
+	void addPoint(uint32_t x, uint32_t y, float crust);
+	Mass build();
+private:
+	float mass;           ///< Amount of crust that constitutes the plate.
+	float cx, cy;         ///< X and Y components of the center of mass of plate.	
+};
+
 class Mass
 {
 public:
+	Mass(float mass_, float cx_, float cy_);
 	Mass(const float* m, const Bounds& bounds);
 	void incMass(float delta);
 	float getMass() const;
