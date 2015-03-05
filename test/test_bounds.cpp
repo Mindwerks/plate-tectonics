@@ -82,3 +82,21 @@ TEST(Bounds, ContainsWorldPoint)
   EXPECT_EQ(false, b.containsWorldPoint(509, 448));
   EXPECT_EQ(false, b.containsWorldPoint(509, 490));    
 }
+
+TEST(Bounds, IsInLimits)
+{
+  // negative coordinates
+  EXPECT_EQ(false, b.isInLimits(-1, 10));
+  EXPECT_EQ(false, b.isInLimits(10, -1));
+  EXPECT_EQ(false, b.isInLimits(-1, -1));
+
+  EXPECT_EQ(true, b.isInLimits(0, 0));
+  EXPECT_EQ(true, b.isInLimits(124.3, 245.56));
+  EXPECT_EQ(true, b.isInLimits(499, 399));
+  EXPECT_EQ(true, b.isInLimits(499.1, 399.1));
+  EXPECT_EQ(true, b.isInLimits(499.999, 399.999));
+
+  EXPECT_EQ(false, b.isInLimits(500, 399));
+  EXPECT_EQ(false, b.isInLimits(499, 400));
+  EXPECT_EQ(false, b.isInLimits(500, 400));
+}

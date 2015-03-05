@@ -76,7 +76,9 @@ bool Bounds::isInLimits(float x, float y) const
 {
     if (x<0) return false;
     if (y<0) return false;
-    return x<=_dimension.getWidth() && y<=_dimension.getHeight();
+    uint32_t ux = x;
+    uint32_t uy = y;
+    return ux < _dimension.getWidth() && uy < _dimension.getHeight();
 }
 
 void Bounds::shift(float dx, float dy) {
