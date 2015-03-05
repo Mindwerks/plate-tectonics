@@ -16,8 +16,7 @@ class Matrix
 public:
 
     Matrix(unsigned int width, unsigned int height)
-        : _width(width), 
-          _height(height)
+        : _width(width), _height(height)
     {
         if (width == 0 || height == 0) {
             throw invalid_argument("width and height should be greater than zero");
@@ -25,14 +24,14 @@ public:
         _data = new Value[width * height];
     };
 
-    Matrix( const Matrix<Value>& other )
+    Matrix(const Matrix<Value>& other)
         : _width(other._width), 
           _height(other._height)
     {
         _data = new Value[_width * _height];
-        for (int x=0; x<_width;x++){
-            for (int y=0; y<_height;y++){
-                set(x,y,other.get(x,y));
+        for (int x=0; x<_width;x++) {
+            for (int y=0; y<_height; y++) {
+                set(x, y ,other.get(x,y));
             }
         }
     }
@@ -86,7 +85,7 @@ public:
         return *this;
     }
 
-    Value& operator[](unsigned int index) const
+    Value& operator[](unsigned int index)
     {
         if (index >= (_width*_height)) {
             string s("invalid index: ");
@@ -98,7 +97,19 @@ public:
         return this->_data[index];
     }
 
-    Value& operator[](const WorldPoint& pos) const
+    const Value& operator[](unsigned int index) const
+    {
+        if (index >= (_width*_height)) {
+            string s("invalid index: ");
+            s = s + Platec::to_string(index)
+                + ", width " + Platec::to_string(_width)
+                + ", height " + Platec::to_string(_height);
+            throw invalid_argument(s);
+        }
+        return this->_data[index];
+    }
+
+    const Value& operator[](const WorldPoint& pos) const
     {
         if (pos.x() >= _width || pos.y() >= _height) {
             string s("invalid index: ");
