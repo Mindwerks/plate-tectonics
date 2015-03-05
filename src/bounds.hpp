@@ -52,6 +52,7 @@ public:
 
 	void growHeight(int d);
 
+	/// Return a rectangle representing the Bounds inside the world.
 	Platec::Rectangle asRect() const;
 
 	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;

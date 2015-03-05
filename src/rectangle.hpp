@@ -253,6 +253,16 @@ public:
         _bottom += dy;
     }
 
+    bool contains(uint32_t x, uint32_t y) const
+    {
+        uint32_t cleanX = _worldDimension.xMod(x);
+        uint32_t cleanY = _worldDimension.yMod(y);
+        if (cleanX < getLeft()) cleanX += _worldDimension.getWidth();
+        if (cleanY < getTop()) cleanY += _worldDimension.getHeight();
+        return cleanX >= getLeft() && cleanX < getRight() 
+            && cleanY >= getTop()  && cleanY < getBottom();
+    }
+
 private:
     const WorldDimension _worldDimension;
     uint32_t _left, _right;

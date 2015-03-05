@@ -64,12 +64,7 @@ uint32_t Bounds::bottomAsUintNonInclusive() const
 
 bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const 
 {
-    uint32_t cleanX = _worldDimension.xMod(x);
-    uint32_t cleanY = _worldDimension.yMod(y);
-    if (cleanX < leftAsUint()) cleanX += _worldDimension.getWidth();
-    if (cleanY < topAsUint()) cleanY += _worldDimension.getHeight();
-    return cleanX >= leftAsUint() && cleanX <= rightAsUintNonInclusive() 
-        && cleanY >= topAsUint()  && cleanY <= bottomAsUintNonInclusive();
+    return asRect().contains(x, y);
 }
 
 bool Bounds::isInLimits(float x, float y) const 
