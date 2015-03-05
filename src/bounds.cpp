@@ -1,90 +1,104 @@
 #include "bounds.hpp"
 
 Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position, 
-	   const Dimension& dimension)
-	: _worldDimension(worldDimension), 
-	  _position(position), 
-	  _dimension(dimension) 
+       const Dimension& dimension)
+    : _worldDimension(worldDimension), 
+      _position(position), 
+      _dimension(dimension) 
 {
+    if (_dimension.getWidth() >= _worldDimension.getWidth()) {
+        throw runtime_error("Plate is larger than the world containing it");
+    }
+    if (_dimension.getHeight() >= _worldDimension.getHeight()) {
+        throw runtime_error("Plate is taller than the world containing it");
+    }   
 }
 
 uint32_t Bounds::index(uint32_t x, uint32_t y) const 
 {
-	if (x >= _dimension.getWidth()) {
-		throw runtime_error("Bounds::Index: unvalid x coordinate");
-	}
-	if (y >= _dimension.getHeight()) {
-		throw runtime_error("Bounds::Index: unvalid y coordinate");
-	}
-	return y * _dimension.getWidth() + x;
-} 	
+    if (x >= _dimension.getWidth()) {
+        throw runtime_error("Bounds::Index: unvalid x coordinate");
+    }
+    if (y >= _dimension.getHeight()) {
+        throw runtime_error("Bounds::Index: unvalid y coordinate");
+    }
+    return y * _dimension.getWidth() + x;
+}   
 
 uint32_t Bounds::area() const
 {
-	return _dimension.getArea();
+    return _dimension.getArea();
 }
 
 uint32_t Bounds::width() const 
 {
-	return _dimension.getWidth();
+    return _dimension.getWidth();
 }
 
 uint32_t Bounds::height() const 
 {
-	return _dimension.getHeight();
+    return _dimension.getHeight();
 }
 
 float Bounds::left() const 
 {
-	return _position.getX();
+    return _position.getX();
 }
 
 float Bounds::top() const 
 {
-	return _position.getY();
-}	
+    return _position.getY();
+}   
 
 float Bounds::right() const 
 {
-	return left() + width() - 1;
+    return left() + width() - 1;
 }
 
 float Bounds::bottom() const 
 {
-	return top() + height() - 1;
+    return top() + height() - 1;
 }
 
 bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const 
 {
-	uint32_t cleanX = _worldDimension.xMod(x);
-	uint32_t cleanY = _worldDimension.yMod(y);
-	return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
-    	&& cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
+    uint32_t cleanX = _worldDimension.xMod(x);
+    uint32_t cleanY = _worldDimension.yMod(y);
+    return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
+        && cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
 }
 
 bool Bounds::isInLimits(float x, float y) const 
 {
-	if (x<0) return false;
-	if (y<0) return false;
-	return x<=_dimension.getWidth() && y<=_dimension.getHeight();
+    if (x<0) return false;
+    if (y<0) return false;
+    return x<=_dimension.getWidth() && y<=_dimension.getHeight();
 }
 
 void Bounds::shift(float dx, float dy) {
-	_position.shift(dx, dy, _worldDimension);
-	p_assert(_worldDimension.contains(_position), "");
+    _position.shift(dx, dy, _worldDimension);
+    p_assert(_worldDimension.contains(_position), "");
 }
 
 void Bounds::growWidth(int d)
 {
-	if (d<0) throw runtime_error("negative value");
-	_dimension.growWidth(d);
+    if (d<0) throw runtime_error("negative value");
+    _dimension.growWidth(d);
+
+    if (_dimension.getWidth() >= _worldDimension.getWidth()) {
+        throw runtime_error("Plate is larger than the world containing it");
+    }    
 }
 
 void Bounds::growHeight(int d)
 {
-	if (d<0) throw runtime_error("negative value");
-	_dimension.growHeight(d);
-}	
+    if (d<0) throw runtime_error("negative value");
+    _dimension.growHeight(d);
+
+    if (_dimension.getHeight() >= _worldDimension.getHeight()) {
+        throw runtime_error("Plate is taller than the world containing it");
+    } 
+}   
 
 Platec::Rectangle Bounds::asRect() const 
 {

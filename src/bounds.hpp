@@ -42,6 +42,8 @@ public:
 	/// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
 	bool isInLimits(float x, float y) const;
 
+	/// Shift the position of the top left corner by the given amount.
+	/// It preserves the dimension of the plate.
 	void shift(float dx, float dy);
 
 	void growWidth(int d);
