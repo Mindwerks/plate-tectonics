@@ -77,36 +77,6 @@ TEST(HeightMap, IndexedAccessOperator)
   EXPECT_FLOAT_EQ(0.8f, hm[999]);
 }
 
-TEST(HeightMap, CopyRawToNoAllocate)
-{
-    HeightMap hm = HeightMap(30, 10);
-    hm.set( 3, 8, 0.123);
-    hm.set(23, 4, 0.234);
-    hm.set(12, 9, 0.345);
-
-    float* dst = new float[300];
-    hm.copy_raw_to(dst);
-
-    EXPECT_FLOAT_EQ(0.123f, hm.get( 3, 8));
-    EXPECT_FLOAT_EQ(0.234f, hm.get(23, 4));
-    EXPECT_FLOAT_EQ(0.345f, hm.get(12, 9));
-}
-
-TEST(HeightMap, CopyRawToAllocate)
-{
-    HeightMap hm = HeightMap(30, 10);
-    hm.set( 3, 8, 0.123);
-    hm.set(23, 4, 0.234);
-    hm.set(12, 9, 0.345);
-
-    float* dst = NULL;
-    hm.copy_raw_to(dst, true);
-
-    EXPECT_FLOAT_EQ(0.123f, hm.get( 3, 8));
-    EXPECT_FLOAT_EQ(0.234f, hm.get(23, 4));
-    EXPECT_FLOAT_EQ(0.345f, hm.get(12, 9));
-}
-
 TEST(HeightMap, From)
 {
     float* src = new float[300];

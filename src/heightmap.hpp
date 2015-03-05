@@ -124,14 +124,6 @@ public:
         return this->_data[pos.y() * _width + pos.y()];
     }
 
-    void copy_raw_to(Value*& dst, bool allocate = false) const
-    {
-        if (allocate) {
-            dst = new Value[_width * _height];
-        }
-        memcpy(dst, _data, sizeof(Value) * _width * _height);
-    }
-
     void from(Value* src)
     {
         memcpy(_data, src, sizeof(Value) * _width * _height);
