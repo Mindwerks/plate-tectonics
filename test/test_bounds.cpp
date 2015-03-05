@@ -109,5 +109,33 @@ TEST(Bounds, Shift)
   // now topLeft should be = 20.9, 149.0
   EXPECT_EQ(20, bounds.leftAsUint());
   EXPECT_EQ(149, bounds.topAsUint());
+  // width and heigh should not be affected
+  EXPECT_EQ(500, bounds.width());
+  EXPECT_EQ(400, bounds.height());
 }
 
+TEST(Bounds, GrowWidth)
+{
+  Bounds bounds(wd, topLeft, plateDim);
+  bounds.growWidth(123);
+
+  EXPECT_EQ(623, bounds.width());
+  // height should not be affected
+  EXPECT_EQ(400, bounds.height());
+  // topLeft not be affected
+  EXPECT_EQ(10, bounds.leftAsUint());
+  EXPECT_EQ(48, bounds.topAsUint());
+}
+
+TEST(Bounds, GrowHeight)
+{
+  Bounds bounds(wd, topLeft, plateDim);
+  bounds.growHeight(123);
+
+  EXPECT_EQ(523, bounds.height());
+  // width should not be affected
+  EXPECT_EQ(500, bounds.width());
+  // topLeft not be affected
+  EXPECT_EQ(10, bounds.leftAsUint());
+  EXPECT_EQ(48, bounds.topAsUint());
+}
