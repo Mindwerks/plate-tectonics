@@ -30,13 +30,13 @@ public:
 
 	uint32_t height() const;
 
-	float left() const;
+	uint32_t leftAsUint() const;
 
-	float top() const;
+	uint32_t topAsUint() const;
 
-	float right() const;
+	uint32_t rightAsUintNonInclusive() const;
 
-	float bottom() const;
+	uint32_t bottomAsUintNonInclusive() const;
 
 	/// Given a point in World relative coordinates, it tells if it is part of the plate or not.
 	bool containsWorldPoint(uint32_t x, uint32_t y) const;

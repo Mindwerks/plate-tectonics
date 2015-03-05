@@ -198,8 +198,8 @@ class plate
 	float getMass() const throw() { return _mass.getMass(); }
 	float getMomentum() const throw() { return _movement.momentum(_mass.getMass()); }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
-	float  getLeft() const throw() { return _bounds.left(); }
-	float  getTop() const throw() { return _bounds.top(); }
+	uint32_t  getLeftAsUint() const throw() { return _bounds.leftAsUint(); }
+	uint32_t  getTopAsUint() const throw() { return _bounds.topAsUint(); }
 	float getVelocity() const throw() { return _movement.getVelocity(); }
 	float getVelX() const throw() { return _movement.velX(); }
 	float getVelY() const throw() { return _movement.velY(); }

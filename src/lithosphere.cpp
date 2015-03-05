@@ -412,8 +412,8 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
     memset(imap, 255, map_area * sizeof(uint32_t));
     for (uint32_t i = 0; i < num_plates; ++i)
     {
-      const uint32_t x0 = (uint32_t)plates[i]->getLeft();
-      const uint32_t y0 = (uint32_t)plates[i]->getTop();
+      const uint32_t x0 = plates[i]->getLeftAsUint();
+      const uint32_t y0 = plates[i]->getTopAsUint();
       const uint32_t x1 = x0 + plates[i]->getWidth();
       const uint32_t y1 = y0 + plates[i]->getHeight();
 
@@ -756,8 +756,8 @@ try {
     hmap.set_all(0);
     for (uint32_t i = 0; i < num_plates; ++i)
     {
-      const uint32_t x0 = (uint32_t)plates[i]->getLeft();
-      const uint32_t y0 = (uint32_t)plates[i]->getTop();
+      const uint32_t x0 = plates[i]->getLeftAsUint();
+      const uint32_t y0 = plates[i]->getTopAsUint();
       const uint32_t x1 = x0 + plates[i]->getWidth();
       const uint32_t y1 = y0 + plates[i]->getHeight();
 
@@ -797,8 +797,8 @@ try {
         // Restore the ages of plates' points of crust!
         for (uint32_t i = 0; i < num_plates; ++i)
         {
-          const uint32_t x0 = (uint32_t)plates[i]->getLeft();
-          const uint32_t y0 = (uint32_t)plates[i]->getTop();
+          const uint32_t x0 = plates[i]->getLeftAsUint();
+          const uint32_t y0 = plates[i]->getTopAsUint();
           const uint32_t x1 = x0 + plates[i]->getWidth();
           const uint32_t y1 = y0 + plates[i]->getHeight();
             

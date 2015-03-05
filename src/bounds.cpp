@@ -40,24 +40,26 @@ uint32_t Bounds::height() const
     return _dimension.getHeight();
 }
 
-float Bounds::left() const 
+uint32_t Bounds::leftAsUint() const 
 {
+    p_assert(_position.getX() >= 0, "_position.getX() should be not negative");
     return _position.getX();
 }
 
-float Bounds::top() const 
+uint32_t Bounds::topAsUint() const 
 {
+    p_assert(_position.getY() >= 0, "_position.getY() should be not negative");
     return _position.getY();
 }   
 
-float Bounds::right() const 
+uint32_t Bounds::rightAsUintNonInclusive() const 
 {
-    return left() + width() - 1;
+    return leftAsUint() + width() - 1;
 }
 
-float Bounds::bottom() const 
+uint32_t Bounds::bottomAsUintNonInclusive() const 
 {
-    return top() + height() - 1;
+    return topAsUint() + height() - 1;
 }
 
 bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const 
@@ -107,8 +109,8 @@ void Bounds::growHeight(int d)
 Platec::Rectangle Bounds::asRect() const 
 {
     p_assert(_position.getX() > 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
-    const uint32_t ilft = (uint32_t)_position.getX();
-    const uint32_t itop = (uint32_t)_position.getY();
+    const uint32_t ilft = leftAsUint();
+    const uint32_t itop = topAsUint();
     const uint32_t irgt = ilft + _dimension.getWidth();
     const uint32_t ibtm = itop + _dimension.getHeight();
 

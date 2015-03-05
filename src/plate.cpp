@@ -533,10 +533,10 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         // Extending plate for nothing!
         assert(z>0);
 
-        const uint32_t ilft = _bounds.left();
-        const uint32_t itop = _bounds.top();
-        const uint32_t irgt = _bounds.right();
-        const uint32_t ibtm = _bounds.bottom();
+        const uint32_t ilft = _bounds.leftAsUint();
+        const uint32_t itop = _bounds.topAsUint();
+        const uint32_t irgt = _bounds.rightAsUintNonInclusive();
+        const uint32_t ibtm = _bounds.bottomAsUintNonInclusive();
 
         _worldDimension.normalize(x, y);
 
