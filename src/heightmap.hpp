@@ -75,7 +75,7 @@ public:
             _width  = other._width;
             _height = other._height;
             delete[] _data;
-            _data = new Value[_width * _height];
+            _data = new Value[area()];
             for (int x=0; x<_width; x++){
                 for (int y=0; y<_height; y++){
                     set(x, y, other.get(x,y));
@@ -87,7 +87,7 @@ public:
 
     Value& operator[](unsigned int index)
     {
-        if (index >= (_width * _height)) {
+        if (index >= area()) {
             string s("invalid index: ");
             s = s + Platec::to_string(index)
                 + ", width " + Platec::to_string(_width)
@@ -99,7 +99,7 @@ public:
 
     const Value& operator[](unsigned int index) const
     {
-        if (index >= (_width * _height)) {
+        if (index >= area()) {
             string s("invalid index: ");
             s = s + Platec::to_string(index)
                 + ", width " + Platec::to_string(_width)
@@ -126,7 +126,7 @@ public:
 
     bool equals(Value* other)
     {                
-        for (int i=0; i< (_width * _height); i++){
+        for (int i=0; i < area(); i++){
             if (_data[i] != other[i]){
                 return false;
             }
