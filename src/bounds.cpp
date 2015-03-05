@@ -4,11 +4,12 @@ Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
 	   const Dimension& dimension)
 	: _worldDimension(worldDimension), 
 	  _position(position), 
-	  _dimension(dimension) {
+	  _dimension(dimension) 
+{
+}
 
-};
-
-uint32_t Bounds::index(uint32_t x, uint32_t y) const {
+uint32_t Bounds::index(uint32_t x, uint32_t y) const 
+{
 	if (x >= _dimension.getWidth()) {
 		throw runtime_error("Bounds::Index: unvalid x coordinate");
 	}
@@ -18,42 +19,51 @@ uint32_t Bounds::index(uint32_t x, uint32_t y) const {
 	return y * _dimension.getWidth() + x;
 } 	
 
-uint32_t Bounds::area() const{
+uint32_t Bounds::area() const
+{
 	return _dimension.getArea();
 }
 
-uint32_t Bounds::width() const {
+uint32_t Bounds::width() const 
+{
 	return _dimension.getWidth();
 }
 
-uint32_t Bounds::height() const {
+uint32_t Bounds::height() const 
+{
 	return _dimension.getHeight();
 }
 
-float Bounds::left() const {
+float Bounds::left() const 
+{
 	return _position.getX();
 }
 
-float Bounds::top() const {
+float Bounds::top() const 
+{
 	return _position.getY();
 }	
 
-float Bounds::right() const {
+float Bounds::right() const 
+{
 	return left() + width() - 1;
 }
 
-float Bounds::bottom() const {
+float Bounds::bottom() const 
+{
 	return top() + height() - 1;
 }
 
-bool Bounds::contains(uint32_t x, uint32_t y) const {
+bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const 
+{
 	uint32_t cleanX = _worldDimension.xMod(x);
 	uint32_t cleanY = _worldDimension.yMod(y);
 	return cleanX >= _position.getX() && cleanX<(_position.getX() + _dimension.getWidth()) 
     	&& cleanY >= _position.getY() && cleanY<(_position.getY() + _dimension.getHeight());
 }
 
-bool Bounds::isInLimits(float x, float y) const {
+bool Bounds::isInLimits(float x, float y) const 
+{
 	if (x<0) return false;
 	if (y<0) return false;
 	return x<=_dimension.getWidth() && y<=_dimension.getHeight();
@@ -64,17 +74,20 @@ void Bounds::grow(float dx, float dy) {
 	p_assert(_worldDimension.contains(_position), "");
 }
 
-void Bounds::growWidth(int d){
+void Bounds::growWidth(int d)
+{
 	if (d<0) throw runtime_error("negative value");
 	_dimension.growWidth(d);
 }
 
-void Bounds::growHeight(int d){
+void Bounds::growHeight(int d)
+{
 	if (d<0) throw runtime_error("negative value");
 	_dimension.growHeight(d);
 }	
 
-Platec::Rectangle Bounds::asRect() const {
+Platec::Rectangle Bounds::asRect() const 
+{
     p_assert(_position.getX() >= 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
     const uint32_t ilft = (uint32_t)_position.getX();
     const uint32_t itop = (uint32_t)_position.getY();

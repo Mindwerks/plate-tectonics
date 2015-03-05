@@ -224,9 +224,9 @@ void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
     _movement.collide(*this, p, this->_movement, p._movement, wx, wy, coll_mass);
 }
 
-bool plate::contains(uint32_t x, uint32_t y) const
+bool plate::containsWorldPoint(uint32_t x, uint32_t y) const
 {
-    return _bounds.contains(x, y);
+    return _bounds.containsWorldPoint(x, y);
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 

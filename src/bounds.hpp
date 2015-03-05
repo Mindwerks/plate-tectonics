@@ -13,7 +13,8 @@
 class Bounds {
 public:
 
-	Bounds(const WorldDimension& worldDimension, const FloatPoint& position, 
+	Bounds(const WorldDimension& worldDimension, 
+		   const FloatPoint& position, 
 		   const Dimension& dimension);
 
 	uint32_t index(uint32_t x, uint32_t y) const;
@@ -32,8 +33,10 @@ public:
 
 	float bottom() const;
 
-	bool contains(uint32_t x, uint32_t y) const;
+	/// Given a point in World relative coordinates, it tells if it is part of the plate or not.
+	bool containsWorldPoint(uint32_t x, uint32_t y) const;
 
+	/// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
 	bool isInLimits(float x, float y) const;
 
 	void grow(float dx, float dy);

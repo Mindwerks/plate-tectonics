@@ -210,7 +210,7 @@ class plate
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
-	bool contains(uint32_t x, uint32_t y) const;
+	bool containsWorldPoint(uint32_t x, uint32_t y) const;
 
 	// visible for testing
 	inline void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
