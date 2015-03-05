@@ -69,7 +69,8 @@ WorldPoint lithosphere::randomPosition()
 {
     return WorldPoint(
         _randsource.next() % _worldDimension.getWidth(), 
-        _randsource.next() % _worldDimension.getHeight());
+        _randsource.next() % _worldDimension.getHeight(),
+        _worldDimension);
 }
 
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
