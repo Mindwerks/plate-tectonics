@@ -213,7 +213,7 @@ void plate::applyFriction(float deformed_mass)
 {
     // Remove the energy that deformation consumed from plate's kinetic
     // energy: F - dF = ma - dF => a = dF/m.
-    if (_mass.notNull())
+    if (!_mass.null())
     {
         _movement.applyFriction(deformed_mass, _mass.getMass());
     }

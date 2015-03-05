@@ -204,7 +204,7 @@ class plate
 	float getVelX() const throw() { return _movement.velX(); }
 	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
-	bool   isEmpty() const throw() { return !_mass.notNull(); }
+	bool   isEmpty() const throw() { return _mass.null(); }
 	float getCx() const { return _mass.getCx(); }
 	float getCy() const { return _mass.getCy(); }
 	void decDx(float delta) { _movement.decDx(delta); }
