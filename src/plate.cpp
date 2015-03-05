@@ -340,14 +340,11 @@ void plate::erode(float lower_bound)
   vector<uint32_t> sources_data;  
   vector<uint32_t>* sources = &sources_data;  
 
-  float* tmp = new float[_bounds.area()];
-  map.copy_raw_to(tmp);
-
+  HeightMap tmpHm(map);
   findRiverSources(lower_bound, sources);
-
-  HeightMap tmpHm(_bounds.width(), _bounds.height());
-  tmpHm.from(tmp);
   flowRivers(lower_bound, sources, tmpHm);
+
+  float* tmp = new float[_bounds.area()];
   tmpHm.copy_raw_to(tmp);  
 
   // Add random noise (10 %) to heightmap.
@@ -362,102 +359,104 @@ void plate::erode(float lower_bound)
   _mass.reset();
 
   for (uint32_t y = 0; y < _bounds.height(); ++y)
+  {
     for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
-    const uint32_t index = y * _bounds.width() + x;
-    _mass.addPoint(x, y, map[index]);    
-    tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
+        const uint32_t index = y * _bounds.width() + x;
+        _mass.addPoint(x, y, map[index]);    
+        tmp[index] += map[index]; // Careful not to overwrite earlier amounts.
 
-    if (map[index] < lower_bound)
-        continue;
+        if (map[index] < lower_bound)
+            continue;
 
-    float w_crust, e_crust, n_crust, s_crust;
-    uint32_t w, e, n, s;
-    calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
-        w, e, n, s);
+        float w_crust, e_crust, n_crust, s_crust;
+        uint32_t w, e, n, s;
+        calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
+            w, e, n, s);
 
-    // This location has no neighbours (ARTIFACT!) or it is the lowest
-    // part of its area. In either case the work here is done.
-    if (w_crust + e_crust + n_crust + s_crust == 0)
-        continue;
+        // This location has no neighbours (ARTIFACT!) or it is the lowest
+        // part of its area. In either case the work here is done.
+        if (w_crust + e_crust + n_crust + s_crust == 0)
+            continue;
 
-    // The steeper the slope, the more water flows along it.
-    // The more downhill (sources), the more water flows to here.
-    // 1+1+10 = 12, avg = 4, stdev = sqrt((3*3+3*3+6*6)/3) = 4.2, var = 18,
-    //  1*1+1*1+10*10 = 102, 102/4.2=24
-    // 1+4+7 = 12, avg = 4, stdev = sqrt((3*3+0*0+3*3)/3) = 2.4, var = 6,
-    //  1*1+4*4+7*7 = 66, 66/2.4 = 27
-    // 4+4+4 = 12, avg = 4, stdev = sqrt((0*0+0*0+0*0)/3) = 0, var = 0,
-    //  4*4+4*4+4*4 = 48, 48/0 = inf -> 48
-    // If there's a source slope of height X then it will always cause
-    // water erosion of amount Y. Then again from one spot only so much
-    // water can flow.
-    // Thus, the calculated non-linear flow value for this location is
-    // multiplied by the "water erosion" constant.
-    // The result is max(result, 1.0). New height of this location could
-    // be e.g. h_lowest + (1 - 1 / result) * (h_0 - h_lowest).
+        // The steeper the slope, the more water flows along it.
+        // The more downhill (sources), the more water flows to here.
+        // 1+1+10 = 12, avg = 4, stdev = sqrt((3*3+3*3+6*6)/3) = 4.2, var = 18,
+        //  1*1+1*1+10*10 = 102, 102/4.2=24
+        // 1+4+7 = 12, avg = 4, stdev = sqrt((3*3+0*0+3*3)/3) = 2.4, var = 6,
+        //  1*1+4*4+7*7 = 66, 66/2.4 = 27
+        // 4+4+4 = 12, avg = 4, stdev = sqrt((0*0+0*0+0*0)/3) = 0, var = 0,
+        //  4*4+4*4+4*4 = 48, 48/0 = inf -> 48
+        // If there's a source slope of height X then it will always cause
+        // water erosion of amount Y. Then again from one spot only so much
+        // water can flow.
+        // Thus, the calculated non-linear flow value for this location is
+        // multiplied by the "water erosion" constant.
+        // The result is max(result, 1.0). New height of this location could
+        // be e.g. h_lowest + (1 - 1 / result) * (h_0 - h_lowest).
 
-    // Calculate the difference in height between this point and its
-    // nbours that are lower than this point.
-    float w_diff = map[index] - w_crust;
-    float e_diff = map[index] - e_crust;
-    float n_diff = map[index] - n_crust;
-    float s_diff = map[index] - s_crust;
+        // Calculate the difference in height between this point and its
+        // nbours that are lower than this point.
+        float w_diff = map[index] - w_crust;
+        float e_diff = map[index] - e_crust;
+        float n_diff = map[index] - n_crust;
+        float s_diff = map[index] - s_crust;
 
-    float min_diff = w_diff;
-    min_diff -= (min_diff - e_diff) * (e_diff < min_diff);
-    min_diff -= (min_diff - n_diff) * (n_diff < min_diff);
-    min_diff -= (min_diff - s_diff) * (s_diff < min_diff);
+        float min_diff = w_diff;
+        min_diff -= (min_diff - e_diff) * (e_diff < min_diff);
+        min_diff -= (min_diff - n_diff) * (n_diff < min_diff);
+        min_diff -= (min_diff - s_diff) * (s_diff < min_diff);
 
-    // Calculate the sum of difference between lower neighbours and
-    // the TALLEST lower neighbour.
-    float diff_sum = (w_diff - min_diff) * (w_crust > 0) +
-                     (e_diff - min_diff) * (e_crust > 0) +
-                     (n_diff - min_diff) * (n_crust > 0) +
-                     (s_diff - min_diff) * (s_crust > 0);
+        // Calculate the sum of difference between lower neighbours and
+        // the TALLEST lower neighbour.
+        float diff_sum = (w_diff - min_diff) * (w_crust > 0) +
+                         (e_diff - min_diff) * (e_crust > 0) +
+                         (n_diff - min_diff) * (n_crust > 0) +
+                         (s_diff - min_diff) * (s_crust > 0);
 
-    // Erosion difference sum is negative!
-    assert(diff_sum >= 0);
+        // Erosion difference sum is negative!
+        assert(diff_sum >= 0);
 
-    if (diff_sum < min_diff)
-    {
-        // There's NOT enough room in neighbours to contain all the
-        // crust from this peak so that it would be as tall as its
-        // tallest lower neighbour. Thus first step is make ALL
-        // lower neighbours and this point equally tall.
-        tmp[w] += (w_diff - min_diff) * (w_crust > 0);
-        tmp[e] += (e_diff - min_diff) * (e_crust > 0);
-        tmp[n] += (n_diff - min_diff) * (n_crust > 0);
-        tmp[s] += (s_diff - min_diff) * (s_crust > 0);
-        tmp[index] -= min_diff;
+        if (diff_sum < min_diff)
+        {
+            // There's NOT enough room in neighbours to contain all the
+            // crust from this peak so that it would be as tall as its
+            // tallest lower neighbour. Thus first step is make ALL
+            // lower neighbours and this point equally tall.
+            tmp[w] += (w_diff - min_diff) * (w_crust > 0);
+            tmp[e] += (e_diff - min_diff) * (e_crust > 0);
+            tmp[n] += (n_diff - min_diff) * (n_crust > 0);
+            tmp[s] += (s_diff - min_diff) * (s_crust > 0);
+            tmp[index] -= min_diff;
 
-        min_diff -= diff_sum;
+            min_diff -= diff_sum;
 
-        // Spread the remaining crust equally among all lower nbours.
-        min_diff /= 1 + (w_crust > 0) + (e_crust > 0) +
-            (n_crust > 0) + (s_crust > 0);
+            // Spread the remaining crust equally among all lower nbours.
+            min_diff /= 1 + (w_crust > 0) + (e_crust > 0) +
+                (n_crust > 0) + (s_crust > 0);
 
-        tmp[w] += min_diff * (w_crust > 0);
-        tmp[e] += min_diff * (e_crust > 0);
-        tmp[n] += min_diff * (n_crust > 0);
-        tmp[s] += min_diff * (s_crust > 0);
-        tmp[index] += min_diff;
+            tmp[w] += min_diff * (w_crust > 0);
+            tmp[e] += min_diff * (e_crust > 0);
+            tmp[n] += min_diff * (n_crust > 0);
+            tmp[s] += min_diff * (s_crust > 0);
+            tmp[index] += min_diff;
+        }
+        else
+        {
+            float unit = min_diff / diff_sum;
+
+            // Remove all crust from this location making it as tall as
+            // its tallest lower neighbour.
+            tmp[index] -= min_diff;
+
+            // Spread all removed crust among all other lower neighbours.
+            tmp[w] += unit * (w_diff - min_diff) * (w_crust > 0);
+            tmp[e] += unit * (e_diff - min_diff) * (e_crust > 0);
+            tmp[n] += unit * (n_diff - min_diff) * (n_crust > 0);
+            tmp[s] += unit * (s_diff - min_diff) * (s_crust > 0);
+        }
     }
-    else
-    {
-        float unit = min_diff / diff_sum;
-
-        // Remove all crust from this location making it as tall as
-        // its tallest lower neighbour.
-        tmp[index] -= min_diff;
-
-        // Spread all removed crust among all other lower neighbours.
-        tmp[w] += unit * (w_diff - min_diff) * (w_crust > 0);
-        tmp[e] += unit * (e_diff - min_diff) * (e_crust > 0);
-        tmp[n] += unit * (n_diff - min_diff) * (n_crust > 0);
-        tmp[s] += unit * (s_diff - min_diff) * (s_crust > 0);
-    }
-    }
+  }
 
   map.from(tmp);
 
