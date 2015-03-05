@@ -52,9 +52,6 @@ public:
 
 	void growHeight(int d);
 
-	/// Return a rectangle representing the Bounds inside the world.
-	Platec::Rectangle asRect() const;
-
 	uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
 
 	/// Translate world coordinates into offset within plate's height map.
@@ -70,6 +67,9 @@ public:
 	uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 	
 private:
+
+	/// Return a rectangle representing the Bounds inside the world.
+	Platec::Rectangle asRect() const;
 
 	const WorldDimension _worldDimension;
 	FloatPoint _position;
