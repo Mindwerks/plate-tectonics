@@ -260,7 +260,7 @@ void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
   }
 }
 
-void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, float* tmp)
+void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp)
 {
   vector<uint32_t> sinks_data;
   vector<uint32_t>* sinks = &sinks_data;
@@ -345,7 +345,10 @@ void plate::erode(float lower_bound)
 
   findRiverSources(lower_bound, sources);
 
-  flowRivers(lower_bound, sources, tmp);
+  HeightMap tmpHm(_bounds.width(), _bounds.height());
+  tmpHm.from(tmp);
+  flowRivers(lower_bound, sources, tmpHm);
+  tmpHm.copy_raw_to(tmp);  
 
   // Add random noise (10 %) to heightmap.
   for (uint32_t i = 0; i < _bounds.area(); ++i)
