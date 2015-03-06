@@ -38,3 +38,19 @@ TEST(Movement, ApplyFrictionWithNullMass)
 	mov.applyFriction(7.2f, 0.0f);
 	EXPECT_FLOAT_EQ(0.0f, mov.getVelocity());
 }
+
+TEST(Movement, Move)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+
+	mov.move();
+	EXPECT_FLOAT_EQ(-0.28745356f, mov.velX());
+	EXPECT_FLOAT_EQ(-0.95779467f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());	
+}
