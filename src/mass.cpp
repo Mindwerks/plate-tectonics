@@ -91,12 +91,6 @@ bool Mass::null() const
     return mass <= 0;
 }
 
-void Mass::reset()
-{
-    mass = 0;
-        cx = cy = 0;
-}
-
 void Mass::addPoint(uint32_t x, uint32_t y, float crust)
 {
     if (crust < 0) throw runtime_error("Crust should be not negative");
@@ -106,14 +100,6 @@ void Mass::addPoint(uint32_t x, uint32_t y, float crust)
     cy += y * crust;
     _totalX += x * crust;
     _totalY += y * crust;
-}
-
-void Mass::modifyPoint(uint32_t x, uint32_t y, float crust)
-{
-    mass += crust;
-    _totalX += x * crust;
-    _totalY += y * crust;
-    redistribute();
 }
 
 void Mass::redistribute()

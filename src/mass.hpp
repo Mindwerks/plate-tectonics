@@ -34,12 +34,10 @@ public:
 	float getMass() const;
 	float getCx() const;
 	float getCy() const;
-	bool null() const;
-	void reset();
-	void addPoint(uint32_t x, uint32_t y, float crust);
-	void modifyPoint(uint32_t x, uint32_t y, float crust);
-	void redistribute();
+	bool null() const;	
 private:
+	void addPoint(uint32_t x, uint32_t y, float crust);
+	void redistribute();
 	float mass;           ///< Amount of crust that constitutes the plate.
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 	float _totalX, _totalY;	
