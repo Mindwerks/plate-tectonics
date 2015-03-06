@@ -15,6 +15,12 @@ MassBuilder::MassBuilder(const float* m, const Bounds& bounds)
     }
 }
 
+MassBuilder::MassBuilder()
+        : mass(0), cx(0), cy(0)
+{
+
+}
+
 void MassBuilder::addPoint(uint32_t x, uint32_t y, float crust)
 {
     if (crust < 0) throw runtime_error("Crust should be not negative");
@@ -26,7 +32,7 @@ void MassBuilder::addPoint(uint32_t x, uint32_t y, float crust)
 
 Mass MassBuilder::build()
 {
-    if (mass > 0) {
+    if (mass <= 0) {
         return Mass(0, 0, 0);
     } else {
         return Mass(mass, cx/mass, cy/mass);

@@ -17,6 +17,7 @@ class MassBuilder
 {
 public:
 	MassBuilder(const float* m, const Bounds& bounds);
+	MassBuilder();
 	void addPoint(uint32_t x, uint32_t y, float crust);
 	Mass build();
 private:

@@ -352,14 +352,14 @@ void plate::erode(float lower_bound)
 
   map = tmpHm;
   tmpHm.set_all(0.0f);
-  _mass.reset();
+  MassBuilder massBuilder;
 
   for (uint32_t y = 0; y < _bounds.height(); ++y)
   {
     for (uint32_t x = 0; x < _bounds.width(); ++x)
     {
         const uint32_t index = y * _bounds.width() + x;
-        _mass.addPoint(x, y, map[index]);    
+        massBuilder.addPoint(x, y, map[index]);
         tmpHm[index] += map[index]; // Careful not to overwrite earlier amounts.
 
         if (map[index] < lower_bound)
@@ -456,7 +456,7 @@ void plate::erode(float lower_bound)
 
   map = tmpHm;
 
-  _mass.redistribute();
+  _mass = massBuilder.build();
 }
 
 void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* ratio) const
