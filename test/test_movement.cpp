@@ -54,3 +54,47 @@ TEST(Movement, Move)
 	EXPECT_FLOAT_EQ(-0.95779467f, mov.velY());
 	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());	
 }
+
+TEST(Movement, VelocityOnXNoParams)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velocityOnX());	
+}
+
+TEST(Movement, VelocityOnYNoParams)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velocityOnY());	
+}
+
+TEST(Movement, VelocityOnXOneParam)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+	EXPECT_FLOAT_EQ(-2.9389676f, mov.velocityOnX(10.0));	
+}
+
+TEST(Movement, VelocityOnYOneParam)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+	EXPECT_FLOAT_EQ(-9.5583719f, mov.velocityOnY(10.0));	
+}
