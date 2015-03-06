@@ -98,3 +98,14 @@ TEST(Movement, VelocityOnYOneParam)
 	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
 	EXPECT_FLOAT_EQ(-9.5583719f, mov.velocityOnY(10.0));	
 }
+
+TEST(Movement, Dot)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
+	EXPECT_FLOAT_EQ(-3.45530509f, mov.dot(2.0, 3.0));
+}
