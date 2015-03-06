@@ -114,6 +114,9 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     //       Drawbacks:
     //           Additional logic required
     //           Might place crust on other continent on same plate!
+    const uint32_t worldX = x;
+    const uint32_t worldY = y;
+    p_assert(_worldDimension.contains(worldX, worldY),"(plate::addCrustBySubduction)");
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
 
     // Take vector difference only between plates that move more or less
@@ -144,6 +147,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
             map[index] += z;
             _mass.incMass(z);
+            //_mass.modifyPoint(worldX, worldY, z);
         }
     }
 }

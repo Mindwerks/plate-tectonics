@@ -44,13 +44,13 @@ Mass MassBuilder::build()
 // ----------------------------------------------
 
 Mass::Mass(float mass_, float cx_, float cy_)
-        : mass(mass_), cx(cx_), cy(cy_)
+        : mass(mass_), cx(cx_), cy(cy_), _totalX(0), _totalY(0)
 {
 
 }
 
 Mass::Mass(const float* m, const Bounds& bounds)
-        : mass(0), cx(0), cy(0)
+        : mass(0), cx(0), cy(0), _totalX(0), _totalY(0)
 {
     uint32_t k;
     for (uint32_t y = k = 0; y < bounds.height(); ++y) {
@@ -104,12 +104,22 @@ void Mass::addPoint(uint32_t x, uint32_t y, float crust)
     // Update the center coordinates weighted by mass.
     cx += x * crust;
     cy += y * crust;
+    _totalX += x * crust;
+    _totalY += y * crust;
+}
+
+void Mass::modifyPoint(uint32_t x, uint32_t y, float crust)
+{
+    mass += crust;
+    _totalX += x * crust;
+    _totalY += y * crust;
+    redistribute();
 }
 
 void Mass::redistribute()
 {
     if (mass > 0) {
-        cx /= mass;
-        cy /= mass;
+        cx = _totalX / mass;
+        cy = _totalY / mass;
     }
 }
