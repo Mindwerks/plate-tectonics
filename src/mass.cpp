@@ -4,7 +4,7 @@
 // MassBuilder
 // ----------------------------------------------
 
-MassBuilder::MassBuilder(const float* m, const Bounds& bounds)
+/*MassBuilder::MassBuilder(const float* m, const Bounds& bounds)
         : mass(0), cx(0), cy(0)
 {
     uint32_t k;
@@ -13,7 +13,7 @@ MassBuilder::MassBuilder(const float* m, const Bounds& bounds)
             addPoint(x, y, m[k]);
         }
     }
-}
+}*/
 
 MassBuilder::MassBuilder()
         : mass(0), cx(0), cy(0)

@@ -16,7 +16,8 @@ class Mass;
 class MassBuilder
 {
 public:
-	MassBuilder(const float* m, const Bounds& bounds);
+	// Deprecated: pass HeightMap instead
+	//MassBuilder(const float* m, const Bounds& bounds);
 	MassBuilder();
 	void addPoint(uint32_t x, uint32_t y, float crust);
 	Mass build();
@@ -29,6 +30,7 @@ class Mass
 {
 public:
 	Mass(float mass_, float cx_, float cy_);
+	// Deprecated: pass HeightMap instead
 	Mass(const float* m, const Bounds& bounds);
 	void incMass(float delta);
 	float getMass() const;
