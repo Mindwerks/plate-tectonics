@@ -16,8 +16,8 @@ class Mass;
 class MassBuilder
 {
 public:
-	// Deprecated: pass HeightMap instead
-	MassBuilder(const float* m, const Bounds& bounds);
+	// FIXME: take a HeightMap instead of float*
+	MassBuilder(const float* m, const Dimension& dimension);
 	MassBuilder();
 	void addPoint(uint32_t x, uint32_t y, float crust);
 	Mass build();

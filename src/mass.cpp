@@ -4,12 +4,12 @@
 // MassBuilder
 // ----------------------------------------------
 
-MassBuilder::MassBuilder(const float* m, const Bounds& bounds)
+MassBuilder::MassBuilder(const float* m, const Dimension& dimension)
         : mass(0), cx(0), cy(0)
 {
     uint32_t k;
-    for (uint32_t y = k = 0; y < bounds.height(); ++y) {
-        for (uint32_t x = 0; x < bounds.width(); ++x, ++k) {
+    for (uint32_t y = k = 0; y < dimension.getHeight(); ++y) {
+        for (uint32_t x = 0; x < dimension.getWidth(); ++x, ++k) {
             addPoint(x, y, m[k]);
         }
     }
@@ -71,7 +71,7 @@ float Mass::getCx() const
 float Mass::getCy() const
 {
     if (null()) throw runtime_error("(Mass::getCy)");
-    return cx;
+    return cy;
 }
 
 bool Mass::null() const
