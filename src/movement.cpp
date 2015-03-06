@@ -94,32 +94,32 @@ float Movement::dot(float dx_, float dy_) const
     return vx * dx_ + vy * dy_;
 }
 
-float Movement::relativeUnitVelocityOnX(const Movement& m) const
+float Movement::relativeUnitVelocityOnX(float otherVx) const
 {
-    return vx - m.vx;
+    return vx - otherVx;
 }
 
-float Movement::relativeUnitVelocityOnY(const Movement& m) const
+float Movement::relativeUnitVelocityOnY(float otherVy) const
 {
-    return vy - m.vy;
+    return vy - otherVy;
 }
 
 float Movement::momentum(const Mass& mass) const throw() { 
     return mass.getMass() * velocity; 
 }
 
-void Movement::collide(plate& thisPlate, plate& p, 
-    Movement& thisMovement, Movement& otherMovement, 
+void Movement::collide(const Mass& thisMass, 
+    plate& other, 
     uint32_t wx, uint32_t wy, float coll_mass)
 {
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
     uint32_t apx = wx, apy = wy, bpx = wx, bpy = wy;
     float ap_dx, ap_dy, bp_dx, bp_dy, nx, ny;
-    ap_dx = (int)apx - (int)thisPlate.getCx();
-    ap_dy = (int)apy - (int)thisPlate.getCy();
-    bp_dx = (int)bpx - (int)p.getCx();
-    bp_dy = (int)bpy - (int)p.getCy();
+    ap_dx = (int)apx - (int)thisMass.getCx();
+    ap_dy = (int)apy - (int)thisMass.getCy();
+    bp_dx = (int)bpx - (int)other.getCx();
+    bp_dy = (int)bpy - (int)other.getCy();
     nx = ap_dx - bp_dx;
     ny = ap_dy - bp_dy;
 
@@ -134,8 +134,8 @@ void Movement::collide(plate& thisPlate, plate& p,
 
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    const float rel_vx = thisMovement.relativeUnitVelocityOnX(otherMovement);
-    const float rel_vy = thisMovement.relativeUnitVelocityOnY(otherMovement);
+    const float rel_vx = relativeUnitVelocityOnX(other.getVelX());
+    const float rel_vy = relativeUnitVelocityOnY(other.getVelY());
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
@@ -148,7 +148,7 @@ void Movement::collide(plate& thisPlate, plate& p,
 
     // Calculate the denominator of impulse: n . n * (1 / m_1 + 1 / m_2).
     // Use the mass of the colliding crust for the "donator" plate.
-    float denom = (nx * nx + ny * ny) * (1.0/p.getMass() + 1.0/coll_mass);
+    float denom = (nx * nx + ny * ny) * (1.0/other.getMass() + 1.0/coll_mass);
 
     // Calculate force of impulse.
     float J = -(1 + coeff_rest) * rel_dot_n / denom;
@@ -156,10 +156,10 @@ void Movement::collide(plate& thisPlate, plate& p,
     // Compute final change of trajectory.
     // The plate that is the "giver" of the impulse should receive a
     // force according to its pre-collision mass, not the current mass!
-    dx += nx * J / thisPlate.getMass();
-    dy += ny * J / thisPlate.getMass();
-    p.decDx( nx * J / (coll_mass + p.getMass()) );
-    p.decDy( ny * J / (coll_mass + p.getMass()) );
+    dx += nx * J / thisMass.getMass();
+    dy += ny * J / thisMass.getMass();
+    other.decDx( nx * J / (coll_mass + other.getMass()) );
+    other.decDy( ny * J / (coll_mass + other.getMass()) );
 
     // In order to prove that the code above works correctly, here is an
     // example calculation with ball A (mass 10) moving right at velocity

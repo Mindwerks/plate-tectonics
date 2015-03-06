@@ -1,4 +1,6 @@
 #include "movement.hpp"
+#include "mass.hpp"
+#include "plate.hpp"
 #include "gtest/gtest.h"
 
 TEST(Movement, Constructor)
@@ -109,3 +111,27 @@ TEST(Movement, Dot)
 	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
 	EXPECT_FLOAT_EQ(-3.45530509f, mov.dot(2.0, 3.0));
 }
+
+/*TEST(Movement, Collide)
+{
+	SimpleRandom sr(789890);
+	WorldDimension wd(500, 400);
+	Movement mov(sr, wd);
+
+	EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
+	EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
+
+	// the collide method affects dx, dy which have an effect on the next move
+	Mass thisMass(100.0, 70.0, 90.0);
+
+	plate otherPlate(234456, const float* m, 
+		  uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
+	      0, wd);
+	
+	mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
+	mov.move();
+	EXPECT_FLOAT_EQ(-0.28745356f, mov.velX());
+	EXPECT_FLOAT_EQ(-0.95779467f, mov.velY());
+	EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());	
+}*/

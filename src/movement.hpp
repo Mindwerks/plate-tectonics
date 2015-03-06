@@ -34,12 +34,12 @@ public:
     float getVelocity() const { return velocity; };
     float velX() const throw() { return vx; }
     float velY() const throw() { return vy; }
-    void collide(plate& thisPlate, plate& p, Movement& thisMovement, Movement& otherMovement, uint32_t wx, uint32_t wy, float coll_mass);
+    void collide(const Mass& thisMass, plate& p, uint32_t wx, uint32_t wy, float coll_mass);
     void decDx(float delta) { dx -= delta; }
     void decDy(float delta) { dy -= delta; }
 private:
-    float relativeUnitVelocityOnX(const Movement& m) const;
-    float relativeUnitVelocityOnY(const Movement& m) const;
+    float relativeUnitVelocityOnX(float otherVx) const;
+    float relativeUnitVelocityOnY(float otherVy) const;
 
     SimpleRandom _randsource;
     const WorldDimension _worldDimension;

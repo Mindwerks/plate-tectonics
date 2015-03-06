@@ -221,7 +221,7 @@ void plate::applyFriction(float deformed_mass)
 
 void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
 {
-    _movement.collide(*this, p, this->_movement, p._movement, wx, wy, coll_mass);
+    _movement.collide(this->_mass, p, wx, wy, coll_mass);
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
