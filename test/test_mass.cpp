@@ -49,3 +49,21 @@ TEST(Mass, Null)
     Mass mass2(8.5f, 7.6f, 27.5f);
     ASSERT_EQ(false, mass2.null());
 }
+
+TEST(Mass, IncMass)
+{
+    Mass mass(8.5f, 7.6f, 27.5f);
+    EXPECT_FLOAT_EQ(8.5f, mass.getMass());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
+
+    mass.incMass(10.0f);
+    EXPECT_FLOAT_EQ(18.5f, mass.getMass());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
+
+    mass.incMass(-18.0f);
+    EXPECT_FLOAT_EQ(0.5f, mass.getMass());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
+}
