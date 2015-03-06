@@ -40,3 +40,12 @@ TEST(Mass, Constructor)
     EXPECT_FLOAT_EQ(7.6f, mass2.getCx());
     EXPECT_FLOAT_EQ(27.5f, mass2.getCy());
 }
+
+TEST(Mass, Null)
+{
+    Mass mass1(0.0f, 7.5f, 8.5f);
+    ASSERT_EQ(true, mass1.null());
+
+    Mass mass2(8.5f, 7.6f, 27.5f);
+    ASSERT_EQ(false, mass2.null());
+}
