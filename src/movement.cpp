@@ -18,6 +18,10 @@ void Movement::applyFriction(float deformed_mass, float mass)
     if (deformed_mass < 0 || mass < 0) {
         throw runtime_error("(Movement::applyFriction) negative masses make not sense");
     }
+    if (0.0f == mass) {
+        velocity = 0;
+        return;
+    }
     float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
     vel_dec = vel_dec < velocity ? vel_dec : velocity;
 
