@@ -17,6 +17,7 @@
 typedef uint32_t ContinentId;
 
 class plate;
+class Mass;
 
 class Movement
 {
@@ -29,9 +30,7 @@ public:
     float velocityOnX(float length) const;
     float velocityOnY(float length) const;
     float dot(float dx_, float dy_) const;
-    float relativeUnitVelocityOnX(const Movement& m) const;
-    float relativeUnitVelocityOnY(const Movement& m) const;
-    float momentum(float mass) const throw() { return mass * velocity; }
+    float momentum(const Mass& mass) const throw();
     float getVelocity() const { return velocity; };
     float velX() const throw() { return vx; }
     float velY() const throw() { return vy; }
@@ -39,6 +38,9 @@ public:
     void decDx(float delta) { dx -= delta; }
     void decDy(float delta) { dy -= delta; }
 private:
+    float relativeUnitVelocityOnX(const Movement& m) const;
+    float relativeUnitVelocityOnY(const Movement& m) const;
+
     SimpleRandom _randsource;
     const WorldDimension _worldDimension;
     float velocity;       ///< Plate's velocity.

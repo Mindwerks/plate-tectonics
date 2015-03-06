@@ -196,7 +196,7 @@ class plate
 	void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
 	float getMass() const throw() { return _mass.getMass(); }
-	float getMomentum() const throw() { return _movement.momentum(_mass.getMass()); }
+	float getMomentum() const throw() { return _movement.momentum(_mass); }
 	uint32_t getHeight() const throw() { return _bounds.height(); }
 	uint32_t  getLeftAsUint() const throw() { return _bounds.leftAsUint(); }
 	uint32_t  getTopAsUint() const throw() { return _bounds.topAsUint(); }

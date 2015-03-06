@@ -1,5 +1,6 @@
 #include "movement.hpp"
 #include "plate.hpp"
+#include "mass.hpp"
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
@@ -101,6 +102,10 @@ float Movement::relativeUnitVelocityOnX(const Movement& m) const
 float Movement::relativeUnitVelocityOnY(const Movement& m) const
 {
     return vy - m.vy;
+}
+
+float Movement::momentum(const Mass& mass) const throw() { 
+    return mass.getMass() * velocity; 
 }
 
 void Movement::collide(plate& thisPlate, plate& p, 
