@@ -2,19 +2,6 @@
 #include "rectangle.hpp"
 #include "utils.hpp"
 
-void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension)
-{
-    _x += dx;
-    _x += _x > 0 ? 0 : _worldDimension.getWidth();
-    _x -= _x < _worldDimension.getWidth() ? 0 : _worldDimension.getWidth();
-
-    _y += dy;
-    _y += _y > 0 ? 0 : _worldDimension.getHeight();
-    _y -= _y < _worldDimension.getHeight() ? 0 : _worldDimension.getHeight();
-
-    p_assert(_worldDimension.contains(*this), "(FloatPoint::shift)");
-}
-
 namespace Platec {
 
 /// Return a valid index or BAD_INDEX
