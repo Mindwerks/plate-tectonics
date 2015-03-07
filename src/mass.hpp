@@ -32,8 +32,7 @@ public:
 	Mass(float mass_, float cx_, float cy_);
 	void incMass(float delta);
 	float getMass() const;
-	float getCx() const;
-	float getCy() const;
+	FloatPoint massCenter() const;
 	bool null() const;	
 private:
 	float mass;           ///< Amount of crust that constitutes the plate.

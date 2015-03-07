@@ -62,16 +62,9 @@ float Mass::getMass() const
     return mass;
 }
 
-float Mass::getCx() const
+FloatPoint Mass::massCenter() const
 {
-    if (null()) throw runtime_error("(Mass::getCx)");
-    return cx;
-}
-
-float Mass::getCy() const
-{
-    if (null()) throw runtime_error("(Mass::getCy)");
-    return cy;
+    return FloatPoint(cx, cy);
 }
 
 bool Mass::null() const

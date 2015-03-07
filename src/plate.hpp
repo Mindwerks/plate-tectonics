@@ -205,13 +205,12 @@ class plate
 	float getVelY() const throw() { return _movement.velY(); }
 	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return _mass.null(); }
-	float getCx() const { return _mass.getCx(); }
-	float getCy() const { return _mass.getCy(); }
+	FloatPoint getMassCenter() const { return _mass.massCenter(); }
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
 	// visible for testing
-	inline void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
+	void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
     		float& w_crust, float& e_crust, float& n_crust, float& s_crust,
     		uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
 
