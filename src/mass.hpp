@@ -34,6 +34,9 @@ public:
 	float getMass() const;
 	float getCx() const;
 	float getCy() const;
+	FloatPoint massCenter() const {
+		return FloatPoint(cx, cy);
+	}
 	bool null() const;	
 private:
 	float mass;           ///< Amount of crust that constitutes the plate.

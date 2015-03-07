@@ -115,8 +115,8 @@ void Movement::collide(const Mass& thisMass,
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
     float ap_dx, ap_dy, bp_dx, bp_dy, nx, ny;
-    ap_dx = (int)wx - (int)thisMass.getCx();
-    ap_dy = (int)wy - (int)thisMass.getCy();
+    ap_dx = (int)wx - (int)thisMass.massCenter().getX();
+    ap_dy = (int)wy - (int)thisMass.massCenter().getY();
     bp_dx = (int)wx - (int)other.getCx();
     bp_dy = (int)wy - (int)other.getCy();
     nx = ap_dx - bp_dx;

@@ -207,6 +207,9 @@ class plate
 	bool   isEmpty() const throw() { return _mass.null(); }
 	float getCx() const { return _mass.getCx(); }
 	float getCy() const { return _mass.getCy(); }
+	FloatPoint massCenter() const {
+		return _mass.massCenter();
+	}
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
