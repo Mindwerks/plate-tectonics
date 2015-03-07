@@ -10,8 +10,8 @@ TEST(MassBuilder, ConstructorFromHeightmap)
     Dimension dim(5, 4);
     MassBuilder mb(heightmap, dim);
     EXPECT_FLOAT_EQ(17.5f, mb.build().getMass());
-    EXPECT_FLOAT_EQ(2.4114285714285715f, mb.build().massCenter().getX());
-    EXPECT_FLOAT_EQ(0.6514285714285715f, mb.build().massCenter().getY());
+    EXPECT_FLOAT_EQ(2.4114285714285715f, mb.build().getCx());
+    EXPECT_FLOAT_EQ(0.6514285714285715f, mb.build().getCy());
 }
 
 TEST(MassBuilder, AddPoint)
@@ -21,13 +21,13 @@ TEST(MassBuilder, AddPoint)
 
     mb.addPoint(10, 10, 123.0);
     EXPECT_FLOAT_EQ(123.0f, mb.build().getMass());
-    EXPECT_FLOAT_EQ(10.0f, mb.build().massCenter().getX());
-    EXPECT_FLOAT_EQ(10.0f, mb.build().massCenter().getY());
+    EXPECT_FLOAT_EQ(10.0f, mb.build().getCx());
+    EXPECT_FLOAT_EQ(10.0f, mb.build().getCy());
 
     mb.addPoint(0, 5, 123.0);
     EXPECT_FLOAT_EQ(246.0f, mb.build().getMass());
-    EXPECT_FLOAT_EQ(5.0f, mb.build().massCenter().getX());
-    EXPECT_FLOAT_EQ(7.5f, mb.build().massCenter().getY());
+    EXPECT_FLOAT_EQ(5.0f, mb.build().getCx());
+    EXPECT_FLOAT_EQ(7.5f, mb.build().getCy());
 }
 
 TEST(Mass, Constructor)
@@ -37,8 +37,8 @@ TEST(Mass, Constructor)
 
     Mass mass2(8.5f, 7.6f, 27.5f);
     EXPECT_FLOAT_EQ(8.5f, mass2.getMass());
-    EXPECT_FLOAT_EQ(7.6f, mass2.massCenter().getX());
-    EXPECT_FLOAT_EQ(27.5f, mass2.massCenter().getY());
+    EXPECT_FLOAT_EQ(7.6f, mass2.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass2.getCy());
 }
 
 TEST(Mass, Null)
@@ -54,16 +54,16 @@ TEST(Mass, IncMass)
 {
     Mass mass(8.5f, 7.6f, 27.5f);
     EXPECT_FLOAT_EQ(8.5f, mass.getMass());
-    EXPECT_FLOAT_EQ(7.6f, mass.massCenter().getX());
-    EXPECT_FLOAT_EQ(27.5f, mass.massCenter().getY());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
 
     mass.incMass(10.0f);
     EXPECT_FLOAT_EQ(18.5f, mass.getMass());
-    EXPECT_FLOAT_EQ(7.6f, mass.massCenter().getX());
-    EXPECT_FLOAT_EQ(27.5f, mass.massCenter().getY());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
 
     mass.incMass(-18.0f);
     EXPECT_FLOAT_EQ(0.5f, mass.getMass());
-    EXPECT_FLOAT_EQ(7.6f, mass.massCenter().getX());
-    EXPECT_FLOAT_EQ(27.5f, mass.massCenter().getY());
+    EXPECT_FLOAT_EQ(7.6f, mass.getCx());
+    EXPECT_FLOAT_EQ(27.5f, mass.getCy());
 }
