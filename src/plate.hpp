@@ -201,8 +201,16 @@ class plate
 	uint32_t  getLeftAsUint() const throw() { return _bounds.leftAsUint(); }
 	uint32_t  getTopAsUint() const throw() { return _bounds.topAsUint(); }
 	float getVelocity() const throw() { return _movement.getVelocity(); }
+
+	Platec::Vector velocityUnitVector() const {
+		return _movement.velocityUnitVector();
+	}
+
+	/// @Deprecated, use velocityUnitVector instead
 	float getVelX() const throw() { return _movement.velX(); }
+	/// @Deprecated, use velocityUnitVector instead
 	float getVelY() const throw() { return _movement.velY(); }
+	
 	uint32_t getWidth() const throw() { return _bounds.width(); }
 	bool   isEmpty() const throw() { return _mass.null(); }
 	float getCx() const { return _mass.getCx(); }

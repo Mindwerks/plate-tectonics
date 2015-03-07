@@ -117,8 +117,8 @@ void Movement::collide(const Mass& thisMass,
     float ap_dx, ap_dy, bp_dx, bp_dy, nx, ny;
     ap_dx = (int)wx - (int)thisMass.massCenter().getX();
     ap_dy = (int)wy - (int)thisMass.massCenter().getY();
-    bp_dx = (int)wx - (int)other.getCx();
-    bp_dy = (int)wy - (int)other.getCy();
+    bp_dx = (int)wx - (int)other.massCenter().getX();
+    bp_dy = (int)wy - (int)other.massCenter().getY();
     nx = ap_dx - bp_dx;
     ny = ap_dy - bp_dy;
 
@@ -133,8 +133,8 @@ void Movement::collide(const Mass& thisMass,
 
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    const float rel_vx = relativeUnitVelocityOnX(other.getVelX());
-    const float rel_vy = relativeUnitVelocityOnY(other.getVelY());
+    const float rel_vx = relativeUnitVelocityOnX(other.velocityUnitVector().x());
+    const float rel_vy = relativeUnitVelocityOnY(other.velocityUnitVector().y());
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
