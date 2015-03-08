@@ -71,6 +71,9 @@ public:
 
 namespace Platec {
 
+class IntVector;
+class FloatVector;
+
 class IntVector
 {
 public:
@@ -79,6 +82,9 @@ public:
     { }
     int x() const { return _x; }
     int y() const { return _y; }
+    static IntVector fromDistance(const IntPoint& a, const IntPoint& b);
+    float length() const;
+    FloatVector toUnitVector() const;
 private:
     int _x, _y;
 };    
@@ -93,12 +99,17 @@ public:
     { }
     float x() const { return _x; }
     float y() const { return _y; }
+    float length() const;
     IntVector toIntVector() const {
         return IntVector((int)_x, (int)_y);
     }
+    float dotProduct(const FloatVector& other) const;
 private:
     float _x, _y;
 };
+
+FloatVector operator-(const FloatVector& a, const FloatVector& b);
+FloatVector operator*(const FloatVector& v, float f);
 
 }
 

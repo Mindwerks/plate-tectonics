@@ -114,30 +114,22 @@ void Movement::collide(const Mass& thisMass,
 {
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
-    float nx, ny;
-    //nx = (int)other.massCenter().getX() - (int)thisMass.massCenter().getX();
-    //ny = (int)other.massCenter().getY() - (int)thisMass.massCenter().getY();
-    nx = (other.massCenter().toInt() - thisMass.massCenter().toInt()).getX();
-    ny = (other.massCenter().toInt() - thisMass.massCenter().toInt()).getY();
-
-    if (nx * nx + ny * ny <= 0) {
+    Platec::IntVector massCentersDistance = Platec::IntVector::fromDistance(
+            other.massCenter().toInt(), thisMass.massCenter().toInt());
+    if (massCentersDistance.length() <= 0) {
         return; // Avoid division by zero!
     }
-
-    // Scaling is required at last when impulses are added to plates!
-    float n_len = sqrt(nx * nx + ny * ny);
-    nx /= n_len;
-    ny /= n_len;
-
+    
+    // Scaling is required at last when impulses are added to plates!    
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    const float rel_vx = relativeUnitVelocityOnX(other.velocityUnitVector().x());
-    const float rel_vy = relativeUnitVelocityOnY(other.velocityUnitVector().y());
+    Platec::FloatVector collisionDirection = massCentersDistance.toUnitVector();
+    Platec::FloatVector relativeVelocity = velocityUnitVector() - other.velocityUnitVector();
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
     // Note that vector n must be a unit vector!
-    const float rel_dot_n = rel_vx * nx + rel_vy * ny;
+    const float rel_dot_n = collisionDirection.dotProduct(relativeVelocity);
 
     if (rel_dot_n <= 0) {
         return; // Exit if objects are moving away from each other.
@@ -145,7 +137,7 @@ void Movement::collide(const Mass& thisMass,
 
     // Calculate the denominator of impulse: n . n * (1 / m_1 + 1 / m_2).
     // Use the mass of the colliding crust for the "donator" plate.
-    float denom = (nx * nx + ny * ny) * (1.0/other.getMass() + 1.0/coll_mass);
+    float denom = collisionDirection.length() * collisionDirection.length() * (1.0/other.getMass() + 1.0/coll_mass);
 
     // Calculate force of impulse.
     float J = -(1 + coeff_rest) * rel_dot_n / denom;
@@ -153,10 +145,9 @@ void Movement::collide(const Mass& thisMass,
     // Compute final change of trajectory.
     // The plate that is the "giver" of the impulse should receive a
     // force according to its pre-collision mass, not the current mass!
-    dx += nx * J / thisMass.getMass();
-    dy += ny * J / thisMass.getMass();
-    other.decDx( nx * J / (coll_mass + other.getMass()) );
-    other.decDy( ny * J / (coll_mass + other.getMass()) );
+    dx += (collisionDirection * (J / thisMass.getMass())).x();
+    dy += (collisionDirection * (J / thisMass.getMass())).y();
+    other.decImpulse( collisionDirection * (J / (coll_mass + other.getMass())) );
 
     // In order to prove that the code above works correctly, here is an
     // example calculation with ball A (mass 10) moving right at velocity

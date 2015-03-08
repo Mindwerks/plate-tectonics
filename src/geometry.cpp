@@ -1,3 +1,4 @@
+#include <math.h>
 #include "geometry.hpp"
 
 //
@@ -193,8 +194,40 @@ uint32_t WorldDimension::largerSize() const
 
 namespace Platec {
 
+float IntVector::length() const {
+    float nx = _x;
+    float ny = _y;
+    return sqrt(nx * nx + ny * ny);
+}
+
+IntVector IntVector::fromDistance(const IntPoint& a, const IntPoint& b){
+    return IntVector(a.getX() - b.getX(), a.getY() - b.getY());
+}
+
 IntVector operator-(const IntVector& a, const IntVector& b) {
     return IntVector(a.x() - b.x(), a.y() - b.y());
+}
+
+FloatVector IntVector::toUnitVector() const {
+    return FloatVector(_x/length(), _y/length());
+}
+
+FloatVector operator-(const FloatVector& a, const FloatVector& b) {
+    return FloatVector(a.x() - b.x(), a.y() - b.y());
+}
+
+FloatVector operator*(const FloatVector& v, float f) {
+    return FloatVector(v.x() * f, v.y() * f);
+}
+
+float FloatVector::dotProduct(const FloatVector& other) const {
+    return x() * other.x() + y() * other.y();
+}
+
+float FloatVector::length() const {
+    float nx = _x;
+    float ny = _y;
+    return sqrt(nx * nx + ny * ny);
 }
 
 }

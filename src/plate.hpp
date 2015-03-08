@@ -218,6 +218,13 @@ class plate
 	FloatPoint massCenter() const {
 		return _mass.massCenter();
 	}
+
+	void decImpulse(const Platec::FloatVector& delta) {
+		_movement.decDx(delta.x());
+		_movement.decDy(delta.y());
+	}
+
+	// @Deprecated, use decImpulse instead
 	void decDx(float delta) { _movement.decDx(delta); }
 	void decDy(float delta) { _movement.decDy(delta); }
 
