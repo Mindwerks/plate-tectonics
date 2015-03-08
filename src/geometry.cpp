@@ -1,6 +1,28 @@
 #include "geometry.hpp"
 
 //
+// IntPoint
+//
+
+IntPoint::IntPoint(int x, int y)
+    : _x(x), _y(y)
+{ }
+
+int IntPoint::getX() const
+{
+    return _x;
+}
+
+int IntPoint::getY() const
+{
+    return _y;
+}
+
+IntPoint operator-(const IntPoint& a, const IntPoint& b) {
+    return IntPoint(a.getX() - b.getX(), a.getY() - b.getY());
+}
+
+//
 // FloatPoint
 //
 
@@ -170,5 +192,9 @@ uint32_t WorldDimension::largerSize() const
 
 
 namespace Platec {
+
+IntVector operator-(const IntVector& a, const IntVector& b) {
+    return IntVector(a.x() - b.x(), a.y() - b.y());
+}
 
 }

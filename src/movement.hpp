@@ -25,11 +25,11 @@ public:
     Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
     void applyFriction(float deformed_mass, float mass);
     void move();
-    Platec::Vector velocityUnitVector() const {
-        return Platec::Vector(vx, vy);
+    Platec::FloatVector velocityUnitVector() const {
+        return Platec::FloatVector(vx, vy);
     }
-    Platec::Vector velocityVector() const {
-        return Platec::Vector(vx * velocity, vy * velocity);
+    Platec::FloatVector velocityVector() const {
+        return Platec::FloatVector(vx * velocity, vy * velocity);
     }
     float velocityOnX() const;
     float velocityOnY() const;

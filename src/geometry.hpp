@@ -9,12 +9,26 @@ using namespace std;
 
 class WorldDimension;
 
+class IntPoint {
+public:
+    IntPoint(int x, int y);
+    int getX() const;
+    int getY() const;
+private:
+    int _x, _y;
+};
+
+IntPoint operator-(const IntPoint& a, const IntPoint& b);
+
 class FloatPoint {
 public:
     FloatPoint(float x, float y);
     float getX() const;
     float getY() const;
     void shift(float dx, float dy, const WorldDimension& _worldDimension);
+    IntPoint toInt() const {
+        return IntPoint((int)_x, (int)_y);
+    }
 private:
     float _x, _y;
 };
@@ -57,14 +71,31 @@ public:
 
 namespace Platec {
 
-class Vector
+class IntVector
 {
 public:
-    Vector(float x, float y)
+    IntVector(int x, int y)
+        : _x(x), _y(y)
+    { }
+    int x() const { return _x; }
+    int y() const { return _y; }
+private:
+    int _x, _y;
+};    
+
+IntVector operator-(const IntVector& a, const IntVector& b);
+
+class FloatVector
+{
+public:
+    FloatVector(float x, float y)
         : _x(x), _y(y)
     { }
     float x() const { return _x; }
     float y() const { return _y; }
+    IntVector toIntVector() const {
+        return IntVector((int)_x, (int)_y);
+    }
 private:
     float _x, _y;
 };

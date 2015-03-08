@@ -115,8 +115,10 @@ void Movement::collide(const Mass& thisMass,
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
     float nx, ny;
-    nx = (int)other.massCenter().getX() - (int)thisMass.massCenter().getX();
-    ny = (int)other.massCenter().getY() - (int)thisMass.massCenter().getY();
+    //nx = (int)other.massCenter().getX() - (int)thisMass.massCenter().getX();
+    //ny = (int)other.massCenter().getY() - (int)thisMass.massCenter().getY();
+    nx = (other.massCenter().toInt() - thisMass.massCenter().toInt()).getX();
+    ny = (other.massCenter().toInt() - thisMass.massCenter().toInt()).getY();
 
     if (nx * nx + ny * ny <= 0) {
         return; // Avoid division by zero!

@@ -202,7 +202,7 @@ class plate
 	uint32_t  getTopAsUint() const throw() { return _bounds.topAsUint(); }
 	float getVelocity() const throw() { return _movement.getVelocity(); }
 
-	Platec::Vector velocityUnitVector() const {
+	Platec::FloatVector velocityUnitVector() const {
 		return _movement.velocityUnitVector();
 	}
 
