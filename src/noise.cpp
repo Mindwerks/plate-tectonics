@@ -19,8 +19,6 @@ static uint32_t nearest_pow(uint32_t num)
 
 void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom randsource, bool useSimplex)
 {
-    // FIXME simplex has been disabled for now
-    //useSimplex = false;
 try {
     if (useSimplex) {
         simplexnoise(randsource.next(), tmp, 
