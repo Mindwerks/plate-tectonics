@@ -212,6 +212,10 @@ FloatVector IntVector::toUnitVector() const {
     return FloatVector(_x/length(), _y/length());
 }
 
+bool operator==(const FloatVector& a, const FloatVector& b) {
+    return a.x() == b.x() && a.y() == b.y();
+}
+
 FloatVector operator-(const FloatVector& a, const FloatVector& b) {
     return FloatVector(a.x() - b.x(), a.y() - b.y());
 }

@@ -108,6 +108,7 @@ private:
     float _x, _y;
 };
 
+bool operator==(const FloatVector& a, const FloatVector& b);
 FloatVector operator-(const FloatVector& a, const FloatVector& b);
 FloatVector operator*(const FloatVector& v, float f);
 

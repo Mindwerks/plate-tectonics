@@ -130,7 +130,6 @@ void Movement::collide(const IMass& thisMass,
     // Then get the projection of v_ab along collision vector.
     // Note that vector n must be a unit vector!
     const float rel_dot_n = collisionDirection.dotProduct(relativeVelocity);
-
     if (rel_dot_n <= 0) {
         return; // Exit if objects are moving away from each other.
     }
