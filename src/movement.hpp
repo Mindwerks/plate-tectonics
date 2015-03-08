@@ -16,10 +16,19 @@
 
 typedef uint32_t ContinentId;
 
+class IPlate;
 class plate;
+class IMass;
 class Mass;
 
-class Movement
+class IMovement
+{
+public:
+    virtual Platec::FloatVector velocityUnitVector() const = 0;
+    virtual void decImpulse(const Platec::FloatVector& delta) = 0;
+};
+
+class Movement : public IMovement
 {
 public:
     Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
@@ -42,9 +51,13 @@ public:
     float velX() const throw() { return vx; }
     /// @Deprecated, use velocityUnitVector instead
     float velY() const throw() { return vy; }
-    void collide(const Mass& thisMass, plate& p, uint32_t wx, uint32_t wy, float coll_mass);
+    void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
     void decDx(float delta) { dx -= delta; }
     void decDy(float delta) { dy -= delta; }
+    void decImpulse(const Platec::FloatVector& delta) {
+        dx -= delta.x();
+        dy -= delta.y();
+    };
 private:
     float relativeUnitVelocityOnX(float otherVx) const;
     float relativeUnitVelocityOnY(float otherVy) const;

@@ -26,7 +26,14 @@ private:
 	float cx, cy;         ///< X and Y components of the center of mass of plate.	
 };
 
-class Mass
+class IMass
+{
+public:
+	virtual float getMass() const = 0;
+	virtual FloatPoint massCenter() const = 0;
+};
+
+class Mass : public IMass
 {
 public:
 	Mass(float mass_, float cx_, float cy_);

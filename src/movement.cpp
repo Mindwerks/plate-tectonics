@@ -108,14 +108,14 @@ float Movement::momentum(const Mass& mass) const throw() {
     return mass.getMass() * velocity; 
 }
 
-void Movement::collide(const Mass& thisMass, 
-    plate& other, 
+void Movement::collide(const IMass& thisMass, 
+    IPlate& otherPlate, 
     uint32_t wx, uint32_t wy, float coll_mass)
 {
     const float coeff_rest = 0.0; // Coefficient of restitution.
                                   // 1 = fully elastic, 0 = stick together.
     Platec::IntVector massCentersDistance = Platec::IntVector::fromDistance(
-            other.massCenter().toInt(), thisMass.massCenter().toInt());
+            otherPlate.massCenter().toInt(), thisMass.massCenter().toInt());
     if (massCentersDistance.length() <= 0) {
         return; // Avoid division by zero!
     }
@@ -124,7 +124,7 @@ void Movement::collide(const Mass& thisMass,
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
     Platec::FloatVector collisionDirection = massCentersDistance.toUnitVector();
-    Platec::FloatVector relativeVelocity = velocityUnitVector() - other.velocityUnitVector();
+    Platec::FloatVector relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
@@ -137,7 +137,7 @@ void Movement::collide(const Mass& thisMass,
 
     // Calculate the denominator of impulse: n . n * (1 / m_1 + 1 / m_2).
     // Use the mass of the colliding crust for the "donator" plate.
-    float denom = collisionDirection.length() * collisionDirection.length() * (1.0/other.getMass() + 1.0/coll_mass);
+    float denom = collisionDirection.length() * collisionDirection.length() * (1.0/otherPlate.getMass() + 1.0/coll_mass);
 
     // Calculate force of impulse.
     float J = -(1 + coeff_rest) * rel_dot_n / denom;
@@ -147,7 +147,7 @@ void Movement::collide(const Mass& thisMass,
     // force according to its pre-collision mass, not the current mass!
     dx += (collisionDirection * (J / thisMass.getMass())).x();
     dy += (collisionDirection * (J / thisMass.getMass())).y();
-    other.decImpulse( collisionDirection * (J / (coll_mass + other.getMass())) );
+    otherPlate.decImpulse( collisionDirection * (J / (coll_mass + otherPlate.getMass())) );
 
     // In order to prove that the code above works correctly, here is an
     // example calculation with ball A (mass 10) moving right at velocity

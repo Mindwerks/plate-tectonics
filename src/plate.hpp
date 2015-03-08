@@ -31,7 +31,12 @@
 #include "mass.hpp"
 #include "segments.hpp"
 
-class plate
+class IPlate : public IMass, public IMovement
+{
+public:
+};
+
+class plate : public IPlate
 {
 	public:
 
