@@ -43,7 +43,7 @@ public:
     {
         _segmentCreator = segmentCreator;
     }
-    void setBounds(Bounds* bounds)
+    void setBounds(IBounds* bounds)
     {
         _bounds = bounds;
     }
@@ -64,7 +64,7 @@ private:
     ContinentId* segment;              ///< Segment ID of each piece of continental crust.
     int _area; /// Should be the same as the bounds area of the plate
     ISegmentCreator* _segmentCreator;
-    Bounds* _bounds;
+    IBounds* _bounds;
 };
 
 #endif

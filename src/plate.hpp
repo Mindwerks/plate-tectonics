@@ -204,9 +204,9 @@ public:
 
     float getMass() const throw() { return _mass.getMass(); }
     float getMomentum() const throw() { return _movement.momentum(_mass); }
-    uint32_t getHeight() const throw() { return _bounds.height(); }
-    uint32_t  getLeftAsUint() const throw() { return _bounds.leftAsUint(); }
-    uint32_t  getTopAsUint() const throw() { return _bounds.topAsUint(); }
+    uint32_t getHeight() const throw() { return _bounds->height(); }
+    uint32_t  getLeftAsUint() const throw() { return _bounds->leftAsUint(); }
+    uint32_t  getTopAsUint() const throw() { return _bounds->topAsUint(); }
     float getVelocity() const throw() { return _movement.getVelocity(); }
 
     Platec::FloatVector velocityUnitVector() const {
@@ -218,7 +218,7 @@ public:
     /// @Deprecated, use velocityUnitVector instead
     float getVelY() const throw() { return _movement.velY(); }
     
-    uint32_t getWidth() const throw() { return _bounds.width(); }
+    uint32_t getWidth() const throw() { return _bounds->width(); }
     bool   isEmpty() const throw() { return _mass.null(); }
     float getCx() const { return _mass.getCx(); }
     float getCy() const { return _mass.getCy(); }
@@ -259,7 +259,7 @@ private:
     SimpleRandom _randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
     AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation. 
-    Bounds _bounds;
+    IBounds* _bounds;
     Mass _mass;
     Movement _movement;
     ISegments* _segments;

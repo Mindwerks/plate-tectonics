@@ -212,6 +212,9 @@ TEST(Plate, addCrustByCollision)
   MockSegments2* mSegments = new MockSegments2(IntPoint(240, 120), 99, mSeg, 240 + 120 * worldWidth);
   p.injectSegments(mSegments);
 
+  // Assumptions:
+  // the point is in the plate bounds 
+
   p.addCrustByCollision(
     240, 120, // Point of impact
     0.8, // Amount of crust
