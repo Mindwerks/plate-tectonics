@@ -16,8 +16,18 @@ public:
     virtual uint32_t collCount() const = 0;
 };
 
+class ISegmentData : public ISegmentDataAccess
+{
+public:
+    virtual void incCollCount() = 0;
+    virtual void incArea() = 0;
+    virtual void enlarge_to_contain(uint32_t x, uint32_t y) = 0;
+    virtual void markNonExistent() = 0;
+    virtual void shift(uint32_t dx, uint32_t dy) = 0;
+};
+
 /// Container for details about a segmented crust area on this plate.
-class SegmentData : public ISegmentDataAccess
+class SegmentData : public ISegmentData
 {
   public:
     SegmentData(Platec::Rectangle& rectangle,
