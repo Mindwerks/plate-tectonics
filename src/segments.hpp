@@ -23,9 +23,9 @@ public:
     virtual void reassign(uint32_t newarea, uint32_t* tmps) = 0;
     virtual void shift(uint32_t d_lft, uint32_t d_top) = 0;
     virtual uint32_t size() const = 0;
-    virtual const SegmentData& operator[](uint32_t index) const = 0;
-    virtual SegmentData& operator[](uint32_t index) = 0;
-    virtual void add(const SegmentData& data) = 0;
+    virtual const ISegmentData& operator[](uint32_t index) const = 0;
+    virtual ISegmentData& operator[](uint32_t index) = 0;
+    virtual void add(ISegmentData* data) = 0;
     virtual const ContinentId& id(uint32_t index) const = 0;
     virtual ContinentId& id(uint32_t index) = 0;
     virtual void setId(uint32_t index, ContinentId id) const = 0;
@@ -50,15 +50,15 @@ public:
     void reassign(uint32_t newarea, uint32_t* tmps);
     void shift(uint32_t d_lft, uint32_t d_top);
     uint32_t size() const;
-    const SegmentData& operator[](uint32_t index) const;
-    SegmentData& operator[](uint32_t index);
-    void add(const SegmentData& data);
+    const ISegmentData& operator[](uint32_t index) const;
+    ISegmentData& operator[](uint32_t index);
+    void add(ISegmentData* data);
     const ContinentId& id(uint32_t index) const;
     ContinentId& id(uint32_t index);
     void setId(uint32_t index, ContinentId id) const;
     ContinentId getContinentAt(int x, int y) const;
 private:
-    std::vector<SegmentData> seg_data; ///< Details of each crust segment.
+    std::vector<ISegmentData*> seg_data; ///< Details of each crust segment.
     ContinentId* segment;              ///< Segment ID of each piece of continental crust.
     int _area; /// Should be the same as the bounds area of the plate
     ISegmentCreator* _segmentCreator;

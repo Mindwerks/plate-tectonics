@@ -89,7 +89,7 @@ plate::~plate()
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
 {
-    SegmentData& seg = getContinentAt(wx, wy);
+    ISegmentData& seg = getContinentAt(wx, wy);
     seg.incCollCount();
     return seg.area();
 }
@@ -102,7 +102,7 @@ void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, 
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
     _segments->setId(index, activeContinent);
 
-    SegmentData& data = (*_segments)[activeContinent];
+    ISegmentData& data = (*_segments)[activeContinent];
     data.incArea();
     data.enlarge_to_contain(x, y);
 }
@@ -469,7 +469,7 @@ void plate::erode(float lower_bound)
 
 void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* ratio) const
 {
-    const SegmentData& seg = getContinentAt(wx, wy);
+    const ISegmentData& seg = getContinentAt(wx, wy);
 
     *count = 0;
     *ratio = 0;
@@ -650,12 +650,12 @@ uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
     return _mySegmentCreator->createSegment(x, y);
 }
 
-SegmentData& plate::getContinentAt(int x, int y)
+ISegmentData& plate::getContinentAt(int x, int y)
 {
     return (*_segments)[_segments->getContinentAt(x, y)];
 }
 
-const SegmentData& plate::getContinentAt(int x, int y) const
+const ISegmentData& plate::getContinentAt(int x, int y) const
 {
     return (*_segments)[_segments->getContinentAt(x, y)];
 }

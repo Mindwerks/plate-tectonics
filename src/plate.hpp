@@ -249,8 +249,8 @@ protected:
 
 private:
 
-    SegmentData& getContinentAt(int x, int y);
-    const SegmentData& getContinentAt(int x, int y) const;
+    ISegmentData& getContinentAt(int x, int y);
+    const ISegmentData& getContinentAt(int x, int y) const;
     void findRiverSources(float lower_bound, vector<uint32_t>* sources);
     void flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp);
     uint32_t createSegment(uint32_t x, uint32_t y) throw();

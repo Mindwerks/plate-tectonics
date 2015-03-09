@@ -86,7 +86,8 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
     uint32_t lines_processed;
     Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
-    SegmentData data(r, 0);
+
+    SegmentData* pData = new SegmentData(r, 0);
 
     std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
     std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
@@ -163,13 +164,13 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
             // Count volume of pixel...
         }
 
-        data.incArea(1 + end - start); // Update segment area counter.
+        pData->incArea(1 + end - start); // Update segment area counter.
 
         // Record any changes in extreme dimensions.
-        if (line < data.getTop()) data.setTop(line);
-        if (line > data.getBottom()) data.setBottom(line);
-        if (start < data.getLeft()) data.setLeft(start);
-        if (end > data.getRight()) data.setRight(end);
+        if (line < pData->getTop()) pData->setTop(line);
+        if (line > pData->getBottom()) pData->setBottom(line);
+        if (start < pData->getLeft()) pData->setLeft(start);
+        if (end > pData->getRight()) pData->setRight(end);
 
         if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
@@ -233,7 +234,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
     delete[] spans_todo;
     delete[] spans_done;
-    _segments->add(data);
+    _segments->add(pData);
 
     return ID;
 }

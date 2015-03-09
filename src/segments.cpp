@@ -12,6 +12,9 @@ Segments::~Segments()
     delete[] segment;
     segment = NULL;
     _area = 0;
+    for (int i=0; i<seg_data.length(); i++){
+        delete seg_data[i];
+    }
 }
 
 uint32_t Segments::area()
@@ -36,7 +39,7 @@ void Segments::shift(uint32_t d_lft, uint32_t d_top)
 {
     for (uint32_t s = 0; s < seg_data.size(); ++s)
     {
-        seg_data[s].shift(d_lft, d_top);
+        seg_data[s]->shift(d_lft, d_top);
     }
 }
 
@@ -45,17 +48,17 @@ uint32_t Segments::size() const
     return seg_data.size();
 }
 
-const SegmentData& Segments::operator[](uint32_t index) const
+const ISegmentData& Segments::operator[](uint32_t index) const
 {
-    return seg_data[index];
+    return *seg_data[index];
 }
 
-SegmentData& Segments::operator[](uint32_t index)
+ISegmentData& Segments::operator[](uint32_t index)
 {
-    return seg_data[index];
+    return *seg_data[index];
 }
 
-void Segments::add(const SegmentData& data){
+void Segments::add(ISegmentData* data){
     seg_data.push_back(data);
 }
 
