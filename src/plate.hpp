@@ -240,10 +240,10 @@ public:
             float& w_crust, float& e_crust, float& n_crust, float& s_crust,
             uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
 
-protected:
-
+    // Visible for testing
     void injectSegments(ISegments* segments)
     {
+        delete _segments;
         _segments = segments;
     }
 

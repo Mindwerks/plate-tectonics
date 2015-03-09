@@ -53,6 +53,32 @@ TEST(Plate, calculateCrust)
   EXPECT_EQ(250, s); 
 }
 
+class MockSegments : public ISegments
+{
+public:
+    virtual uint32_t area() { throw runtime_error("Not implemented"); }
+    virtual void reset() { throw runtime_error("Not implemented"); }
+    virtual void reassign(uint32_t newarea, uint32_t* tmps) { throw runtime_error("Not implemented"); }
+    virtual void shift(uint32_t d_lft, uint32_t d_top) { throw runtime_error("Not implemented"); }
+    virtual uint32_t size() const { throw runtime_error("Not implemented"); }
+    virtual const ISegmentData& operator[](uint32_t index) const { throw runtime_error("Not implemented"); }
+    virtual ISegmentData& operator[](uint32_t index) { throw runtime_error("Not implemented"); }
+    virtual void add(ISegmentData* data) { throw runtime_error("Not implemented"); }
+    virtual const ContinentId& id(uint32_t index) const { throw runtime_error("Not implemented"); }
+    virtual ContinentId& id(uint32_t index) { throw runtime_error("Not implemented"); }
+    virtual void setId(uint32_t index, ContinentId id) const { throw runtime_error("Not implemented"); }
+    virtual ContinentId getContinentAt(int x, int y) const { throw runtime_error("Not implemented"); }
+};
+
+TEST(Plate, addCollision)
+{
+  const float *heightmap = new float[256 * 128];
+  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));  
+
+  MockSegments* mSegments = new MockSegments();
+  p.injectSegments(mSegments);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

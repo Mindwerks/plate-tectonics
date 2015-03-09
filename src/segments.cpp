@@ -12,7 +12,7 @@ Segments::~Segments()
     delete[] segment;
     segment = NULL;
     _area = 0;
-    for (int i=0; i<seg_data.length(); i++){
+    for (int i=0; i<seg_data.size(); i++){
         delete seg_data[i];
     }
 }
