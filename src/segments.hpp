@@ -11,14 +11,9 @@
 #include "bounds.hpp"
 #include "movement.hpp"
 #include "mass.hpp"
+#include "segment_creator.hpp"
 
 typedef uint32_t ContinentId;
-
-class ISegmentCreator
-{
-public:
-	virtual ContinentId createSegment(uint32_t wx, uint32_t wy) const = 0;
-};
 
 class Segments
 {
