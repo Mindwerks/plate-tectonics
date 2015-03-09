@@ -14,14 +14,14 @@ uint32_t MySegmentCreator::calcDirection(uint32_t x, uint32_t y, const uint32_t 
     // This point belongs to no segment yet.
     // However it might be a neighbour to some segment created earlier.
     // If such neighbour is found, associate this point with it.
-    if (canGoLeft && _segments.id(origin_index - 1) < ID) {
-        nbour_id = _segments.id(origin_index - 1);
-    } else if (canGoRight && _segments.id(origin_index + 1) < ID) {
-        nbour_id = _segments.id(origin_index + 1);
-    } else if (canGoUp && _segments.id(origin_index - _bounds.width()) < ID) {
-        nbour_id = _segments.id(origin_index - _bounds.width());
-    } else if (canGoDown && _segments.id(origin_index + _bounds.width()) < ID) {
-        nbour_id = _segments.id(origin_index + _bounds.width());
+    if (canGoLeft && _segments->id(origin_index - 1) < ID) {
+        nbour_id = _segments->id(origin_index - 1);
+    } else if (canGoRight && _segments->id(origin_index + 1) < ID) {
+        nbour_id = _segments->id(origin_index + 1);
+    } else if (canGoUp && _segments->id(origin_index - _bounds.width()) < ID) {
+        nbour_id = _segments->id(origin_index - _bounds.width());
+    } else if (canGoDown && _segments->id(origin_index + _bounds.width()) < ID) {
+        nbour_id = _segments->id(origin_index + _bounds.width());
     }
 
     return nbour_id;
@@ -66,20 +66,20 @@ void MySegmentCreator::scanSpans(const uint32_t line, uint32_t& start, uint32_t&
 ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw()
 {
     const uint32_t origin_index = _bounds.index(x, y);
-    const uint32_t ID = _segments.size();
+    const uint32_t ID = _segments->size();
 
-    if (_segments.id(origin_index) < ID) {
-        return _segments.id(origin_index);
+    if (_segments->id(origin_index) < ID) {
+        return _segments->id(origin_index);
     }
 
     uint32_t nbour_id = calcDirection(x, y, origin_index, ID);
 
     if (nbour_id < ID)
     {
-        _segments.setId(origin_index, nbour_id);
-        _segments[nbour_id].incArea();
+        _segments->setId(origin_index, nbour_id);
+        (*_segments)[nbour_id].incArea();
 
-        _segments[nbour_id].enlarge_to_contain(x, y);
+        (*_segments)[nbour_id].enlarge_to_contain(x, y);
 
         return nbour_id;
     }
@@ -91,7 +91,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
     std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
     std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
 
-    _segments.setId(origin_index, ID);
+    _segments->setId(origin_index, ID);
     spans_todo[y].push_back(x);
     spans_todo[y].push_back(x);
 
@@ -119,32 +119,32 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
         const uint32_t line_below = row_below * _bounds.width();
 
         // Extend the beginning of line.
-        while (start > 0 && _segments.id(line_here+start-1) > ID &&
+        while (start > 0 && _segments->id(line_here+start-1) > ID &&
             map[line_here+start-1] >= CONT_BASE)
         {
             --start;
-            _segments.setId(line_here + start, ID);
+            _segments->setId(line_here + start, ID);
 
             // Count volume of pixel...
         }
 
         // Extend the end of line.
         while (end < _bounds.width() - 1 &&
-            _segments.id(line_here + end + 1) > ID &&
+            _segments->id(line_here + end + 1) > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
             ++end;
-            _segments.setId(line_here + end, ID);
+            _segments->setId(line_here + end, ID);
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around left edge.
         if (_bounds.width() == _worldDimension.getWidth() && start == 0 &&
-            _segments.id(line_here+_bounds.width()-1) > ID &&
+            _segments->id(line_here+_bounds.width()-1) > ID &&
             map[line_here+_bounds.width()-1] >= CONT_BASE)
         {
-            _segments.setId(line_here + _bounds.width() - 1, ID);
+            _segments->setId(line_here + _bounds.width() - 1, ID);
             spans_todo[line].push_back(_bounds.width() - 1);
             spans_todo[line].push_back(_bounds.width() - 1);
 
@@ -153,10 +153,10 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
         // Check if should wrap around right edge.
         if (_bounds.width() == _worldDimension.getWidth() && end == _bounds.width() - 1 &&
-            _segments.id(line_here+0) > ID &&
+            _segments->id(line_here+0) > ID &&
             map[line_here+0] >= CONT_BASE)
         {
-            _segments.setId(line_here + 0, ID);
+            _segments->setId(line_here + 0, ID);
             spans_todo[line].push_back(0);
             spans_todo[line].push_back(0);
 
@@ -173,19 +173,19 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
         if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (_segments.id(line_above + j) > ID &&
+              if (_segments->id(line_above + j) > ID &&
                   map[line_above + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                _segments.setId(line_above + a, ID);
+                _segments->setId(line_above + a, ID);
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       _segments.id(line_above + j) > ID &&
+                       _segments->id(line_above + j) > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
-                    _segments.setId(line_above + j, ID);
+                    _segments->setId(line_above + j, ID);
 
                     // Count volume of pixel...
                 }
@@ -200,19 +200,19 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
         if (line < _bounds.height() - 1 || _bounds.height() == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
-              if (_segments.id(line_below + j) > ID &&
+              if (_segments->id(line_below + j) > ID &&
                   map[line_below + j] >= CONT_BASE)
               {
                 uint32_t a = j;
-                _segments.setId(line_below + a, ID);
+                _segments->setId(line_below + a, ID);
 
                 // Count volume of pixel...
 
                 while (++j < _bounds.width() &&
-                       _segments.id(line_below + j) > ID &&
+                       _segments->id(line_below + j) > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
-                    _segments.setId(line_below + j, ID);
+                    _segments->setId(line_below + j, ID);
 
                     // Count volume of pixel...
                 }
@@ -233,7 +233,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
     delete[] spans_todo;
     delete[] spans_done;
-    _segments.add(data);
+    _segments->add(data);
 
     return ID;
 }

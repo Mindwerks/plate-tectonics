@@ -43,8 +43,7 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
              map(w, h), 
              age_map(w, h), 
              _worldDimension(worldDimension),
-             _movement(_randsource, worldDimension),
-             _segments(w * h)
+             _movement(_randsource, worldDimension)
 {
     if (NULL == m) {
         throw invalid_argument("the given heightmap should not be null");
@@ -75,14 +74,17 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
             age_map.set(x, y, plate_age & -(m[k] > 0));
         }
     }
+    Segments* segments = new Segments(plate_area);    
+    _segments = segments;
     _mySegmentCreator = new MySegmentCreator(_bounds, _segments, map, _worldDimension);
-    _segments.setSegmentCreator(_mySegmentCreator);
-    _segments.setBounds(&_bounds);
+    segments->setSegmentCreator(_mySegmentCreator);
+    segments->setBounds(&_bounds);    
 }
 
 plate::~plate()
 {
     delete _mySegmentCreator;
+    delete _segments;
 }
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
@@ -98,9 +100,9 @@ void plate::addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t time, 
     setCrust(x, y, getCrust(x, y) + z, time);
 
     uint32_t index = _bounds.getValidMapIndex(&x, &y);
-    _segments.setId(index, activeContinent);
+    _segments->setId(index, activeContinent);
 
-    SegmentData& data = _segments[activeContinent];
+    SegmentData& data = (*_segments)[activeContinent];
     data.incArea();
     data.enlarge_to_contain(x, y);
 }
@@ -161,7 +163,7 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
     uint32_t lx = wx, ly = wy;
     const uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
 
-    const ContinentId seg_id = _segments.id(index);
+    const ContinentId seg_id = _segments->id(index);
 
     // This check forces the caller to do things in proper order!
     //
@@ -179,7 +181,7 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
     // causes continent to aggregate then all successive collisions and
     // attempts of aggregation would necessarily change nothing at all,
     // because the continent was removed from this plate earlier!
-    if (_segments[seg_id].isEmpty()) {
+    if ((*_segments)[seg_id].isEmpty()) {
         return 0;   // Do not process empty continents.
     }
 
@@ -197,12 +199,12 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
     float old_mass = _mass.getMass();
 
     // Add all of the collided continent's crust to destination plate.
-    for (uint32_t y = _segments[seg_id].getTop(); y <= _segments[seg_id].getBottom(); ++y)
+    for (uint32_t y = (*_segments)[seg_id].getTop(); y <= (*_segments)[seg_id].getBottom(); ++y)
     {
-      for (uint32_t x = _segments[seg_id].getLeft(); x <= _segments[seg_id].getRight(); ++x)
+      for (uint32_t x = (*_segments)[seg_id].getLeft(); x <= (*_segments)[seg_id].getRight(); ++x)
       {
         const uint32_t i = y * _bounds.width() + x;
-        if ((_segments.id(i) == seg_id) && (map[i] > 0))
+        if ((_segments->id(i) == seg_id) && (map[i] > 0))
         {
             p->addCrustByCollision(wx + x - lx, wy + y - ly,
                 map[i], age_map[i], activeContinent);
@@ -213,7 +215,7 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
       }
     }
 
-    _segments[seg_id].markNonExistent(); // Mark segment as non-existent
+    (*_segments)[seg_id].markNonExistent(); // Mark segment as non-existent
     return old_mass - _mass.getMass();
 }
 
@@ -480,8 +482,8 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 {
     const uint32_t index = _bounds.getValidMapIndex(&wx, &wy);
-    assert(_segments.id(index) < _segments.size());
-    return _segments[_segments.id(index)].area(); 
+    assert(_segments->id(index) < _segments->size());
+    return (*_segments)[_segments->id(index)].area(); 
 }
 
 float plate::getCrust(uint32_t x, uint32_t y) const
@@ -518,8 +520,8 @@ void plate::move()
 
 void plate::resetSegments()
 {
-    p_assert(_bounds.area()==_segments.area(), "Segments has not the expected area");
-    _segments.reset();
+    p_assert(_bounds.area()==_segments->area(), "Segments has not the expected area");
+    _segments->reset();
 }
 
 void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
@@ -601,16 +603,16 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
                 sizeof(float));
             memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
                 sizeof(uint32_t));
-            memcpy(&tmps[dest_i], &_segments.id(src_i), old_width *
+            memcpy(&tmps[dest_i], &_segments->id(src_i), old_width *
                 sizeof(uint32_t));
         }
         
         map     = tmph;
         age_map = tmpa;
-        _segments.reassign(_bounds.area(), tmps);
+        _segments->reassign(_bounds.area(), tmps);
 
         // Shift all segment data to match new coordinates.
-        _segments.shift(d_lft, d_top);
+        _segments->shift(d_lft, d_top);
 
         _x = x, _y = y;
         index = _bounds.getValidMapIndex(&_x, &_y);
@@ -635,7 +637,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
 ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 {
     uint32_t index = _bounds.getValidMapIndex(&coll_x, &coll_y);
-    ContinentId activeContinent = _segments.id(index);
+    ContinentId activeContinent = _segments->id(index);
     return activeContinent;   
 }
 
@@ -650,10 +652,10 @@ uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
 
 SegmentData& plate::getContinentAt(int x, int y)
 {
-    return _segments[_segments.getContinentAt(x, y)];
+    return (*_segments)[_segments->getContinentAt(x, y)];
 }
 
 const SegmentData& plate::getContinentAt(int x, int y) const
 {
-    return _segments[_segments.getContinentAt(x, y)];
+    return (*_segments)[_segments->getContinentAt(x, y)];
 }

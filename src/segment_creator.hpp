@@ -8,7 +8,7 @@
 typedef uint32_t ContinentId;
 
 class Bounds;
-class Segments;
+class ISegments;
 
 class ISegmentCreator
 {
@@ -19,7 +19,7 @@ public:
 class MySegmentCreator : public ISegmentCreator
 {
 public:
-	MySegmentCreator(Bounds& bounds, Segments& segments, HeightMap& map_,
+	MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMap& map_,
 		const WorldDimension& worldDimension)
 		: _bounds(bounds), _segments(segments), map(map_),
 		_worldDimension(worldDimension)
@@ -41,7 +41,7 @@ private:
 		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const;
 	const WorldDimension _worldDimension;
 	Bounds& _bounds;
-	Segments& _segments;
+	ISegments* _segments;
 	HeightMap& map;
 };
 
