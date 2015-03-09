@@ -243,7 +243,7 @@ class plate : public IPlate
 	protected:
 	private:	   
 
-	class MySegmentCreator : ISegmentCreator
+	class MySegmentCreator : public ISegmentCreator
 	{
 	public:
 		MySegmentCreator(Bounds& bounds, Segments& segments, HeightMap& map_,

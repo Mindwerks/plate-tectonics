@@ -79,3 +79,26 @@ void Segments::setId(uint32_t index, ContinentId id) const {
     }
     segment[index] = id;
 }
+
+ContinentId Segments::getContinentAt(int x, int y) const
+{
+    if (_bounds == NULL) throw runtime_error("(Segments::getContinentAt) bounds not set");
+    if (_segmentCreator == NULL) throw runtime_error("(Segments::getContinentAt) segmentCreator not set");
+    uint32_t lx = x, ly = y;
+    uint32_t index = _bounds->getValidMapIndex(&lx, &ly);
+    ContinentId seg = id(index);
+
+    if (seg >= size()) {
+        // in this case, we consider as const this call because we calculate
+        // something that we would calculate anyway, so the segments are
+        // a sort of cache
+        //seg = const_cast<plate*>(this)->createSegment(lx, ly);
+        seg = _segmentCreator->createSegment(lx, ly);
+    }
+
+    if (seg >= size())
+    {
+        throw invalid_argument("Could not create segment");
+    }
+    return seg;  
+}

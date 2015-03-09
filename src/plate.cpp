@@ -76,6 +76,8 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
         }
     }
     _mySegmentCreator = new MySegmentCreator(_bounds, _segments, map, _worldDimension);
+    _segments.setSegmentCreator(_mySegmentCreator);
+    _segments.setBounds(&_bounds);
 }
 
 plate::~plate()
@@ -883,20 +885,5 @@ ContinentId plate::MySegmentCreator::createSegment(uint32_t x, uint32_t y) const
 
 ContinentId plate::getContinentAt(int x, int y) const
 {
-    uint32_t lx = x, ly = y;
-    uint32_t index = _bounds.getValidMapIndex(&lx, &ly);
-    ContinentId seg = _segments.id(index);
-
-    if (seg >= _segments.size()) {
-        // in this case, we consider as const this call because we calculate
-        // something that we would calculate anyway, so the segments are
-        // a sort of cache
-        seg = const_cast<plate*>(this)->createSegment(lx, ly);
-    }
-
-    if (seg >= _segments.size())
-    {
-        throw invalid_argument("Could not create segment");
-    }
-    return seg;  
+    return _segments.getContinentAt(x, y);
 }
