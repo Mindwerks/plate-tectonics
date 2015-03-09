@@ -51,6 +51,8 @@ class plate : public IPlate
 	plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
 	      uint32_t plate_age, WorldDimension worldDimension);
 
+	~plate();
+
 	/// Increment collision counter of the continent at given location.
 	///
 	/// @param	wx	X coordinate of collision point on world map.
@@ -241,22 +243,39 @@ class plate : public IPlate
 	protected:
 	private:	   
 
+	class MySegmentCreator : ISegmentCreator
+	{
+	public:
+		MySegmentCreator(Bounds& bounds, Segments& segments, HeightMap& map_,
+			const WorldDimension& worldDimension)
+			: _bounds(bounds), _segments(segments), map(map_),
+			_worldDimension(worldDimension)
+		{
+
+		}
+		/// Separate a continent at (X, Y) to its own partition.
+		///
+		/// Method analyzes the pixels 4-ways adjacent at the given location
+		/// and labels all connected continental points with same segment ID.
+		///
+		/// @param	x	Offset on the local height map along X axis.
+		/// @param	y	Offset on the local height map along Y axis.
+		/// @return	ID of created segment on success, otherwise -1.
+		ContinentId createSegment(uint32_t wx, uint32_t wy) const throw();
+	private:
+		uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID) const;
+		void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
+    		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const;
+		const WorldDimension _worldDimension;
+		Bounds& _bounds;
+		Segments& _segments;
+		HeightMap& map;
+	};
+
 	ContinentId getContinentAt(int x, int y) const;
 	void findRiverSources(float lower_bound, vector<uint32_t>* sources);
 	void flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp);
-	uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID);
-	void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
-    		std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done);
-
-	/// Separate a continent at (X, Y) to its own partition.
-	///
-	/// Method analyzes the pixels 4-ways adjacent at the given location
-	/// and labels all connected continental points with same segment ID.
-	///
-	/// @param	x	Offset on the local height map along X axis.
-	/// @param	y	Offset on the local height map along Y axis.
-	/// @return	ID of created segment on success, otherwise -1.
-	uint32_t createSegment(uint32_t wx, uint32_t wy) throw();
+	uint32_t createSegment(uint32_t x, uint32_t y) throw();
 
 	const WorldDimension _worldDimension;
     SimpleRandom _randsource;
@@ -266,6 +285,7 @@ class plate : public IPlate
 	Mass _mass;
 	Movement _movement;
 	Segments _segments;
+	MySegmentCreator* _mySegmentCreator;
 };
 
 #endif

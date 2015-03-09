@@ -75,6 +75,12 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
             age_map.set(x, y, plate_age & -(m[k] > 0));
         }
     }
+    _mySegmentCreator = new MySegmentCreator(_bounds, _segments, map, _worldDimension);
+}
+
+plate::~plate()
+{
+    delete _mySegmentCreator;
 }
 
 uint32_t plate::addCollision(uint32_t wx, uint32_t wy)
@@ -635,7 +641,7 @@ ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 /// Private methods ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID)
+uint32_t plate::MySegmentCreator::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID) const
 {
     uint32_t canGoLeft  = x > 0          && map[origin_index - 1]     >= CONT_BASE;
     uint32_t canGoRight = x < _bounds.width() - 1  && map[origin_index+1]       >= CONT_BASE;
@@ -659,8 +665,8 @@ uint32_t plate::calcDirection(uint32_t x, uint32_t y, const uint32_t origin_inde
     return nbour_id;
 }
 
-void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
-    std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done)
+void plate::MySegmentCreator::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
+    std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const
 {
     do // Find an unscanned span on this line.
     {
@@ -696,6 +702,11 @@ void plate::scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
 }
 
 uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
+{
+    return _mySegmentCreator->createSegment(x, y);
+}
+
+ContinentId plate::MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw()
 {
     const uint32_t origin_index = _bounds.index(x, y);
     const uint32_t ID = _segments.size();

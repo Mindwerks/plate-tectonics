@@ -14,6 +14,11 @@
 
 typedef uint32_t ContinentId;
 
+class ISegmentCreator
+{
+	virtual ContinentId createSegment(uint32_t wx, uint32_t wy) const = 0;
+};
+
 class Segments
 {
 public:
