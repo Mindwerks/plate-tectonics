@@ -26,7 +26,9 @@ public:
     virtual const ISegmentData& operator[](uint32_t index) const = 0;
     virtual ISegmentData& operator[](uint32_t index) = 0;
     virtual void add(ISegmentData* data) = 0;
+    // Continent at the give world index
     virtual const ContinentId& id(uint32_t index) const = 0;
+    // Continent at the give world index
     virtual ContinentId& id(uint32_t index) = 0;
     virtual void setId(uint32_t index, ContinentId id) const = 0;
     virtual ContinentId getContinentAt(int x, int y) const = 0;

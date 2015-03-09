@@ -91,7 +91,7 @@ public:
     virtual void reset() { throw runtime_error("Not implemented"); }
     virtual void reassign(uint32_t newarea, uint32_t* tmps) { throw runtime_error("Not implemented"); }
     virtual void shift(uint32_t d_lft, uint32_t d_top) { throw runtime_error("Not implemented"); }
-    virtual uint32_t size() const { throw runtime_error("Not implemented"); }
+    virtual uint32_t size() const { throw runtime_error("(MockSegments::size) Not implemented"); }
     virtual const ISegmentData& operator[](uint32_t index) const { 
       if (index == _id) {
         return *_data;
@@ -107,8 +107,10 @@ public:
       }
     }
     virtual void add(ISegmentData* data) { throw runtime_error("Not implemented"); }
-    virtual const ContinentId& id(uint32_t index) const { throw runtime_error("Not implemented"); }
-    virtual ContinentId& id(uint32_t index) { throw runtime_error("Not implemented"); }
+    virtual const ContinentId& id(uint32_t index) const { 
+      throw runtime_error("(MockSegments::id) Not implemented"); 
+    }
+    virtual ContinentId& id(uint32_t index) { throw runtime_error("(MockSegments::id) Not implemented"); }
     virtual void setId(uint32_t index, ContinentId id) const { throw runtime_error("Not implemented"); }
     virtual ContinentId getContinentAt(int x, int y) const { 
       if (x==_p.getX() && y==_p.getY()){        
@@ -136,6 +138,95 @@ TEST(Plate, addCollision)
 
   EXPECT_EQ(789, area);
   EXPECT_EQ(8, mSeg->collCount());
+
+  delete[] heightmap;
+}
+
+class MockSegments2 : public ISegments
+{
+public:
+    MockSegments2(IntPoint p, ContinentId id, ISegmentData* data, uint32_t index)
+      : _p(p), _id(id), _data(data), _index(index)
+    {
+
+    }
+    virtual uint32_t area() { throw runtime_error("Not implemented"); }
+    virtual void reset() { throw runtime_error("Not implemented"); }
+    virtual void reassign(uint32_t newarea, uint32_t* tmps) { throw runtime_error("Not implemented"); }
+    virtual void shift(uint32_t d_lft, uint32_t d_top) { throw runtime_error("Not implemented"); }
+    virtual uint32_t size() const { throw runtime_error("(MockSegments2::size) Not implemented"); }
+    virtual const ISegmentData& operator[](uint32_t index) const { 
+      if (index == _id) {
+        return *_data;
+      } else {
+        throw runtime_error("(MockSegments2::operator[]) Unexpected call"); 
+      }
+    }
+    virtual ISegmentData& operator[](uint32_t index) {
+      if (index == _id) {
+        return *_data;
+      } else {
+        throw runtime_error("(MockSegments2::operator[]) Unexpected call"); 
+      }
+    }
+    virtual void add(ISegmentData* data) { throw runtime_error("Not implemented"); }
+    virtual const ContinentId& id(uint32_t index) const { 
+      if (_index == index) return _id;
+      throw runtime_error(
+        string("(MockSegments2::id) Unexpected value ")
+        + Platec::to_string(index)
+        + " expected was "
+        + Platec::to_string(_index)); 
+    }
+    virtual ContinentId& id(uint32_t index) { 
+      if (_index == index) return _id;
+      throw runtime_error(
+        string("(MockSegments2::id) Unexpected value ")
+        + Platec::to_string(index)
+        + " expected was "
+        + Platec::to_string(_index)); 
+    }
+    virtual void setId(uint32_t index, ContinentId id) const { throw runtime_error("Not implemented"); }
+    virtual ContinentId getContinentAt(int x, int y) const { 
+      if (x==_p.getX() && y==_p.getY()){        
+        return _id;
+      } else {
+        throw runtime_error("(MockSegments2::getContinentAt) Unexpected call");
+      }
+    }
+private:
+    IntPoint _p;
+    ContinentId _id;
+    ISegmentData* _data;
+    uint32_t _index;      
+};
+
+TEST(Plate, addCrustByCollision)
+{
+  const uint32_t worldWidth = 256;
+  const uint32_t worldHeight = 128;
+  const float *heightmap = new float[worldWidth * worldHeight];
+  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
+
+  MockSegmentData* mSeg = new MockSegmentData(7, 789);
+  MockSegments2* mSegments = new MockSegments2(IntPoint(240, 120), 99, mSeg, 240 + 120 * worldWidth);
+  p.injectSegments(mSegments);
+
+  p.addCrustByCollision(
+    240, 120, // Point of impact
+    0.8, // Amount of crust
+    123, // Current age
+    99); // Active continent
+
+  // Age of the point should be updated
+  /*EXPECT_EQ(123, p.getCrustTimestamp(240, 120));
+
+  // Crust should be increased
+  // The activeContinent should now owns the point
+  // The activeContinent should contains the point
+  // The activeContinent are should be increased
+  */
+  delete[] heightmap;
 }
 
 int main(int argc, char **argv) {

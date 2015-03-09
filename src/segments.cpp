@@ -50,11 +50,13 @@ uint32_t Segments::size() const
 
 const ISegmentData& Segments::operator[](uint32_t index) const
 {
+    if (index >= seg_data.size()) throw runtime_error("(Segments::operator[]) unvalid index");
     return *seg_data[index];
 }
 
 ISegmentData& Segments::operator[](uint32_t index)
 {
+    if (index >= seg_data.size()) throw runtime_error("(Segments::operator[]) unvalid index");
     return *seg_data[index];
 }
 
