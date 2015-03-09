@@ -4,8 +4,20 @@
 #include "utils.hpp"
 #include "rectangle.hpp"
 
+class ISegmentDataAccess
+{
+public:    
+    virtual uint32_t getLeft() const = 0;
+    virtual uint32_t getRight() const = 0;
+    virtual uint32_t getTop() const = 0;
+    virtual uint32_t getBottom() const = 0;
+    virtual bool isEmpty() const = 0;
+    virtual uint32_t area() const = 0;
+    virtual uint32_t collCount() const = 0;
+};
+
 /// Container for details about a segmented crust area on this plate.
-class SegmentData
+class SegmentData : public ISegmentDataAccess
 {
   public:
     SegmentData(Platec::Rectangle& rectangle,
