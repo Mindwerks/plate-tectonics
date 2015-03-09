@@ -78,7 +78,7 @@ ContinentId& Segments::id(uint32_t index) {
     return segment[index];
 }
 
-void Segments::setId(uint32_t index, ContinentId id) const {
+void Segments::setId(uint32_t index, ContinentId id) {
     if (index>=_area) {
         throw runtime_error("unvalid index");
     }

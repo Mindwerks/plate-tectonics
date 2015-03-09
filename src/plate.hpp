@@ -247,6 +247,13 @@ public:
         _segments = segments;
     }
 
+    // Visible for testing
+    void injectBounds(IBounds* bounds)
+    {
+        delete _bounds;
+        _bounds = bounds;
+    }
+
 private:
 
     ISegmentData& getContinentAt(int x, int y);
