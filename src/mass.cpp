@@ -29,6 +29,10 @@ MassBuilder::MassBuilder(const float* m, const Dimension& dimension)
     uint32_t k;
     for (uint32_t y = k = 0; y < dimension.getHeight(); ++y) {
         for (uint32_t x = 0; x < dimension.getWidth(); ++x, ++k) {
+            if (m[k] < 0.0f) {
+                throw runtime_error(string("(MassBuilder::MassBuilder) Crust should be not negative")
+                    + ", m[k] " + Platec::to_string_f(m[k]));                
+            }
             addPoint(x, y, m[k]);
         }
     }
