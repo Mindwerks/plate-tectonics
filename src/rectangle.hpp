@@ -36,7 +36,7 @@ public:
         return r;
     };
 
-    uint32_t getMapIndex(uint32_t* px, uint32_t* py) const throw();
+    uint32_t getMapIndex(uint32_t* px, uint32_t* py) const;
     void enlarge_to_contain(uint32_t x, uint32_t y);
 
     uint32_t getLeft() const
