@@ -272,6 +272,60 @@ TEST(Plate, addCrustByCollision)
   delete[] heightmap;
 }
 
+TEST(Plate, addCrustBySubduction)
+{
+  const uint32_t worldWidth = 256;
+  const uint32_t worldHeight = 128;
+
+  float *heightmap = new float[worldWidth * worldHeight];
+  WorldDimension wd(worldWidth, worldHeight);
+  createNoise(heightmap, wd, SimpleRandom(1), true);
+  
+  // Suppose the plate start at 170, 70 and ends at 250, 125
+  plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
+  // the point of collision in world coordinates
+  const uint32_t worldPointX = 240;
+  const uint32_t worldPointY = 120;
+  // the point of collision in plate coordinates
+  const uint32_t platePointX = 70;
+  const uint32_t platePointY = 50;
+  uint32_t indexInPlate = platePointY * 80 + platePointX;
+  
+  MockSegmentData* mSeg = new MockSegmentData(7, 789);
+  MockSegments2* mSegments = new MockSegments2(IntPoint(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+  p.injectSegments(mSegments);
+
+  uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
+  float crustIn_240_120before = p.getCrust(worldPointX, worldPointY);
+
+  float massBefore = p.getMass();
+
+  // Assumptions:
+  // the point is in the plate bounds 
+  float dx = 0.0f;
+  float dy = 0.0f;
+  p.addCrustBySubduction(
+    worldPointX, worldPointY, // Point of impact
+    0.8, // Amount of crust
+    123, // Current age
+    dx, dy); // Direction of the subducting plate
+
+  // Crust should be increased
+  float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
+  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8, crustIn_240_120after);  
+
+  // The mass should be increased
+  float massAfter = p.getMass();
+  EXPECT_EQ(massBefore + 0.8f, massAfter);
+
+  // Age of the point should be updated
+  uint32_t timestampIn_240_120after = p.getCrustTimestamp(worldPointX, worldPointY);
+  ASSERT_EQ(true, timestampIn_240_120after > timestampIn_240_120before);
+  ASSERT_EQ(true, timestampIn_240_120after < 123 );
+  
+  delete[] heightmap;  
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
