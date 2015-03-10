@@ -42,7 +42,10 @@ MassBuilder::MassBuilder()
 
 void MassBuilder::addPoint(uint32_t x, uint32_t y, float crust)
 {
-    if (crust < 0) throw runtime_error("Crust should be not negative");
+    if (crust < 0) {
+        throw runtime_error(string("(MassBuilder::addPoint) Crust should be not negative")
+            + ", crust " + Platec::to_string(crust));
+    }
     mass += crust;
     // Update the center coordinates weighted by mass.
     cx += x * crust;

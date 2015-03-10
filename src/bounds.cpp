@@ -19,11 +19,11 @@
 
 #include "bounds.hpp"
 
-Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position, 
+Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
        const Dimension& dimension)
-    : _worldDimension(worldDimension), 
-      _position(position), 
-      _dimension(dimension) 
+    : _worldDimension(worldDimension),
+      _position(position),
+      _dimension(dimension)
 {
     if (_dimension.getWidth() >= _worldDimension.getWidth()) {
         throw runtime_error("(Bounds::Bounds) Plate is larger than the world containing it");
