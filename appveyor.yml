@@ -9,4 +9,6 @@ build: off
 test_script:
   - cmd: cmake .
   - cmd: cmake --build .
-  - cmd: "test\\PlateTectonicsTests.exe"
+  - cmd: cd test
+  - cmd: dir
+  - cmd: "PlateTectonicsTests.exe"
