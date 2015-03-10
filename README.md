@@ -1,6 +1,10 @@
 plate-tectonics
 ===============
+Travis
 [![Build Status](https://travis-ci.org/Mindwerks/plate-tectonics.svg?branch=master)](https://travis-ci.org/Mindweks/plate-tectonics)
+AppVeyor
+[![Build status](https://ci.appveyor.com/api/projects/status/siss20palcy6rbif?svg=true)](https://ci.appveyor.com/project/ftomassetti/plate-tectonics)
+
 
 This is a library to simulate plate tectonics.
 
