@@ -1,0 +1,6 @@
+install:
+  - ps: wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-win32-x86.zip -OutFile cmake.zip
+  - cmd: echo "Unzipping cmake..."
+  - cmd: 7z x cmake.zip -o"C:\Program Files (x86)\" -y > nul
+  - cmd: set PATH=%PATH:CMake 2.8\bin=%;C:\Program Files (x86)\cmake-3.0.2-win32-x86\bin
+  - cmd: cmake --version
