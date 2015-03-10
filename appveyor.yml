@@ -8,5 +8,5 @@ build: off
 
 test_script:
   - cmd: cmake .
-  - cmd: make
+  - cmd: cmake --build .
   - cmd: test/PlateTectonicsTests.exe
