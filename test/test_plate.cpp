@@ -299,6 +299,11 @@ TEST(Plate, addCrustBySubduction)
   float *heightmap = new float[worldWidth * worldHeight];
   WorldDimension wd(worldWidth, worldHeight);
   createNoise(heightmap, wd, SimpleRandom(1), true);
+  for (int i=0; i<worldWidth * worldHeight; i++){
+    if (heightmap[i]<0.0f){
+      heightmap[i] *= -1.0f;
+    }
+  }
   
   // Suppose the plate start at 170, 70 and ends at 250, 125
   plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
