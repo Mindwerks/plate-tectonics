@@ -73,7 +73,8 @@ try {
         		tmp[y*tmpDim.getWidth()+x] += (myDelta + specularWidthDelta + specularHeightDelta + oppositeDelta)/4;
         	}
         }
-       
+        
+        delete[] deltas;
         delete[] squareTmp;
     }    
 } catch (const exception& e){
