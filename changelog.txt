@@ -11,3 +11,10 @@ V 0.2
 * Using simplex noise in some cases
 * Working towards supporting rectangular maps
 * Trying to simplify code
+
+V 1.3
+-----
+* Renaming the version: given we have a perfectly viable project it makes sense to have a version number > 1.0,
+  moreover we want it to be aligned to pyplatec
+* Major refactoring. Plate and Lithospere classes have been disassembled in many smaller classes, methods
+  have been divided and >50 tests have been written.
