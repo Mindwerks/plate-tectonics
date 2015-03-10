@@ -1,5 +1,6 @@
 #include "plate.hpp"
 #include "gtest/gtest.h"
+#include "noise.hpp"
 
 TEST(CreatePlate, SquareDoesNotExplode)
 {
@@ -76,6 +77,7 @@ public:
     virtual bool isEmpty() const { throw runtime_error("Not implemented"); }
     virtual uint32_t area() const { return _area; }
     virtual uint32_t collCount() const { return _collCount; }
+    IntPoint* enlargedPoint() { return _enlargePoint; }
 private:
     uint32_t _collCount;
     uint32_t _area;
@@ -216,39 +218,58 @@ TEST(Plate, addCrustByCollision)
 {
   const uint32_t worldWidth = 256;
   const uint32_t worldHeight = 128;
-  const float *heightmap = new float[worldWidth * worldHeight];
+
+  float *heightmap = new float[worldWidth * worldHeight];
+  WorldDimension wd(worldWidth, worldHeight);
+  createNoise(heightmap, wd, SimpleRandom(1), true);
+  
   // Suppose the plate start at 170, 70 and ends at 250, 125
   plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
-
-  uint32_t indexInPlate = 50 * 80 + 70;
+  // the point of collision in world coordinates
+  const uint32_t worldPointX = 240;
+  const uint32_t worldPointY = 120;
+  // the point of collision in plate coordinates
+  const uint32_t platePointX = 70;
+  const uint32_t platePointY = 50;
+  uint32_t indexInPlate = platePointY * 80 + platePointX;
   
   MockSegmentData* mSeg = new MockSegmentData(7, 789);
-  MockSegments2* mSegments = new MockSegments2(IntPoint(240, 120), 99, mSeg, indexInPlate);
+  MockSegments2* mSegments = new MockSegments2(IntPoint(worldPointX, worldPointY), 99, mSeg, indexInPlate);
   p.injectSegments(mSegments);
+
+  uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
+  float crustIn_240_120before = p.getCrust(worldPointX, worldPointY);
 
   // Assumptions:
   // the point is in the plate bounds 
 
   p.addCrustByCollision(
-    240, 120, // Point of impact
+    worldPointX, worldPointY, // Point of impact
     0.8, // Amount of crust
     123, // Current age
     99); // Active continent
 
   // Age of the point should be updated
-  EXPECT_EQ(123, p.getCrustTimestamp(240, 120));
+  uint32_t timestampIn_240_120after = p.getCrustTimestamp(worldPointX, worldPointY);
+  ASSERT_EQ(true, timestampIn_240_120after > timestampIn_240_120before);
+  ASSERT_EQ(true, timestampIn_240_120after < 123 );
 
   // Crust should be increased
-  
+  float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
+  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8, crustIn_240_120after);  
   
   // The activeContinent should now owns the point
+  EXPECT_EQ(99, mSegments->getContinentAt(worldPointX, worldPointY));
+
   // The activeContinent should contains the point
+  ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
+  EXPECT_EQ(70, mSeg->enlargedPoint()->getX());
+  EXPECT_EQ(50, mSeg->enlargedPoint()->getY());
+
   // The activeContinent are should be increased
+  EXPECT_EQ(790, mSeg->area());
   
   delete[] heightmap;
-  //delete mSeg;
-  //delete mSegments;
-  //delete mBounds;
 }
 
 int main(int argc, char **argv) {
