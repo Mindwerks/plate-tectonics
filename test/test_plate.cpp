@@ -20,6 +20,7 @@
 #include "plate.hpp"
 #include "gtest/gtest.h"
 #include "noise.hpp"
+#include "simplexnoise.hpp"
 
 void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimension& wd)
 {
@@ -44,7 +45,16 @@ TEST(SimpleRandom, NextRepeatability)
   EXPECT_EQ(3364058674, sr999.next());  
 }
 
-TEST(Noise, Repeatability)
+TEST(Noise, SimplexRawNoiseRepeatability)
+{
+  EXPECT_FLOAT_EQ(-0.12851511f, raw_noise_4d(0.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(-0.83697641f, raw_noise_4d(-0.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(-0.5346415f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(0.089452535f, raw_noise_4d(0.3f, 70.78f, 1.677f, 0.0009f));
+  EXPECT_FLOAT_EQ(-0.063593678f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
+}
+
+TEST(Noise, SimplexNoiseRepeatability)
 {
   WorldDimension wd(233, 111);
   float *heightmap = new float[wd.getArea()];
