@@ -11,4 +11,6 @@ test_script:
   - cmd: cmake --build .
   - cmd: cd test
   - cmd: dir
+  - cmd: cd Debug
+  - cmd: dir
   - cmd: "PlateTectonicsTests.exe"
