@@ -4,9 +4,7 @@ install:
   - cmd: 7z x cmake.zip -o"C:\Program Files (x86)\" -y > nul
   - cmd: set PATH=%PATH:CMake 2.8\bin=%;C:\Program Files (x86)\cmake-3.0.2-win32-x86\bin
 
-build:
+test_script:
   - cmd: cmake .
   - cmd: make
-
-test_script:
   - cmd: test/PlateTectonicsTests.exe
