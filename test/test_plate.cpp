@@ -24,6 +24,9 @@
 
 void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimension& wd)
 {
+  // this is necessary because the noise is applied only to cell with a value
+  // equal to zero
+  memset(heightmap, 0, sizeof(float) * wd.getArea());
   createNoise(heightmap, wd, SimpleRandom(seed), true);
   for (int i=0; i<wd.getArea(); i++){
     if (heightmap[i]<0.0f){
@@ -60,7 +63,7 @@ TEST(Noise, SimplexNoiseRepeatability)
   float *heightmap = new float[wd.getArea()];
   initializeHeightmapWithNoise(123, heightmap, wd);
 
-  EXPECT_FLOAT_EQ(1.4012985e-45f, heightmap[0]);
+  EXPECT_FLOAT_EQ(0.55709976f, heightmap[0]);
   EXPECT_FLOAT_EQ(0.525886f, heightmap[1000]);
   EXPECT_FLOAT_EQ(0.3915835f, heightmap[2000]);
   EXPECT_FLOAT_EQ(0.45404199f, heightmap[5000]);
