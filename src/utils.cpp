@@ -32,6 +32,14 @@ std::string to_string(uint32_t value)
     return str;
 }
 
+std::string to_string_f(float value)
+{   
+    std::stringstream ss;
+    ss << value;
+    std::string str = ss.str();
+    return str;
+}
+
 }
 
 void p_assert(bool condition, const std::string& message)
