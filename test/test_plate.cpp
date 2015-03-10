@@ -31,6 +31,19 @@ void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimens
   }
 }
 
+TEST(SimpleRandom, NextRepeatability)
+{
+  SimpleRandom sr1(1);
+  EXPECT_EQ(81414, sr1.next());
+  EXPECT_EQ(1328228615, sr1.next());
+  EXPECT_EQ(3215746516, sr1.next());
+
+  SimpleRandom sr999(999);
+  EXPECT_EQ(69012276, sr999.next());
+  EXPECT_EQ(3490172125, sr999.next());
+  EXPECT_EQ(3364058674, sr999.next());  
+}
+
 TEST(Noise, Repeatability)
 {
   WorldDimension wd(233, 111);
