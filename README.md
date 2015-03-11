@@ -8,14 +8,24 @@ AppVeyor
 
 This is a library to simulate plate tectonics.
 
-You can see a simulation using the library at work at: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
+How it looks like
+=================
+
+You can see a video of simulation based on an old version of this library: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
 
 How to build plate-tectonics
 ============================
 
-The project can be built using CMake (so you should install it, to build plate-tectonics).
-It permits to define how to build the project in a platform independent
-way. To build it on Linux you can run:
+We use [CMake](http://www.cmake.org/). Install it and then run the folowing commands
+
+### Linux
+
+```
+cmake . -G "Unix Makefiles"
+make
+```
+
+### Mac OS-X
 
 ```
 cmake .
@@ -24,7 +34,21 @@ make
 
 This should produce a library (libPlateTectonics.a).
 
-Not that this command will build the library in the same directory where the source files are hosted. Some prefer to build out of tree the library (i.e., in a separate dir). For example in this scenario:
+### Windows
+
+```
+cmake .
+cmake --build .
+```
+
+If you want to build also the examples run:
+
+```
+# instead of cmake .
+cmake . -DWITH_EXAMPLES=ON
+```
+
+Note that this command will build the library in the same directory where the source files are hosted. Some prefer to build out of tree the library (i.e., in a separate dir). For example in this scenario:
 
 ```
 -- plate-tectonics
@@ -47,7 +71,7 @@ cmake --help
 Running the examples
 ====================
 
-To run also the examples you need to install the library DevIL.
+To run also the examples you need to install the library libpng.
 
 From the root directory run:
 
@@ -71,7 +95,7 @@ make
 ./PlateTectonicsTest
 ```
 
-Currently the test coverage is rather poor, tests are present only for new code and tiny portion of the old code that were refactored.
+Currently the test coverage is still poor (but improving!_, tests are present only for new code and tiny portion of the old code that were refactored.
 
 Original project
 ================
@@ -95,7 +119,7 @@ Goals
 Bindings
 ========
 
-I am working on these bindings:
+We are working on these bindings:
 * Python [pyplatec](http://github.com/Mindwerks/pyplatec)
 * Haskell [hplatec](http://github.com/ftomassetti/hplatec)
 
