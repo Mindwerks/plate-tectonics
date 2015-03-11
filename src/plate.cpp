@@ -141,8 +141,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     float offset = (float)_randsource.next_double();
     float offset_sign = 2 * (int)(_randsource.next() % 2) - 1;
     offset *= offset * offset * offset_sign;
+    float offset2 = (float)_randsource.next_double();
+    float offset_sign2 = 2 * (int)(_randsource.next() % 2) - 1;
+    offset2 *= offset2 * offset2 * offset_sign2;    
     dx = 10 * dx + 3 * offset;
-    dy = 10 * dy + 3 * offset;
+    dy = 10 * dy + 3 * offset2;
 
     float fx = x + dx;
     float fy = y + dy;
