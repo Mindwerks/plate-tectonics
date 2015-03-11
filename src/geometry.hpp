@@ -28,36 +28,70 @@ using namespace std;
 
 class WorldDimension;
 
+/// A point with int coordinates.
 class IntPoint {
 public:
+    
+    /// Create a point with the given coordinates
     IntPoint(int x, int y);
+
+    /// X coordinate of the point
     int getX() const;
+
+    /// Y coordinate of the point
     int getY() const;
+
 private:
+
     int _x, _y;
 };
 
+/// Create a new point by subtracting the coordinates of the second
+/// point from the coordinate of the first.
 IntPoint operator-(const IntPoint& a, const IntPoint& b);
 
+
+/// A point with float coordinates.
 class FloatPoint {
 public:
+
+    /// Create a point with the given coordinates
     FloatPoint(float x, float y);
+
+    /// X coordinate of the point
     float getX() const;
+
+    /// Y coordinate of the point
     float getY() const;
+
+    /// Move a point by the given delta, wrapping it around the borders of
+    /// the world if needed.
+    /// The given point is assured to be contained in the World.
     void shift(float dx, float dy, const WorldDimension& _worldDimension);
-    IntPoint toInt() const {
-        return IntPoint((int)_x, (int)_y);
-    }
+
+    /// Translate to an IntPoint (using the truncate operation).
+    IntPoint toInt() const;
+
 private:
+
     float _x, _y;
 };
 
+/// Dimension of a Rectangle.
 class Dimension {
 public:
+
+    /// Initialize the dimension with the given values
     Dimension(uint32_t width, uint32_t height);
     Dimension(const Dimension& original);
+    
+    /// Width of the rectangle
     uint32_t getWidth() const;
+
+    /// Height of the rectangle
     uint32_t getHeight() const;
+
+    /// Area of the rectangle
     uint32_t getArea() const;
     bool contains(const uint32_t x, const uint32_t y) const;
     bool contains(const float x, const float y) const;
@@ -96,9 +130,7 @@ class FloatVector;
 class IntVector
 {
 public:
-    IntVector(int x, int y)
-        : _x(x), _y(y)
-    { }
+    IntVector(int x, int y);
     int x() const { return _x; }
     int y() const { return _y; }
     static IntVector fromDistance(const IntPoint& a, const IntPoint& b);
@@ -113,15 +145,11 @@ IntVector operator-(const IntVector& a, const IntVector& b);
 class FloatVector
 {
 public:
-    FloatVector(float x, float y)
-        : _x(x), _y(y)
-    { }
+    FloatVector(float x, float y);
     float x() const { return _x; }
     float y() const { return _y; }
     float length() const;
-    IntVector toIntVector() const {
-        return IntVector((int)_x, (int)_y);
-    }
+    IntVector toIntVector() const;
     float dotProduct(const FloatVector& other) const;
 private:
     float _x, _y;

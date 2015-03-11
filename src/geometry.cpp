@@ -73,6 +73,10 @@ void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension
     p_assert(_worldDimension.contains(*this), "(FloatPoint::shift)");
 }
 
+IntPoint FloatPoint::toInt() const {
+    return IntPoint((int)_x, (int)_y);
+}
+
 //
 // Dimension
 //
@@ -213,6 +217,10 @@ uint32_t WorldDimension::largerSize() const
 
 namespace Platec {
 
+IntVector::IntVector(int x, int y)
+    : _x(x), _y(y)
+{ }
+
 float IntVector::length() const {
     float nx = _x;
     float ny = _y;
@@ -233,6 +241,14 @@ FloatVector IntVector::toUnitVector() const {
 
 bool operator==(const FloatVector& a, const FloatVector& b) {
     return a.x() == b.x() && a.y() == b.y();
+}
+
+FloatVector::FloatVector(float x, float y)
+    : _x(x), _y(y)
+{ }
+
+IntVector FloatVector::toIntVector() const {
+    return IntVector((int)_x, (int)_y);
 }
 
 FloatVector operator-(const FloatVector& a, const FloatVector& b) {
