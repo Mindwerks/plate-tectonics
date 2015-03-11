@@ -57,11 +57,13 @@ int main(int argc, char* argv[])
 
     printf(" * simulation completed\n");
     const float* heightmap = platec_api_get_heightmap(p);
-    float copy[width * height];
-    memcpy(copy, heightmap, sizeof(float)*width*height);
+    float* copy = new float[width * height];
+    memcpy(copy, heightmap, sizeof(float) * width * height);
+
     printf(" * heightmap obtained\n");
 
-    //normalize(copy, width * height);
+    normalize(copy, width * height);
 
     produce_image(copy, width, height, "simulation_rect.png");
+    delete copy;
 }
