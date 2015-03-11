@@ -33,6 +33,11 @@ void produce_image(float* heightmap, int width, int height, const char* filename
     writeImage((char*)filename, width, height, heightmap, "FOO");
 }
 
+void produce_image_colors(float* heightmap, int width, int height, const char* filename)
+{
+    writeImageColors((char*)filename, width, height, heightmap, "FOO");
+}
+
 int main(int argc, char* argv[])
 {
     std::set_terminate( handler );
@@ -64,6 +69,6 @@ int main(int argc, char* argv[])
 
     normalize(copy, width * height);
 
-    produce_image(copy, width, height, "simulation_rect.png");
+    produce_image_colors(copy, width, height, "simulation_rect.png");
     delete copy;
 }

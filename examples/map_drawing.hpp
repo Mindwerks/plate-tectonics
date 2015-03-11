@@ -14,11 +14,20 @@ inline void setRGB(png_byte *ptr, int val);
 // also written into the image file
 int writeImage(const char* filename, int width, int height, float *heightmap, const char* title);
 
+int writeImageColors(const char* filename, int width, int height, float *heightmap, const char* title);
+
 inline void setRGB(png_byte *ptr, int val)
 {
   ptr[0] = val;
   ptr[1] = val;
   ptr[2] = val;
+}
+
+inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
+{
+  ptr[0] = r;
+  ptr[1] = g;
+  ptr[2] = b;
 }
 
 
