@@ -120,7 +120,7 @@ void Bounds::grow(int dx, int dy)
 
 Platec::Rectangle Bounds::asRect() const 
 {
-    p_assert(_position.getX() > 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");  
+    p_assert(_position.getX() > 0.0f && _position.getY() >= 0.0f, "(Bounds::asRect) Left and top must be positive");  
     const uint32_t ilft = leftAsUint();
     const uint32_t itop = topAsUint();
     const uint32_t irgt = ilft + _dimension.getWidth();
