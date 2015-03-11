@@ -78,8 +78,12 @@ Mass::Mass(float mass_, float cx_, float cy_)
 void Mass::incMass(float delta)
 {
     mass += delta;
-    if (mass < 0) {
-        throw runtime_error("(Mass::incMass) does not make sense");
+    if (mass < 0.0f && mass > -0.001f) {
+        mass = 0.0f;
+    }
+    if (mass < 0.0f) {
+        throw runtime_error(string("(Mass::incMass) a negative delta is not allowed: ")
+            + Platec::to_string_f(delta) + ", resulting mass: " + Platec::to_string_f(mass));
     }
 }
 
