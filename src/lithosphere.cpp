@@ -84,6 +84,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
     float aggr_ratio_rel, uint32_t num_cycles) throw(invalid_argument) :
     hmap(width, height),
     amap(width, height),
+    imap(width, height),
     plates(0), 
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel), 
@@ -149,18 +150,15 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
                _worldDimension.getWidth()*sizeof(float));
     }
 
-    imap = new uint32_t[_worldDimension.getArea()];
-
     delete[] tmp;
 }
 
 lithosphere::~lithosphere() throw()
 {
     delete[] plates; plates = 0;
-    delete[] imap;   imap = 0;
 }
 
-void lithosphere::growPlates(plateArea*& area, uint32_t*& owner)
+void lithosphere::growPlates(plateArea*& area, IndexMap& owner)
 {
     // "Grow" plates from their origins until surface is fully populated.
     uint32_t max_border = 1;
@@ -286,10 +284,9 @@ try {
         imap[p] = imap[map_area - i - 1];
     }
 
-    uint32_t* owner = imap; // Create an alias.
-    memset(owner, 255, map_area * sizeof(uint32_t));
+    imap.set_all(0xFFFFFFFF);
 
-    growPlates(area, owner);
+    growPlates(area, imap);
 
     plates = new plate*[num_plates];
 
@@ -312,7 +309,7 @@ try {
             for (uint32_t x = x0; x < x1; ++x, ++j)
             {
                 uint32_t k = _worldDimension.normalizedIndexOf(x, y);
-                plt[j] = hmap[k] * (owner[k] == i);
+                plt[j] = hmap[k] * (imap[k] == i);
             }
 
         // Create plate.
@@ -411,7 +408,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
     uint32_t& continental_collisions)
 {
     hmap.set_all(0);
-    memset(imap, 255, map_area * sizeof(uint32_t));
+    imap.set_all(0xFFFFFFFF);
     for (uint32_t i = 0; i < num_plates; ++i)
     {
       const uint32_t x0 = plates[i]->getLeftAsUint();
@@ -641,8 +638,8 @@ try {
     }
 
     const uint32_t map_area = _worldDimension.getArea();
-    const uint32_t* prev_imap = imap;
-    imap = new uint32_t[map_area];
+    const IndexMap prev_imap = imap;
+    imap = IndexMap(_worldDimension.getWidth(), _worldDimension.getHeight());
 
     // Realize accumulated external forces to each plate.
     for (uint32_t i = 0; i < num_plates; ++i)
@@ -734,7 +731,6 @@ try {
                    OCEANIC_BASE * crust_age * MULINV_MAX_BUOYANCY_AGE;
     }
 
-    delete[] prev_imap;
     ++iter_count;
 } catch (const exception& e){
     std::string msg = "Problem during update: ";
@@ -855,5 +851,5 @@ uint32_t lithosphere::getHeight() const
 
 uint32_t* lithosphere::getPlatesMap() const throw()
 {
-    return imap;
+    return imap.raw_data();
 }

@@ -156,5 +156,6 @@ private:
 
 typedef Matrix<float> HeightMap;
 typedef Matrix<uint32_t> AgeMap;
+typedef Matrix<uint32_t> IndexMap;
 
 #endif

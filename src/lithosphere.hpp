@@ -105,7 +105,7 @@ class lithosphere
   			uint32_t& oceanic_collisions,
     		uint32_t& continental_collisions);
   	void updateCollisions();
-  	void growPlates(plateArea*& area, uint32_t*& owner);
+  	void growPlates(plateArea*& area, IndexMap& owner);
   	void removeEmptyPlates(uint32_t*& indexFound);
   	void resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
         const uint32_t& x_mod, const uint32_t& y_mod,
@@ -142,7 +142,7 @@ class lithosphere
 	WorldPoint randomPosition();
 
 	HeightMap hmap; ///< Height map representing the topography of system.
-	uint32_t* imap; ///< Plate index map of the "owner" of each map point.
+	IndexMap imap; ///< Plate index map of the "owner" of each map point.
 	AgeMap amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.
 
