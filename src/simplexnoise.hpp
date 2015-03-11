@@ -23,6 +23,8 @@
 #ifndef SIMPLEX_H_
 #define SIMPLEX_H_
 
+#include "utils.hpp"
+
 
 /* 2D, 3D and 4D Simplex Noise functions return 'random' values in (-1, 1).
 
@@ -118,7 +120,7 @@ float scaled_raw_noise_4d( const float loBound,
                         const float w);
 
 void normalize(float* arr, int size);
-int simplexnoise(long seed, float* map, int width, int height, float roughness);
+int simplexnoise(int32_t seed, float* map, int width, int height, float roughness);
 
 
 // Raw Simplex noise - a single noise value.

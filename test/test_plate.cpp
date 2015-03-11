@@ -20,23 +20,79 @@
 #include "plate.hpp"
 #include "gtest/gtest.h"
 #include "noise.hpp"
+#include "simplexnoise.hpp"
+
+void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimension& wd)
+{
+  // this is necessary because the noise is applied only to cell with a value
+  // equal to zero
+  memset(heightmap, 0, sizeof(float) * wd.getArea());
+  createNoise(heightmap, wd, SimpleRandom(seed), true);
+  for (int i=0; i<wd.getArea(); i++){
+    if (heightmap[i]<0.0f){
+      heightmap[i] *= -1.0f;
+    }
+  }
+}
+
+TEST(SimpleRandom, NextRepeatability)
+{
+  SimpleRandom sr1(1);
+  EXPECT_EQ(81414, sr1.next());
+  EXPECT_EQ(1328228615, sr1.next());
+  EXPECT_EQ(3215746516, sr1.next());
+
+  SimpleRandom sr999(999);
+  EXPECT_EQ(69012276, sr999.next());
+  EXPECT_EQ(3490172125, sr999.next());
+  EXPECT_EQ(3364058674, sr999.next());  
+}
+
+TEST(Noise, SimplexRawNoiseRepeatability)
+{
+  EXPECT_FLOAT_EQ(-0.12851511f, raw_noise_4d(0.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(-0.83697641f, raw_noise_4d(-0.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(-0.5346415f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
+  EXPECT_FLOAT_EQ(0.089452535f, raw_noise_4d(0.3f, 70.78f, 1.677f, 0.0009f));
+  EXPECT_FLOAT_EQ(-0.063593678f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
+}
+
+TEST(Noise, SimplexNoiseRepeatability)
+{
+  WorldDimension wd(233, 111);
+  float *heightmap = new float[wd.getArea()];
+  initializeHeightmapWithNoise(123, heightmap, wd);
+
+  EXPECT_FLOAT_EQ(0.55709976f, heightmap[0]);
+  EXPECT_FLOAT_EQ(0.525886f, heightmap[1000]);
+  EXPECT_FLOAT_EQ(0.3915835f, heightmap[2000]);
+  EXPECT_FLOAT_EQ(0.45404199f, heightmap[5000]);
+  EXPECT_FLOAT_EQ(0.64141226f, heightmap[8000]);
+  EXPECT_FLOAT_EQ(0.5614078f, heightmap[11000]);
+  EXPECT_FLOAT_EQ(0.57266176f, heightmap[13000]);
+
+  delete[] heightmap;
+}
 
 TEST(CreatePlate, SquareDoesNotExplode)
 {
-  const float *heightmap = new float[40000]; // 200 x 200
+  float *heightmap = new float[40000]; // 200 x 200
+  initializeHeightmapWithNoise(678, heightmap, WorldDimension(200, 200));
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 200));
 }
 
 TEST(CreatePlate, NotSquareDoesNotExplode)
 {
-  const float *heightmap = new float[80000]; // 200 x 400
+  float *heightmap = new float[80000]; // 200 x 400
+  initializeHeightmapWithNoise(678, heightmap, WorldDimension(200, 400));
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 400));
 }
 
 // TODO test also when plate is large as world
 TEST(Plate, calculateCrust)
 {
-  const float *heightmap = new float[256 * 128];
+  float *heightmap = new float[256 * 128];
+  initializeHeightmapWithNoise(678, heightmap, WorldDimension(256, 128));
   plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));	
   uint32_t x, y, index;
   float w_crust, e_crust, n_crust, s_crust;
@@ -151,8 +207,9 @@ private:
 
 TEST(Plate, addCollision)
 {
-  const float *heightmap = new float[256 * 128];
-  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));  
+  float *heightmap = new float[256 * 128];
+  initializeHeightmapWithNoise(678, heightmap, WorldDimension(256, 128));
+  plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128)); 
 
   MockSegmentData* mSeg = new MockSegmentData(7, 789);
   MockSegments* mSegments = new MockSegments(IntPoint(123, 78), 99, mSeg);
@@ -240,7 +297,7 @@ TEST(Plate, addCrustByCollision)
 
   float *heightmap = new float[worldWidth * worldHeight];
   WorldDimension wd(worldWidth, worldHeight);
-  createNoise(heightmap, wd, SimpleRandom(1), true);
+  initializeHeightmapWithNoise(1, heightmap, wd);
   
   // Suppose the plate start at 170, 70 and ends at 250, 125
   plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
@@ -297,13 +354,7 @@ TEST(Plate, addCrustBySubduction)
   const uint32_t worldHeight = 128;
 
   float *heightmap = new float[worldWidth * worldHeight];
-  WorldDimension wd(worldWidth, worldHeight);
-  createNoise(heightmap, wd, SimpleRandom(1), true);
-  for (int i=0; i<worldWidth * worldHeight; i++){
-    if (heightmap[i]<0.0f){
-      heightmap[i] *= -1.0f;
-    }
-  }
+  initializeHeightmapWithNoise(1, heightmap, WorldDimension(worldWidth, worldHeight));
   
   // Suppose the plate start at 170, 70 and ends at 250, 125
   plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));

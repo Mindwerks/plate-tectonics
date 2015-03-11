@@ -21,6 +21,11 @@
 #include "plate.hpp"
 #include "mass.hpp"
 
+// Missing on Windows
+#ifndef M_PI
+#define M_PI 3.141592654
+#endif
+
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
       velocity(1),
