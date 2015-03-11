@@ -103,7 +103,7 @@ float find_value_for_quantile(const float quantile, const float* array, const ui
     float value = 0.5;
     float th_step = 0.5;
 
-    while (th_step > 0.001)
+    while (th_step > 0.00001)
     {
         uint32_t count = 0;
         for (uint32_t i = 0; i < size; ++i)
@@ -181,7 +181,7 @@ int writeImageColors(const char* filename, int width, int height, float *heightm
 
   // Write image data  
   q15 = find_value_for_quantile(0.15f, heightmap, width * height);
-  q65 = find_value_for_quantile(0.65f, heightmap, width * height);
+  q65 = find_value_for_quantile(0.75f, heightmap, width * height);
   q90 = find_value_for_quantile(0.90f, heightmap, width * height);
   q95 = find_value_for_quantile(0.95f, heightmap, width * height);
   q99 = find_value_for_quantile(0.99f, heightmap, width * height);

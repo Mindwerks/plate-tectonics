@@ -38,6 +38,17 @@ void produce_image_colors(float* heightmap, int width, int height, const char* f
     writeImageColors((char*)filename, width, height, heightmap, "FOO");
 }
 
+void save_image(void* p, const char* filename, const int width, const int height)
+{
+    const float* heightmap = platec_api_get_heightmap(p);
+    float* copy = new float[width * height];
+    memcpy(copy, heightmap, sizeof(float) * width * height);
+    normalize(copy, width * height);
+
+    produce_image_colors(copy, width, height, filename);
+    delete copy;
+}
+
 int main(int argc, char* argv[])
 {
     std::set_terminate( handler );
@@ -55,20 +66,14 @@ int main(int argc, char* argv[])
         step++;
         platec_api_step(p);
 
-        if (step % 50 == 0) {
+        if (step % 10 == 0) {
             printf(" * step %i\n", step);
+            char filename[50];
+            sprintf(filename, "simulation_rect_%i.png", step);
+            save_image(p, filename, width, height);
         }
     }
 
     printf(" * simulation completed\n");
-    const float* heightmap = platec_api_get_heightmap(p);
-    float* copy = new float[width * height];
-    memcpy(copy, heightmap, sizeof(float) * width * height);
-
-    printf(" * heightmap obtained\n");
-
-    normalize(copy, width * height);
-
-    produce_image_colors(copy, width, height, "simulation_rect.png");
-    delete copy;
+    save_image(p, "simulation_rect.png", width, height);
 }

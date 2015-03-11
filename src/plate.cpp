@@ -216,7 +216,7 @@ float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
                 map[i], age_map[i], activeContinent);
 
             _mass.incMass(-1.0f * map[i]);
-            map[i] = 0;
+            map[i] = 0.0f;
         }
       }
     }
