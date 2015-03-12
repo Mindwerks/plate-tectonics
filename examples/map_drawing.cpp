@@ -1,5 +1,8 @@
 #include "map_drawing.hpp"
 #include "utils.hpp"
+#include <stdexcept>
+
+using namespace std;
 
 int writeImage(const char* filename, int width, int height, float *heightmap, const char* title)
 {
@@ -118,9 +121,32 @@ float find_value_for_quantile(const float quantile, const float* array, const ui
     return value;
 }
 
+void gradient(png_byte *ptr, png_byte ra, png_byte ga, png_byte ba, png_byte rb, png_byte gb, png_byte bb, float h, float ha, float hb)
+{
+  if (ha>hb) {
+    printf("BAD1\n");
+    throw runtime_error("BAD1\n");
+  }
+  if (hb<h) {
+    printf("BAD2\n");
+    throw runtime_error("BAD2\n");
+  }
+  if (ha>h) {
+    printf("BAD3\n");
+    throw runtime_error("BAD3\n");
+  }
+  float h_delta = hb - ha;
+  float simil_b = (h - ha)/h_delta;
+  float simil_a = (1.0f - simil_b);
+  setColor(ptr, 
+    (float)simil_a * ra + (float)simil_b * rb,
+    (float)simil_a * ga + (float)simil_b * gb,
+    (float)simil_a * ba + (float)simil_b * bb);
+}
+
 int writeImageColors(const char* filename, int width, int height, float *heightmap, const char* title)
 {
-  float q15, q65, q90, q95, q99;
+  float q15, q70, q75, q90, q95, q99;
   int code = 0;
   FILE *fp;
   png_structp png_ptr;
@@ -181,15 +207,16 @@ int writeImageColors(const char* filename, int width, int height, float *heightm
 
   // Write image data  
   q15 = find_value_for_quantile(0.15f, heightmap, width * height);
-  q65 = find_value_for_quantile(0.75f, heightmap, width * height);
+  q70 = find_value_for_quantile(0.70f, heightmap, width * height);
+  q75 = find_value_for_quantile(0.75f, heightmap, width * height);
   q90 = find_value_for_quantile(0.90f, heightmap, width * height);
   q95 = find_value_for_quantile(0.95f, heightmap, width * height);
   q99 = find_value_for_quantile(0.99f, heightmap, width * height);
-  printf(" * value for q .15 %f\n", q15);
+  /*printf(" * value for q .15 %f\n", q15);
   printf(" * value for q .65 %f\n", q65);
   printf(" * value for q .90 %f\n", q90);
   printf(" * value for q .95 %f\n", q95);
-  printf(" * value for q .99 %f\n", q99);
+  printf(" * value for q .99 %f\n", q99);*/
 
   int x, y;
   for (y=0 ; y<height ; y++) {
@@ -199,31 +226,40 @@ int writeImageColors(const char* filename, int width, int height, float *heightm
       float res = 0.0f;
 
       if (h < q15) {
-        setColor(&(row[x*3]), 0, 0, 255);                  
+        gradient(&(row[x*3]), 0, 0, 255, 0, 20, 200, h, 0.0f, q15);                 
         continue;
       }
 
-      if (h < q65) {
-        setColor(&(row[x*3]), 0, 20, 200);                  
+      if (h < q70) {
+        gradient(&(row[x*3]), 0, 20, 200, 50, 80, 225, h, q15, q70);                 
+        continue;
+      }
+
+      if (h < q75) {
+        gradient(&(row[x*3]), 50, 80, 225, 135, 237, 235, h, q70, q75);
         continue;
       }
 
       if (h < q90) {
-        setColor(&(row[x*3]), 20, 240, 20);                  
+        gradient(&(row[x*3]), 88, 173, 49, 218, 226, 58, h, q75, q90);
+        //setColor(&(row[x*3]), 20, 240, 20);                  
         continue;
       }
 
       if (h < q95) {
-        setColor(&(row[x*3]), 215, 219, 137);                  
+        gradient(&(row[x*3]), 218, 226, 58, 251, 252, 42, h, q90, q95);
+        //setColor(&(row[x*3]), 215, 219, 137);                  
         continue;
       }
 
       if (h < q99) {
-        setColor(&(row[x*3]), 219, 185, 137);                  
+        gradient(&(row[x*3]), 251, 252, 42, 91, 28, 13, h, q95, q99);
+        //setColor(&(row[x*3]), 219, 185, 137);                  
         continue;
       }
 
-      setColor(&(row[x*3]), 240, 20, 20);
+
+      gradient(&(row[x*3]), 91, 28, 13, 51, 0, 4, h, q99, 1.0f);
 
       if (h <= 0.0f) {
         res = 0;        

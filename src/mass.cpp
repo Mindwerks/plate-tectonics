@@ -78,7 +78,7 @@ Mass::Mass(float mass_, float cx_, float cy_)
 void Mass::incMass(float delta)
 {
     mass += delta;
-    if (mass < 0.0f && mass > -0.001f) {
+    if (mass < 0.0f && mass > -0.01f) {
         mass = 0.0f;
     }
     if (mass < 0.0f) {

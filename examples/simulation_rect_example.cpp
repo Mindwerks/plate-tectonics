@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         step++;
         platec_api_step(p);
 
-        if (step % 10 == 0) {
+        if (step % 100 == 0) {
             printf(" * step %i\n", step);
             char filename[50];
             sprintf(filename, "simulation_rect_%i.png", step);
