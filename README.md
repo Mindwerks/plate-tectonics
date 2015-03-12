@@ -11,9 +11,11 @@ This is a library to simulate plate tectonics.
 How it looks like
 =================
 
-The library offers an API to generate heightmaps and some other data about the world resulting from the simulation. The examples permit also to generate maps like this one:
+The library offers an API to generate heightmaps and some other data about the world resulting from the simulation. The example permits also to generate maps like this one:
 
-![](https://raw.githubusercontent.com/Mindwerks/plate-tectonics/master/screenshots/map.png)
+![](https://raw.githubusercontent.com/Mindwerks/plate-tectonics/master/screenshots/map_grayscale.png)
+
+![](https://raw.githubusercontent.com/Mindwerks/plate-tectonics/master/screenshots/map_colors.png)
 
 You can see a video of simulation based on an old version of this library: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
 
