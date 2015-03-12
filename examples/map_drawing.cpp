@@ -4,7 +4,22 @@
 
 using namespace std;
 
-int writeImage(const char* filename, int width, int height, float *heightmap, const char* title)
+inline void setGray(png_byte *ptr, int val)
+{
+  ptr[0] = val;
+  ptr[1] = val;
+  ptr[2] = val;
+}
+
+inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
+{
+  ptr[0] = r;
+  ptr[1] = g;
+  ptr[2] = b;
+}
+
+int writeImage(const char* filename, int width, int height, float *heightmap, const char* title,
+  void (drawFunction)(png_structp&, png_bytep&, int, int, float*))
 {
   int code = 0;
   FILE *fp;
@@ -65,29 +80,8 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
   row = (png_bytep) malloc(3 * width * sizeof(png_byte));
 
   // Write image data
-  int x, y;
-  for (y=0 ; y<height ; y++) {
-    for (x=0 ; x<width ; x++) {
-
-      float h = heightmap[(y*width + x)];          
-      float res = 0.0f;
-      if (h <= 0.0f) {
-        res = 0;
-      } else if (h >= 1.0f) {
-        res = 255;
-      } else {
-        res = (h * 255.0f);
-      }
-
-      setRGB(&(row[x*3]), res);
-    }
-    png_write_row(png_ptr, row);
-  }
-
-
-
+  drawFunction(png_ptr, row, width, height, heightmap);
           
-
   // End write
   png_write_end(png_ptr, NULL);
 
@@ -99,7 +93,6 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
 
   return code;
 }
-
 
 float find_value_for_quantile(const float quantile, const float* array, const uint32_t size)
 {
@@ -144,79 +137,36 @@ void gradient(png_byte *ptr, png_byte ra, png_byte ga, png_byte ba, png_byte rb,
     (float)simil_a * ba + (float)simil_b * bb);
 }
 
-int writeImageColors(const char* filename, int width, int height, float *heightmap, const char* title)
+void drawGrayImage(png_structp& png_ptr, png_bytep& row, int width, int height, float *heightmap)
 {
-  float q15, q70, q75, q90, q95, q99;
-  int code = 0;
-  FILE *fp;
-  png_structp png_ptr;
-  png_infop info_ptr;
-  png_bytep row;
-  
-  // Open file for writing (binary mode)
-  fp = fopen(filename, "wb");
-  if (fp == NULL) {
-    fprintf(stderr, "Could not open file %s for writing\n", filename);
-    code = 1;
-    goto finalise;
+  int x, y;
+  for (y=0 ; y<height ; y++) {
+    for (x=0 ; x<width ; x++) {
+
+      float h = heightmap[(y*width + x)];          
+      float res = 0.0f;
+      if (h <= 0.0f) {
+        res = 0;
+      } else if (h >= 1.0f) {
+        res = 255;
+      } else {
+        res = (h * 255.0f);
+      }
+
+      setGray(&(row[x*3]), res);
+    }
+    png_write_row(png_ptr, row);
   }
+}
 
-  // Initialize write structure
-  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-  if (png_ptr == NULL) {
-    fprintf(stderr, "Could not allocate write struct\n");
-    code = 1;
-    goto finalise;
-  }
-
-  // Initialize info structure
-  info_ptr = png_create_info_struct(png_ptr);
-  if (info_ptr == NULL) {
-    fprintf(stderr, "Could not allocate info struct\n");
-    code = 1;
-    goto finalise;
-  }
-
-  // Setup Exception handling
-  if (setjmp(png_jmpbuf(png_ptr))) {
-    fprintf(stderr, "Error during png creation\n");
-    code = 1;
-    goto finalise;
-  }
-
-  png_init_io(png_ptr, fp);
-
-  // Write header (8 bit colour depth)
-  png_set_IHDR(png_ptr, info_ptr, width, height,
-      8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
-      PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-  // Set title
-  if (title != NULL) {
-    png_text title_text;
-    title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-    title_text.key = "Title";
-    title_text.text = (char*)title;
-    png_set_text(png_ptr, info_ptr, &title_text, 1);
-  }
-
-  png_write_info(png_ptr, info_ptr);
-
-  // Allocate memory for one row (3 bytes per pixel - RGB)
-  row = (png_bytep) malloc(3 * width * sizeof(png_byte));
-
-  // Write image data  
-  q15 = find_value_for_quantile(0.15f, heightmap, width * height);
-  q70 = find_value_for_quantile(0.70f, heightmap, width * height);
-  q75 = find_value_for_quantile(0.75f, heightmap, width * height);
-  q90 = find_value_for_quantile(0.90f, heightmap, width * height);
-  q95 = find_value_for_quantile(0.95f, heightmap, width * height);
-  q99 = find_value_for_quantile(0.99f, heightmap, width * height);
-  /*printf(" * value for q .15 %f\n", q15);
-  printf(" * value for q .65 %f\n", q65);
-  printf(" * value for q .90 %f\n", q90);
-  printf(" * value for q .95 %f\n", q95);
-  printf(" * value for q .99 %f\n", q99);*/
+void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height, float *heightmap)
+{  
+  float q15 = find_value_for_quantile(0.15f, heightmap, width * height);
+  float q70 = find_value_for_quantile(0.70f, heightmap, width * height);
+  float q75 = find_value_for_quantile(0.75f, heightmap, width * height);
+  float q90 = find_value_for_quantile(0.90f, heightmap, width * height);
+  float q95 = find_value_for_quantile(0.95f, heightmap, width * height);
+  float q99 = find_value_for_quantile(0.99f, heightmap, width * height);
 
   int x, y;
   for (y=0 ; y<height ; y++) {
@@ -241,23 +191,19 @@ int writeImageColors(const char* filename, int width, int height, float *heightm
       }
 
       if (h < q90) {
-        gradient(&(row[x*3]), 88, 173, 49, 218, 226, 58, h, q75, q90);
-        //setColor(&(row[x*3]), 20, 240, 20);                  
+        gradient(&(row[x*3]), 88, 173, 49, 218, 226, 58, h, q75, q90);              
         continue;
       }
 
       if (h < q95) {
-        gradient(&(row[x*3]), 218, 226, 58, 251, 252, 42, h, q90, q95);
-        //setColor(&(row[x*3]), 215, 219, 137);                  
+        gradient(&(row[x*3]), 218, 226, 58, 251, 252, 42, h, q90, q95);              
         continue;
       }
 
       if (h < q99) {
-        gradient(&(row[x*3]), 251, 252, 42, 91, 28, 13, h, q95, q99);
-        //setColor(&(row[x*3]), 219, 185, 137);                  
+        gradient(&(row[x*3]), 251, 252, 42, 91, 28, 13, h, q95, q99);              
         continue;
       }
-
 
       gradient(&(row[x*3]), 91, 28, 13, 51, 0, 4, h, q99, 1.0f);
 
@@ -269,23 +215,18 @@ int writeImageColors(const char* filename, int width, int height, float *heightm
         res = (h * 255.0f);
       }      
 
-      setRGB(&(row[x*3]), res);
+      setGray(&(row[x*3]), res);
     }
     png_write_row(png_ptr, row);
   }
+}
 
+int writeImageGray(const char* filename, int width, int height, float *heightmap, const char* title)
+{
+  return writeImage(filename, width, height, heightmap, title, drawGrayImage);
+}
 
-
-          
-
-  // End write
-  png_write_end(png_ptr, NULL);
-
-  finalise:
-  if (fp != NULL) fclose(fp);
-  if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-  if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-  if (row != NULL) free(row);
-
-  return code;
+int writeImageColors(const char* filename, int width, int height, float *heightmap, const char* title)
+{
+  return writeImage(filename, width, height, heightmap, title, drawColorsImage);
 }

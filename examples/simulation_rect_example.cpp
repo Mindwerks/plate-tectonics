@@ -30,7 +30,7 @@ void handler() {
 
 void produce_image(float* heightmap, int width, int height, const char* filename)
 {
-    writeImage((char*)filename, width, height, heightmap, "FOO");
+    writeImageGray((char*)filename, width, height, heightmap, "FOO");
 }
 
 void produce_image_colors(float* heightmap, int width, int height, const char* filename)
