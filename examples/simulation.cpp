@@ -14,7 +14,7 @@
 
 #include <execinfo.h>
 
-void produce_image(float* heightmap, int width, int height, const char* filename)
+void produce_image_gray(float* heightmap, int width, int height, const char* filename)
 {
     writeImageGray((char*)filename, width, height, heightmap, "FOO");
 }
@@ -24,14 +24,17 @@ void produce_image_colors(float* heightmap, int width, int height, const char* f
     writeImageColors((char*)filename, width, height, heightmap, "FOO");
 }
 
-void save_image(void* p, const char* filename, const int width, const int height)
+void save_image(void* p, const char* filename, const int width, const int height, bool colors)
 {
     const float* heightmap = platec_api_get_heightmap(p);
     float* copy = new float[width * height];
     memcpy(copy, heightmap, sizeof(float) * width * height);
     normalize(copy, width * height);
 
-    produce_image_colors(copy, width, height, filename);
+    if (colors)
+        produce_image_colors(copy, width, height, filename);
+    else
+        produce_image_gray(copy, width, height, filename);
     delete copy;
 }
 
@@ -137,7 +140,7 @@ int main(int argc, char* argv[])
     Params params;
     fill_params(params, argc, argv);
 
-    printf("Plate-tectonics simulation example");
+    printf("Plate-tectonics simulation example\n");
     printf(" seed     : %d\n", params.seed);
     printf(" width    : %d\n", params.width);
     printf(" height   : %d\n", params.height);
@@ -162,12 +165,12 @@ int main(int argc, char* argv[])
             char filename[250];
             sprintf(filename, "%s_%i.png", params.filename, step);
             printf(" * step %i (filename %s)\n", step, filename);
-            save_image(p, filename, params.width, params.height);
+            save_image(p, filename, params.width, params.height, params.colors);
         }
     }
     
     char filename[250];
     sprintf(filename, "%s.png", params.filename);
-    save_image(p, filename, params.width, params.height);
+    save_image(p, filename, params.width, params.height, params.colors);
     printf(" * simulation completed (filename %s)\n", filename);
 }
