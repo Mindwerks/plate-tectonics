@@ -295,8 +295,7 @@ try {
     plates = new plate*[num_plates];
 
     // Extract and create plates from initial terrain.
-    for (uint32_t i = 0; i < num_plates; ++i)
-    {
+    for (uint32_t i = 0; i < num_plates; ++i) {
         area[i].wdt = _worldDimension.xCap(area[i].wdt);
         area[i].hgt = _worldDimension.yCap(area[i].hgt);
 
@@ -309,12 +308,12 @@ try {
         float* plt = new float[width * height];
 
         // Copy plate's height data from global map into local map.
-        for (uint32_t y = y0, j = 0; y < y1; ++y)
-            for (uint32_t x = x0; x < x1; ++x, ++j)
-            {
+        for (uint32_t y = y0, j = 0; y < y1; ++y) {
+            for (uint32_t x = x0; x < x1; ++x, ++j) {
                 uint32_t k = _worldDimension.normalizedIndexOf(x, y);
                 plt[j] = hmap[k] * (imap[k] == i);
             }
+        }
 
         // Create plate.
         plates[i] = new plate(_randsource.next(), plt, width, height, x0, y0, i, _worldDimension);
