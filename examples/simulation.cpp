@@ -75,6 +75,12 @@ void fill_params(Params& params, int argc, char* argv[])
                 printf("error: a parameter should follow -s\n");
                 exit(1);
             }
+            long seed = atol(argv[p+1]);
+            if (seed==0){
+                printf("error: not a number\n");
+                exit(1);   
+            }            
+            params.seed = seed;
             p += 2;
         } else if (0 == strcmp(argv[p], "--dim")) {
             if (p + 2 >= argc){
