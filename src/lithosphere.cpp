@@ -292,6 +292,11 @@ try {
 
     growPlates(area, imap);
 
+    // check all the points of the map are owned
+    for (int i=0; i < imap.area(); i++){
+        p_assert(imap[i]<num_plates, "A point was not assigned to any plate");
+    }
+
     plates = new plate*[num_plates];
 
     // Extract and create plates from initial terrain.
@@ -357,6 +362,8 @@ void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, co
         const uint32_t& x_mod, const uint32_t& y_mod,
         const float*& this_map, const uint32_t*& this_age, uint32_t& continental_collisions)
 {
+    p_assert(i<num_plates, "Given invalid plate index");
+
     // Record collisions to both plates. This also creates
     // continent segment at the collided location to plates.
     uint32_t this_area = plates[i]->addCollision(x_mod, y_mod);
@@ -697,8 +704,6 @@ try {
             // who was located at this point before plates moved.
             imap[i] = prev_imap[i];
 
-            p_assert(imap[i] < num_plates, "Previous index map has no owner!");
-
             // If this is oceanic crust then add buoyancy to it.
             // Magma that has just crystallized into oceanic crust
             // is more buoyant than that which has had a lot of
@@ -706,8 +711,11 @@ try {
             amap[i] = iter_count;
             hmap[i] = OCEANIC_BASE * BUOYANCY_BONUS_X;
 
-            plates[imap[i]]->setCrust(x, y, OCEANIC_BASE,
-                iter_count);
+            // This should probably not happen
+            if (imap[i] < num_plates) {
+                plates[imap[i]]->setCrust(x, y, OCEANIC_BASE,
+                    iter_count);
+            }
 
         } else if (++indexFound[imap[i]] && hmap[i] <= 0){
             puts("Occupied point has no land mass!");
