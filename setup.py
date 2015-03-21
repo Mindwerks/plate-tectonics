@@ -3,8 +3,7 @@ import os
 
 extra_compile_args = ""
 
-sources = [ 'platec_src/platecmodule.cpp',
-            'platec_src/platecapi.cpp']
+sources = [ 'platec_src/platecmodule.cpp']
 for f in os.listdir("plate-tectonics/src"):
   if f.endswith(".cpp"):
     sources.append("plate-tectonics/src/%s" % f)
