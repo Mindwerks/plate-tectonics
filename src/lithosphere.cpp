@@ -99,6 +99,10 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
     _randsource(seed),
     _steps(0)
 {
+    if (width < 5 || height < 5){
+        throw runtime_error("Width and height should be >=5");
+    }
+
     WorldDimension tmpDim = WorldDimension(width+1, height+1);
     const uint32_t A = tmpDim.getArea();
     float* tmp = new float[A];

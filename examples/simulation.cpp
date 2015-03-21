@@ -87,8 +87,8 @@ void fill_params(Params& params, int argc, char* argv[])
                 printf("error: not a number\n");
                 exit(1);   
             }
-            if (width<0 || height<0){
-                printf("error: dimensions have to be positive\n");
+            if (width<5 || height<5){
+                printf("error: dimensions have to be positive and >= 5\n");
                 exit(1);   
             }
             params.width = width;
