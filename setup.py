@@ -1,32 +1,30 @@
 from setuptools import setup, Extension, Command
+import os
 
-extra_compile_args = "-std=c++11"
+extra_compile_args = ""
+
+sources = [ 'platec_src/platecmodule.cpp',
+            'platec_src/platecapi.cpp']
+for f in os.listdir("plate-tectonics/src"):
+  if f.endswith(".cpp"):
+    sources.append("plate-tectonics/src/%s" % f)
+print(sources)
 
 pyplatec = Extension('platec',                    
-                    sources = [
-                        'platec_src/platecmodule.cpp',
-                        'platec_src/platecapi.cpp',
-                        'platec_src/plate.cpp',
-                        'platec_src/lithosphere.cpp',
-                        'platec_src/heightmap.cpp',
-                        'platec_src/rectangle.cpp',
-                        'platec_src/simplexnoise.cpp',
-                        'platec_src/simplerandom.cpp',
-                        'platec_src/sqrdmd.cpp',
-                        'platec_src/utils.cpp',
-                        'platec_src/noise.cpp'],
-                     language='c++',
-                     extra_compile_args=[extra_compile_args],
+                     sources = sources,
+                     language='c++'
+                     #extra_compile_args=[extra_compile_args],
                     )
 
 setup (name = 'PyPlatec',
-       version = '1.2.10',
+       version = '1.3.0',
        author = "Federico Tomassetti",
        author_email = "f.tomassetti@gmail.com",
-       url = "https://github.com/ftomassetti/pyplatec",
+       url = "https://github.com/Mindwerks/pyplatec",
        description = 'Plates simulation library',
        ext_modules = [pyplatec],
-      include_package_data=True,
+       include_package_data=True,
+       include_dirs = ['plate-tectonics/src', 'platec_src'],
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -37,6 +35,8 @@ setup (name = 'PyPlatec',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ])
