@@ -25,7 +25,7 @@ Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
       _position(position),
       _dimension(dimension)
 {
-    if (_dimension.getWidth() >= _worldDimension.getWidth()) {
+    if (_dimension.getWidth() > _worldDimension.getWidth()) {
         throw runtime_error("(Bounds::Bounds) Plate is larger than the world containing it");
     }
     if (_dimension.getHeight() > _worldDimension.getHeight()) {
