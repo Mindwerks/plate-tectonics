@@ -1,8 +1,6 @@
 from setuptools import setup, Extension, Command
 import os
 
-extra_compile_args = "-O3"
-
 sources = [ 'platec_src/platecmodule.cpp']
 for f in os.listdir("plate-tectonics/src"):
   if f.endswith(".cpp"):
@@ -11,9 +9,7 @@ print(sources)
 
 pyplatec = Extension('platec',                    
                      sources = sources,
-                     language='c++',
-                     extra_compile_args=[extra_compile_args],
-                    )
+                     language='c++')
 
 setup (name = 'PyPlatec',
        version = '1.3.1',
