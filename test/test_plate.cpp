@@ -63,13 +63,13 @@ TEST(Noise, SimplexNoiseRepeatability)
   float *heightmap = new float[wd.getArea()];
   initializeHeightmapWithNoise(123, heightmap, wd);
 
-  EXPECT_FLOAT_EQ(0.55709976f, heightmap[0]);
-  EXPECT_FLOAT_EQ(0.525886f, heightmap[1000]);
-  EXPECT_FLOAT_EQ(0.3915835f, heightmap[2000]);
-  EXPECT_FLOAT_EQ(0.45404199f, heightmap[5000]);
-  EXPECT_FLOAT_EQ(0.64141226f, heightmap[8000]);
-  EXPECT_FLOAT_EQ(0.5614078f, heightmap[11000]);
-  EXPECT_FLOAT_EQ(0.57266176f, heightmap[13000]);
+  EXPECT_FLOAT_EQ(0.50098729f, heightmap[0]);
+  EXPECT_FLOAT_EQ(0.39222634f, heightmap[1000]);
+  EXPECT_FLOAT_EQ(0.51659518f, heightmap[2000]);
+  EXPECT_FLOAT_EQ(0.5479334f, heightmap[5000]);
+  EXPECT_FLOAT_EQ(0.59222502f, heightmap[8000]);
+  EXPECT_FLOAT_EQ(0.36362505f, heightmap[11000]);
+  EXPECT_FLOAT_EQ(0.57599854f, heightmap[13000]);
 
   delete[] heightmap;
 }
