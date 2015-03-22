@@ -27,5 +27,6 @@
 #include "simplerandom.hpp"
 
 void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom _randsource, bool useSimplex = false);
+void createSlowNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom _randsource);
 
 #endif

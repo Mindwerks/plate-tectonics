@@ -505,7 +505,7 @@ int simplexnoise(int32_t seed, float* map, int width, int height, float persiste
             float d = fRdsSin*cosf(fRdy);
             float v = scaled_octave_noise_4d(16.0f,
                     persistence,
-                    2.0f,
+                    0.5f,
                     0.0f,
                     1.0f,
                     ka+a*noiseScale, 

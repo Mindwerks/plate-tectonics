@@ -18,6 +18,7 @@
  *****************************************************************************/
 
 #include <string>
+#include <math.h>
 #include "noise.hpp"
 #include "sqrdmd.hpp"
 #include "simplexnoise.hpp"
@@ -25,6 +26,7 @@
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
 static const float SIMPLEX_PERSISTENCE = 0.25f;
+#define PI 3.14159265
 
 static uint32_t nearest_pow(uint32_t num)
 {
@@ -35,6 +37,44 @@ static uint32_t nearest_pow(uint32_t num)
     }
 
     return n;
+}
+
+void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom randsource)
+{
+    long seed = randsource.next();
+    uint32_t width = tmpDim.getWidth();
+    uint32_t height = tmpDim.getHeight();
+    float persistence = 0.25f;
+
+    float ka = 256/seed;
+    float kb = seed*567%256;
+    float kc = (seed*seed) % 256;
+    float kd = (567-seed) % 256;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            float fNX = x/(float)width; // we let the x-offset define the circle
+            float fNY = y/(float)height; // we let the x-offset define the circle
+            float fRdx = fNX*2*PI; // a full circle is two pi radians
+            float fRdy = fNY*4*PI; // a full circle is two pi radians
+            float fYSin = sinf(fRdy);
+            float fRdsSin = 1.0f;
+            float noiseScale = 0.593;
+            float a = fRdsSin*sinf(fRdx);
+            float b = fRdsSin*cosf(fRdx);
+            float c = fRdsSin*sinf(fRdy);
+            float d = fRdsSin*cosf(fRdy);
+            float v = scaled_octave_noise_4d(4.0f,
+                    persistence,
+                    0.25f,
+                    0.0f,
+                    1.0f,
+                    ka+a*noiseScale, 
+                    kb+b*noiseScale,
+                    kc+c*noiseScale,
+                    kd+d*noiseScale);          
+            if (map[y * width + x] == 0.0f) map[y * width + x] = v;          
+        }
+    }
 }
 
 void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom randsource, bool useSimplex)

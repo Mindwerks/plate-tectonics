@@ -79,6 +79,11 @@ void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool use
     ::createNoise(tmp, tmpDim, _randsource, useSimplex);
 }
 
+void lithosphere::createSlowNoise(float* tmp, const WorldDimension& tmpDim)
+{
+    ::createSlowNoise(tmp, tmpDim, _randsource);
+}
+
 lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_level,
     uint32_t _erosion_period, float _folding_ratio, uint32_t aggr_ratio_abs,
     float aggr_ratio_rel, uint32_t num_cycles) throw(invalid_argument) :
@@ -108,7 +113,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
     float* tmp = new float[A];
     memset(tmp, 0, A * sizeof(float));
 
-    createNoise(tmp, tmpDim, true);
+    createSlowNoise(tmp, tmpDim);
 
     float lowest = tmp[0], highest = tmp[0];
     for (uint32_t i = 1; i < A; ++i)

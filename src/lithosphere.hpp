@@ -101,6 +101,7 @@ class lithosphere
   private:
 
   	void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
+  	void createSlowNoise(float* tmp, const WorldDimension& tmpDim);
   	void updateHeightAndPlateIndexMaps(const uint32_t& map_area, 
   			uint32_t& oceanic_collisions,
     		uint32_t& continental_collisions);
