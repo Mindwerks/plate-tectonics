@@ -111,6 +111,7 @@ void fill_params(Params& params, int argc, char* argv[])
                 printf("error: a parameter should follow --filename\n");
                 exit(1);
             }
+            params.filename = argv[p+1];
             p += 2;
         } else if (0 == strcmp(argv[p], "--step")) {
             if (p + 1 >= argc){
