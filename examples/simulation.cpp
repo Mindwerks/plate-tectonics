@@ -35,7 +35,7 @@ void save_image(void* p, const char* filename, const int width, const int height
         produce_image_colors(copy, width, height, filename);
     else
         produce_image_gray(copy, width, height, filename);
-    delete copy;
+    delete[] copy;
 }
 
 typedef struct {
