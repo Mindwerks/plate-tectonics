@@ -484,7 +484,7 @@ float dot( const int* g, const float x, const float y, const float z, const floa
 
 #define PI 3.14159265
 
-int simplexnoise(int32_t seed, float* map, int width, int height, float roughness)
+int simplexnoise(int32_t seed, float* map, int width, int height, float persistence)
 {
     float ka = 256/seed;
     float kb = seed*567%256;
@@ -503,8 +503,8 @@ int simplexnoise(int32_t seed, float* map, int width, int height, float roughnes
             float b = fRdsSin*cosf(fRdx);
             float c = fRdsSin*sinf(fRdy);
             float d = fRdsSin*cosf(fRdy);
-            float v = scaled_octave_noise_4d(64.0f,
-                    roughness,
+            float v = scaled_octave_noise_4d(16.0f,
+                    persistence,
                     2.0f,
                     0.0f,
                     1.0f,
