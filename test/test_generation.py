@@ -1,6 +1,5 @@
 import unittest
-from worldengine.common import *
-
+import platec
 
 class TestGeneration(unittest.TestCase):
 
@@ -8,10 +7,11 @@ class TestGeneration(unittest.TestCase):
         pass
 
     def test_create(self):
-        pass
-
-    def test_destroy(self):
-        pass
+        seed = 1
+        width = 100
+        height = 100
+        p = platec.create(seed, width, height, 0.65, 60, 0.02,1000000, 0.33, 2, 10)
+        platec.destroy(p)
 
     def test_get_heightmap(self):
         pass
@@ -23,4 +23,9 @@ class TestGeneration(unittest.TestCase):
         pass
 
     def test_is_finished(self):
-        pass
+        seed = 1
+        width = 100
+        height = 100
+        p = platec.create(seed, width, height, 0.65, 60, 0.02,1000000, 0.33, 2, 10)
+        platec.destroy(p)
+        self.assertEqual(False, platec.is_finished(p))
