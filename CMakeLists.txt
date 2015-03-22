@@ -44,24 +44,6 @@ if(MSVC)
 	endif()
 endif()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -fp-model disable floating point optimization, for the sake of having
 # reproducible results across platforms 
 IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
