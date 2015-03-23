@@ -26,5 +26,6 @@ install:
   - git submodule update --init --recursive
   - cd plate-tectonics
   - git checkout v1.3.1
+  - cd ..
 
 script:  'python setup.py clean build sdist install'
