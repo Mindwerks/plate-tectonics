@@ -23,6 +23,17 @@ Supported versions:
 * Python 3.3
 * Python 3.4
 
+Clone
+=====
+
+This project contains git submodules. After cloning it do:
+
+```
+git submodule update --init --recursive
+cd plate-tectonics
+git checkout v1.3.1
+```
+
 Compile
 =======
 

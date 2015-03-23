@@ -23,5 +23,8 @@ install:
   - sudo apt-get install libstdc++-4.8-dev
   - echo "CXX=$CXX"
   - echo "version `$CXX --version`"
+  - git submodule update --init --recursive
+  - cd plate-tectonics
+  - git checkout v1.3.1
 
 script:  'python setup.py clean build sdist install'
