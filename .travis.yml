@@ -28,4 +28,4 @@ install:
   - git checkout v1.3.1
   - cd ..
 
-script:  'python setup.py clean build sdist install'
+script:  'python setup.py clean build sdist install && nosetests'
