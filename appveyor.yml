@@ -60,11 +60,12 @@ install:
   - cd plate-tectonics
   - git checkout v1.3.1
   - cd ..
+  - "%WITH_COMPILER% %PYTHON%/python -m pip install -r dev-requirements.txt"
 
 build: off
 
 test_script:
-  - "nosetests"
+  - "%WITH_COMPILER% %PYTHON%/python setup.py nosetests"
 
 after_test:
   - "%WITH_COMPILER% %PYTHON%/python setup.py %DISTRIBUTIONS%"
