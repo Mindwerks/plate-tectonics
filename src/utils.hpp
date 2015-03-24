@@ -31,6 +31,10 @@ typedef INT32 int32_t;
 #include <stdint.h>
 #endif
 
+#ifndef UINT32_C
+#define UINT32_C(val) val##ui32
+#endif
+
 namespace Platec {
 
 std::string to_string(uint32_t value);
