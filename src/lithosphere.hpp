@@ -96,6 +96,7 @@ class lithosphere
 	uint32_t getWidth() const;
 	uint32_t getHeight() const;
 	bool isFinished() const;
+	const plate* getPlate(uint32_t index) const;
 
   protected:
   private:

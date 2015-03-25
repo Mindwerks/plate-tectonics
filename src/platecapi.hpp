@@ -39,6 +39,9 @@ uint32_t* platec_api_get_platesmap(void*);
 uint32_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
 
+float platec_api_velocity_unity_vector_x(void*, uint32_t plate_index);
+float platec_api_velocity_unity_vector_y(void*, uint32_t plate_index);
+
 uint32_t lithosphere_getMapWidth ( void* object);
 uint32_t lithosphere_getMapHeight ( void* object);
 

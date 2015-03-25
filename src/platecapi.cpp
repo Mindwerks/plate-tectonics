@@ -18,6 +18,7 @@
  *****************************************************************************/
 
 #include "lithosphere.hpp"
+#include "plate.hpp"
 #include "platecapi.hpp"
 #include <stdlib.h>
 #include <stdio.h>
@@ -116,7 +117,6 @@ void platec_api_step(void *pointer)
 	litho->update();
 }
 
-
 uint32_t lithosphere_getMapWidth ( void* object)
 {
     return static_cast<lithosphere*>( object)->getWidth();
@@ -125,4 +125,16 @@ uint32_t lithosphere_getMapWidth ( void* object)
 uint32_t lithosphere_getMapHeight ( void* object)
 {
     return static_cast<lithosphere*>( object)->getHeight();
+}
+
+float platec_api_velocity_unity_vector_x(void* pointer, uint32_t plate_index)
+{
+	lithosphere* litho = (lithosphere*)pointer;
+	return litho->getPlate(plate_index)->velocityUnitVector().x();
+}
+
+float platec_api_velocity_unity_vector_y(void* pointer, uint32_t plate_index)
+{
+	lithosphere* litho = (lithosphere*)pointer;
+	return litho->getPlate(plate_index)->velocityUnitVector().y();
 }

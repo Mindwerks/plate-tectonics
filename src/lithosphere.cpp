@@ -869,3 +869,11 @@ uint32_t* lithosphere::getPlatesMap() const throw()
 {
     return imap.raw_data();
 }
+
+const plate* lithosphere::getPlate(uint32_t index) const
+{
+    if (index >= num_plates){
+        throw runtime_error("(lithosphere::getPlate) invalid plate index");
+    }
+    return plates[index];
+}
