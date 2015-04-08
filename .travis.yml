@@ -32,26 +32,26 @@ script:
   - $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
 
   # Python 2.6 
-  - echo "yes" | sudo apt remove python
-  - echo "yes" | sudo apt install python-2.6
+  - echo "yes" | sudo apt-get remove python
+  - echo "yes" | sudo apt-get install python-2.6
   - 'python setup.py clean build sdist install && nosetests'
 
   # Python 2.7
-  - echo "yes" | sudo apt remove python
-  - echo "yes" | sudo apt install python-2.7
+  - echo "yes" | sudo apt-get remove python
+  - echo "yes" | sudo apt-get install python-2.7
   - 'python setup.py clean build sdist install && nosetests'
 
   # Python 3.2
-  - echo "yes" | sudo apt remove python
-  - echo "yes" | sudo apt install python-3.2
+  - echo "yes" | sudo apt-get remove python
+  - echo "yes" | sudo apt-get install python-3.2
   - 'python setup.py clean build sdist install && nosetests'  
 
   # Python 3.3
-  - echo "yes" | sudo apt remove python
-  - echo "yes" | sudo apt install python-3.3
+  - echo "yes" | sudo apt-get remove python
+  - echo "yes" | sudo apt-get install python-3.3
   - 'python setup.py clean build sdist install && nosetests'  
 
   # Python 3.4
-  - echo "yes" | sudo apt remove python
-  - echo "yes" | sudo apt install python-3.4
+  - echo "yes" | sudo apt-get remove python
+  - echo "yes" | sudo apt-get install python-3.4
   - 'python setup.py clean build sdist install && nosetests'      
