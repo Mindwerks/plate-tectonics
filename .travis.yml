@@ -30,6 +30,7 @@ install:
 
 script: 
   - $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
+  - cd ..
 
   # Python 2.6 
   - echo "yes" | sudo apt-get remove python
