@@ -4,7 +4,7 @@ import os
 sources = [ 'platec_src/platecmodule.cpp']
 for f in os.listdir("plate-tectonics/src"):
   if f.endswith(".cpp"):
-    sources.append("plate-tectonics/src/%s" % f)
+    sources.append("src/%s" % f)
 print(sources)
 
 pyplatec = Extension('platec',                    
