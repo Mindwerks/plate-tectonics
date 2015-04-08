@@ -57,10 +57,6 @@ install:
 # Python
   - "powershell appveyor\\install.ps1"
   - "set HOME=%APPVEYOR_BUILD_FOLDER%"
-  - git submodule update --init --recursive
-  - cd plate-tectonics
-  - git checkout v1.3.1
-  - cd ..
   - "%WITH_COMPILER% %PYTHON%/python -m pip install -r dev-requirements.txt"
 # C++  
   - ps: wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-win32-x86.zip -OutFile cmake.zip
