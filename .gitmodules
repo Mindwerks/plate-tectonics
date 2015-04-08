@@ -1,0 +1,3 @@
+[submodule "plate-tectonics"]
+	path = plate-tectonics
+	url = https://github.com/Mindwerks/plate-tectonics.git

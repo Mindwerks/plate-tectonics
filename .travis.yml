@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 language: cpp
 compiler:
     - gcc
@@ -15,10 +16,27 @@ before_install:
     # clang 3.4
     - if [ "$CXX" == "clang++" ]; then sudo add-apt-repository -y ppa:h-rayflood/llvm; fi
 
+=======
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+
+before_install:
+    - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq
+    # g++4.8.1
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+>>>>>>> pyplatec/tests
     - sudo apt-get update -qq
 
 install:
   # g++4.8.1
+<<<<<<< HEAD
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   - if [ "$CXX" = "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90; fi
@@ -30,3 +48,18 @@ install:
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi   
 
 script: $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
+=======
+  - sudo apt-get install -qq g++-4.8
+  - export CXX="g++-4.8" CC="gcc-4.8"
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
+  - sudo apt-get install libstdc++-4.8-dev
+  - echo "CXX=$CXX"
+  - echo "version `$CXX --version`"
+  - git submodule update --init --recursive
+  - cd plate-tectonics
+  - git checkout v1.3.1
+  - cd ..
+
+script:  'python setup.py clean build sdist install && nosetests'
+>>>>>>> pyplatec/tests

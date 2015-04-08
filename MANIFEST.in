@@ -1,0 +1,3 @@
+include LICENSE README.md
+recursive-include platec_src *
+recursive-include plate-tectonics/src *
