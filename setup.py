@@ -19,7 +19,7 @@ setup (name = 'PyPlatec',
        description = 'Plates simulation library',
        ext_modules = [pyplatec],
        include_package_data=True,
-       include_dirs = ['plate-tectonics/src', 'platec_src'],
+       include_dirs = ['src', 'platec_src'],
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
