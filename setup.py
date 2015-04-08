@@ -2,7 +2,7 @@ from setuptools import setup, Extension, Command
 import os
 
 sources = [ 'platec_src/platecmodule.cpp']
-for f in os.listdir("plate-tectonics/src"):
+for f in os.listdir("src"):
   if f.endswith(".cpp"):
     sources.append("src/%s" % f)
 print(sources)
