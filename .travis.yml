@@ -29,7 +29,12 @@ install:
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
 
 script: 
-  - $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests
+  - $CXX --version
+  - cmake . -G 'Unix Makefiles' 
+  - make 
+  - cd test 
+  - make 
+  - ./PlateTectonicsTests
   - cd ..
 
   # Python 2.6 
