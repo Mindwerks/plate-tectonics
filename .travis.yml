@@ -41,29 +41,29 @@ script:
   # Python 2.6 
   - source ~/virtualenv/python2.6/bin/activate
   - python --version
-  - 'python setup.py clean build sdist develop && nosetests'
+  - 'sudo python setup.py clean build sdist develop && nosetests'
   - deactivate
 
   # Python 2.7
   - source ~/virtualenv/python2.6/bin/activate
   - python --version
-  - 'python setup.py clean build sdist develop && nosetests'
+  - 'sudo python setup.py clean build sdist develop && nosetests'
   - deactivate'
 
   # Python 3.2
   - source ~/virtualenv/python2.6/bin/activate
   - python --version
-  - 'python setup.py clean build sdist develop && nosetests'
+  - 'sudo python setup.py clean build sdist develop && nosetests'
   - deactivate  
 
   # Python 3.3
   - source ~/virtualenv/python2.6/bin/activate
   - python --version
-  - 'python setup.py clean build sdist develop && nosetests'
+  - 'sudo python setup.py clean build sdist develop && nosetests'
   - deactivate
 
   # Python 3.4
   - source ~/virtualenv/python2.6/bin/activate
   - python --version
-  - 'python setup.py clean build sdist develop && nosetests'
+  - 'sudo python setup.py clean build sdist develop && nosetests'
   - deactivate    
