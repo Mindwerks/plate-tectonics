@@ -21,13 +21,13 @@ install:
   - echo "== Install step =="
 
 script: 
-  - if [ "$TARGET" = "cpp" ]; then $CXX --version
-  - if [ "$TARGET" = "cpp" ]; then cmake . -G 'Unix Makefiles' 
-  - if [ "$TARGET" = "cpp" ]; then make
-  - if [ "$TARGET" = "cpp" ]; then cd test
-  - if [ "$TARGET" = "cpp" ]; then make
-  - if [ "$TARGET" = "cpp" ]; then ./PlateTectonicsTests
+  - if [ "$TARGET" = "cpp" ]; then $CXX --version ; fi
+  - if [ "$TARGET" = "cpp" ]; then cmake . -G 'Unix Makefiles' ; fi 
+  - if [ "$TARGET" = "cpp" ]; then make ; fi
+  - if [ "$TARGET" = "cpp" ]; then cd test ; fi
+  - if [ "$TARGET" = "cpp" ]; then make ; fi
+  - if [ "$TARGET" = "cpp" ]; then ./PlateTectonicsTests ; fi
 
-  - if [ ! "$TARGET" = "cpp" ]; then cd pybindings
-  - if [ ! "$TARGET" = "cpp" ]; then python --version
-  - if [ ! "$TARGET" = "cpp" ]; then 'sudo python setup.py clean build sdist develop && nosetests'
+  - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then python --version ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then 'sudo python setup.py clean build sdist develop && nosetests' ; fi
