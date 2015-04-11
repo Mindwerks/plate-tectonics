@@ -15,6 +15,7 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
+    WITH_COMPILER_FROM_PY: "cmd /E:ON /V:ON /C ..\\appveyor\\run_with_compiler.cmd"
 
   matrix:
     - PYTHON: "C:\\Python27"
@@ -62,7 +63,8 @@ install:
   - ps: wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-win32-x86.zip -OutFile cmake.zip
   - cmd: echo "Unzipping cmake..."
   - cmd: 7z x cmake.zip -o"C:\Program Files (x86)\" -y > nul
-  - cmd: set PATH="CMake 2.8\bin";%PATH%;"C:\Program Files (x86)\cmake-3.0.2-win32-x86\bin"
+  - cmd: 7z x cmake.zip -o"%CD%" -y > nul
+  - cmd: SET PATH=%CD%\bin;%PATH%
 
 build: off
 
@@ -79,10 +81,16 @@ test_script:
   - cmd: dir 
   - cmd: echo %PYTHON%/python
 # Python
-  - "%WITH_COMPILER% %PYTHON%/python setup.py nosetests"  
+  - cmd: echo "WC= " %WITH_COMPILER_FROM_PY%
+  - cmd: SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+  - cmd: echo "PATH" %PATH%
+  - dir
+  - dir %PYTHON%
+  - dir ..\\appveyor\\run_with_compiler.cmd
+  - "%WITH_COMPILER_FROM_PY% %PYTHON%/python.exe setup.py test"
 
 after_test:
-  - "%WITH_COMPILER% %PYTHON%/python setup.py %DISTRIBUTIONS%"
+  - "%WITH_COMPILER_FROM_PY% %PYTHON%/python.exe setup.py %DISTRIBUTIONS%"
 
 artifacts:
   - path: dist\*

@@ -20,9 +20,11 @@
 @ECHO OFF
 
 SET COMMAND_TO_RUN=%*
+echo command to run is %COMMAND_TO_RUN%
 SET WIN_SDK_ROOT=C:\Program Files\Microsoft SDKs\Windows
 
 SET MAJOR_PYTHON_VERSION="%PYTHON_VERSION:~0,1%"
+echo major python version %MAJOR_PYTHON_VERSION%
 IF %MAJOR_PYTHON_VERSION% == "2" (
     SET WINDOWS_SDK_VERSION="v7.0"
 ) ELSE IF %MAJOR_PYTHON_VERSION% == "3" (
@@ -31,17 +33,23 @@ IF %MAJOR_PYTHON_VERSION% == "2" (
     ECHO Unsupported Python version: "%MAJOR_PYTHON_VERSION%"
     EXIT 1
 )
+echo WINDOWS_SDK_VERSION %WINDOWS_SDK_VERSION%
 
 IF "%PYTHON_ARCH%"=="64" (
     ECHO Configuring Windows SDK %WINDOWS_SDK_VERSION% for Python %MAJOR_PYTHON_VERSION% on a 64 bit architecture
     SET DISTUTILS_USE_SDK=1
     SET MSSdk=1
+    echo "Next step (64)"
     "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Setup\WindowsSdkVer.exe" -q -version:%WINDOWS_SDK_VERSION%
     "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Bin\SetEnv.cmd" /x64 /release
     ECHO Executing: %COMMAND_TO_RUN%
+    echo "Going to call (64) START"
     call %COMMAND_TO_RUN% || EXIT 1
+    echo "Going to call (64) END"
 ) ELSE (
     ECHO Using default MSVC build environment for 32 bit architecture
     ECHO Executing: %COMMAND_TO_RUN%
+    echo "Going to call (32) START"
     call %COMMAND_TO_RUN% || EXIT 1
+    echo "Going to call (32) DONE"
 )
