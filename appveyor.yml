@@ -67,8 +67,6 @@ install:
 build: off
 
 test_script:
-# Python
-  - "%WITH_COMPILER% %PYTHON%/python setup.py nosetests"
 # C++
   - cmd: cmake .
   - cmd: cmake --build .
@@ -77,6 +75,9 @@ test_script:
   - cmd: cd Debug
   - cmd: dir
   - cmd: "PlateTectonicsTests.exe"  
+  - cmd: cd ../../pybindings
+# Python
+  - "%WITH_COMPILER% %PYTHON%/python setup.py nosetests"  
 
 after_test:
   - "%WITH_COMPILER% %PYTHON%/python setup.py %DISTRIBUTIONS%"
