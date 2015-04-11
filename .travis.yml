@@ -47,4 +47,4 @@ script:
   - if [ ! "$TARGET" = "cpp" ]; then $PYCMD --version ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo $PIP install -r dev-requirements.txt ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo $PYCMD setup.py clean build sdist develop ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then $PYCMD -m nose ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then nosetests ; fi
