@@ -57,7 +57,7 @@ install:
 # Python
   - "powershell appveyor\\install.ps1"
   - "set HOME=%APPVEYOR_BUILD_FOLDER%"
-  - "%WITH_COMPILER% %PYTHON%/python -m pip install -r dev-requirements.txt"
+  - "%WITH_COMPILER% %PYTHON%/python -m pip install -r pybindings/dev-requirements.txt"
 # C++  
   - ps: wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-win32-x86.zip -OutFile cmake.zip
   - cmd: echo "Unzipping cmake..."
