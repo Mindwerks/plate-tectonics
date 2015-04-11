@@ -4,11 +4,11 @@ compiler:
     - clang
 env:
     - TARGET=cpp
-    - PYVERSION=2.6
-    - PYVERSION=2.7
-    - PYVERSION=3.2
-    - PYVERSION=3.3
-    - PYVERSION=3.4
+    - PYVERSION=2.6.9
+    - PYVERSION=2.7.8
+    - PYVERSION=3.2.6
+    - PYVERSION=3.3.6
+    - PYVERSION=3.4.3
 
 before_install:
     - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
@@ -29,6 +29,12 @@ script:
   - if [ "$TARGET" = "cpp" ]; then ./PlateTectonicsTests ; fi
 
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
+  - if [ ! "$TARGET" = "cpp" ]; git clone https://github.com/yyuu/pyenv.git ; fi
+  - if [ ! "$TARGET" = "cpp" ]; export PYENV_ROOT="pyenv" ; fi
+  - if [ ! "$TARGET" = "cpp" ]; export PATH="$PYENV_ROOT/bin:$PATH" ; fi
+  - if [ ! "$TARGET" = "cpp" ]; eval "$(pyenv init -)" ; fi
+  - if [ ! "$TARGET" = "cpp" ]; pyenv install $PYVERSION ; fi
+  - if [ ! "$TARGET" = "cpp" ]; pyenv local $PYVERSION ; fi
   - if [ ! "$TARGET" = "cpp" ]; then python --version ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo pip install -r dev-requirements.txt ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo python setup.py clean build sdist develop ; fi
