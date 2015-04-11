@@ -36,28 +36,34 @@ script:
   - make 
   - ./PlateTectonicsTests
   - cd ..
+  - cd pybindings
 
   # Python 2.6 
-  - echo "yes" | sudo apt-get remove python
-  - echo "yes" | sudo apt-get install python-2.6
+  - source ~/virtualenv/python2.6/bin/activate
+  - python --version
   - 'python setup.py clean build sdist develop && nosetests'
+  - deactivate
 
   # Python 2.7
-  - echo "yes" | sudo apt-get remove python
-  - echo "yes" | sudo apt-get install python-2.7
+  - source ~/virtualenv/python2.6/bin/activate
+  - python --version
   - 'python setup.py clean build sdist develop && nosetests'
+  - deactivate'
 
   # Python 3.2
-  - echo "yes" | sudo apt-get remove python
-  - echo "yes" | sudo apt-get install python-3.2
-  - 'python setup.py clean build sdist develop && nosetests'  
+  - source ~/virtualenv/python2.6/bin/activate
+  - python --version
+  - 'python setup.py clean build sdist develop && nosetests'
+  - deactivate  
 
   # Python 3.3
-  - echo "yes" | sudo apt-get remove python
-  - echo "yes" | sudo apt-get install python-3.3
-  - 'python setup.py clean build sdist develop && nosetests'  
+  - source ~/virtualenv/python2.6/bin/activate
+  - python --version
+  - 'python setup.py clean build sdist develop && nosetests'
+  - deactivate
 
   # Python 3.4
-  - echo "yes" | sudo apt-get remove python
-  - echo "yes" | sudo apt-get install python-3.4
-  - 'python setup.py clean build sdist develop && nosetests'      
+  - source ~/virtualenv/python2.6/bin/activate
+  - python --version
+  - 'python setup.py clean build sdist develop && nosetests'
+  - deactivate    
