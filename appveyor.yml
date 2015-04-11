@@ -75,7 +75,9 @@ test_script:
   - cmd: cd Debug
   - cmd: dir
   - cmd: "PlateTectonicsTests.exe"  
-  - cmd: cd ../../pybindings
+  - cmd: cd ../../pybindings  
+  - cmd: dir 
+  - cmd: echo %PYTHON%/python
 # Python
   - "%WITH_COMPILER% %PYTHON%/python setup.py nosetests"  
 
