@@ -1,10 +1,15 @@
 from setuptools import setup, Extension, Command
 import os
 
+
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.join(current_dir, os.pardir)
+cpp_src_dir = os.path.abspath(os.path.join(parent_dir, "src"))
+
 sources = [ 'platec_src/platecmodule.cpp']
-for f in os.listdir("src"):
+for f in os.listdir(cpp_src_dir):
   if f.endswith(".cpp"):
-    sources.append("src/%s" % f)
+    sources.append("%s/%s" % (cpp_src_dir, f))
 print(sources)
 
 pyplatec = Extension('platec',                    
@@ -19,7 +24,7 @@ setup (name = 'PyPlatec',
        description = 'Plates simulation library',
        ext_modules = [pyplatec],
        include_package_data=True,
-       include_dirs = ['src', 'platec_src'],
+       include_dirs = [cpp_src_dir, 'platec_src'],
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
