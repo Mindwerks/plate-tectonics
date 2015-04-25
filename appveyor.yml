@@ -93,7 +93,7 @@ after_test:
   - "%WITH_COMPILER_FROM_PY% %PYTHON%/python.exe setup.py %DISTRIBUTIONS%"
 
 artifacts:
-  - path: dist\*
+  - path: pybindings\dist\*
 
 #on_success:
 #  - "%WITH_COMPILER% %PYTHON%/python -m pip install twine"
