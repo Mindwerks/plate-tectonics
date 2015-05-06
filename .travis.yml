@@ -2,31 +2,29 @@ language: cpp
 compiler:
     - gcc
     - clang
+env:
+    - TARGET=cpp
+    - PYVERSION=2.6.9
+    - PYVERSION=2.7.8
+    - PYVERSION=3.2.6
+    - PYVERSION=3.3.6
+    - PYVERSION=3.4.3
 
 before_install:
-    - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
+    # contains mostly new versions of gcc
     - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    # this one contains python 2.6.9
+    - if [ "$PYVERSION" = "2.6.9" ]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y ; fi
     - sudo apt-get update -qq
     - sudo apt-get install -qq
-    - sudo apt-get install cmake
-    # g++4.8.1
-    - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
-
-    # clang 3.4
-    - if [ "$CXX" == "clang++" ]; then sudo add-apt-repository -y ppa:h-rayflood/llvm; fi
-
-    - sudo apt-get update -qq
 
 install:
-  # g++4.8.1
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-  - if [ "$CXX" = "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90; fi
-  - if [ "$CXX" = "g++" ]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90; fi
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install libstdc++-4.8-dev; fi
+  - echo "== Install step =="
 
-  # clang 3.4
-  - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi   
+script: 
+  - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
+  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
+  - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py.sh ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then sh ../travis/build_python.sh ; fi
 
-script: $CXX --version && cmake . -G 'Unix Makefiles' && make && cd test && make && ./PlateTectonicsTests

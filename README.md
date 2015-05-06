@@ -1,4 +1,4 @@
-plate-tectonics
+Plate-tectonics
 ===============
 Travis
 [![Build Status](https://travis-ci.org/Mindwerks/plate-tectonics.svg?branch=master)](https://travis-ci.org/Mindweks/plate-tectonics)
@@ -7,6 +7,7 @@ AppVeyor
 
 
 This is a library to simulate plate tectonics.
+It is written in C++ and it has Python bindings (as part of this project), as well as Haskell bindings ([hplatec](http://github.com/ftomassetti/hplatec))
 
 How it looks like
 =================
@@ -19,8 +20,8 @@ The library offers an API to generate heightmaps and some other data about the w
 
 You can see a video of simulation based on an old version of this library: http://www.youtube.com/watch?v=bi4b45tMEPE#t=0
 
-How to build plate-tectonics
-============================
+How to build plate-tectonics (C++)
+==================================
 
 We use [CMake](http://www.cmake.org/). Install it and then run the folowing commands
 
@@ -74,8 +75,8 @@ To compile on other platforms please run:
 cmake --help
 ```
 
-Running the examples
-====================
+Running the examples (C++)
+==========================
 
 To run also the examples you need to install the library libpng.
 
@@ -88,8 +89,8 @@ cd examples
 ./simulation_rect
 ```
 
-How to run tests
-================
+How to run tests (C++)
+======================
 
 To run tests you need to install DevIL
 
@@ -103,6 +104,53 @@ make
 
 Currently the test coverage is still poor (but improving!_, tests are present only for new code and tiny portion of the old code that were refactored.
 
+Python bindings
+===============
+
+Supported versions:
+* Python 2.6 (currently not supported on AppVeyor)
+* Python 2.7
+* Python 3.2 (currently not supported on AppVeyor)
+* Python 3.3
+* Python 3.4
+
+Compile (Python)
+================
+
+```
+python setup.py build
+```
+
+Usage (Python)
+==============
+
+The library is quite simple:
+
+    p = platec.create(seed=3)
+    while platec.is_finished(p)==0:
+        platec.step(p)
+    hm = platec.get_heightmap(p)
+    platec.destroy(p)
+
+
+Or if you want more control:
+
+    p = platec.create(seed=3, width=1000, height=800,
+                      sea_level=0.65,erosion_period=60,
+                      folding_ratio=0.02,aggr_overlap_abs=1000000,
+                      aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
+
+Plans for the future
+====================
+
+* Improve the quality of the code and add some tests
+* Support Google protocol buffer
+
+Projects using plate-tectonics
+==============================
+
+[WorldEngine](http://github.com/Mindwerks/worldengine), a world generator
+
 Original project
 ================
 
@@ -111,25 +159,3 @@ That project is part of a Bachelor of Engineering thesis in Metropolia Universit
 
 Kudos to the original author: Lauri Viitanen!
 
-License
-=======
-
-This work is (as the original work) released under the GNU LGPL.
-
-Goals
-=====
-
-* Improve the quality of the code and add some tests
-* Support Google protocol buffer
-
-Bindings
-========
-
-We are working on these bindings:
-* Python [pyplatec](http://github.com/Mindwerks/pyplatec)
-* Haskell [hplatec](http://github.com/ftomassetti/hplatec)
-
-Projects using plate-tectonics
-==============================
-
-[WorldEngine](http://github.com/Mindwerks/worldengine), a world generator
