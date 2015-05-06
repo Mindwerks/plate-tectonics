@@ -24,11 +24,7 @@ install:
 script: 
   - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
-  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then sh ../travis/prepare_py26.sh ; fi
+  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py.sh ; fi
-  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then export PYCMD="python2.6" ; fi
-  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then export PIP="pip2.6" ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then $PYCMD --version ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then sudo $PIP install -r dev-requirements.txt ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then sudo $PYCMD setup.py clean build sdist develop ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then sudo $PYCMD setup.py nosetests ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then sh ../travis/build_python.sh ; fi
+
