@@ -3,4 +3,4 @@ wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O ez_setup
 sudo python2.6 ez_setup.py
 sudo easy_install-2.6 pip
 export PYCMD="python2.6"
-then export PIP="pip2.6"
+export PIP="pip2.6"
