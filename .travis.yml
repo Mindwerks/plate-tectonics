@@ -33,6 +33,8 @@ script:
   - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then pyenv local $PYVERSION ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then export PYCMD="python" ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then export PIP="pip" ; fi
+  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then export PYCMD="python2.6" ; fi   
+  - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then export PIP="pip2.6" ; fi
   - if [ ! "$TARGET" = "cpp" ]; then $PYCMD --version ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo $PIP install -r dev-requirements.txt ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sudo $PYCMD setup.py clean build sdist develop ; fi
