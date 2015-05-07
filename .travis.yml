@@ -27,4 +27,4 @@ script:
   - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ ! "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then sh ../travis/build_python.sh ; fi
-  - if [ ! "$TARGET" = "cpp" ]; then sh ../travis/build_and_test_sdist.sh ; fi
+  - if [ ! "$TARGET" = "cpp" ]; then sudo sh ../travis/build_and_test_sdist.sh ; fi
