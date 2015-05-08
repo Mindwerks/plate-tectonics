@@ -34,7 +34,7 @@ pyplatec = Extension('platec',
                      language='c++')
 
 setup (name = 'PyPlatec',
-       version = '1.3.2',
+       version = '1.3.1.post1',
        author = "Federico Tomassetti",
        author_email = "f.tomassetti@gmail.com",
        url = "https://github.com/Mindwerks/pyplatec",
