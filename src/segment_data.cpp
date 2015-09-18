@@ -19,7 +19,7 @@
 
 #include "segment_data.hpp"
 
-SegmentData::SegmentData(Platec::Rectangle& rectangle,
+SegmentData::SegmentData(const Platec::Rectangle& rectangle,
             uint32_t area) : _rectangle(rectangle),
                           _area(area), _coll_count(0) {};
 
