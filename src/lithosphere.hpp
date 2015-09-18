@@ -151,9 +151,9 @@ class lithosphere
 			throw() : index(_index), wx(x), wy(y), crust(z) {
 			ASSERT(crust >= 0, "Crust must be a positive value");
 		}
-		const uint32_t index; ///< Index of the other plate involved in the event.
-		const uint32_t wx, wy; ///< Coordinates of collision in world space.
-		const float crust; ///< Amount of crust that will deform/subduct.
+		uint32_t index; ///< Index of the other plate involved in the event.
+		uint32_t wx, wy; ///< Coordinates of collision in world space.
+		float crust; ///< Amount of crust that will deform/subduct.
 	};
 
 	void restart(); //< Replace plates with a new population.
@@ -177,8 +177,8 @@ class lithosphere
 	uint32_t max_plates; ///< Number of plates in the initial setting.
 	uint32_t num_plates; ///< Number of plates in the current setting.
 
-	vector<vector<plateCollision>> collisions;
-	vector<vector<plateCollision>> subductions;
+	vector<vector<plateCollision> > collisions;
+	vector<vector<plateCollision> > subductions;
 
 	float peak_Ek; ///< Max total kinetic energy in the system so far.
 	uint32_t last_coll_count; ///< Iterations since last cont. collision.

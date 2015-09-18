@@ -74,13 +74,13 @@ public:
     const ISegmentData& operator[](uint32_t index) const;
     ISegmentData& operator[](uint32_t index);
     void add(ISegmentData* data);
-	const ContinentId& Segments::id(uint32_t index) const {
+	const ContinentId& id(uint32_t index) const {
 		return segment[index];
 	}
-	ContinentId& Segments::id(uint32_t index) {
+	ContinentId& id(uint32_t index) {
 		return segment[index];
 	}
-	void Segments::setId(uint32_t index, ContinentId id) {
+	void setId(uint32_t index, ContinentId id) {
 		segment[index] = id;
 	}
     ContinentId getContinentAt(int x, int y) const;
