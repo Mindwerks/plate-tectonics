@@ -53,7 +53,7 @@ do { \
 	if (!(condition)) { \
 		std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
 			<< " line " << __LINE__ << " Message: " << (message) << std::endl; \
-		std::abort(); \
+		exit(1); \
 	} \
 } while (false)
 #elif defined(LOG_ASSERTS)
