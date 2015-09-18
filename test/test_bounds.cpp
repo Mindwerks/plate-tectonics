@@ -21,7 +21,7 @@
 #include "gtest/gtest.h"
 
 const WorldDimension wd(800, 600);
-const FloatPoint topLeft(10.2, 48.9);
+const FloatPoint topLeft(10.2f, 48.9f);
 const Dimension plateDim(500, 400);
 const Bounds b(wd, topLeft, plateDim);
 
@@ -110,10 +110,10 @@ TEST(Bounds, IsInLimits)
   EXPECT_EQ(false, b.isInLimits(-1, -1));
 
   EXPECT_EQ(true, b.isInLimits(0, 0));
-  EXPECT_EQ(true, b.isInLimits(124.3, 245.56));
+  EXPECT_EQ(true, b.isInLimits(124.3f, 245.56f));
   EXPECT_EQ(true, b.isInLimits(499, 399));
-  EXPECT_EQ(true, b.isInLimits(499.1, 399.1));
-  EXPECT_EQ(true, b.isInLimits(499.999, 399.999));
+  EXPECT_EQ(true, b.isInLimits(499.1f, 399.1f));
+  EXPECT_EQ(true, b.isInLimits(499.999f, 399.999f));
 
   EXPECT_EQ(false, b.isInLimits(500, 399));
   EXPECT_EQ(false, b.isInLimits(499, 400));
@@ -124,7 +124,7 @@ TEST(Bounds, Shift)
 {
   Bounds bounds(wd, topLeft, plateDim);
   // topLeft = 10.2, 48.9
-  bounds.shift(10.7, 100.1);
+  bounds.shift(10.7f, 100.1f);
   // now topLeft should be = 20.9, 149.0
   EXPECT_EQ(20, bounds.leftAsUint());
   EXPECT_EQ(149, bounds.topAsUint());

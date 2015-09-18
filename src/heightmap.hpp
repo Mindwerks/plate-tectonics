@@ -37,18 +37,21 @@ public:
     Matrix(unsigned int width, unsigned int height)
         : _width(width), _height(height)
     {
-        if (width == 0 || height == 0) {
-            throw invalid_argument("width and height should be greater than zero");
-        }
-        _data = new Value[width * height];
-    };
+		ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
+		_data = new Value[width * height];
+    }
+	Matrix(Value* data, unsigned int width, unsigned int height)
+		: _width(width), _height(height) {
+		ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
+		_data = data;
+	}
 
     Matrix(const Matrix<Value>& other)
         : _width(other._width), _height(other._height)
     {
         _data = new Value[_width * _height];
-        for (int x=0; x<_width;x++) {
-            for (int y=0; y<_height; y++) {
+        for (uint32_t x=0; x<_width;x++) {
+            for (uint32_t y=0; y<_height; y++) {
                 set(x, y ,other.get(x,y));
             }
         }
@@ -57,83 +60,60 @@ public:
     ~Matrix()
     {
         delete[] _data;
-    }
+    }  
 
-    const uint32_t width() const
-    {
-        return _width;
-    }
-
-    const uint32_t height() const
-    {
-        return _height;
-    }    
-
-    const void set_all(const Value& value)
+    void set_all(const Value& value)
     {
         // we cannot use memset to make it very general
-        for (int x=0; x<_width; x++) {
-            for (int y=0; y<_height; y++) {
+        for (uint32_t x=0; x<_width; x++) {
+            for (uint32_t y=0; y<_height; y++) {
                 set(x, y, value);
             }
         }
     }
+	void copy(const Matrix& other) 
+	{
+		for (uint32_t x = 0; x<_width; x++) {
+			for (uint32_t y = 0; y<_height; y++) {
+				set(x, y, other.get(x, y));
+			}
+		}
+	}
 
     inline const Value& set(unsigned int x, unsigned y, const Value& value)
     {
-        if (x >= _width || y >= _height) {
-            throw invalid_argument("invalid coordinates");
-        }
+		ASSERT(x < _width && y < _height, "Invalid coordinates");
         _data[y * _width + x] = value;
         return value;
     }
 
     inline const Value& get(unsigned int x, unsigned y) const
     {
-        if (x >= _width || y >= _height) {
-            throw invalid_argument("invalid coordinates");
-        }
+		ASSERT(x < _width && y < _height, "Invalid coordinates");
         return _data[y * _width + x];
     }
 
     Matrix<Value>& operator=(const Matrix<Value>& other)
     {
-        if (this != &other) // prevent self-assignment
-        {
-            _width  = other._width;
-            _height = other._height;
-            delete[] _data;
-            _data = new Value[area()];
-            for (int x=0; x<_width; x++){
-                for (int y=0; y<_height; y++){
-                    set(x, y, other.get(x,y));
-                }
-            }
-        }
+		ASSERT(this != &other, "Tried to copy matrix into itself");
+
+		if (_width != other._width || _height != other._height) {
+			_width = other._width;
+			_height = other._height;
+			delete[] _data;
+			_data = new Value[area()];
+		}
+		copy(other);
         return *this;
     }
 
     Value& operator[](unsigned int index)
     {
-        if (index >= area()) {
-            string s("invalid index: ");
-            s = s + Platec::to_string(index)
-                + ", width " + Platec::to_string(_width)
-                + ", height " + Platec::to_string(_height);
-            throw invalid_argument(s);
-        }
         return this->_data[index];
     }
 
     const Value& operator[](unsigned int index) const
     {
-        if (index >= area()) {
-            string s("invalid index: ");
-            s = s + Platec::to_string(index)
-                + ", width " + Platec::to_string(_width)
-                + ", height " + Platec::to_string(_height);
-            throw invalid_argument(s);
-        }
         return this->_data[index];
     }
 
@@ -141,12 +121,18 @@ public:
     {
         return _data;
     }
-
-    inline uint32_t area() const
-    {
+	const uint32_t width() const
+	{
+		return _width;
+	}
+	const uint32_t height() const 
+	{
+		return _height;
+	}
+    inline uint32_t area() const 
+	{
         return _width * _height;
-    }   
-
+    }
 private:
 
     Value* _data;

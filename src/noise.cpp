@@ -45,7 +45,7 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
     uint32_t width = tmpDim.getWidth();
     uint32_t height = tmpDim.getHeight();
     float persistence = 0.25f;
-
+	float noiseScale = 0.593;
     float ka = 256/seed;
     float kb = seed*567%256;
     float kc = (seed*seed) % 256;
@@ -58,7 +58,6 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
             float fRdy = fNY*4*PI; // a full circle is two pi radians
             float fYSin = sinf(fRdy);
             float fRdsSin = 1.0f;
-            float noiseScale = 0.593;
             float a = fRdsSin*sinf(fRdx);
             float b = fRdsSin*cosf(fRdx);
             float c = fRdsSin*sinf(fRdy);
@@ -72,7 +71,7 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
                     kb+b*noiseScale,
                     kc+c*noiseScale,
                     kd+d*noiseScale);          
-            if (map[y * width + x] == 0.0f) map[y * width + x] = v;          
+            map[y * width + x] = v;          
         }
     }
 }

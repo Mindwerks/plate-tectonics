@@ -34,9 +34,7 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
 	const uint32_t irgt = (uint32_t)(int)_right  + (((uint32_t)(int)_right  < ilft) ? (uint32_t)(int)_worldDimension.getWidth()  : 0);
 	const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)_worldDimension.getHeight() : 0);
 	const int width = irgt - ilft;
-	if (width < 0) {
-	    throw std::invalid_argument("(Rectangle::getMapIndex) negative width");
-	}
+	ASSERT(width >= 0, "Width must be postive");
 
 	///////////////////////////////////////////////////////////////////////
 	// If you think you're smart enough to optimize this then PREPARE to be
@@ -54,15 +52,9 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
 	x += (x < ilft) ? _worldDimension.getWidth() : 0; // Point is within plate's map: wrap
 	y += (y < itop) ? _worldDimension.getHeight() : 0; // it around world edges if necessary.
 
+	ASSERT(x >= ilft && y >= itop, "Coordinates must be positive");
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
-
-    if (x < 0) {
-        throw std::invalid_argument("failure x");
-    }
-    if (y < 0) {
-        throw std::invalid_argument("failure y");
-    }
 
     if (xOk && yOk) {
         *px = x;
@@ -77,14 +69,12 @@ void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y)
 {
     if (y < _top) {
         _top = y;
-    }
-    if (y > _bottom) {
+    } else if (y > _bottom) {
         _bottom = y;
     }
     if (x < _left) {
         _left = x;
-    }
-    if (x > _right) {
+    } else if (x > _right) {
         _right = x;
     }
 }

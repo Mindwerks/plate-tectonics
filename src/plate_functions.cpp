@@ -31,10 +31,12 @@ void calculateCrust(
 try {    
     // Build masks for accessible directions (4-way).
     // Allow wrapping around map edges if plate has world wide dimensions.
-    uint32_t w_mask = -((x > 0)          | (width == worldDimension.getWidth()));
-    uint32_t e_mask = -((x < width - 1)  | (width == worldDimension.getWidth()));
-    uint32_t n_mask = -((y > 0)          | (height == worldDimension.getHeight()));
-    uint32_t s_mask = -((y < height - 1) | (height == worldDimension.getHeight()));
+	bool width_bit = width == worldDimension.getWidth();
+	bool height_bit = height == worldDimension.getHeight();
+    uint32_t w_mask = -((x > 0)          | width_bit);
+    uint32_t e_mask = -((x < width - 1)  | width_bit);
+    uint32_t n_mask = -((y > 0)          | height_bit);
+    uint32_t s_mask = -((y < height - 1) | height_bit);
 
     // Calculate the x and y offset of neighbour directions.
     // If neighbour is out of plate edges, set it to zero. This protects
@@ -56,7 +58,7 @@ try {
     n_crust = map[n] * (n_mask & (map[n] < map[index]));
     s_crust = map[s] * (s_mask & (map[s] < map[index]));    
 } catch (const exception& e){
-    std::string msg = "Problem during plate::calculateCrust (width: ";
+    string msg = "Problem during plate::calculateCrust (width: ";
     msg = msg + Platec::to_string(width)
             + ", height: " + Platec::to_string(height) 
             + ", x: " + Platec::to_string(x)

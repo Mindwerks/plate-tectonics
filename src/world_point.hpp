@@ -28,7 +28,7 @@ class WorldDimension;
 class WorldPoint
 {
 public:
-    WorldPoint(uint32_t x, uint32_t y, const WorldDimension& worldDimension);
+    WorldPoint(uint32_t x, uint32_t y, const WorldDimension& dim);
     WorldPoint(const WorldPoint& other);
     uint32_t x() const;
     uint32_t y() const;

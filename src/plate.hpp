@@ -49,7 +49,7 @@ public:
     /// @param  _x             X of height map's left-top corner on world map.
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
-    plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
+    plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
           uint32_t plate_age, WorldDimension worldDimension);
 
     ~plate();

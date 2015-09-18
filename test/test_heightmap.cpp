@@ -98,10 +98,10 @@ TEST(HeightMap, IndexedAccessOperatorFromIndex)
   ASSERT_TRUE(0.5f == hm[940]);
   ASSERT_TRUE(0.9f == hm[999]);
 
-  hm[0]   += 0.1;
-  hm[920] += 0.1;
-  hm[940] -= 0.1;
-  hm[999] -= 0.1;
+  hm[0]   += 0.1f;
+  hm[920] += 0.1f;
+  hm[940] -= 0.1f;
+  hm[999] -= 0.1f;
 
   EXPECT_FLOAT_EQ(0.3f, hm[0]);
   EXPECT_FLOAT_EQ(0.8f, hm[920]);

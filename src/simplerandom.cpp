@@ -34,12 +34,6 @@ SimpleRandom::SimpleRandom(uint32_t seed)
     simplerandom_cong_seed(internal, seed);
 }
 
-SimpleRandom::SimpleRandom(SimpleRandom& other)
-{
-    internal = new SimpleRandomCong_t();
-    internal->cong = other.internal->cong;
-}
-
 SimpleRandom::SimpleRandom(const SimpleRandom& other)
 {
     internal = new SimpleRandomCong_t();
@@ -66,8 +60,8 @@ double SimpleRandom::next_double()
 float SimpleRandom::next_float_signed()
 {
     float value = next_double();
-    p_assert(value >= 0.0f && value <= 1.0f, "(SimpleRandom::next_float_signed)");
-    return next_double() - 0.5f;
+	ASSERT(value >= 0.0f && value <= 1.0f, "Invalid float range");
+    return value - 0.5f;
 }
 
 int32_t SimpleRandom::next_signed()

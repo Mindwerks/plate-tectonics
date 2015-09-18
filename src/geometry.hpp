@@ -28,6 +28,24 @@ using namespace std;
 
 class WorldDimension;
 
+namespace Platec {
+	class IntVector
+	{
+	public:
+		IntVector(int x, int y) : _x(x), _y(y) {}
+		int x() const { return _x; }
+		int y() const { return _y; }
+		float length() const {
+			return sqrt(_x * _x + _y * _y);
+		}
+		friend IntVector operator-(const IntVector& a, const IntVector& b) {
+			return IntVector(a.x() - b.x(), a.y() - b.y());
+		}
+	private:
+		int _x, _y;
+	};
+}
+
 /// A point with int coordinates.
 class IntPoint {
 public:
@@ -41,15 +59,52 @@ public:
     /// Y coordinate of the point
     int getY() const;
 
+	friend Platec::IntVector operator-(const IntPoint& a, const IntPoint& b) {
+		return Platec::IntVector(a.getX() - b.getX(), a.getY() - b.getY());
+	}
 private:
 
     int _x, _y;
 };
 
-/// Create a new point by subtracting the coordinates of the second
-/// point from the coordinate of the first.
-IntPoint operator-(const IntPoint& a, const IntPoint& b);
-
+namespace Platec {
+	class FloatVector
+	{
+	public:
+		FloatVector(float x, float y) : _x(x), _y(y) {}
+		float x() const { return _x; }
+		float y() const { return _y; }
+		float length() const {
+			return sqrt(_x * _x + _y * _y);
+		}
+		float FloatVector::normalize() {
+			float len = length();
+			if (len > 0) {
+				float inv_len = 1 / len;
+				_x *= inv_len;
+				_y *= inv_len;
+			}
+			return len;
+		}
+		IntVector toIntVector() const {
+			return IntVector((int)_x, (int)_y);
+		}
+		float dotProduct(const FloatVector& other) const {
+			return x() * other.x() + y() * other.y();
+		}
+		friend bool operator==(const FloatVector& a, const FloatVector& b) {
+			return a.x() == b.x() && a.y() == b.y();
+		}
+		friend FloatVector operator-(const FloatVector& a, const FloatVector& b) {
+			return FloatVector(a.x() - b.x(), a.y() - b.y());
+		}
+		friend FloatVector operator*(const FloatVector& v, float f) {
+			return FloatVector(v.x() * f, v.y() * f);
+		}
+	private:
+		float _x, _y;
+	};
+}
 
 /// A point with float coordinates.
 class FloatPoint {
@@ -70,8 +125,12 @@ public:
     void shift(float dx, float dy, const WorldDimension& _worldDimension);
 
     /// Translate to an IntPoint (using the truncate operation).
-    IntPoint toInt() const;
-
+	IntPoint toInt() const {
+		return IntPoint((int)_x, (int)_y);
+	}
+	friend Platec::FloatVector operator-(const FloatPoint& a, const FloatPoint& b) {
+		return Platec::FloatVector(a.getX() - b.getX(), a.getY() - b.getY());
+	}
 private:
 
     float _x, _y;
@@ -85,14 +144,15 @@ public:
     Dimension(uint32_t width, uint32_t height);
     Dimension(const Dimension& original);
     
-    /// Width of the rectangle
-    uint32_t getWidth() const;
-
-    /// Height of the rectangle
-    uint32_t getHeight() const;
-
-    /// Area of the rectangle
-    uint32_t getArea() const;
+	uint32_t Dimension::getWidth() const {
+		return _width;
+	}
+	uint32_t Dimension::getHeight() const {
+		return _height;
+	}
+	uint32_t Dimension::getArea() const {
+		return _width * _height;
+	}
     bool contains(const uint32_t x, const uint32_t y) const;
     bool contains(const float x, const float y) const;
     bool contains(const FloatPoint& p) const;
@@ -107,8 +167,6 @@ public:
     WorldDimension(uint32_t width, uint32_t height);
     WorldDimension(const WorldDimension& original);
     uint32_t getMax() const;
-    uint32_t xMod(int x) const;
-    uint32_t yMod(int y) const;
     uint32_t xMod(uint32_t x) const;
     uint32_t yMod(uint32_t y) const;
     void normalize(uint32_t& x, uint32_t& y) const;
@@ -121,44 +179,5 @@ public:
     uint32_t yCap(const uint32_t y) const;
     uint32_t largerSize() const;
 };	
-
-namespace Platec {
-
-class IntVector;
-class FloatVector;
-
-class IntVector
-{
-public:
-    IntVector(int x, int y);
-    int x() const { return _x; }
-    int y() const { return _y; }
-    static IntVector fromDistance(const IntPoint& a, const IntPoint& b);
-    float length() const;
-    FloatVector toUnitVector() const;
-private:
-    int _x, _y;
-};    
-
-IntVector operator-(const IntVector& a, const IntVector& b);
-
-class FloatVector
-{
-public:
-    FloatVector(float x, float y);
-    float x() const { return _x; }
-    float y() const { return _y; }
-    float length() const;
-    IntVector toIntVector() const;
-    float dotProduct(const FloatVector& other) const;
-private:
-    float _x, _y;
-};
-
-bool operator==(const FloatVector& a, const FloatVector& b);
-FloatVector operator-(const FloatVector& a, const FloatVector& b);
-FloatVector operator*(const FloatVector& v, float f);
-
-}
 
 #endif

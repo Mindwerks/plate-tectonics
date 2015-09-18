@@ -191,6 +191,6 @@ TEST(Movement, Collide)
 	MockPlate otherPlate(otherPlateVelocityUnitVector, otherPlateMass, otherPlateMassCenter);
 	mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
 
-	EXPECT_FLOAT_EQ(-6.2893254e-05, otherPlate.decImpulseDelta().x());
+	EXPECT_FLOAT_EQ((float)-6.2893254e-05, otherPlate.decImpulseDelta().x());
 	EXPECT_FLOAT_EQ(-0.00064989703f, otherPlate.decImpulseDelta().y());
 }

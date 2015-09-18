@@ -36,28 +36,15 @@
 
 using namespace std;
 
-plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
+plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
              _randsource(seed),
              _mass(MassBuilder(m, Dimension(w, h)).build()),             
-             map(w, h), 
+             map(m, w, h), 
              age_map(w, h), 
              _worldDimension(worldDimension),
              _movement(_randsource, worldDimension)
 {
-    if (NULL == m) {
-        throw invalid_argument("the given heightmap should not be null");
-    }
-    if (w <= 0 || h <= 0) {
-        throw invalid_argument("width and height of the plate should be greater than zero");
-    }
-    if (_x < 0 || _y <0) {
-        throw invalid_argument("coordinates of the plate should be greater or equal to zero");
-    }
-    if (plate_age < 0) {
-        throw invalid_argument("age of the plate should be greater or equal to zero");
-    }
-
     const uint32_t plate_area = w * h;
 
     _bounds = new Bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h));
@@ -65,9 +52,6 @@ plate::plate(long seed, const float* m, uint32_t w, uint32_t h, uint32_t _x, uin
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds->height(); ++y) {
         for (uint32_t x = 0; x < _bounds->width(); ++x, ++k) {
-            // Clone map data and count crust mass.
-            map[k] = m[k];
-
             // Set the age of ALL points in this plate to same
             // value. The right thing to do would be to simulate
             // the generation of new oceanic crust as if the plate
@@ -237,7 +221,9 @@ void plate::applyFriction(float deformed_mass)
 
 void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
 {
-    _movement.collide(this->_mass, p, wx, wy, coll_mass);
+	if (!_mass.null() && coll_mass > 0) {
+		_movement.collide(_mass, p, wx, wy, coll_mass);
+	}
 }
 
 void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
@@ -251,10 +237,14 @@ void plate::calculateCrust(uint32_t x, uint32_t y, uint32_t index,
 
 void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
 {
+  const uint32_t bounds_height = _bounds->height();
+  const uint32_t bounds_width = _bounds->width();
+
   // Find all tops.
-  for (uint32_t y = 0; y < _bounds->height(); ++y) {
-    for (uint32_t x = 0; x < _bounds->width(); ++x) {
-        const uint32_t index = _bounds->index(x, y);
+  for (uint32_t y = 0; y < bounds_height; ++y) {
+	const uint32_t y_width = y * bounds_width;
+    for (uint32_t x = 0; x < bounds_width; ++x) {
+		const uint32_t index = y_width + x;
 
         if (map[index] < lower_bound) {
             continue;
@@ -278,11 +268,15 @@ void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
 
 void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp)
 {
+  const uint32_t bounds_area = _bounds->area();
   vector<uint32_t> sinks_data;
   vector<uint32_t>* sinks = &sinks_data;
 
-  uint32_t* isDone = new uint32_t[_bounds->area()];
-  memset(isDone, 0, _bounds->area() * sizeof(uint32_t));
+  static vector<bool> s_flowDone;
+  if (s_flowDone.size() < bounds_area) {
+	  s_flowDone.resize(bounds_area);
+  }
+  fill(s_flowDone.begin(), s_flowDone.begin() + bounds_area, false);
 
   // From each top, start flowing water along the steepest slope.
   while (!sources->empty()) {
@@ -332,9 +326,9 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
         }
 
         // if it's not handled yet, add it as new sink.
-        if (dest < _bounds->area() && !isDone[dest]) {
+        if (dest < _bounds->area() && !s_flowDone[dest]) {
             sinks->push_back(dest);
-            isDone[dest] = 1;
+			s_flowDone[dest] = true;
         }
 
         // Erode this location with the water flow.
@@ -347,8 +341,6 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
     sinks = v_tmp;
     sinks->clear();
   }
-
-  delete[] isDone;
 }
 
 void plate::erode(float lower_bound)
@@ -427,7 +419,7 @@ void plate::erode(float lower_bound)
                          (s_diff - min_diff) * (s_crust > 0);
 
         // Erosion difference sum is negative!
-        assert(diff_sum >= 0);
+		ASSERT(diff_sum >= 0, "Difference sum must be positive");
 
         if (diff_sum < min_diff)
         {
@@ -477,9 +469,6 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 {
     const ISegmentData& seg = getContinentAt(wx, wy);
 
-    *count = 0;
-    *ratio = 0;
-
     *count = seg.collCount();
     *ratio = (float)seg.collCount() /
         (float)(1 + seg.area()); // +1 avoids DIV with zero.
@@ -488,7 +477,7 @@ void plate::getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* r
 uint32_t plate::getContinentArea(uint32_t wx, uint32_t wy) const
 {
     const uint32_t index = _bounds->getValidMapIndex(&wx, &wy);
-    assert(_segments->id(index) < _segments->size());
+	ASSERT(_segments->id(index) < _segments->size(), "Segment index invalid");
     return (*_segments)[_segments->id(index)].area(); 
 }
 
@@ -526,7 +515,7 @@ void plate::move()
 
 void plate::resetSegments()
 {
-    p_assert(_bounds->area()==_segments->area(), "Segments has not the expected area");
+	ASSERT(_bounds->area() == _segments->area(), "Segments doesn't have the expected area");
     _segments->reset();
 }
 
@@ -543,7 +532,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
     if (index == BAD_INDEX)
     {
         // Extending plate for nothing!
-        assert(z>0);
+		ASSERT(z > 0, "Height value must be non-zero");
 
         const uint32_t ilft = _bounds->leftAsUint();
         const uint32_t itop = _bounds->topAsUint();
@@ -585,7 +574,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         }
 
         // Index out of bounds, but nowhere to grow!
-        assert(d_lft + d_rgt + d_top + d_btm != 0);
+		ASSERT(d_lft + d_rgt + d_top + d_btm != 0, "Invalid plate growth deltas");
 
         const uint32_t old_width  = _bounds->width();
         const uint32_t old_height = _bounds->height();

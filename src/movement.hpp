@@ -73,6 +73,10 @@ public:
     void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
     void decDx(float delta) { dx -= delta; }
     void decDy(float delta) { dy -= delta; }
+	void addImpulse(const Platec::FloatVector& impulse) {
+		dx += impulse.x();
+		dy += impulse.y();
+	}
     void decImpulse(const Platec::FloatVector& delta) {
         dx -= delta.x();
         dy -= delta.y();

@@ -24,11 +24,8 @@
 
 void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimension& wd)
 {
-  // this is necessary because the noise is applied only to cell with a value
-  // equal to zero
-  memset(heightmap, 0, sizeof(float) * wd.getArea());
   createNoise(heightmap, wd, SimpleRandom(seed), true);
-  for (int i=0; i<wd.getArea(); i++){
+  for (uint32_t i=0; i<wd.getArea(); i++){
     if (heightmap[i]<0.0f){
       heightmap[i] *= -1.0f;
     }
@@ -219,8 +216,6 @@ TEST(Plate, addCollision)
 
   EXPECT_EQ(789, area);
   EXPECT_EQ(8, mSeg->collCount());
-
-  delete[] heightmap;
 }
 
 class MockSegments2 : public ISegments
@@ -321,7 +316,7 @@ TEST(Plate, addCrustByCollision)
 
   p.addCrustByCollision(
     worldPointX, worldPointY, // Point of impact
-    0.8, // Amount of crust
+    0.8f, // Amount of crust
     123, // Current age
     99); // Active continent
 
@@ -332,7 +327,7 @@ TEST(Plate, addCrustByCollision)
 
   // Crust should be increased
   float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
-  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8, crustIn_240_120after);  
+  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);  
   
   // The activeContinent should now owns the point
   EXPECT_EQ(99, mSegments->getContinentAt(worldPointX, worldPointY));
@@ -344,8 +339,6 @@ TEST(Plate, addCrustByCollision)
 
   // The activeContinent are should be increased
   EXPECT_EQ(790, mSeg->area());
-  
-  delete[] heightmap;
 }
 
 TEST(Plate, addCrustBySubduction)
@@ -381,13 +374,13 @@ TEST(Plate, addCrustBySubduction)
   float dy = 0.0f;
   p.addCrustBySubduction(
     worldPointX, worldPointY, // Point of impact
-    0.8, // Amount of crust
+    0.8f, // Amount of crust
     123, // Current age
     dx, dy); // Direction of the subducting plate
 
   // Crust should be increased
   float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
-  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8, crustIn_240_120after);  
+  EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);  
 
   // The mass should be increased
   float massAfter = p.getMass();
@@ -397,8 +390,6 @@ TEST(Plate, addCrustBySubduction)
   uint32_t timestampIn_240_120after = p.getCrustTimestamp(worldPointX, worldPointY);
   ASSERT_EQ(true, timestampIn_240_120after > timestampIn_240_120before);
   ASSERT_EQ(true, timestampIn_240_120after < 123 );
-  
-  delete[] heightmap;  
 }
 
 int main(int argc, char **argv) {

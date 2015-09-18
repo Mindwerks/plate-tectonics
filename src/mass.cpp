@@ -29,10 +29,7 @@ MassBuilder::MassBuilder(const float* m, const Dimension& dimension)
     uint32_t k;
     for (uint32_t y = k = 0; y < dimension.getHeight(); ++y) {
         for (uint32_t x = 0; x < dimension.getWidth(); ++x, ++k) {
-            if (m[k] < 0.0f) {
-                throw runtime_error(string("(MassBuilder::MassBuilder) Crust should be not negative")
-                    + ", m[k] " + Platec::to_string_f(m[k]));                
-            }
+			ASSERT(m[k] >= 0.0f, "Crust should be not negative");
             addPoint(x, y, m[k]);
         }
     }
@@ -46,10 +43,7 @@ MassBuilder::MassBuilder()
 
 void MassBuilder::addPoint(uint32_t x, uint32_t y, float crust)
 {
-    if (crust < 0.0f) {
-        throw runtime_error(string("(MassBuilder::addPoint) Crust should be not negative")
-            + ", crust " + Platec::to_string_f(crust));
-    }
+	ASSERT(crust >= 0.0f, "Crust should be not negative");
     mass += crust;
     // Update the center coordinates weighted by mass.
     cx += x * crust;
@@ -61,7 +55,9 @@ Mass MassBuilder::build()
     if (mass <= 0) {
         return Mass(0, 0, 0);
     } else {
-        return Mass(mass, cx/mass, cy/mass);
+		ASSERT(mass > 0, "Mass was zero!");
+		float inv_mass = 1 / mass;
+		return Mass(mass, cx * inv_mass, cy * inv_mass);
     }
 }
 
@@ -77,14 +73,14 @@ Mass::Mass(float mass_, float cx_, float cy_)
 
 void Mass::incMass(float delta)
 {
-    mass += delta;
-    if (mass < 0.0f && mass > -0.01f) {
-        mass = 0.0f;
-    }
-    if (mass < 0.0f) {
-        throw runtime_error(string("(Mass::incMass) a negative delta is not allowed: ")
-            + Platec::to_string_f(delta) + ", resulting mass: " + Platec::to_string_f(mass));
-    }
+	mass += delta;
+	if (mass < 0.0f) {
+		if (mass > -0.01f) {
+			mass = 0.0f;
+		} else {
+			ASSERT(0, "A negative mass is not allowed");
+		}
+	}
 }
 
 float Mass::getMass() const
@@ -94,13 +90,11 @@ float Mass::getMass() const
 
 float Mass::getCx() const
 {
-    if (null()) throw runtime_error("(Mass::getCx)");
     return cx;
 }
 
 float Mass::getCy() const
 {
-    if (null()) throw runtime_error("(Mass::getCy)");
     return cy;
 }
 

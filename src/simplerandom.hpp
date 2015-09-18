@@ -34,7 +34,6 @@ typedef struct
 class SimpleRandom {
 public:
 	SimpleRandom(uint32_t seed);
-	SimpleRandom(SimpleRandom& other);
 	SimpleRandom(const SimpleRandom& other);
 	~SimpleRandom();
 	uint32_t next();
