@@ -19,7 +19,6 @@
 
 #include "utils.hpp"
 #include <sstream>
-#include <stdlib.h>
 
 namespace Platec {
 

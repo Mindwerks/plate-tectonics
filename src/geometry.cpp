@@ -17,7 +17,6 @@
  *  License along with this library; if not, see http://www.gnu.org/licenses/
  *****************************************************************************/
 
-#include <math.h>
 #include "geometry.hpp"
 
 //
@@ -180,5 +179,3 @@ uint32_t WorldDimension::largerSize() const
 {
     return _width > _height ? _width : _height;
 }
-
-

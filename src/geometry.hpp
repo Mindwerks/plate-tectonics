@@ -20,6 +20,7 @@
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
 
+#include <math.h>
 #include <stdexcept>
 #include "utils.hpp"
 #include "world_point.hpp"
@@ -77,7 +78,7 @@ namespace Platec {
 		float length() const {
 			return sqrt(_x * _x + _y * _y);
 		}
-		float FloatVector::normalize() {
+		float normalize() {
 			float len = length();
 			if (len > 0) {
 				float inv_len = 1 / len;
@@ -144,13 +145,13 @@ public:
     Dimension(uint32_t width, uint32_t height);
     Dimension(const Dimension& original);
     
-	uint32_t Dimension::getWidth() const {
+	uint32_t getWidth() const {
 		return _width;
 	}
-	uint32_t Dimension::getHeight() const {
+	uint32_t getHeight() const {
 		return _height;
 	}
-	uint32_t Dimension::getArea() const {
+	uint32_t getArea() const {
 		return _width * _height;
 	}
     bool contains(const uint32_t x, const uint32_t y) const;
