@@ -64,7 +64,7 @@ void Segments::shift(uint32_t d_lft, uint32_t d_top)
 
 uint32_t Segments::size() const
 {
-    return seg_data.size();
+    return (uint32_t)seg_data.size();
 }
 
 const ISegmentData& Segments::operator[](uint32_t index) const

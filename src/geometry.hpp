@@ -37,7 +37,7 @@ namespace Platec {
 		int x() const { return _x; }
 		int y() const { return _y; }
 		float length() const {
-			return sqrt(_x * _x + _y * _y);
+			return sqrt((float)(_x * _x + _y * _y));
 		}
 		friend IntVector operator-(const IntVector& a, const IntVector& b) {
 			return IntVector(a.x() - b.x(), a.y() - b.y());

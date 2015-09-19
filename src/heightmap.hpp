@@ -38,23 +38,21 @@ public:
         : _width(width), _height(height)
     {
 		ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
-		_data = new Value[width * height];
+		_area = width * height;
+		_data = new Value[_area];
     }
 	Matrix(Value* data, unsigned int width, unsigned int height)
 		: _width(width), _height(height) {
 		ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
+		_area = width * height;
 		_data = data;
 	}
 
-    Matrix(const Matrix<Value>& other)
-        : _width(other._width), _height(other._height)
+	Matrix(const Matrix<Value>& other)
+		: _width(other._width), _height(other._height), _area(other._area)
     {
-        _data = new Value[_width * _height];
-        for (uint32_t x=0; x<_width;x++) {
-            for (uint32_t y=0; y<_height; y++) {
-                set(x, y ,other.get(x,y));
-            }
-        }
+        _data = new Value[_area];
+		copy(other);
     }
 
     ~Matrix()
@@ -65,18 +63,22 @@ public:
     void set_all(const Value& value)
     {
         // we cannot use memset to make it very general
-        for (uint32_t x=0; x<_width; x++) {
-            for (uint32_t y=0; y<_height; y++) {
-                set(x, y, value);
-            }
-        }
+		const uint32_t my_area = area();
+		for (uint32_t i = 0; i < my_area; i++) {
+			_data[i] = value;
+		}
     }
 	void copy(const Matrix& other) 
 	{
-		for (uint32_t x = 0; x<_width; x++) {
-			for (uint32_t y = 0; y<_height; y++) {
-				set(x, y, other.get(x, y));
-			}
+		if (_area != other._area) {
+			_width = other._width;
+			_height = other._height;
+			_area = other._area;
+			delete[] _data;
+			_data = new Value[_area];
+		}
+		for (uint32_t i = 0; i < _area; i++) {
+			_data[i] = other._data[i];
 		}
 	}
 
@@ -95,14 +97,6 @@ public:
 
     Matrix<Value>& operator=(const Matrix<Value>& other)
     {
-		ASSERT(this != &other, "Tried to copy matrix into itself");
-
-		if (_width != other._width || _height != other._height) {
-			_width = other._width;
-			_height = other._height;
-			delete[] _data;
-			_data = new Value[area()];
-		}
 		copy(other);
         return *this;
     }
@@ -131,13 +125,14 @@ public:
 	}
     inline uint32_t area() const 
 	{
-        return _width * _height;
+        return _area;
     }
 private:
 
     Value* _data;
     unsigned int _width;
     unsigned int _height;
+	unsigned int _area;
 };
 
 typedef Matrix<float> HeightMap;

@@ -48,12 +48,10 @@ uint32_t Bounds::height() const {
 }
 
 uint32_t Bounds::leftAsUint() const {
-	ASSERT(_position.getX() >= 0, "Value should not be negative");
 	return (uint32_t)_position.getX();
 }
 
 uint32_t Bounds::topAsUint() const {
-	ASSERT(_position.getY() >= 0, "Value should not be negative");
 	return (uint32_t)_position.getY();
 }
 
@@ -95,7 +93,6 @@ void Bounds::grow(int dx, int dy) {
 }
 
 Platec::Rectangle Bounds::asRect() const {
-	ASSERT(_position.getX() > 0.0f && _position.getY() >= 0.0f, "Left and top must be positive");
 	const uint32_t ilft = leftAsUint();
 	const uint32_t itop = topAsUint();
 	const uint32_t irgt = ilft + _dimension.getWidth();

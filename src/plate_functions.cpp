@@ -31,8 +31,10 @@ void calculateCrust(
 try {    
     // Build masks for accessible directions (4-way).
     // Allow wrapping around map edges if plate has world wide dimensions.
-	bool width_bit = width == worldDimension.getWidth();
-	bool height_bit = height == worldDimension.getHeight();
+	const uint32_t world_width = worldDimension.getWidth();
+	const uint32_t world_height = worldDimension.getHeight();
+	bool width_bit = width == world_width;
+	bool height_bit = height == world_height;
     uint32_t w_mask = -((x > 0)          | width_bit);
     uint32_t e_mask = -((x < width - 1)  | width_bit);
     uint32_t n_mask = -((y > 0)          | height_bit);
@@ -41,10 +43,16 @@ try {
     // Calculate the x and y offset of neighbour directions.
     // If neighbour is out of plate edges, set it to zero. This protects
     // map memory reads from segment faulting.
-    w = w_mask==-1 ? worldDimension.xMod(x-1) : 0;
-    e = e_mask==-1 ? worldDimension.xMod(x+1) : 0;
-    n = n_mask==-1 ? worldDimension.yMod(y-1) : 0;
-    s = s_mask==-1 ? worldDimension.yMod(y+1) : 0;
+	const uint32_t x_mod = x % world_width;
+	const uint32_t y_mod = y % world_height;
+	uint32_t x_mod_minus_1 = x_mod == 0 ? world_width - 1 : x_mod - 1;
+	uint32_t x_mod_plus_1 = x_mod + 1 == world_width ? 0 : x_mod + 1;
+	uint32_t y_mod_minus_1 = y_mod == 0 ? world_height - 1 : y_mod - 1;
+	uint32_t y_mod_plus_1 = y_mod + 1 == world_height ? 0 : y_mod + 1;
+    w = w_mask==-1 ? x_mod_minus_1 : 0;
+    e = e_mask==-1 ? x_mod_plus_1 : 0;
+    n = n_mask==-1 ? y_mod_minus_1 : 0;
+    s = s_mask==-1 ? y_mod_plus_1 : 0;
 
     // Calculate offsets within map memory.
     w = y * width + w;
