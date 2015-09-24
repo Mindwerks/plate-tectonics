@@ -51,8 +51,7 @@ void* platec_api_create(long seed, uint32_t width, uint32_t height, float sea_le
 
 	lithosphere* litho = new lithosphere(seed, width, height, sea_level,
 		erosion_period, folding_ratio, aggr_overlap_abs,
-		aggr_overlap_rel, cycle_count);
-	litho->createPlates(num_plates);
+		aggr_overlap_rel, cycle_count, num_plates);
 
 	platec_api_list_elem elem(++last_id, litho);
 	lithospheres.push_back(elem);	

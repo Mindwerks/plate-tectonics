@@ -73,8 +73,8 @@ public:
 	{};
 	int indexOf(int x, int y) const
 	{
-		if (x < 0 || x >= _width)  throw invalid_argument("x is not valid"); 
-		if (y < 0 || y >= _height) throw invalid_argument("y is not valid"); 
+		ASSERT(x >= 0 && x < _width && y >= 0 && y < _height,
+			   "Coordinates are not valid");
 		return y * _width + x;
 	}
 private:
@@ -96,9 +96,7 @@ int sqrdmd(long seed, float* map, int size, float rgh)
 	i = 0;
 	temp = size - 1;
 	// MUST EQUAL TO 2^x + 1!
-	if (temp & (temp - 1) || temp & 3) {
-		throw invalid_argument("Side should be 2**n +1");
-	}
+	ASSERT(!(temp & (temp - 1) || temp & 3), "Side should be 2**n +1");
 	temp = size;
 	slope = rgh;
 	step = size & ~1;

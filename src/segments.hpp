@@ -74,9 +74,15 @@ public:
     const ISegmentData& operator[](uint32_t index) const;
     ISegmentData& operator[](uint32_t index);
     void add(ISegmentData* data);
-    const ContinentId& id(uint32_t index) const;
-    ContinentId& id(uint32_t index);
-    void setId(uint32_t index, ContinentId id);
+	const ContinentId& id(uint32_t index) const {
+		return segment[index];
+	}
+	ContinentId& id(uint32_t index) {
+		return segment[index];
+	}
+	void setId(uint32_t index, ContinentId id) {
+		segment[index] = id;
+	}
     ContinentId getContinentAt(int x, int y) const;
 private:
     std::vector<ISegmentData*> seg_data; ///< Details of each crust segment.

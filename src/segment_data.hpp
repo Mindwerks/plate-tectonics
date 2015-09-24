@@ -49,7 +49,7 @@ public:
 class SegmentData : public ISegmentData
 {
   public:
-    SegmentData(Platec::Rectangle& rectangle,
+    SegmentData(const Platec::Rectangle& rectangle,
                 uint32_t area);
 
     void enlarge_to_contain(uint32_t x, uint32_t y);

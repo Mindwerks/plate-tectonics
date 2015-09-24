@@ -26,43 +26,39 @@ namespace Platec {
 /// Return a valid index or BAD_INDEX
 uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
 {
-	uint32_t x = *px % _worldDimension.getWidth();
-	uint32_t y = *py % _worldDimension.getHeight();
+	uint32_t world_width = _worldDimension.getWidth();
+	uint32_t world_height = _worldDimension.getHeight();
+	uint32_t x = *px % world_width;
+	uint32_t y = *py % world_height;
 
 	const uint32_t ilft = (uint32_t)(int)_left;
 	const uint32_t itop = (uint32_t)(int)_top;
-	const uint32_t irgt = (uint32_t)(int)_right  + (((uint32_t)(int)_right  < ilft) ? (uint32_t)(int)_worldDimension.getWidth()  : 0);
-	const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)_worldDimension.getHeight() : 0);
+	const uint32_t irgt = (uint32_t)(int)_right  + (((uint32_t)(int)_right  < ilft) ? (uint32_t)(int)world_width  : 0);
+	const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)world_height : 0);
 	const int width = irgt - ilft;
-	if (width < 0) {
-	    throw std::invalid_argument("(Rectangle::getMapIndex) negative width");
-	}
+	ASSERT(width >= 0, "Width must be postive");
 
 	///////////////////////////////////////////////////////////////////////
 	// If you think you're smart enough to optimize this then PREPARE to be
 	// smart as HELL to debug it!
 	///////////////////////////////////////////////////////////////////////
 
+	const uint32_t x_plus_width = x + world_width;
 	const uint32_t xOkA = (x >= ilft) && (x < irgt);
-	const uint32_t xOkB = (x + _worldDimension.getWidth() >= ilft) && (x + _worldDimension.getWidth() < irgt);
+	const uint32_t xOkB = (x_plus_width >= ilft) && (x_plus_width < irgt);
 	const uint32_t xOk = xOkA || xOkB;
 
+	const uint32_t y_plus_height = y + world_height;
 	const uint32_t yOkA = (y >= itop) && (y < ibtm);
-	const uint32_t yOkB = (y + _worldDimension.getHeight() >= itop) && (y + _worldDimension.getHeight() < ibtm);
+	const uint32_t yOkB = (y_plus_height >= itop) && (y_plus_height < ibtm);
 	const uint32_t yOk = yOkA || yOkB;
 
-	x += (x < ilft) ? _worldDimension.getWidth() : 0; // Point is within plate's map: wrap
-	y += (y < itop) ? _worldDimension.getHeight() : 0; // it around world edges if necessary.
+	x += (x < ilft) ? world_width : 0; // Point is within plate's map: wrap
+	y += (y < itop) ? world_height : 0; // it around world edges if necessary.
 
+	ASSERT(x >= ilft && y >= itop, "Coordinates must be positive");
 	x -= ilft; // Calculate offset within local map.
 	y -= itop;
-
-    if (x < 0) {
-        throw std::invalid_argument("failure x");
-    }
-    if (y < 0) {
-        throw std::invalid_argument("failure y");
-    }
 
     if (xOk && yOk) {
         *px = x;
@@ -77,14 +73,12 @@ void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y)
 {
     if (y < _top) {
         _top = y;
-    }
-    if (y > _bottom) {
+    } else if (y > _bottom) {
         _bottom = y;
     }
     if (x < _left) {
         _left = x;
-    }
-    if (x > _right) {
+    } else if (x > _right) {
         _right = x;
     }
 }

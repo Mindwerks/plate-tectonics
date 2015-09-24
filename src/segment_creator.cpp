@@ -84,6 +84,8 @@ void MySegmentCreator::scanSpans(const uint32_t line, uint32_t& start, uint32_t&
 
 ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw()
 {
+	const uint32_t bounds_width = _bounds.width();
+	const uint32_t bounds_height = _bounds.height();
     const uint32_t origin_index = _bounds.index(x, y);
     const uint32_t ID = _segments->size();
 
@@ -104,13 +106,21 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
     }
 
     uint32_t lines_processed;
-    Platec::Rectangle r = Platec::Rectangle(_worldDimension, x, x, y, y);
-
-    SegmentData* pData = new SegmentData(r, 0);
-
-    std::vector<uint32_t>* spans_todo = new std::vector<uint32_t>[_bounds.height()];
-    std::vector<uint32_t>* spans_done = new std::vector<uint32_t>[_bounds.height()];
-
+	Platec::Rectangle rect(_worldDimension, x, x, y, y);
+    SegmentData* pData = new SegmentData(rect, 0);
+	static vector<uint32_t>* spans_todo = NULL;
+	static vector<uint32_t>* spans_done = NULL;
+	static uint32_t spans_size = 0;
+	// MK: This code was originally allocating the 2D arrays per function call.
+	// This was eating up a tremendous amount of cpu.
+	// They are now static and they grow as needed, which turns out to be seldom.
+	if (spans_size < bounds_height) {
+		delete[] spans_todo;
+		delete[] spans_done;
+		spans_todo = new vector<uint32_t>[bounds_height];
+		spans_done = new vector<uint32_t>[bounds_height];
+		spans_size = bounds_height;
+	}
     _segments->setId(origin_index, ID);
     spans_todo[y].push_back(x);
     spans_todo[y].push_back(x);
@@ -118,11 +128,11 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
     do
     {
       lines_processed = 0;
-      for (uint32_t line = 0; line < _bounds.height(); ++line)
+      for (uint32_t line = 0; line < bounds_height; ++line)
       {
         uint32_t start, end;
 
-        if (spans_todo[line].size() == 0)
+        if (spans_todo[line].empty())
             continue;
 
         scanSpans(line, start, end, spans_todo, spans_done);
@@ -132,11 +142,11 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
         // Calculate line indices. Allow wrapping around map edges.
         const uint32_t row_above = ((line - 1) & -(line > 0)) |
-            ((_bounds.height() - 1) & -(line == 0));
-        const uint32_t row_below = (line + 1) & -(line < _bounds.height() - 1);
-        const uint32_t line_here = line * _bounds.width();
-        const uint32_t line_above = row_above * _bounds.width();
-        const uint32_t line_below = row_below * _bounds.width();
+            ((bounds_height - 1) & -(line == 0));
+        const uint32_t row_below = (line + 1) & -(line < bounds_height - 1);
+        const uint32_t line_here = line * bounds_width;
+        const uint32_t line_above = row_above * bounds_width;
+        const uint32_t line_below = row_below * bounds_width;
 
         // Extend the beginning of line.
         while (start > 0 && _segments->id(line_here+start-1) > ID &&
@@ -149,7 +159,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
         }
 
         // Extend the end of line.
-        while (end < _bounds.width() - 1 &&
+        while (end < bounds_width - 1 &&
             _segments->id(line_here + end + 1) > ID &&
             map[line_here + end + 1] >= CONT_BASE)
         {
@@ -160,19 +170,19 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
         }
 
         // Check if should wrap around left edge.
-        if (_bounds.width() == _worldDimension.getWidth() && start == 0 &&
-            _segments->id(line_here+_bounds.width()-1) > ID &&
-            map[line_here+_bounds.width()-1] >= CONT_BASE)
+        if (bounds_width == _worldDimension.getWidth() && start == 0 &&
+            _segments->id(line_here+bounds_width-1) > ID &&
+            map[line_here+bounds_width-1] >= CONT_BASE)
         {
-            _segments->setId(line_here + _bounds.width() - 1, ID);
-            spans_todo[line].push_back(_bounds.width() - 1);
-            spans_todo[line].push_back(_bounds.width() - 1);
+            _segments->setId(line_here + bounds_width - 1, ID);
+            spans_todo[line].push_back(bounds_width - 1);
+            spans_todo[line].push_back(bounds_width - 1);
 
             // Count volume of pixel...
         }
 
         // Check if should wrap around right edge.
-        if (_bounds.width() == _worldDimension.getWidth() && end == _bounds.width() - 1 &&
+        if (bounds_width == _worldDimension.getWidth() && end == bounds_width - 1 &&
             _segments->id(line_here+0) > ID &&
             map[line_here+0] >= CONT_BASE)
         {
@@ -191,7 +201,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
         if (start < pData->getLeft()) pData->setLeft(start);
         if (end > pData->getRight()) pData->setRight(end);
 
-        if (line > 0 || _bounds.height() == _worldDimension.getHeight()) {
+        if (line > 0 || bounds_height == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (_segments->id(line_above + j) > ID &&
                   map[line_above + j] >= CONT_BASE)
@@ -201,7 +211,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
                 // Count volume of pixel...
 
-                while (++j < _bounds.width() &&
+                while (++j < bounds_width &&
                        _segments->id(line_above + j) > ID &&
                        map[line_above + j] >= CONT_BASE)
                 {
@@ -218,7 +228,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
               }
         }
 
-        if (line < _bounds.height() - 1 || _bounds.height() == _worldDimension.getHeight()) {
+        if (line < bounds_height - 1 || bounds_height == _worldDimension.getHeight()) {
             for (uint32_t j = start; j <= end; ++j)
               if (_segments->id(line_below + j) > ID &&
                   map[line_below + j] >= CONT_BASE)
@@ -228,7 +238,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 
                 // Count volume of pixel...
 
-                while (++j < _bounds.width() &&
+                while (++j < bounds_width &&
                        _segments->id(line_below + j) > ID &&
                        map[line_below + j] >= CONT_BASE)
                 {
@@ -251,8 +261,10 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
       }
     } while (lines_processed > 0);
 
-    delete[] spans_todo;
-    delete[] spans_done;
+	for (uint32_t line = 0; line < bounds_height; line++) {
+		spans_todo[line].clear();
+		spans_done[line].clear();
+	}
     _segments->add(pData);
 
     return ID;

@@ -64,18 +64,18 @@ void Segments::shift(uint32_t d_lft, uint32_t d_top)
 
 uint32_t Segments::size() const
 {
-    return seg_data.size();
+    return (uint32_t)seg_data.size();
 }
 
 const ISegmentData& Segments::operator[](uint32_t index) const
 {
-    if (index >= seg_data.size()) throw runtime_error("(Segments::operator[]) unvalid index");
+	ASSERT(index < seg_data.size(), "Invalid index");
     return *seg_data[index];
 }
 
 ISegmentData& Segments::operator[](uint32_t index)
 {
-    if (index >= seg_data.size()) throw runtime_error("(Segments::operator[]) unvalid index");
+	ASSERT(index < seg_data.size(), "Invalid index");
     return *seg_data[index];
 }
 
@@ -83,31 +83,10 @@ void Segments::add(ISegmentData* data){
     seg_data.push_back(data);
 }
 
-const ContinentId& Segments::id(uint32_t index) const {
-    if (index>=_area) {
-        throw runtime_error("unvalid index");
-    }
-    return segment[index];
-}
-
-ContinentId& Segments::id(uint32_t index) {
-    if (index>=_area) {
-        throw runtime_error("unvalid index");
-    }
-    return segment[index];
-}
-
-void Segments::setId(uint32_t index, ContinentId id) {
-    if (index>=_area) {
-        throw runtime_error("unvalid index");
-    }
-    segment[index] = id;
-}
-
 ContinentId Segments::getContinentAt(int x, int y) const
 {
-    if (_bounds == NULL) throw runtime_error("(Segments::getContinentAt) bounds not set");
-    if (_segmentCreator == NULL) throw runtime_error("(Segments::getContinentAt) segmentCreator not set");
+	ASSERT(_bounds, "Bounds not set");
+	ASSERT(_segmentCreator, "SegmentCreator not set");
     uint32_t lx = x, ly = y;
     uint32_t index = _bounds->getValidMapIndex(&lx, &ly);
     ContinentId seg = id(index);
@@ -120,9 +99,6 @@ ContinentId Segments::getContinentAt(int x, int y) const
         seg = _segmentCreator->createSegment(lx, ly);
     }
 
-    if (seg >= size())
-    {
-        throw invalid_argument("Could not create segment");
-    }
+	ASSERT(seg < size(), "Could not create segment");
     return seg;  
 }

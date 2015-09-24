@@ -38,7 +38,22 @@ using namespace std;
 
 class plate;
 
-class plateArea;
+/**
+* Wrapper for growing plate from a seed. Contains plate's dimensions.
+*
+* Used exclusively in plate creation phase.
+*/
+class plateArea
+{
+public:
+	vector<uint32_t> border; ///< Plate's unprocessed border pixels.
+	uint32_t btm; ///< Most bottom pixel of plate.
+	uint32_t lft; ///< Most left pixel of plate.
+	uint32_t rgt; ///< Most right pixel of plate.
+	uint32_t top; ///< Most top pixel of plate.
+	uint32_t wdt; ///< Width of area in pixels.
+	uint32_t hgt; ///< Height of area in pixels.
+};
 
 /**
  * Lithosphere is the rigid outermost shell of a rocky planet.
@@ -72,7 +87,7 @@ class lithosphere
 		float sea_level,
 		uint32_t _erosion_period, float _folding_ratio,
 		uint32_t aggr_ratio_abs, float aggr_ratio_rel,
-		uint32_t num_cycles) throw(std::invalid_argument);
+		uint32_t num_cycles, uint32_t _max_plates) throw(std::invalid_argument);
 
 	~lithosphere() throw(); ///< Standard destructor.
 
@@ -83,7 +98,7 @@ class lithosphere
 	 *
 	 * @param num_plates Number of areas the surface is divided into.
 	 */
-	void createPlates(uint32_t num_plates);
+	void createPlates();
 
 	uint32_t getCycleCount() const throw() { return cycle_count; }
 	uint32_t getIterationCount() const throw() { return iter_count; }
@@ -107,8 +122,9 @@ class lithosphere
   			uint32_t& oceanic_collisions,
     		uint32_t& continental_collisions);
   	void updateCollisions();
-  	void growPlates(plateArea*& area, IndexMap& owner);
-  	void removeEmptyPlates(uint32_t*& indexFound);
+	void clearPlates();
+  	void growPlates();
+  	void removeEmptyPlates();
   	void resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
         const uint32_t& x_mod, const uint32_t& y_mod,
         const float*& this_map, const uint32_t*& this_age, uint32_t& continental_collisions);
@@ -130,11 +146,11 @@ class lithosphere
 	 */
 	class plateCollision
 	{
-	  public:
-
+		public:
 		plateCollision(uint32_t _index, uint32_t x, uint32_t y, float z)
-			throw() : index(_index), wx(x), wy(y), crust(z) {}
-
+			throw() : index(_index), wx(x), wy(y), crust(z) {
+			ASSERT(crust >= 0, "Crust must be a positive value");
+		}
 		uint32_t index; ///< Index of the other plate involved in the event.
 		uint32_t wx, wy; ///< Coordinates of collision in world space.
 		float crust; ///< Amount of crust that will deform/subduct.
@@ -145,8 +161,11 @@ class lithosphere
 
 	HeightMap hmap; ///< Height map representing the topography of system.
 	IndexMap imap; ///< Plate index map of the "owner" of each map point.
+	IndexMap prev_imap; ///< Plate index map from the last update
 	AgeMap amap; ///< Age map of the system's surface (topography).
 	plate** plates; ///< Array of plates that constitute the system.
+	vector<plateArea> plate_areas;
+	vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
 
 	uint32_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
 	float  aggr_overlap_rel; ///< % of overlapping area -> aggregation.
@@ -158,8 +177,8 @@ class lithosphere
 	uint32_t max_plates; ///< Number of plates in the initial setting.
 	uint32_t num_plates; ///< Number of plates in the current setting.
 
-	std::vector<std::vector<plateCollision> > collisions;
-	std::vector<std::vector<plateCollision> > subductions;
+	vector<vector<plateCollision> > collisions;
+	vector<vector<plateCollision> > subductions;
 
 	float peak_Ek; ///< Max total kinetic energy in the system so far.
 	uint32_t last_coll_count; ///< Iterations since last cont. collision.
