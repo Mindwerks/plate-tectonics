@@ -65,18 +65,28 @@ public:
     float velocityOnY(float length) const;
     float dot(float dx_, float dy_) const;
     float momentum(const Mass& mass) const throw();
-    float getVelocity() const { return velocity; };
+    float getVelocity() const {
+        return velocity;
+    };
     /// @Deprecated, use velocityUnitVector instead
-    float velX() const throw() { return vx; }
+    float velX() const throw() {
+        return vx;
+    }
     /// @Deprecated, use velocityUnitVector instead
-    float velY() const throw() { return vy; }
+    float velY() const throw() {
+        return vy;
+    }
     void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
-    void decDx(float delta) { dx -= delta; }
-    void decDy(float delta) { dy -= delta; }
-	void addImpulse(const Platec::FloatVector& impulse) {
-		dx += impulse.x();
-		dy += impulse.y();
-	}
+    void decDx(float delta) {
+        dx -= delta;
+    }
+    void decDy(float delta) {
+        dy -= delta;
+    }
+    void addImpulse(const Platec::FloatVector& impulse) {
+        dx += impulse.x();
+        dy += impulse.y();
+    }
     void decImpulse(const Platec::FloatVector& delta) {
         dx -= delta.x();
         dy -= delta.y();

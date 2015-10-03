@@ -20,8 +20,8 @@
 #include "segment_data.hpp"
 
 SegmentData::SegmentData(const Platec::Rectangle& rectangle,
-            uint32_t area) : _rectangle(rectangle),
-                          _area(area), _coll_count(0) {};
+                         uint32_t area) : _rectangle(rectangle),
+    _area(area), _coll_count(0) {};
 
 void SegmentData::enlarge_to_contain(uint32_t x, uint32_t y)
 {

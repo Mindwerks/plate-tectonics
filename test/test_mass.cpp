@@ -25,7 +25,8 @@ TEST(MassBuilder, ConstructorFromHeightmap)
     float heightmap[20] = {0.0f, 0.0f, 0.0f, 0.0f, 10.3f,
                            5.0f, 0.0f, 0.0f, 0.0f,  0.0f,
                            0.2f, 0.0f, 0.0f, 0.0f,  0.0f,
-                           1.0f, 1.0f, 0.0f, 0.0f,  0.0f};
+                           1.0f, 1.0f, 0.0f, 0.0f,  0.0f
+                          };
     Dimension dim(5, 4);
     MassBuilder mb(heightmap, dim);
     EXPECT_FLOAT_EQ(17.5f, mb.build().getMass());

@@ -61,7 +61,7 @@ void fill_params(Params& params, int argc, char* argv[])
 
     int p = 1;
     while (p < argc) {
-        if (0 == strcmp(argv[p], "--help") || 0 == strcmp(argv[p], "-h")){
+        if (0 == strcmp(argv[p], "--help") || 0 == strcmp(argv[p], "-h")) {
             printf(" -h --help           : show this message\n");
             printf(" -s SEED             : use the given SEED\n");
             printf(" --dim WIDTH HEIGHT  : use the given width and height\n");
@@ -71,31 +71,31 @@ void fill_params(Params& params, int argc, char* argv[])
             printf(" --step X            : generate intermediate maps any given steps\n");
             exit(0);
         } else if (0 == strcmp(argv[p], "-s")) {
-            if (p + 1 >= argc){
+            if (p + 1 >= argc) {
                 printf("error: a parameter should follow -s\n");
                 exit(1);
             }
             long seed = atol(argv[p+1]);
-            if (seed==0){
+            if (seed==0) {
                 printf("error: not a number\n");
-                exit(1);   
-            }            
+                exit(1);
+            }
             params.seed = seed;
             p += 2;
         } else if (0 == strcmp(argv[p], "--dim")) {
-            if (p + 2 >= argc){
+            if (p + 2 >= argc) {
                 printf("error: two parameters should follow --dim\n");
                 exit(1);
             }
             int width = atoi(argv[p+1]);
             int height = atoi(argv[p+2]);
-            if (width==0 || height==0){
+            if (width==0 || height==0) {
                 printf("error: not a number\n");
-                exit(1);   
+                exit(1);
             }
-            if (width<5 || height<5){
+            if (width<5 || height<5) {
                 printf("error: dimensions have to be positive and >= 5\n");
-                exit(1);   
+                exit(1);
             }
             params.width = width;
             params.height = height;
@@ -106,27 +106,27 @@ void fill_params(Params& params, int argc, char* argv[])
         } else if (0 == strcmp(argv[p], "--grayscale")) {
             params.colors = false;
             p += 1;
-        } else if (0 == strcmp(argv[p], "--filename")) {            
-            if (p + 1 >= argc){
+        } else if (0 == strcmp(argv[p], "--filename")) {
+            if (p + 1 >= argc) {
                 printf("error: a parameter should follow --filename\n");
                 exit(1);
             }
             params.filename = argv[p+1];
             p += 2;
         } else if (0 == strcmp(argv[p], "--step")) {
-            if (p + 1 >= argc){
+            if (p + 1 >= argc) {
                 printf("error: a parameter should follow --step\n");
                 exit(1);
             }
             int step = atoi(argv[p+1]);
-            if (step==0){
+            if (step==0) {
                 printf("error: not a number\n");
-                exit(1);   
+                exit(1);
             }
-            if (step<0){
+            if (step<0) {
                 printf("error: step have to be positive\n");
-                exit(1);   
-            }            
+                exit(1);
+            }
             params.step = step;
             p += 2;
         } else {
@@ -143,7 +143,7 @@ void fill_params(Params& params, int argc, char* argv[])
 /// - the output filename
 /// - the seed
 int main(int argc, char* argv[])
-{    
+{
     Params params;
     fill_params(params, argc, argv);
 
@@ -172,14 +172,14 @@ int main(int argc, char* argv[])
         step++;
         platec_api_step(p);
 
-        if (params.step != 0 && (step % params.step == 0) ) {            
+        if (params.step != 0 && (step % params.step == 0) ) {
             char filename[250];
             sprintf(filename, "%s_%i.png", params.filename, step);
             printf(" * step %i (filename %s)\n", step, filename);
             save_image(p, filename, params.width, params.height, params.colors);
         }
     }
-    
+
     char filename[250];
     sprintf(filename, "%s.png", params.filename);
     save_image(p, filename, params.width, params.height, params.colors);
