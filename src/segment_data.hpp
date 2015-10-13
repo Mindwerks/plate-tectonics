@@ -25,7 +25,7 @@
 
 class ISegmentDataAccess
 {
-public:    
+public:
     virtual uint32_t getLeft() const = 0;
     virtual uint32_t getRight() const = 0;
     virtual uint32_t getTop() const = 0;
@@ -48,7 +48,7 @@ public:
 /// Container for details about a segmented crust area on this plate.
 class SegmentData : public ISegmentData
 {
-  public:
+public:
     SegmentData(const Platec::Rectangle& rectangle,
                 uint32_t area);
 
@@ -69,7 +69,7 @@ class SegmentData : public ISegmentData
     uint32_t area() const;
     uint32_t collCount() const;
     void markNonExistent();
-  private:
+private:
     Platec::Rectangle _rectangle;
     uint32_t _area; ///< Number of locations this area consists of.
     uint32_t _coll_count; ///< Number of collisions on this segment.

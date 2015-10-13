@@ -23,7 +23,7 @@
 WorldPoint::WorldPoint(uint32_t x, uint32_t y, const WorldDimension& dim)
     : _x(x), _y(y)
 {
-	ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
+    ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
 }
 
 WorldPoint::WorldPoint(const WorldPoint& other)
@@ -43,6 +43,6 @@ uint32_t WorldPoint::y() const
 
 uint32_t WorldPoint::toIndex(const WorldDimension& dim) const
 {
-	ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
+    ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
     return _y * dim.getWidth() + _x;
 }

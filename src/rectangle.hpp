@@ -34,11 +34,11 @@ namespace Platec {
 class Rectangle {
 public:
     Rectangle(const WorldDimension& worldDimension,
-            uint32_t left, uint32_t right,
-            uint32_t top, uint32_t bottom)
-            : _worldDimension(worldDimension),
-              _left(left), _right(right),
-              _top(top), _bottom(bottom)
+              uint32_t left, uint32_t right,
+              uint32_t top, uint32_t bottom)
+        : _worldDimension(worldDimension),
+          _left(left), _right(right),
+          _top(top), _bottom(bottom)
     {
     };
 
@@ -112,8 +112,8 @@ public:
         uint32_t cleanY = _worldDimension.yMod(y);
         if (cleanX < getLeft()) cleanX += _worldDimension.getWidth();
         if (cleanY < getTop()) cleanY += _worldDimension.getHeight();
-        return cleanX >= getLeft() && cleanX < getRight() 
-            && cleanY >= getTop()  && cleanY < getBottom();
+        return cleanX >= getLeft() && cleanX < getRight()
+               && cleanY >= getTop()  && cleanY < getBottom();
     }
 
 private:

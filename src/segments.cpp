@@ -27,11 +27,11 @@ Segments::Segments(uint32_t plate_area)
 }
 
 Segments::~Segments()
-{   
+{
     delete[] segment;
     segment = NULL;
     _area = 0;
-    for (int i=0; i<seg_data.size(); i++){
+    for (int i=0; i<seg_data.size(); i++) {
         delete seg_data[i];
     }
 }
@@ -69,24 +69,24 @@ uint32_t Segments::size() const
 
 const ISegmentData& Segments::operator[](uint32_t index) const
 {
-	ASSERT(index < seg_data.size(), "Invalid index");
+    ASSERT(index < seg_data.size(), "Invalid index");
     return *seg_data[index];
 }
 
 ISegmentData& Segments::operator[](uint32_t index)
 {
-	ASSERT(index < seg_data.size(), "Invalid index");
+    ASSERT(index < seg_data.size(), "Invalid index");
     return *seg_data[index];
 }
 
-void Segments::add(ISegmentData* data){
+void Segments::add(ISegmentData* data) {
     seg_data.push_back(data);
 }
 
 ContinentId Segments::getContinentAt(int x, int y) const
 {
-	ASSERT(_bounds, "Bounds not set");
-	ASSERT(_segmentCreator, "SegmentCreator not set");
+    ASSERT(_bounds, "Bounds not set");
+    ASSERT(_segmentCreator, "SegmentCreator not set");
     uint32_t lx = x, ly = y;
     uint32_t index = _bounds->getValidMapIndex(&lx, &ly);
     ContinentId seg = id(index);
@@ -99,6 +99,6 @@ ContinentId Segments::getContinentAt(int x, int y) const
         seg = _segmentCreator->createSegment(lx, ly);
     }
 
-	ASSERT(seg < size(), "Could not create segment");
-    return seg;  
+    ASSERT(seg < size(), "Could not create segment");
+    return seg;
 }

@@ -39,8 +39,8 @@ typedef INT32 int32_t;
 
 namespace Platec {
 
-	std::string to_string(uint32_t value);
-	std::string to_string_f(float value);
+std::string to_string(uint32_t value);
+std::string to_string_f(float value);
 
 }
 

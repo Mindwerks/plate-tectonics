@@ -75,7 +75,7 @@ public:
     /// Subduction is simulated by calculating the distance on surface
     /// that subducting sediment will travel under the plate until the
     /// subducting slab has reached certain depth where the heat triggers
-    /// the melting and uprising of molten magma. 
+    /// the melting and uprising of molten magma.
     ///
     /// @param  x   Origin of subduction on global world map (X).
     /// @param  y   Origin of subduction on global world map (Y).
@@ -84,7 +84,7 @@ public:
     /// @param  dx  Direction of the subducting plate (X).
     /// @param  dy  Direction of the subducting plate (Y).
     void addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
-        float dx, float dy);
+                              float dx, float dy);
 
     /// Add continental crust from this plate as part of other plate.
     ///
@@ -141,7 +141,7 @@ public:
     /// @param[in, out] count Destination for the count of collisions.
     /// @param[in, out] count Destination for the % of area that collided.
     void getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count,
-                            float* ratio) const;
+                          float* ratio) const;
 
     /// Retrieve the surface area of continent lying at desired location.
     ///
@@ -203,26 +203,50 @@ public:
     /// @param  t   Time of creation of new crust.
     void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
-    float getMass() const throw() { return _mass.getMass(); }
-    float getMomentum() const throw() { return _movement.momentum(_mass); }
-    uint32_t getHeight() const throw() { return _bounds->height(); }
-    uint32_t  getLeftAsUint() const throw() { return _bounds->leftAsUint(); }
-    uint32_t  getTopAsUint() const throw() { return _bounds->topAsUint(); }
-    float getVelocity() const throw() { return _movement.getVelocity(); }
+    float getMass() const throw() {
+        return _mass.getMass();
+    }
+    float getMomentum() const throw() {
+        return _movement.momentum(_mass);
+    }
+    uint32_t getHeight() const throw() {
+        return _bounds->height();
+    }
+    uint32_t  getLeftAsUint() const throw() {
+        return _bounds->leftAsUint();
+    }
+    uint32_t  getTopAsUint() const throw() {
+        return _bounds->topAsUint();
+    }
+    float getVelocity() const throw() {
+        return _movement.getVelocity();
+    }
 
     Platec::FloatVector velocityUnitVector() const {
         return _movement.velocityUnitVector();
     }
 
     /// @Deprecated, use velocityUnitVector instead
-    float getVelX() const throw() { return _movement.velX(); }
+    float getVelX() const throw() {
+        return _movement.velX();
+    }
     /// @Deprecated, use velocityUnitVector instead
-    float getVelY() const throw() { return _movement.velY(); }
-    
-    uint32_t getWidth() const throw() { return _bounds->width(); }
-    bool   isEmpty() const throw() { return _mass.null(); }
-    float getCx() const { return _mass.getCx(); }
-    float getCy() const { return _mass.getCy(); }
+    float getVelY() const throw() {
+        return _movement.velY();
+    }
+
+    uint32_t getWidth() const throw() {
+        return _bounds->width();
+    }
+    bool   isEmpty() const throw() {
+        return _mass.null();
+    }
+    float getCx() const {
+        return _mass.getCx();
+    }
+    float getCy() const {
+        return _mass.getCy();
+    }
     FloatPoint massCenter() const {
         return _mass.massCenter();
     }
@@ -233,13 +257,17 @@ public:
     }
 
     // @Deprecated, use decImpulse instead
-    void decDx(float delta) { _movement.decDx(delta); }
-    void decDy(float delta) { _movement.decDy(delta); }
+    void decDx(float delta) {
+        _movement.decDx(delta);
+    }
+    void decDy(float delta) {
+        _movement.decDy(delta);
+    }
 
     // visible for testing
-    void calculateCrust(uint32_t x, uint32_t y, uint32_t index, 
-            float& w_crust, float& e_crust, float& n_crust, float& s_crust,
-            uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
+    void calculateCrust(uint32_t x, uint32_t y, uint32_t index,
+                        float& w_crust, float& e_crust, float& n_crust, float& s_crust,
+                        uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
 
     // Visible for testing
     void injectSegments(ISegments* segments)
@@ -266,7 +294,7 @@ private:
     const WorldDimension _worldDimension;
     SimpleRandom _randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
-    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation. 
+    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
     IBounds* _bounds;
     Mass _mass;
     Movement _movement;

@@ -57,12 +57,12 @@ float FloatPoint::getY() const
 
 void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension)
 {
-	const uint32_t world_width = _worldDimension.getWidth();
+    const uint32_t world_width = _worldDimension.getWidth();
     _x += dx;
     _x += _x > 0 ? 0 : world_width;
     _x -= _x < world_width ? 0 : world_width;
 
-	const uint32_t world_height = _worldDimension.getHeight();
+    const uint32_t world_height = _worldDimension.getHeight();
     _y += dy;
     _y += _y > 0 ? 0 : world_height;
     _y -= _y < world_height ? 0 : world_height;
@@ -130,7 +130,7 @@ uint32_t WorldDimension::xMod(uint32_t x) const
 uint32_t WorldDimension::yMod(uint32_t y) const
 {
     return (y + _height) % _height;
-}    
+}
 
 void WorldDimension::normalize(uint32_t& x, uint32_t& y) const
 {
@@ -145,7 +145,7 @@ uint32_t WorldDimension::indexOf(const uint32_t x, const uint32_t y) const
 
 uint32_t WorldDimension::lineIndex(const uint32_t y) const
 {
-	ASSERT(y >= 0 && y < _height, "y is not valid");
+    ASSERT(y >= 0 && y < _height, "y is not valid");
     return indexOf(0, y);
 }
 
@@ -158,7 +158,7 @@ uint32_t WorldDimension::xFromIndex(const uint32_t index) const
 {
     const uint32_t y = yFromIndex(index);
     return index - y * _width;
-}    
+}
 
 uint32_t WorldDimension::normalizedIndexOf(const uint32_t x, const uint32_t y) const
 {

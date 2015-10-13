@@ -27,14 +27,14 @@ static PyObject * platec_create(PyObject *self, PyObject *args)
     unsigned int cycle_count;
     unsigned int num_plates;
     if (!PyArg_ParseTuple(args, "IIIfIfIfII", &seed, &width, &height, &sea_level, &erosion_period,
-            &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
-            &cycle_count, &num_plates))
-        return NULL; 
+                          &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
+                          &cycle_count, &num_plates))
+        return NULL;
     srand(seed);
 
     void *litho = platec_api_create(seed, width, height, sea_level, erosion_period,
-            folding_ratio, aggr_overlap_abs, aggr_overlap_rel,
-            cycle_count, num_plates);
+                                    folding_ratio, aggr_overlap_abs, aggr_overlap_rel,
+                                    cycle_count, num_plates);
 
     long pointer = (long)litho;
     return Py_BuildValue("l", pointer);
@@ -44,7 +44,7 @@ static PyObject * platec_step(PyObject *self, PyObject *args)
 {
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
-        return NULL; 
+        return NULL;
     platec_api_step(litho);
     return Py_BuildValue("i", 0);
 }
@@ -53,7 +53,7 @@ static PyObject * platec_destroy(PyObject *self, PyObject *args)
 {
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
-        return NULL; 
+        return NULL;
     platec_api_destroy(litho);
     return Py_BuildValue("i", 0);
 }
@@ -79,7 +79,7 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
     size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
-        return NULL; 
+        return NULL;
     float *hm = platec_api_get_heightmap(litho);
 
     size_t width = lithosphere_getMapWidth(litho);
@@ -95,7 +95,7 @@ static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
     size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
-        return NULL; 
+        return NULL;
     uint32_t *hm = platec_api_get_platesmap(litho);
 
     size_t width = lithosphere_getMapWidth(litho);
@@ -111,53 +111,59 @@ static PyObject * platec_is_finished(PyObject *self, PyObject *args)
     size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
-        return NULL; 
+        return NULL;
     PyObject* res = Py_BuildValue("b",platec_api_is_finished(litho));
     return res;
 }
 
 static PyMethodDef PlatecMethods[] = {
-    {"create",  platec_create, METH_VARARGS,
-     "Create initial plates configuration."},
-    {"destroy",  platec_destroy, METH_VARARGS,
-     "Release the data for the simulation."},
-    {"get_heightmap",  platec_get_heightmap, METH_VARARGS,
-     "Get current heightmap."},
-    {"get_platesmap",  platec_get_platesmap, METH_VARARGS,
-     "Get current plates map."},     
-    {"step", platec_step, METH_VARARGS,
-     "Perform next step of the simulation."},     
-    {"is_finished",  platec_is_finished, METH_VARARGS,
-     "Is the simulation finished?"},       
+    {   "create",  platec_create, METH_VARARGS,
+        "Create initial plates configuration."
+    },
+    {   "destroy",  platec_destroy, METH_VARARGS,
+        "Release the data for the simulation."
+    },
+    {   "get_heightmap",  platec_get_heightmap, METH_VARARGS,
+        "Get current heightmap."
+    },
+    {   "get_platesmap",  platec_get_platesmap, METH_VARARGS,
+        "Get current plates map."
+    },
+    {   "step", platec_step, METH_VARARGS,
+        "Perform next step of the simulation."
+    },
+    {   "is_finished",  platec_is_finished, METH_VARARGS,
+        "Is the simulation finished?"
+    },
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
 #if PY_MAJOR_VERSION >= 3
-    static struct PyModuleDef moduledef = {
-        PyModuleDef_HEAD_INIT,
-        "platec",     /* m_name */
-        "Plate tectonics simulation",  /* m_doc */
-        -1,                  /* m_size */
-        PlatecMethods,       /* m_methods */
-        NULL,                /* m_reload */
-        NULL,                /* m_traverse */
-        NULL,                /* m_clear */
-        NULL,                /* m_free */
-    };
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "platec",     /* m_name */
+    "Plate tectonics simulation",  /* m_doc */
+    -1,                  /* m_size */
+    PlatecMethods,       /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+};
 #endif
 
 #if PY_MAJOR_VERSION >= 3
-    #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
 #else
-    #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+#define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
 #endif
 
 MOD_INIT(platec)
 {
-    #if PY_MAJOR_VERSION >= 3
-        return PyModule_Create(&moduledef);
-    #else
-        Py_InitModule3("platec",
-            PlatecMethods, "Plate tectonics simulation");        
-    #endif    
+#if PY_MAJOR_VERSION >= 3
+    return PyModule_Create(&moduledef);
+#else
+    Py_InitModule3("platec",
+                   PlatecMethods, "Plate tectonics simulation");
+#endif
 }

@@ -40,7 +40,7 @@ public:
     /// Total area occupied by the plate (width * height).
     virtual uint32_t area() const = 0;
 
-    /// Width of the plate. 
+    /// Width of the plate.
     virtual uint32_t width() const = 0;
 
     /// Height of the plate.
@@ -62,14 +62,14 @@ public:
 
     /// Given a point in World relative coordinates, it tells if it is part of the plate or not.
     virtual bool containsWorldPoint(uint32_t x, uint32_t y) const = 0;
-    
+
     /// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
     virtual bool isInLimits(float x, float y) const = 0;
-    
+
     /// Shift the position of the top left corner by the given amount.
     /// It preserves the dimension of the plate.
     virtual void shift(float dx, float dy) = 0;
-    
+
     /// Grow the plate towards the right and the bottom.
     /// @param dx must be positive or zero
     /// @param dy must be positive or zero
@@ -107,8 +107,8 @@ public:
     /// @param worldDimension dimension of the world containing the plate
     /// @param position Position of the top left corner of the plae
     /// @param dimension Dimension of the plate
-    Bounds(const WorldDimension& worldDimension, 
-           const FloatPoint& position, 
+    Bounds(const WorldDimension& worldDimension,
+           const FloatPoint& position,
            const Dimension& dimension);
 
     uint32_t index(uint32_t x, uint32_t y) const;
@@ -125,7 +125,7 @@ public:
     void grow(int dx, int dy);
     uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
     uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
-    
+
 private:
 
     /// Return a rectangle representing the Bounds inside the world.
@@ -133,7 +133,7 @@ private:
 
     const WorldDimension _worldDimension;
     FloatPoint _position;
-    Dimension _dimension;   
+    Dimension _dimension;
 };
 
 #endif

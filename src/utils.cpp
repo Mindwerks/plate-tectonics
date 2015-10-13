@@ -22,16 +22,16 @@
 
 namespace Platec {
 
-	std::string to_string(uint32_t value) {
-		std::stringstream ss;
-		ss << value;
-		return ss.str();
-	}
+std::string to_string(uint32_t value) {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
 
-	std::string to_string_f(float value) {
-		std::stringstream ss;
-		ss << value;
-		return ss.str();
-	}
+std::string to_string_f(float value) {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
 
 }

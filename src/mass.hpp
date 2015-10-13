@@ -35,39 +35,39 @@ class Mass;
 class MassBuilder
 {
 public:
-	// FIXME: take a HeightMap instead of float*
-	MassBuilder(const float* m, const Dimension& dimension);
-	MassBuilder();
-	void addPoint(uint32_t x, uint32_t y, float crust);
-	Mass build();
+    // FIXME: take a HeightMap instead of float*
+    MassBuilder(const float* m, const Dimension& dimension);
+    MassBuilder();
+    void addPoint(uint32_t x, uint32_t y, float crust);
+    Mass build();
 private:
-	float mass;           ///< Amount of crust that constitutes the plate.
-	float cx, cy;         ///< X and Y components of the center of mass of plate.	
+    float mass;           ///< Amount of crust that constitutes the plate.
+    float cx, cy;         ///< X and Y components of the center of mass of plate.
 };
 
 class IMass
 {
 public:
-	virtual float getMass() const = 0;
-	virtual FloatPoint massCenter() const = 0;
+    virtual float getMass() const = 0;
+    virtual FloatPoint massCenter() const = 0;
 };
 
 class Mass : public IMass
 {
 public:
-	Mass(float mass_, float cx_, float cy_);
-	void incMass(float delta);
-	float getMass() const;
-	float getCx() const;
-	float getCy() const;
-	FloatPoint massCenter() const {
-		return FloatPoint(cx, cy);
-	}
-	bool null() const;	
+    Mass(float mass_, float cx_, float cy_);
+    void incMass(float delta);
+    float getMass() const;
+    float getCx() const;
+    float getCy() const;
+    FloatPoint massCenter() const {
+        return FloatPoint(cx, cy);
+    }
+    bool null() const;
 private:
-	float mass;           ///< Amount of crust that constitutes the plate.
-	float cx, cy;         ///< X and Y components of the center of mass of plate.	
-	float _totalX, _totalY;	
+    float mass;           ///< Amount of crust that constitutes the plate.
+    float cx, cy;         ///< X and Y components of the center of mass of plate.
+    float _totalX, _totalY;
 };
 
 #endif

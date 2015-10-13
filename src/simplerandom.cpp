@@ -44,11 +44,11 @@ SimpleRandom::~SimpleRandom()
 {
     delete internal;
 }
-    
+
 uint32_t SimpleRandom::next()
 {
     uint32_t res = simplerandom_cong_next(internal);
-    
+
     return res;
 }
 
@@ -60,7 +60,7 @@ double SimpleRandom::next_double()
 float SimpleRandom::next_float_signed()
 {
     float value = next_double();
-	ASSERT(value >= 0.0f && value <= 1.0f, "Invalid float range");
+    ASSERT(value >= 0.0f && value <= 1.0f, "Invalid float range");
     return value - 0.5f;
 }
 

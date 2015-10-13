@@ -26,7 +26,7 @@
 /// (the original library). We want to refactor the code while
 /// obtaining the same results.
 ///
-/// Unfortunately they are still platform dependant. 
+/// Unfortunately they are still platform dependant.
 /// They work on Linux (and especially on the Travis servers).
 /// In the future we will work on having the same results on all
 /// the platforms, for now are used as guards against undesired changes.

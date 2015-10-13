@@ -33,19 +33,19 @@ typedef struct
 
 class SimpleRandom {
 public:
-	SimpleRandom(uint32_t seed);
-	SimpleRandom(const SimpleRandom& other);
-	~SimpleRandom();
-	uint32_t next();
-	int32_t next_signed();
-	// Return a random value in [0.0, 1.0]
-	double next_double();
-	// Return a random value in [-0.5f, 0.5f]
-	float next_float_signed();
-	uint32_t maximum();
+    SimpleRandom(uint32_t seed);
+    SimpleRandom(const SimpleRandom& other);
+    ~SimpleRandom();
+    uint32_t next();
+    int32_t next_signed();
+    // Return a random value in [0.0, 1.0]
+    double next_double();
+    // Return a random value in [-0.5f, 0.5f]
+    float next_float_signed();
+    uint32_t maximum();
 private:
-	SimpleRandomCong_t* internal;
-	int counter;
+    SimpleRandomCong_t* internal;
+    int counter;
 };
 
 #endif
