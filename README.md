@@ -7,7 +7,14 @@ AppVeyor
 
 
 This is a library to simulate plate tectonics.
-It is written in C++ and it has Python bindings (as part of this project), as well as Haskell bindings ([hplatec](http://github.com/ftomassetti/hplatec))
+It is written in C++ and it has Python bindings (as part of this project), as well as Haskell bindings ([hplatec](http://github.com/ftomassetti/hplatec)).
+
+How can I use it?
+=================
+
+Being a library you want probably to use it inside some larger program. From example [WorldEngine](https://github.com/Mindwerks/worldengine) (a world generator) is based on plate-tectonics.
+
+You can also use the examples to just run the code of this library and generate a few maps. However the examples do not unleash the full power of this library. For running the examples check section _Running the examples (C++)_.
 
 How it looks like
 =================
@@ -104,8 +111,7 @@ make
 
 Currently the test coverage is still poor (but improving!_, tests are present only for new code and tiny portion of the old code that were refactored.
 
-Python bindings
-===============
+## Python bindings
 
 Supported versions:
 * Python 2.6 (currently not supported on AppVeyor)
@@ -114,31 +120,39 @@ Supported versions:
 * Python 3.3
 * Python 3.4
 
-Compile (Python)
-================
+To use it in your program you can either add a dependency use pip (_pip install PyPlatec_) or build and install it from source code.
+
+### Compile (Python)
 
 ```
 python setup.py build
 ```
 
-Usage (Python)
-==============
+### Usage (Python)
 
 The library is quite simple:
 
+```python    
+    import platec
+
     p = platec.create(seed=3)
-    while platec.is_finished(p)==0:
+    while platec.is_finished(p) == 0:
         platec.step(p)
     hm = platec.get_heightmap(p)
     platec.destroy(p)
+```    
 
 
 Or if you want more control:
 
+```python
+    import platec
+    
     p = platec.create(seed=3, width=1000, height=800,
                       sea_level=0.65,erosion_period=60,
                       folding_ratio=0.02,aggr_overlap_abs=1000000,
                       aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
+```
 
 Plans for the future
 ====================
