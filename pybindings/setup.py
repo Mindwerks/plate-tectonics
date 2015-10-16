@@ -34,9 +34,9 @@ pyplatec = Extension('platec',
                      language='c++')
 
 setup (name = 'PyPlatec',
-       version = '1.3.1.post1',
-       author = "Federico Tomassetti",
-       author_email = "f.tomassetti@gmail.com",
+       version = '1.4.0',
+       author = "Federico Tomassetti, Bret Curtis",
+       author_email = 'f.tomassetti@gmail.com, psi29a@gmail.com',
        url = "https://github.com/Mindwerks/pyplatec",
        description = 'Plates simulation library',
        ext_modules = [pyplatec],
