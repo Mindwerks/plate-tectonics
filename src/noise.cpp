@@ -24,6 +24,11 @@
 #include "simplexnoise.hpp"
 #include "utils.hpp"
 
+#if defined(_MSC_VER) && defined(_M_X64)
+#define sinf(x) ((float)sin((double)x))
+#define cosf(x) ((float)cos((double)x))
+#endif
+
 static const float SQRDMD_ROUGHNESS = 0.35f;
 static const float SIMPLEX_PERSISTENCE = 0.25f;
 #define PI 3.14159265
@@ -41,7 +46,7 @@ static uint32_t nearest_pow(uint32_t num)
 
 void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom randsource)
 {
-    long seed = randsource.next();
+    int64_t seed = randsource.next();
     uint32_t width = tmpDim.getWidth();
     uint32_t height = tmpDim.getHeight();
     float persistence = 0.25f;
