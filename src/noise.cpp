@@ -25,8 +25,8 @@
 #include "utils.hpp"
 
 #if defined(_MSC_VER) && defined(_M_X64)
-#define sinf(x) ((float)sin((double)x))
-#define cosf(x) ((float)cos((double)x))
+#define sinf(x) static_cast<float>(sin(static_cast<double>(x)))
+#define cosf(x) static_cast<float>(cos(static_cast<double>(x)))
 #endif
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
