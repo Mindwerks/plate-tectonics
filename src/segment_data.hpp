@@ -26,6 +26,7 @@
 class ISegmentDataAccess
 {
 public:
+    virtual ~ISegmentDataAccess() {}
     virtual uint32_t getLeft() const = 0;
     virtual uint32_t getRight() const = 0;
     virtual uint32_t getTop() const = 0;
@@ -38,6 +39,7 @@ public:
 class ISegmentData : public ISegmentDataAccess
 {
 public:
+    virtual ~ISegmentData() {}
     virtual void incCollCount() = 0;
     virtual void incArea() = 0;
     virtual void enlarge_to_contain(uint32_t x, uint32_t y) = 0;

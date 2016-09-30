@@ -35,6 +35,7 @@
 class IPlate : public IMass, public IMovement
 {
 public:
+    virtual ~IPlate() {}
 };
 
 class plate : public IPlate

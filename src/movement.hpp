@@ -43,6 +43,7 @@ class Mass;
 class IMovement
 {
 public:
+    virtual ~IMovement() {}
     virtual Platec::FloatVector velocityUnitVector() const = 0;
     virtual void decImpulse(const Platec::FloatVector& delta) = 0;
 };
