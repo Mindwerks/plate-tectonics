@@ -56,6 +56,7 @@ option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)
 
 IF(WITH_TESTS)
+	enable_testing()
 	add_subdirectory (test)
 ENDIF(WITH_TESTS)
 IF(WITH_EXAMPLES)
