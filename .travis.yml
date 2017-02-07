@@ -1,7 +1,15 @@
 language: cpp
+
+dist: trusty
+sudo: required
+
 compiler:
     - gcc
     - clang
+    
+cache:
+    apt: true   
+   
 env:
     - TARGET=cpp
     - PYVERSION=2.6.9
@@ -9,19 +17,19 @@ env:
     - PYVERSION=3.2.6
     - PYVERSION=3.3.6
     - PYVERSION=3.4.3
-
+    
 before_install:
-    # contains mostly new versions of gcc
-    - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     # this one contains python 2.6.9
     - if [ "$PYVERSION" = "2.6.9" ]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y ; fi
     - sudo apt-get update -qq
-    - sudo apt-get install -qq
 
 install:
   - echo "== Install step =="
+  - if [[ "$CXX" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang libclang-dev; fi
 
 script: 
+
+  - sudo apt-get install -y --no-install-recommends clang libclang-dev
   - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
