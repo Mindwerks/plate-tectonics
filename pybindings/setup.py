@@ -1,6 +1,8 @@
 from setuptools import setup, Extension, Command
 import os
 import shutil
+import sys
+
 
 def ensure_clean_dir(f):
   if os.path.exists(f):
