@@ -48,8 +48,7 @@ endif()
 # reproducible results across platforms 
 IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 ELSE()
-	set(CMAKE_C_FLAGS "-std=c99 -O3")
-	set(CMAKE_CXX_FLAGS "-O3 -g -rdynamic")
+    add_definitions( -std=c++14 )
 ENDIF()
 
 option(WITH_EXAMPLES "compile also the example" OFF)
