@@ -3,20 +3,39 @@ language: cpp
 dist: trusty
 sudo: required
 
-compiler:
-    - gcc
-    - clang
-    
 cache:
     apt: true   
    
-env:
-    - TARGET=cpp
-    - PYVERSION=2.6.9
-    - PYVERSION=2.7.8
-    - PYVERSION=3.2.6
-    - PYVERSION=3.3.6
-    - PYVERSION=3.4.3
+matrix:
+    include:
+    - env: 
+        - TARGET=gcc-cpp
+        - PYVERSION=2.6.9
+        - PYVERSION=2.7.8
+        - PYVERSION=3.2.6
+        - PYVERSION=3.3.6
+        - PYVERSION=3.4.3
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise
+            - llvm-toolchain-precise-3.8
+    - env:
+        - TARGET=clang-cpp
+        - PYVERSION=2.6.9
+        - PYVERSION=2.7.8
+        - PYVERSION=3.2.6
+        - PYVERSION=3.3.6
+        - PYVERSION=3.4.3        
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+            - libc++-dev
+          sources: *sources   
     
 before_install:
     # this one contains python 2.6.9
@@ -28,8 +47,7 @@ install:
   - if [[ "$CXX" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang libclang-dev; fi
 
 script: 
-
-  - sudo apt-get install -y --no-install-recommends clang libclang-dev
+  - if [[ "$CXX" == clang* ]]; then export CXXFLAGS="-stdlib=libc++"; fi
   - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
