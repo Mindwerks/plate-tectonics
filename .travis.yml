@@ -7,6 +7,10 @@ cache:
     apt: true   
    
    
+compiler:
+    - gcc
+    - clang   
+   
 env:
     - TARGET=cpp
     - PYVERSION=2.6.9
@@ -35,12 +39,15 @@ matrix:
           sources: *sources
     
 before_install:
+    # contains mostly new versions of gcc
+    - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     # this one contains python 2.6.9
     - if [ "$PYVERSION" = "2.6.9" ]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y ; fi
     - sudo apt-get update -qq
 
 install:
   - echo "== Install step =="
+  - if [[ "$CXX" == gcc* ]]; then sudo apt-get install -y --no-install-recommends gcc-6 gcc-6-dev; fi
   - if [[ "$CXX" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang libclang-dev; fi
 
 script: 
