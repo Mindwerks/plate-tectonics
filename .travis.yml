@@ -29,8 +29,8 @@ before_install:
 
 install:
   - echo "== Install step =="
-  - if [[ "$CC" == gcc* ]]; then sudo apt-get install -y --no-install-recommends gcc-6 gcc-6-dev ; fi
-  - if [[ "$CC" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang libclang-dev ; fi
+  - if [[ "$CC" == gcc* ]]; then sudo apt-get install -y --no-install-recommends gcc-6 ; fi
+  - if [[ "$CC" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang-3.8 ; fi
 
 script: 
   - if [[ "$CC" == gcc* ]]; then export CXX=g++-6 CC=gcc-6 ; fi
