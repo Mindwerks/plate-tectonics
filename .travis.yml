@@ -28,12 +28,12 @@ before_install:
 
 install:
   - echo "== Install step =="
-  - if [ "$CXX" == gcc* ]; then sudo apt-get install -y --no-install-recommends gcc-6 gcc-6-dev ; fi
-  - if [ "$CXX" == clang* ]; then sudo apt-get install -y --no-install-recommends clang libclang-dev ; fi
+  - if [[ "$CXX" == gcc* ]]; then sudo apt-get install -y --no-install-recommends gcc-6 gcc-6-dev ; fi
+  - if [[ "$CXX" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang libclang-dev ; fi
 
 script: 
-  - if [ "$CXX" == gcc*]; then export CXX=g++-6 CC=gcc-6 ; fi
-  - if [ "$CXX" == clang* ]; then export CXXFLAGS="-stdlib=libc++" CXX=clang++-3.8 CC=clang-3.8 ; fi
+  - if [[ "$CXX" == gcc* ]]; then export CXX=g++-6 CC=gcc-6 ; fi
+  - if [[ "$CXX" == clang* ]]; then export CXXFLAGS="-stdlib=libc++" CXX=clang++-3.8 CC=clang-3.8 ; fi
   - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi
