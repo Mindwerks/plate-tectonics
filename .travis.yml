@@ -22,8 +22,7 @@ env:
 before_install:
     # contains mostly new versions of gcc
     - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - echo "yes" | sudo add-apt-repository ppa:llvm-toolchain-precise -y
-    - echo "yes" | sudo add-apt-repository ppa:llvm-toolchain-precise-3.8 -y
+    - echo "yes" | sudo add-apt-repository "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" -y
     # this one contains python 2.6.9
     - if [ "$PYVERSION" = "2.6.9" ]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y ; fi
     - sudo apt-get update -qq
