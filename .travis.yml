@@ -6,15 +6,18 @@ sudo: required
 cache:
     apt: true   
    
+   
+env:
+    - TARGET=cpp
+    - PYVERSION=2.6.9
+    - PYVERSION=2.7.8
+    - PYVERSION=3.2.6
+    - PYVERSION=3.3.6
+    - PYVERSION=3.4.3
+    
 matrix:
     include:
-    - env: 
-        - TARGET=gcc-cpp
-        - PYVERSION=2.6.9
-        - PYVERSION=2.7.8
-        - PYVERSION=3.2.6
-        - PYVERSION=3.3.6
-        - PYVERSION=3.4.3
+    - env: CXX=g++-6 CC=gcc-6
       addons:
         apt:
           packages:
@@ -23,19 +26,13 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise
             - llvm-toolchain-precise-3.8
-    - env:
-        - TARGET=clang-cpp
-        - PYVERSION=2.6.9
-        - PYVERSION=2.7.8
-        - PYVERSION=3.2.6
-        - PYVERSION=3.3.6
-        - PYVERSION=3.4.3        
+    - env: CXX=clang++-3.8 CC=clang-3.8
       addons:
         apt:
           packages:
             - clang-3.8
             - libc++-dev
-          sources: *sources   
+          sources: *sources
     
 before_install:
     # this one contains python 2.6.9
