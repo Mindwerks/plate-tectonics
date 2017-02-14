@@ -20,7 +20,8 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <stdint.h>
+
+#include <cstdint>
 #include <vector>
 
 
@@ -33,6 +34,10 @@ private:
     uint32_t dataWidth;
     uint32_t dataHeight;    
     
+    uint32_t calcIndex(const uint32_t x,const uint32_t y) const
+    {
+        return y * dataWidth + x;
+    }
     
 public:
     
@@ -100,10 +105,7 @@ public:
         return data.size();
     }
     
-    constexpr uint32_t calcIndex(uint32_t x, uint32_t y) const
-    {
-        return y * dataWidth + x;
-    }
+
 
 
 };
