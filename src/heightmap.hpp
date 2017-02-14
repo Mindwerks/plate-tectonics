@@ -84,12 +84,14 @@ public:
 
     const Value* raw_data() const
     {
-        return data.data();
+        //cant use .data() because msvc
+        return &data[0];
     }
     
     Value* raw_data()
     {
-        return data.data();
+        //cant use .data() because msvc
+        return &data[0];
     }
         
     const uint32_t width() const
