@@ -647,7 +647,7 @@ void lithosphere::update()
 
         const uint32_t map_area = _worldDimension.getArea();
         // Keep a copy of the previous index map
-        prev_imap.copy(imap);
+        prev_imap = imap;
 
         // Realize accumulated external forces to each plate.
         for (uint32_t i = 0; i < num_plates; ++i)

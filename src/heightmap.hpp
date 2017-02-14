@@ -20,11 +20,9 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <stdexcept> // std::invalid_argument
+#include <stdint.h>
 #include <vector>
-#include "utils.hpp"
-#include "rectangle.hpp"
-#include "world_point.hpp"
+
 
 template <typename Value>
 class Matrix
@@ -52,15 +50,6 @@ public:
         data = std::vector<Value>(data.size(),value);
     }
     
-    void copy(const Matrix& other)
-    {
-        if (data.size() != other.data.size()) 
-        {
-            dataWidth = other.dataWidth;
-            dataHeight = other.dataHeight;
-            data = other.data;
-        }
-    }
 
     const Value& set(uint32_t x, uint32_t y, const Value& value)
     {
@@ -73,14 +62,19 @@ public:
         return data.at(calcIndex(x,y));
     }
     
+    const Value& get(uint32_t index) const
+    {
+        return data.at(index);
+    }
+    
     Value& operator[](uint32_t index)
     {
-        return data[index];
+        return data.at(index);
     }
 
     const Value& operator[](uint32_t index) const
     {
-        return data[index];
+        return data.at(index);;
     }
 
     const Value* raw_data() const

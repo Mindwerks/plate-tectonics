@@ -22,6 +22,7 @@
 
 #include <vector>
 #include "utils.hpp"
+#include "geometry.hpp"
 #include "heightmap.hpp"
 
 typedef uint32_t ContinentId;
