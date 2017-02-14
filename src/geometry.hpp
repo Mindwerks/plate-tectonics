@@ -186,7 +186,6 @@ public:
     uint32_t normalizedIndexOf(const uint32_t x, const uint32_t y) const;
     uint32_t xCap(const uint32_t x) const;
     uint32_t yCap(const uint32_t y) const;
-    uint32_t largerSize() const;
 };
 
 #endif

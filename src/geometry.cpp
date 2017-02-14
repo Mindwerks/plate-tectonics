@@ -119,23 +119,23 @@ WorldDimension::WorldDimension(const WorldDimension& original) : Dimension(origi
 
 uint32_t WorldDimension::getMax() const
 {
-    return _width > _height ? _width : _height;
+    return std::max(_width, _height);
 }
 
 uint32_t WorldDimension::xMod(uint32_t x) const
 {
-    return (x + _width) % _width;
+    return x>= _width ? x-_width : x;
 }
 
 uint32_t WorldDimension::yMod(uint32_t y) const
 {
-    return (y + _height) % _height;
+   return y>= _height ? y-_height : y;
 }
 
 void WorldDimension::normalize(uint32_t& x, uint32_t& y) const
 {
-    x %= _width;
-    y %= _height;
+    x = (x>= _width) ? x-_width : x;
+    y = (y>= _height) ? y-_height : y;
 }
 
 uint32_t WorldDimension::indexOf(const uint32_t x, const uint32_t y) const
@@ -173,9 +173,4 @@ uint32_t WorldDimension::xCap(const uint32_t x) const
 uint32_t WorldDimension::yCap(const uint32_t y) const
 {
     return y < _height ? y : (_height-1);
-}
-
-uint32_t WorldDimension::largerSize() const
-{
-    return _width > _height ? _width : _height;
 }
