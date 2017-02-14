@@ -21,7 +21,7 @@
 #define HEIGHTMAP_HPP
 
 
-#include <cstdint>
+#include <stdint.h>
 #include <vector>
 
 
