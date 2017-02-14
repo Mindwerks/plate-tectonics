@@ -111,8 +111,8 @@ public:
     }
     uint32_t getPlateCount() const throw(); ///< Return number of plates.
     const uint32_t* getAgemap() const throw(); ///< Return surface age map.
-    float* getTopography() const throw(); ///< Return height map.
-    uint32_t* getPlatesMap() const throw(); ///< Return a map of the plates owning eaach point
+    float* getTopography() throw(); ///< Return height map.
+    uint32_t* getPlatesMap() throw(); ///< Return a map of the plates owning eaach point
     void update(); ///< Simulate one step of plate tectonics.
     uint32_t getWidth() const;
     uint32_t getHeight() const;

@@ -346,7 +346,7 @@ const uint32_t* lithosphere::getAgemap() const throw()
     return amap.raw_data();
 }
 
-float* lithosphere::getTopography() const throw()
+float* lithosphere::getTopography() throw()
 {
     return hmap.raw_data();
 }
@@ -853,7 +853,7 @@ uint32_t lithosphere::getHeight() const
     return _worldDimension.getHeight();
 }
 
-uint32_t* lithosphere::getPlatesMap() const throw()
+uint32_t* lithosphere::getPlatesMap() throw()
 {
     return imap.raw_data();
 }

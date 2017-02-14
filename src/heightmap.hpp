@@ -21,118 +21,92 @@
 #define HEIGHTMAP_HPP
 
 #include <stdexcept> // std::invalid_argument
-#include <cstring>
-#include <string>
+#include <vector>
 #include "utils.hpp"
 #include "rectangle.hpp"
 #include "world_point.hpp"
 
-using namespace std;
-
 template <typename Value>
 class Matrix
 {
+private:
+
+    std::vector<Value> data;
+    uint32_t dataWidth;
+    uint32_t dataHeight;    
+    
 public:
 
     Matrix(unsigned int width, unsigned int height)
-        : _width(width), _height(height)
+        : dataWidth(width), dataHeight(height), data(width*height)
     {
-        ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
-        _area = width * height;
-        _data = new Value[_area];
     }
     Matrix(Value* data, unsigned int width, unsigned int height)
-        : _width(width), _height(height) {
-        ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
-        _area = width * height;
-        _data = data;
+        : dataWidth(width), dataHeight(height), data(data, data+(width*height))
+    {
     }
 
-    Matrix(const Matrix<Value>& other)
-        : _width(other._width), _height(other._height), _area(other._area)
+    void set_all(const Value& value) 
     {
-        _data = new Value[_area];
-        copy(other);
+        data = std::vector<Value>(data.size(),value);
     }
-
-    ~Matrix()
-    {
-        delete[] _data;
-    }
-
-    void set_all(const Value& value)
-    {
-        // we cannot use memset to make it very general
-        const uint32_t my_area = area();
-        for (uint32_t i = 0; i < my_area; i++) {
-            _data[i] = value;
-        }
-    }
+    
     void copy(const Matrix& other)
     {
-        if (_area != other._area) {
-            _width = other._width;
-            _height = other._height;
-            _area = other._area;
-            delete[] _data;
-            _data = new Value[_area];
-        }
-        for (uint32_t i = 0; i < _area; i++) {
-            _data[i] = other._data[i];
+        if (data.size() != other.data.size()) 
+        {
+            dataWidth = other.dataWidth;
+            dataHeight = other.dataHeight;
+            data = other.data;
         }
     }
 
-    inline const Value& set(unsigned int x, unsigned y, const Value& value)
+    const Value& set(unsigned int x, unsigned y, const Value& value)
     {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        _data[y * _width + x] = value;
+        data.at(y * dataWidth + x) = value;
         return value;
     }
 
-    inline const Value& get(unsigned int x, unsigned y) const
+    const Value& get(unsigned int x, unsigned y) const
     {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        return _data[y * _width + x];
-    }
-
-    Matrix<Value>& operator=(const Matrix<Value>& other)
-    {
-        copy(other);
-        return *this;
+        return data.at(y * dataWidth + x);
     }
 
     Value& operator[](unsigned int index)
     {
-        return this->_data[index];
+        return data[index];
     }
 
     const Value& operator[](unsigned int index) const
     {
-        return this->_data[index];
+        return data[index];
     }
 
-    Value* raw_data() const
+    const Value* raw_data() const
     {
-        return _data;
+        return data.data();
     }
+    
+    Value* raw_data()
+    {
+        return data.data();
+    }
+    
+
+    
     const uint32_t width() const
     {
-        return _width;
+        return dataWidth;
     }
     const uint32_t height() const
     {
-        return _height;
+        return dataHeight;
     }
     inline uint32_t area() const
     {
-        return _area;
+        return data.size();
     }
-private:
 
-    Value* _data;
-    unsigned int _width;
-    unsigned int _height;
-    unsigned int _area;
 };
 
 typedef Matrix<float> HeightMap;
