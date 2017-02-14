@@ -35,13 +35,14 @@ private:
     uint32_t dataWidth;
     uint32_t dataHeight;    
     
+    
 public:
-
-    Matrix(unsigned int width, unsigned int height)
+    
+    Matrix(uint32_t width, uint32_t height)
         : dataWidth(width), dataHeight(height), data(width*height)
     {
     }
-    Matrix(Value* data, unsigned int width, unsigned int height)
+    Matrix(Value* data, uint32_t width, uint32_t height)
         : dataWidth(width), dataHeight(height), data(data, data+(width*height))
     {
     }
@@ -61,23 +62,23 @@ public:
         }
     }
 
-    const Value& set(unsigned int x, unsigned y, const Value& value)
+    const Value& set(uint32_t x, uint32_t y, const Value& value)
     {
-        data.at(y * dataWidth + x) = value;
+        data.at(calcIndex(x,y)) = value;
         return value;
     }
 
-    const Value& get(unsigned int x, unsigned y) const
+    const Value& get(uint32_t x, uint32_t y) const
     {
-        return data.at(y * dataWidth + x);
+        return data.at(calcIndex(x,y));
     }
-
-    Value& operator[](unsigned int index)
+    
+    Value& operator[](uint32_t index)
     {
         return data[index];
     }
 
-    const Value& operator[](unsigned int index) const
+    const Value& operator[](uint32_t index) const
     {
         return data[index];
     }
@@ -91,9 +92,7 @@ public:
     {
         return data.data();
     }
-    
-
-    
+        
     const uint32_t width() const
     {
         return dataWidth;
@@ -102,10 +101,16 @@ public:
     {
         return dataHeight;
     }
-    inline uint32_t area() const
+    uint32_t area() const
     {
         return data.size();
     }
+    
+    constexpr uint32_t calcIndex(uint32_t x, uint32_t y) const
+    {
+        return y * dataWidth + x;
+    }
+
 
 };
 
