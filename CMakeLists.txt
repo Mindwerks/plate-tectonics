@@ -8,6 +8,8 @@ include_directories("src")
 # The whole MSVC
 #
 if(MSVC)
+    add_definitions(-DNOMINMAX)
+
 	# Default to statically-linked runtime.
 	if("${MSVC_RUNTIME}" STREQUAL "")
   		set(MSVC_RUNTIME "static")
@@ -42,14 +44,15 @@ if(MSVC)
 	    endif()
 	  endforeach()
 	endif()
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14)")
+
+else()
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14)")
 endif()
 #
 ## -fp-model disable floating point optimization, for the sake of having
 ## reproducible results across platforms 
-#IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-#ELSE()
-    set (CMAKE_CXX_STANDARD 14)
-#ENDIF()
+
 
 option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)
