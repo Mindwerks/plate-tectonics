@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <stdexcept>
+#include <algorithm>
 #include "utils.hpp"
 #include "world_point.hpp"
 

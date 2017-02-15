@@ -2,7 +2,7 @@ from setuptools import setup, Extension, Command
 import os
 import shutil
 import sys
-
+import re
 
 def ensure_clean_dir(f):
   if os.path.exists(f):
@@ -31,10 +31,19 @@ for f in os.listdir(cpp_src_dir):
   if f.endswith(".cpp"):
     sources.append("%s/%s" % (cpp_src_dir, f))
 
+
+compileArgs=['-std=c++14']
+
+regex = re.compile('clang*')
+if re.match(regex, self.compiler.compiler_type)
+    compileArgs += ['-stdlib=libc++']
+
 pyplatec = Extension('platec',                    
                      sources = sources,
                      language='c++',
-                    extra_compile_args=['-std=c++14'])
+                    extra_compile_args=compileArgs)
+
+
 
 setup (name = 'PyPlatec',
        version = '1.4.0',
