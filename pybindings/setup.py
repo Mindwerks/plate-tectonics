@@ -50,6 +50,9 @@ class build_ext_subclass( build_ext ):
         build_ext.build_extensions(self)
 
 
+pyplatec = Extension('platec',                    
+                     sources = sources,
+                    language='c++')
 
 
 setup (name = 'PyPlatec',
