@@ -49,7 +49,6 @@ class build_ext_subclass( build_ext ):
         if re.match(regexMSVC, self.compiler.compiler_type) is not None:
             for e in self.extensions:
                 e.extra_compile_args = ['/std:c++14']
-        self.extensions.extra_compile_args = compileArgs
         build_ext.build_extensions(self)
 
 
