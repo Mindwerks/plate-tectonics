@@ -8,7 +8,7 @@ include_directories("src")
 # The whole MSVC
 #
 if(MSVC)
-    add_definitions(-DNOMINMAX)
+    add_definitions(/DNOMINMAX)
 
 	# Default to statically-linked runtime.
 	if("${MSVC_RUNTIME}" STREQUAL "")
