@@ -42,13 +42,13 @@ class build_ext_subclass( build_ext ):
         regexMSVC = re.compile('ms*')
         if re.match(regexClang, self.compiler.compiler_type) is not None:
             for e in self.extensions:
-                e.extra_compile_args = ['-stdlib=libc++', '-std=c++14']
+                e.extra_compile_args += ['-stdlib=libc++', '-std=c++14']
         if re.match(regexGCC, self.compiler.compiler_type) is not None:
             for e in self.extensions:
-                e.extra_compile_args = ['-std=c++14']
+                e.extra_compile_args += ['-std=c++14']
         if re.match(regexMSVC, self.compiler.compiler_type) is not None:
             for e in self.extensions:
-                e.extra_compile_args = ['/std:c++14']
+                e.extra_compile_args += ['/std:c++14']
         build_ext.build_extensions(self)
 
 
