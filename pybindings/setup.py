@@ -32,11 +32,20 @@ for f in os.listdir(cpp_src_dir):
     sources.append("%s/%s" % (cpp_src_dir, f))
 
 
-compileArgs=['-std=c++14']
+compileArgs = ""
 
-regex = re.compile('clang*')
-if re.match(regex, self.compiler.compiler_type)
-    compileArgs += ['-stdlib=libc++']
+regexClang = re.compile('clang*')
+regexGCC = re.compile('g*')
+regexMSVC = re.compile('ms*')
+
+if re.match(regexClang, self.compiler.compiler_type) is not None:
+    compileArgs = ['-stdlib=libc++ -std=c++14']
+
+if re.match(regexGCC, self.compiler.compiler_type) is not None:
+    compileArgs = ['-std=c++14']
+
+if re.match(regexMSVC, self.compiler.compiler_type) is not None:
+    compileArgs = ['/std:c++14']
 
 pyplatec = Extension('platec',                    
                      sources = sources,
