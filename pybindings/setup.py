@@ -59,7 +59,7 @@ setup (name = 'PyPlatec',
        ext_modules = [pyplatec],
        include_package_data=True,
        include_dirs = [cpp_src_dir, 'platec_src'],
-       cmdclass = {'build_ext': build_ext_subclass }
+       cmdclass = {'build_ext': build_ext_subclass },
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
