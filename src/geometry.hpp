@@ -20,6 +20,8 @@
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
 
+#define NOMINMAX
+
 #include <math.h>
 #include <stdexcept>
 #include "utils.hpp"

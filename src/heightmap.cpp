@@ -19,5 +19,3 @@
 
 #include "heightmap.hpp"
 
-#include <stdexcept> // std::invalid_argument
-

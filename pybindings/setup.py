@@ -33,7 +33,8 @@ for f in os.listdir(cpp_src_dir):
 
 pyplatec = Extension('platec',                    
                      sources = sources,
-                     language='c++')
+                     language='c++',
+                    extra_compile_args=['-std=c++14'])
 
 setup (name = 'PyPlatec',
        version = '1.4.0',

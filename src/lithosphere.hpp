@@ -20,6 +20,9 @@
 #ifndef LITHOSPHERE_HPP
 #define LITHOSPHERE_HPP
 
+
+#define NOMINMAX
+
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
