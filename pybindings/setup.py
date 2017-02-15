@@ -54,7 +54,7 @@ class build_ext_subclass( build_ext ):
 
 pyplatec = Extension('platec',                    
                      sources = sources,
-                    language='c++'
+                    language='c++',
                    extra_compile_args=['-stdlib=libc++','-std=c++14','/std:c++14'])
 
 
