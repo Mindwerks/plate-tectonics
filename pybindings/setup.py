@@ -1,4 +1,6 @@
 from setuptools import setup, Extension, Command
+from distutils.command.build_ext import build_ext
+
 import os
 import shutil
 import sys
