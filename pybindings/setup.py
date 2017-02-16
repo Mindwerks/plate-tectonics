@@ -40,16 +40,16 @@ class build_ext_subclass( build_ext ):
         regexClang = re.compile('clang*')
         regexGCC = re.compile('g*')
         regexMSVC = re.compile('ms*')
-        if re.match(regexClang, os.environ["CXX"]) is not None:
+        if re.match(regexMSVC, self.compiler.compiler_type) is not None:
+            for e in self.extensions:
+                e.extra_compile_args += ['/std:c++14']
+        elif re.match(regexClang, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-stdlib=libc++', '-std=c++14']
                 e.extra_link_args += ['-stdlib=libc++']
-        if re.match(regexGCC, os.environ["CXX"]) is not None:
+        elif re.match(regexGCC, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-std=c++14']
-        if re.match(regexMSVC, os.environ["CXX"]) is not None:
-            for e in self.extensions:
-                e.extra_compile_args += ['/std:c++14']
         build_ext.build_extensions(self)
 
 
