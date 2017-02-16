@@ -22,7 +22,7 @@
 
 #define NOMINMAX
 
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
 #include <algorithm>
 #include "utils.hpp"
@@ -45,7 +45,7 @@ public:
         return y_value;
     }
     float_t length() const {
-        return std::hypot(x_value,y_value);
+        return std::hypot(static_cast<float_t>(x_value),static_cast<float_t>(y_value));
         
     }
     friend IntVector operator-(const IntVector& a, const IntVector& b) {
@@ -57,52 +57,56 @@ public:
 
 /// A point with int coordinates.
 class IntPoint {
+    
+private:
+     int32_t x_value, y_value;
+    
 public:
-
     /// Create a point with the given coordinates
-    IntPoint(int x, int y);
+    IntPoint(int32_t x, int32_t y);
 
     /// X coordinate of the point
-    int getX() const;
+    int32_t getX() const;
 
     /// Y coordinate of the point
-    int getY() const;
+    int32_t getY() const;
 
     friend Platec::IntVector operator-(const IntPoint& a, const IntPoint& b) {
         return Platec::IntVector(a.getX() - b.getX(), a.getY() - b.getY());
     }
-private:
-
-    int _x, _y;
 };
 
 namespace Platec {
 class FloatVector
 {
+private:
+    float_t x_value, y_value;
+    
 public:
-    FloatVector(float x, float y) : _x(x), _y(y) {}
-    float x() const {
-        return _x;
+    FloatVector(float_t x, float_t y) : x_value(x), y_value(y) {}
+    float_t x() const {
+        return x_value;
     }
-    float y() const {
-        return _y;
+    float_t y() const {
+        return y_value;
     }
-    float length() const {
-        return sqrt(_x * _x + _y * _y);
+    float_t length() const {
+        return std::hypot(x_value,y_value);
     }
-    float normalize() {
-        float len = length();
-        if (len > 0) {
-            float inv_len = 1 / len;
-            _x *= inv_len;
-            _y *= inv_len;
+    float_t normalize() 
+    {
+        float_t len = length();
+        if (len > 0.0f) 
+        {
+            x_value /= len;
+            y_value /= len;
         }
         return len;
     }
     IntVector toIntVector() const {
-        return IntVector((int)_x, (int)_y);
+        return IntVector(static_cast<int32_t>(x_value),static_cast<int32_t>(y_value));
     }
-    float dotProduct(const FloatVector& other) const {
+    float_t dotProduct(const FloatVector& other) const {
         return x() * other.x() + y() * other.y();
     }
     friend bool operator==(const FloatVector& a, const FloatVector& b) {
@@ -110,43 +114,44 @@ public:
     }
     friend FloatVector operator-(const FloatVector& a, const FloatVector& b) {
         return FloatVector(a.x() - b.x(), a.y() - b.y());
-    }
-    friend FloatVector operator*(const FloatVector& v, float f) {
+   }
+    friend FloatVector operator*(const FloatVector& v, float_t f) {
         return FloatVector(v.x() * f, v.y() * f);
     }
-private:
-    float _x, _y;
+
 };
 }
 
 /// A point with float coordinates.
-class FloatPoint {
+class FloatPoint 
+{
+private:
+
+    float_t x_value, y_value;
 public:
 
     /// Create a point with the given coordinates
-    FloatPoint(float x, float y);
+    FloatPoint(float_t x, float_t y);
 
     /// X coordinate of the point
-    float getX() const;
+    float_t getX() const;
 
     /// Y coordinate of the point
-    float getY() const;
+    float_t getY() const;
 
     /// Move a point by the given delta, wrapping it around the borders of
     /// the world if needed.
     /// The given point is assured to be contained in the World.
-    void shift(float dx, float dy, const WorldDimension& _worldDimension);
+    void shift(float_t dx, float_t dy, const WorldDimension& _worldDimension);
 
     /// Translate to an IntPoint (using the truncate operation).
     IntPoint toInt() const {
-        return IntPoint((int)_x, (int)_y);
+        return IntPoint(static_cast<int32_t>(x_value),static_cast<int32_t>(y_value));
     }
     friend Platec::FloatVector operator-(const FloatPoint& a, const FloatPoint& b) {
         return Platec::FloatVector(a.getX() - b.getX(), a.getY() - b.getY());
     }
-private:
 
-    float _x, _y;
 };
 
 /// Dimension of a Rectangle.
