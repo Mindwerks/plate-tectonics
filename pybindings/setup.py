@@ -40,13 +40,13 @@ class build_ext_subclass( build_ext ):
         regexClang = re.compile('clang*')
         regexGCC = re.compile('g*')
         regexMSVC = re.compile('ms*')
-        if re.match(regexClang, self.compiler.compiler_type) is not None:
+        if re.match(regexClang, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-stdlib=libc++', '-std=c++14']
-        if re.match(regexGCC, self.compiler.compiler_type) is not None:
+        if re.match(regexGCC, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-std=c++14']
-        if re.match(regexMSVC, self.compiler.compiler_type) is not None:
+        if re.match(regexMSVC, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['/std:c++14']
         build_ext.build_extensions(self)
@@ -55,7 +55,7 @@ class build_ext_subclass( build_ext ):
 pyplatec = Extension('platec',                    
                      sources = sources,
                     language='c++',
-                   extra_compile_args=['-stdlib=libc++','-std=c++14','/std:c++14'])
+                  )
 
 
 setup (name = 'PyPlatec',
@@ -67,7 +67,7 @@ setup (name = 'PyPlatec',
        ext_modules = [pyplatec],
        include_package_data=True,
        include_dirs = [cpp_src_dir, 'platec_src'],
-  #     cmdclass = {'build_ext': build_ext_subclass },
+       cmdclass = {'build_ext': build_ext_subclass },
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
