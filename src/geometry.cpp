@@ -24,17 +24,17 @@
 //
 
 IntPoint::IntPoint(int x, int y)
-    : _x(x), _y(y)
+    : x_value(x), y_value(y)
 { }
 
 int IntPoint::getX() const
 {
-    return _x;
+    return x_value;
 }
 
 int IntPoint::getY() const
 {
-    return _y;
+    return y_value;
 }
 
 //
@@ -42,32 +42,31 @@ int IntPoint::getY() const
 //
 
 FloatPoint::FloatPoint(float x, float y)
-    : _x(x), _y(y)
+    : x_value(x), y_value(y)
 { }
 
 float FloatPoint::getX() const
 {
-    return _x;
+    return x_value;
 }
 
 float FloatPoint::getY() const
 {
-    return _y;
+    return y_value;
 }
 
-void FloatPoint::shift(float dx, float dy, const WorldDimension& _worldDimension)
+void FloatPoint::shift(float_t dx, float_t dy, const WorldDimension& _worldDimension)
 {
     const uint32_t world_width = _worldDimension.getWidth();
-    _x += dx;
-    _x += _x > 0 ? 0 : world_width;
-    _x -= _x < world_width ? 0 : world_width;
-
+    x_value += dx;
+    x_value += x_value > 0 ? 0 : world_width;
+    x_value -= x_value < world_width ? 0 : world_width;
+   
     const uint32_t world_height = _worldDimension.getHeight();
-    _y += dy;
-    _y += _y > 0 ? 0 : world_height;
-    _y -= _y < world_height ? 0 : world_height;
+    y_value += dy;
+    y_value += y_value > 0 ? 0 : world_height;
+    y_value -= y_value < world_height ? 0 : world_height;
 
-    ASSERT(_worldDimension.contains(*this), "Point not in world!");
 }
 
 //
@@ -96,7 +95,7 @@ bool Dimension::contains(const float x, const float y) const
 
 bool Dimension::contains(const FloatPoint& p) const
 {
-    return (p.getX() >= 0 && p.getX() < _width && p.getY() >= 0 && p.getY() < _height);
+    return (p.getX() >= 0.0f && p.getX() < _width && p.getY() >= 0.0f && p.getY() < _height);
 }
 
 void Dimension::grow(uint32_t amountX, uint32_t amountY)
