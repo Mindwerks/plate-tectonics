@@ -28,29 +28,30 @@
 #include "utils.hpp"
 #include "world_point.hpp"
 
-using namespace std;
 
 class WorldDimension;
 
 namespace Platec {
 class IntVector
 {
+private:    
+    int x_value, y_value;
 public:
-    IntVector(int x, int y) : _x(x), _y(y) {}
-    int x() const {
-        return _x;
+    IntVector(int32_t x, int32_t y) : x_value(x), y_value(y) {}
+    int32_t x() const {
+        return x_value;
     }
-    int y() const {
-        return _y;
+    int32_t y() const {
+        return y_value;
     }
-    float length() const {
-        return sqrt((float)(_x * _x + _y * _y));
+    float_t length() const {
+        return std::hypot(x_value,y_value);
+        
     }
     friend IntVector operator-(const IntVector& a, const IntVector& b) {
         return IntVector(a.x() - b.x(), a.y() - b.y());
     }
-private:
-    int _x, _y;
+
 };
 }
 
