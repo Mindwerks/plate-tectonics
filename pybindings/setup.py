@@ -43,6 +43,7 @@ class build_ext_subclass( build_ext ):
         if re.match(regexClang, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-stdlib=libc++', '-std=c++14']
+                e.extra_link_args += ['-stdlib=libc++']
         if re.match(regexGCC, os.environ["CXX"]) is not None:
             for e in self.extensions:
                 e.extra_compile_args += ['-std=c++14']
