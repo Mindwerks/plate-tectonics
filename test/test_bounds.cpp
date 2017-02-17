@@ -21,7 +21,7 @@
 #include "gtest/gtest.h"
 
 const WorldDimension wd(800, 600);
-const FloatPoint topLeft(10.2f, 48.9f);
+const Platec::Point2D<float_t> topLeft(10.2f, 48.9f);
 const Dimension plateDim(500, 400);
 const Bounds b(wd, topLeft, plateDim);
 

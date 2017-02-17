@@ -222,7 +222,7 @@ public:
         return _movement.getVelocity();
     }
 
-    Platec::FloatVector velocityUnitVector() const {
+    Platec::Vector2D<float_t> velocityUnitVector() const {
         return _movement.velocityUnitVector();
     }
 
@@ -247,11 +247,11 @@ public:
     float getCy() const {
         return _mass.getCy();
     }
-    Platec::NumericPoint<float_t> massCenter() const {
+    Platec::Point2D<float_t> massCenter() const {
         return _mass.massCenter();
     }
 
-    void decImpulse(const Platec::FloatVector& delta) {
+    void decImpulse(const Platec::Vector2D<float_t>& delta) {
         _movement.decDx(delta.x());
         _movement.decDy(delta.y());
     }

@@ -123,7 +123,7 @@ void Movement::collide(const IMass& thisMass,
                        uint32_t wx, uint32_t wy, float coll_mass) {
     const float coeff_rest = 0.0; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
-    Platec::NumericVector<float_t> massCentersDistance =
+    Platec::Vector2D<float_t> massCentersDistance =
         otherPlate.massCenter() - thisMass.massCenter();
     float distance = massCentersDistance.length();
     if (distance <= 0) {
@@ -133,8 +133,8 @@ void Movement::collide(const IMass& thisMass,
     // Scaling is required at last when impulses are added to plates!
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    Platec::FloatVector collisionDirection = Platec::FloatVector(massCentersDistance.x()/distance,massCentersDistance.y()/distance);
-    Platec::FloatVector relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
+    Platec::Vector2D<float_t>  collisionDirection = Platec::Vector2D<float_t> (massCentersDistance.x()/distance,massCentersDistance.y()/distance);
+    Platec::Vector2D<float_t>  relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.

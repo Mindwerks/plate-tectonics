@@ -35,15 +35,15 @@ class WorldDimension;
 namespace Platec {
    
 template<class T, class Enable = void>
-class NumericVector {};
+class Vector2D {};
     
 template<class T>  
-class NumericVector<T, typename std::enable_if<std::is_signed<T>::value>::type>
+class Vector2D<T, typename std::enable_if<std::is_signed<T>::value>::type>
 {
 private:    
     T x_value, y_value;
 public:
-    NumericVector(T x, T y) : x_value(x), y_value(y) {}
+    Vector2D(T x, T y) : x_value(x), y_value(y) {}
     T x() const {
         return x_value;
     }
@@ -55,37 +55,37 @@ public:
         return std::hypot(static_cast<float_t>(x_value),static_cast<float_t>(y_value));
     }
     
-    friend NumericVector<T> operator-(const NumericVector<T>& a, const NumericVector<T>& b) 
+    friend Vector2D<T> operator-(const Vector2D<T>& a, const Vector2D<T>& b) 
     {
-        return NumericVector<T>(a.x() - b.x(), a.y() - b.y());
+        return Vector2D<T>(a.x() - b.x(), a.y() - b.y());
     }
     
-    T dotProduct(const NumericVector<T>& other) const 
+    T dotProduct(const Vector2D<T>& other) const 
     {
         return x() * other.x() + y() * other.y();
     }
     
-    friend bool operator==(const NumericVector<T>& a, const NumericVector<T>& b) 
+    friend bool operator==(const Vector2D<T>& a, const Vector2D<T>& b) 
     {
         return a.x() == b.x() && a.y() == b.y();
     }
     
-    friend NumericVector<T> operator+(const NumericVector<T>& a, const NumericVector<T>& b)
+    friend Vector2D<T> operator+(const Vector2D<T>& a, const Vector2D<T>& b)
     {
-        return NumericVector<T>(a.x() + b.x(), a.y() + b.y());
+        return Vector2D<T>(a.x() + b.x(), a.y() + b.y());
     }
     
-    friend NumericVector<T> operator*(const NumericVector<T>& v, T f)
+    friend Vector2D<T> operator*(const Vector2D<T>& v, T f)
     {
-        return NumericVector<T>(v.x() * f, v.y() * f);
+        return Vector2D<T>(v.x() * f, v.y() * f);
     }
 };
     
 template<class T, class Enable = void>
-class NumericPoint {};
+class Point2D {};
     
 template<class T>  
-class NumericPoint<T, typename std::enable_if<std::is_signed<T>::value>::type>
+class Point2D<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
 
 private:
@@ -93,167 +93,55 @@ private:
     
 public:
     /// Create a point with the given coordinates
-    NumericPoint(T x, T y): x_value(x), y_value(y) {};
+    Point2D(T x, T y): x_value(x), y_value(y) {};
 
     /// X coordinate of the point
-    T getX() const
+    T x() const
     {
         return x_value;
     };
 
     /// Y coordinate of the point
-    T getY() const
+    T y() const
     {
         return y_value;
     }
 
-    friend NumericVector<T> operator-(const NumericPoint<T>& a, const NumericPoint<T>& b) 
+    friend Vector2D<T> operator-(const Point2D<T>& a, const Point2D<T>& b) 
     {
-        return NumericVector<T>(a.getX() - b.getX(), a.getY() - b.getY());
+        return Vector2D<T>(a.x() - b.x(), a.y() - b.y());
     }
-};
     
-class IntVector
-{
-private:    
-    int x_value, y_value;
-public:
-    IntVector(int32_t x, int32_t y) : x_value(x), y_value(y) {}
-    int32_t x() const 
+    template<class R>
+    void shift(const Vector2D<T>& delta, const Point2D<R>& _worldDimension)
     {
-        return x_value;
-    }
-    int32_t y() const 
-    {
-        return y_value;
-    }
-    float_t length() const
-    {
-        return std::hypot(static_cast<float_t>(x_value),static_cast<float_t>(y_value));
-    }
-    float_t normalize() 
-    {
-        float_t len = length();
-        if (len > 0.0f) 
-        {
-            x_value /= len;
-            y_value /= len;
-        }
-        return len;
-    }
-    friend IntVector operator-(const IntVector& a, const IntVector& b) {
-        return IntVector(a.x() - b.x(), a.y() - b.y());
-    }
+        //TODO. Shift should be replace with the + operator.
+        // Boundchecking is not something a Point should do,
+        // but we have to solve the int <-> float issue here first
+        const uint32_t world_width = _worldDimension.x();
+        x_value += delta.x();
+        x_value += x_value > 0 ? 0.0f : world_width;
+        x_value -= x_value < world_width ? 0.0f  : world_width;
 
+        const uint32_t world_height = _worldDimension.y();
+        y_value += delta.y();
+        y_value += y_value > 0 ? 0.0f  : world_height;
+        y_value -= y_value < world_height ? 0.0f  : world_height;
+    }  
 };
+
 }
-
-/// A point with int coordinates.
-class IntPoint {
-    
-private:
-     int32_t x_value, y_value;
-    
-public:
-    /// Create a point with the given coordinates
-    IntPoint(int32_t x, int32_t y);
-
-    /// X coordinate of the point
-    int32_t getX() const;
-
-    /// Y coordinate of the point
-    int32_t getY() const;
-
-    friend Platec::IntVector operator-(const IntPoint& a, const IntPoint& b) {
-        return Platec::IntVector(a.getX() - b.getX(), a.getY() - b.getY());
-    }
-};
-
-namespace Platec {
-class FloatVector
-{
-private:
-    float_t x_value, y_value;
-    
-public:
-    FloatVector(float_t x, float_t y) : x_value(x), y_value(y) {}
-    float_t x() const {
-        return x_value;
-    }
-    float_t y() const {
-        return y_value;
-    }
-    float_t length() const {
-        return std::hypot(x_value,y_value);
-    }
-    float_t normalize() 
-    {
-        float_t len = length();
-        if (len > 0.0f) 
-        {
-            x_value /= len;
-            y_value /= len;
-        }
-        return len;
-    }
-    IntVector toIntVector() const {
-        return IntVector(static_cast<int32_t>(x_value),static_cast<int32_t>(y_value));
-    }
-    float_t dotProduct(const FloatVector& other) const {
-        return x() * other.x() + y() * other.y();
-    }
-    friend bool operator==(const FloatVector& a, const FloatVector& b) {
-        return a.x() == b.x() && a.y() == b.y();
-    }
-    friend FloatVector operator-(const FloatVector& a, const FloatVector& b) {
-        return FloatVector(a.x() - b.x(), a.y() - b.y());
-   }
-    friend FloatVector operator*(const FloatVector& v, float_t f) {
-        return FloatVector(v.x() * f, v.y() * f);
-    }
-
-};
-}
-
-/// A point with float coordinates.
-class FloatPoint 
-{
-private:
-
-    float_t x_value, y_value;
-public:
-
-    /// Create a point with the given coordinates
-    FloatPoint(float_t x, float_t y);
-
-    /// X coordinate of the point
-    float_t getX() const;
-
-    /// Y coordinate of the point
-    float_t getY() const;
-
-    /// Move a point by the given delta, wrapping it around the borders of
-    /// the world if needed.
-    /// The given point is assured to be contained in the World.
-    void shift(float_t dx, float_t dy, const WorldDimension& _worldDimension);
-
-    /// Translate to an IntPoint (using the truncate operation).
-    IntPoint toInt() const {
-        return IntPoint(static_cast<int32_t>(x_value),static_cast<int32_t>(y_value));
-    }
-    friend Platec::FloatVector operator-(const FloatPoint& a, const FloatPoint& b) {
-        return Platec::FloatVector(a.getX() - b.getX(), a.getY() - b.getY());
-    }
-
-};
 
 /// Dimension of a Rectangle.
 class Dimension {
+    
+protected:
+    uint32_t _width;
+    uint32_t _height;
 public:
 
     /// Initialize the dimension with the given values
     Dimension(uint32_t width, uint32_t height);
-    Dimension(const Dimension& original);
 
     uint32_t getWidth() const {
         return _width;
@@ -266,17 +154,14 @@ public:
     }
     bool contains(const uint32_t x, const uint32_t y) const;
     bool contains(const float x, const float y) const;
-    bool contains(const FloatPoint& p) const;
+    bool contains(const Platec::Point2D<float_t>& p) const;
     void grow(uint32_t amountX, uint32_t amountY);
-protected:
-    uint32_t _width;
-    uint32_t _height;
+
 };
 
 class WorldDimension : public Dimension {
 public:
     WorldDimension(uint32_t width, uint32_t height);
-    WorldDimension(const WorldDimension& original);
     uint32_t getMax() const;
     uint32_t xMod(uint32_t x) const;
     uint32_t yMod(uint32_t y) const;

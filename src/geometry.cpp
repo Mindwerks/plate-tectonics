@@ -19,55 +19,19 @@
 
 #include "geometry.hpp"
 
+//template<class T>
+//void Point2D::shift(float_t dx, float_t dy, const WorldDimension& _worldDimension) {
+//        const uint32_t world_width = _worldDimension.getWidth();
+//        x_value += dx;
+//        x_value += x_value > 0 ? 0 : world_width;
+//        x_value -= x_value < world_width ? 0 : world_width;
 //
-// IntPoint
-//
+//        const uint32_t world_height = _worldDimension.getHeight();
+//        y_value += dy;
+//        y_value += y_value > 0 ? 0 : world_height;
+//        y_value -= y_value < world_height ? 0 : world_height;
+//}
 
-IntPoint::IntPoint(int x, int y)
-    : x_value(x), y_value(y)
-{ }
-
-int IntPoint::getX() const
-{
-    return x_value;
-}
-
-int IntPoint::getY() const
-{
-    return y_value;
-}
-
-//
-// FloatPoint
-//
-
-FloatPoint::FloatPoint(float x, float y)
-    : x_value(x), y_value(y)
-{ }
-
-float FloatPoint::getX() const
-{
-    return x_value;
-}
-
-float FloatPoint::getY() const
-{
-    return y_value;
-}
-
-void FloatPoint::shift(float_t dx, float_t dy, const WorldDimension& _worldDimension)
-{
-    const uint32_t world_width = _worldDimension.getWidth();
-    x_value += dx;
-    x_value += x_value > 0 ? 0 : world_width;
-    x_value -= x_value < world_width ? 0 : world_width;
-   
-    const uint32_t world_height = _worldDimension.getHeight();
-    y_value += dy;
-    y_value += y_value > 0 ? 0 : world_height;
-    y_value -= y_value < world_height ? 0 : world_height;
-
-}
 
 //
 // Dimension
@@ -78,10 +42,7 @@ Dimension::Dimension(uint32_t width, uint32_t height) :
 {
 }
 
-Dimension::Dimension(const Dimension& original) :
-    _width(original.getWidth()), _height(original.getHeight())
-{
-}
+
 
 bool Dimension::contains(const uint32_t x, const uint32_t y) const
 {
@@ -93,9 +54,9 @@ bool Dimension::contains(const float x, const float y) const
     return (x >= 0 && x < _width && y >= 0 && y < _height);
 }
 
-bool Dimension::contains(const FloatPoint& p) const
+bool Dimension::contains(const Platec::Point2D<float_t>& p) const
 {
-    return (p.getX() >= 0.0f && p.getX() < _width && p.getY() >= 0.0f && p.getY() < _height);
+    return (p.x() >= 0.0f && p.x() < _width && p.y() >= 0.0f && p.y() < _height);
 }
 
 void Dimension::grow(uint32_t amountX, uint32_t amountY)
@@ -109,10 +70,6 @@ void Dimension::grow(uint32_t amountX, uint32_t amountY)
 //
 
 WorldDimension::WorldDimension(uint32_t width, uint32_t height) : Dimension(width, height)
-{
-};
-
-WorldDimension::WorldDimension(const WorldDimension& original) : Dimension(original)
 {
 };
 

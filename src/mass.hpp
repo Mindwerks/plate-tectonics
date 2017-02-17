@@ -49,7 +49,7 @@ class IMass
 {
 public: 
     virtual float getMass() const = 0;
-    virtual Platec::NumericPoint<float_t>  massCenter() const = 0;
+    virtual Platec::Point2D<float_t>  massCenter() const = 0;
 };
 
 class Mass : public IMass
@@ -60,8 +60,8 @@ public:
     float getMass() const;
     float getCx() const;
     float getCy() const;
-    Platec::NumericPoint<float_t> massCenter() const {
-        return Platec::NumericPoint<float_t>(cx, cy);
+    Platec::Point2D<float_t> massCenter() const {
+        return Platec::Point2D<float_t>(cx, cy);
     }
     bool null() const;
 private:

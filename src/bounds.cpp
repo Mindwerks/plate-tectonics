@@ -19,7 +19,7 @@
 
 #include "bounds.hpp"
 
-Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
+Bounds::Bounds(const WorldDimension& worldDimension, const Platec::Point2D<float_t>& position,
                const Dimension& dimension)
     : _worldDimension(worldDimension),
       _position(position),
@@ -48,11 +48,11 @@ uint32_t Bounds::height() const {
 }
 
 uint32_t Bounds::leftAsUint() const {
-    return (uint32_t)_position.getX();
+    return (uint32_t)_position.x();
 }
 
 uint32_t Bounds::topAsUint() const {
-    return (uint32_t)_position.getY();
+    return (uint32_t)_position.y();
 }
 
 uint32_t Bounds::rightAsUintNonInclusive() const {
@@ -76,8 +76,10 @@ bool Bounds::isInLimits(float x, float y) const {
 }
 
 void Bounds::shift(float dx, float dy) {
-    _position.shift(dx, dy, _worldDimension);
-    ASSERT(_worldDimension.contains(_position), "Point not in world!");
+    _position.shift(Platec::Vector2D<float_t>(dx, dy),
+            Platec::Point2D<uint32_t>(_worldDimension.getWidth(),
+                                     _worldDimension.getHeight()));
+      ASSERT(_worldDimension.contains(_position), "Point not in world!");
 }
 
 void Bounds::grow(int dx, int dy) {

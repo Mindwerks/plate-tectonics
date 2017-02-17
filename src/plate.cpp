@@ -47,7 +47,7 @@ plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t 
 {
     const uint32_t plate_area = w * h;
 
-    _bounds = new Bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h));
+    _bounds = new Bounds(worldDimension, Platec::Point2D<float_t>(_x, _y), Dimension(w, h));
 
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds->height(); ++y) {

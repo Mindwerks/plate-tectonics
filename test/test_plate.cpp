@@ -141,7 +141,7 @@ public:
         _area++;
     }
     virtual void enlarge_to_contain(uint32_t x, uint32_t y) {
-        _enlargePoint = new IntPoint(x, y);
+        _enlargePoint = new Platec::Point2D<int32_t>(x, y);
     }
     virtual void markNonExistent() {
         throw runtime_error("Not implemented");
@@ -171,19 +171,19 @@ public:
     virtual uint32_t collCount() const {
         return _collCount;
     }
-    IntPoint* enlargedPoint() {
+    Platec::Point2D<int32_t>* enlargedPoint() {
         return _enlargePoint;
     }
 private:
     uint32_t _collCount;
     uint32_t _area;
-    IntPoint* _enlargePoint;
+    Platec::Point2D<int32_t>* _enlargePoint;
 };
 
 class MockSegments : public ISegments
 {
 public:
-    MockSegments(IntPoint p, ContinentId id, ISegmentData* data)
+    MockSegments(Platec::Point2D<int32_t> p, ContinentId id, ISegmentData* data)
         : _p(p), _id(id), _data(data)
     {
 
@@ -230,14 +230,14 @@ public:
         throw runtime_error("Not implemented");
     }
     virtual ContinentId getContinentAt(int x, int y) const {
-        if (x==_p.getX() && y==_p.getY()) {
+        if (x==_p.x() && y==_p.y()) {
             return _id;
         } else {
             throw runtime_error("(MockSegments::getContinentAt) Unexpected call");
         }
     }
 private:
-    IntPoint _p;
+    Platec::Point2D<int32_t> _p;
     ContinentId _id;
     ISegmentData* _data;
 };
@@ -249,7 +249,7 @@ TEST(Plate, addCollision)
     plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments* mSegments = new MockSegments(IntPoint(123, 78), 99, mSeg);
+    MockSegments* mSegments = new MockSegments(Platec::Point2D<int32_t>(123, 78), 99, mSeg);
     p.injectSegments(mSegments);
 
     uint32_t area = p.addCollision(123, 78);
@@ -261,7 +261,7 @@ TEST(Plate, addCollision)
 class MockSegments2 : public ISegments
 {
 public:
-    MockSegments2(IntPoint p, ContinentId id, ISegmentData* data, uint32_t index)
+    MockSegments2(Platec::Point2D<int32_t> p, ContinentId id, ISegmentData* data, uint32_t index)
         : _p(p), _id(id), _data(data), _index(index)
     {
 
@@ -324,14 +324,14 @@ public:
         }
     }
     virtual ContinentId getContinentAt(int x, int y) const {
-        if (x==_p.getX() && y==_p.getY()) {
+        if (x==_p.x() && y==_p.y()) {
             return _id;
         } else {
             throw runtime_error("(MockSegments2::getContinentAt) Unexpected call");
         }
     }
 private:
-    IntPoint _p;
+    Platec::Point2D<int32_t> _p;
     ContinentId _id;
     ISegmentData* _data;
     uint32_t _index;
@@ -357,7 +357,7 @@ TEST(Plate, addCrustByCollision)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(IntPoint(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    MockSegments2* mSegments = new MockSegments2(Platec::Point2D<int32_t>(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
     uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
@@ -386,8 +386,8 @@ TEST(Plate, addCrustByCollision)
 
     // The activeContinent should contains the point
     ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
-    EXPECT_EQ(70, mSeg->enlargedPoint()->getX());
-    EXPECT_EQ(50, mSeg->enlargedPoint()->getY());
+    EXPECT_EQ(70, mSeg->enlargedPoint()->x());
+    EXPECT_EQ(50, mSeg->enlargedPoint()->y());
 
     // The activeContinent are should be increased
     EXPECT_EQ(790, mSeg->area());
@@ -412,7 +412,7 @@ TEST(Plate, addCrustBySubduction)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(IntPoint(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    MockSegments2* mSegments = new MockSegments2(Platec::Point2D<int32_t>(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
     uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);

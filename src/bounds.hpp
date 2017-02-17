@@ -27,6 +27,7 @@
 #include "rectangle.hpp"
 #include "segment_data.hpp"
 #include "utils.hpp"
+#include "geometry.hpp"
 
 /// Represent the bounds of a Plate.
 class IBounds {
@@ -108,7 +109,7 @@ public:
     /// @param position Position of the top left corner of the plae
     /// @param dimension Dimension of the plate
     Bounds(const WorldDimension& worldDimension,
-           const FloatPoint& position,
+           const Platec::Point2D<float_t>& position,
            const Dimension& dimension);
 
     uint32_t index(uint32_t x, uint32_t y) const;
@@ -132,7 +133,7 @@ private:
     Platec::Rectangle asRect() const;
 
     const WorldDimension _worldDimension;
-    FloatPoint _position;
+    Platec::Point2D<float_t> _position;
     Dimension _dimension;
 };
 

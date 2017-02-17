@@ -135,7 +135,7 @@ TEST(Movement, Dot)
 
 class MockPlate : public IPlate {
 public:
-    MockPlate(const FloatVector& velocityUnitVector, float mass, const Platec::NumericPoint<float_t> & massCenter)
+    MockPlate(const Platec::Vector2D<float_t>& velocityUnitVector, float mass, const Platec::Point2D<float_t> & massCenter)
         : _velocityUnitVector(velocityUnitVector),
           _mass(mass),
           _massCenter(massCenter),
@@ -146,15 +146,15 @@ public:
         if (_decImpulseDelta) delete _decImpulseDelta;
     }
 
-    FloatVector velocityUnitVector() const {
+    Platec::Vector2D<float_t> velocityUnitVector() const {
         return _velocityUnitVector;
     }
 
-    void decImpulse(const FloatVector& delta) {
-        _decImpulseDelta = new FloatVector(delta);
+    void decImpulse(const Platec::Vector2D<float_t>& delta) {
+        _decImpulseDelta = new Platec::Vector2D<float_t>(delta);
     }
 
-    FloatVector decImpulseDelta() {
+    Platec::Vector2D<float_t> decImpulseDelta() {
         if (_decImpulseDelta == NULL) throw runtime_error("(MockPlate::decImpulseDelta) Data not ready");
         return *_decImpulseDelta;
     }
@@ -163,15 +163,15 @@ public:
         return _mass;
     }
 
-    Platec::NumericPoint<float_t> massCenter() const {
+    Platec::Point2D<float_t> massCenter() const {
         return _massCenter;
     }
 
 private:
-    FloatVector _velocityUnitVector;
-    FloatVector* _decImpulseDelta;
+    Platec::Vector2D<float_t> _velocityUnitVector;
+    Platec::Vector2D<float_t>* _decImpulseDelta;
     float _mass;
-    Platec::NumericPoint<float_t>  _massCenter;
+    Platec::Point2D<float_t>  _massCenter;
 };
 
 TEST(Movement, Collide)
@@ -185,9 +185,9 @@ TEST(Movement, Collide)
     EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
 
     Mass thisMass(100.0, 70.0, 90.0);
-    FloatVector otherPlateVelocityUnitVector(0.0f, -1.0f);
+    Platec::Vector2D<float_t> otherPlateVelocityUnitVector(0.0f, -1.0f);
     float otherPlateMass = 10000.0f;
-    Platec::NumericPoint<float_t>  otherPlateMassCenter(100.0f, 400.0f);
+    Platec::Point2D<float_t>  otherPlateMassCenter(100.0f, 400.0f);
     MockPlate otherPlate(otherPlateVelocityUnitVector, otherPlateMass, otherPlateMassCenter);
     mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
 

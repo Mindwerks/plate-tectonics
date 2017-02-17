@@ -56,13 +56,13 @@ public:
     }
     
 
-    const Value& set(uint32_t x, uint32_t y, const Value& value)
+    const Value& set(const uint32_t x,const uint32_t y, const Value& value)
     {
         data.at(calcIndex(x,y)) = value;
         return value;
     }
 
-    const Value& get(uint32_t x, uint32_t y) const
+    const Value& get(const uint32_t x,const uint32_t y) const
     {
         return data.at(calcIndex(x,y));
     }
