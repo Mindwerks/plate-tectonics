@@ -123,8 +123,8 @@ void Movement::collide(const IMass& thisMass,
                        uint32_t wx, uint32_t wy, float coll_mass) {
     const float coeff_rest = 0.0; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
-    Platec::IntVector massCentersDistance =
-        otherPlate.massCenter().toInt() - thisMass.massCenter().toInt();
+    Platec::NumericVector<float_t> massCentersDistance =
+        otherPlate.massCenter() - thisMass.massCenter();
     float distance = massCentersDistance.length();
     if (distance <= 0) {
         return; // Avoid division by zero!

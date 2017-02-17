@@ -29,7 +29,7 @@ environment:
 #      DISTRIBUTIONS: "bdist_wheel"
 
     - PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5"
+      PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "32"
       DISTRIBUTIONS: "bdist_wheel"
 
@@ -46,7 +46,7 @@ environment:
 #      DISTRIBUTIONS: "bdist_wheel"
 
     - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5"
+      PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.1"
       DISTRIBUTIONS: "bdist_wheel"

@@ -247,7 +247,7 @@ public:
     float getCy() const {
         return _mass.getCy();
     }
-    FloatPoint massCenter() const {
+    Platec::NumericPoint<float_t> massCenter() const {
         return _mass.massCenter();
     }
 

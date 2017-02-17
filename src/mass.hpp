@@ -47,9 +47,9 @@ private:
 
 class IMass
 {
-public:
+public: 
     virtual float getMass() const = 0;
-    virtual FloatPoint massCenter() const = 0;
+    virtual Platec::NumericPoint<float_t>  massCenter() const = 0;
 };
 
 class Mass : public IMass
@@ -60,13 +60,13 @@ public:
     float getMass() const;
     float getCx() const;
     float getCy() const;
-    FloatPoint massCenter() const {
-        return FloatPoint(cx, cy);
+    Platec::NumericPoint<float_t> massCenter() const {
+        return Platec::NumericPoint<float_t>(cx, cy);
     }
     bool null() const;
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
-    float cx, cy;         ///< X and Y components of the center of mass of plate.
+    float_t cx, cy;         ///< X and Y components of the center of mass of plate.
     float _totalX, _totalY;
 };
 

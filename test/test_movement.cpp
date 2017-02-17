@@ -135,7 +135,7 @@ TEST(Movement, Dot)
 
 class MockPlate : public IPlate {
 public:
-    MockPlate(const FloatVector& velocityUnitVector, float mass, const FloatPoint& massCenter)
+    MockPlate(const FloatVector& velocityUnitVector, float mass, const Platec::NumericPoint<float_t> & massCenter)
         : _velocityUnitVector(velocityUnitVector),
           _mass(mass),
           _massCenter(massCenter),
@@ -163,7 +163,7 @@ public:
         return _mass;
     }
 
-    FloatPoint massCenter() const {
+    Platec::NumericPoint<float_t> massCenter() const {
         return _massCenter;
     }
 
@@ -171,7 +171,7 @@ private:
     FloatVector _velocityUnitVector;
     FloatVector* _decImpulseDelta;
     float _mass;
-    FloatPoint _massCenter;
+    Platec::NumericPoint<float_t>  _massCenter;
 };
 
 TEST(Movement, Collide)
@@ -187,7 +187,7 @@ TEST(Movement, Collide)
     Mass thisMass(100.0, 70.0, 90.0);
     FloatVector otherPlateVelocityUnitVector(0.0f, -1.0f);
     float otherPlateMass = 10000.0f;
-    FloatPoint otherPlateMassCenter(100.0f, 400.0f);
+    Platec::NumericPoint<float_t>  otherPlateMassCenter(100.0f, 400.0f);
     MockPlate otherPlate(otherPlateVelocityUnitVector, otherPlateMass, otherPlateMassCenter);
     mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
 

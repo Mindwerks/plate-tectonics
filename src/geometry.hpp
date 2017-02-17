@@ -25,6 +25,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <type_traits>
 #include "utils.hpp"
 #include "world_point.hpp"
 
@@ -32,21 +33,113 @@
 class WorldDimension;
 
 namespace Platec {
+   
+template<class T, class Enable = void>
+class NumericVector {};
+    
+template<class T>  
+class NumericVector<T, typename std::enable_if<std::is_signed<T>::value>::type>
+{
+private:    
+    T x_value, y_value;
+public:
+    NumericVector(T x, T y) : x_value(x), y_value(y) {}
+    T x() const {
+        return x_value;
+    }
+    T y() const {
+        return y_value;
+    }
+    float_t length() const 
+    {
+        return std::hypot(static_cast<float_t>(x_value),static_cast<float_t>(y_value));
+    }
+    
+    friend NumericVector<T> operator-(const NumericVector<T>& a, const NumericVector<T>& b) 
+    {
+        return NumericVector<T>(a.x() - b.x(), a.y() - b.y());
+    }
+    
+    T dotProduct(const NumericVector<T>& other) const 
+    {
+        return x() * other.x() + y() * other.y();
+    }
+    
+    friend bool operator==(const NumericVector<T>& a, const NumericVector<T>& b) 
+    {
+        return a.x() == b.x() && a.y() == b.y();
+    }
+    
+    friend NumericVector<T> operator+(const NumericVector<T>& a, const NumericVector<T>& b)
+    {
+        return NumericVector<T>(a.x() + b.x(), a.y() + b.y());
+    }
+    
+    friend NumericVector<T> operator*(const NumericVector<T>& v, T f)
+    {
+        return NumericVector<T>(v.x() * f, v.y() * f);
+    }
+};
+    
+template<class T, class Enable = void>
+class NumericPoint {};
+    
+template<class T>  
+class NumericPoint<T, typename std::enable_if<std::is_signed<T>::value>::type>
+{
+
+private:
+     T x_value, y_value;
+    
+public:
+    /// Create a point with the given coordinates
+    NumericPoint(T x, T y): x_value(x), y_value(y) {};
+
+    /// X coordinate of the point
+    T getX() const
+    {
+        return x_value;
+    };
+
+    /// Y coordinate of the point
+    T getY() const
+    {
+        return y_value;
+    }
+
+    friend NumericVector<T> operator-(const NumericPoint<T>& a, const NumericPoint<T>& b) 
+    {
+        return NumericVector<T>(a.getX() - b.getX(), a.getY() - b.getY());
+    }
+};
+    
 class IntVector
 {
 private:    
     int x_value, y_value;
 public:
     IntVector(int32_t x, int32_t y) : x_value(x), y_value(y) {}
-    int32_t x() const {
+    int32_t x() const 
+    {
         return x_value;
     }
-    int32_t y() const {
+    int32_t y() const 
+    {
         return y_value;
     }
-    float_t length() const {
+    float_t length() const
+    {
         return std::hypot(static_cast<float_t>(x_value),static_cast<float_t>(y_value));
-        
+    }
+    float_t normalize() 
+    {
+        float_t len = length();
+        if (len > 0.0f) 
+        {
+            x_value /= len;
+            y_value /= len;
+        }
+        return len;
     }
     friend IntVector operator-(const IntVector& a, const IntVector& b) {
         return IntVector(a.x() - b.x(), a.y() - b.y());
