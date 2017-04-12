@@ -76,10 +76,21 @@ bool Bounds::isInLimits(float x, float y) const {
 }
 
 void Bounds::shift(float dx, float dy) {
-    _position.shift(Platec::Vector2D<float_t>(dx, dy),
-            Platec::Point2D<uint32_t>(_worldDimension.getWidth(),
-                                     _worldDimension.getHeight()));
-      ASSERT(_worldDimension.contains(_position), "Point not in world!");
+    _position.shift(Platec::Vector2D<float_t>(dx, dy));
+    if(!_worldDimension.contains(_position))
+    {
+        
+        float_t xval = _position.x(), yval = _position.y();
+        
+        xval += xval > 0 ? 0.f : _worldDimension.getWidth();
+        xval -= xval < _worldDimension.getWidth() ? 0.0f  : _worldDimension.getWidth();
+    
+         yval += yval > 0 ? 0.f  : _worldDimension.getHeight();
+        yval -= yval < _worldDimension.getHeight() ? 0.0f  : _worldDimension.getHeight();
+        
+        
+        _position = Platec::Point2D<float_t> (xval,yval);
+    }
 }
 
 void Bounds::grow(int dx, int dy) {

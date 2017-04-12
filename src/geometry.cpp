@@ -44,20 +44,10 @@ Dimension::Dimension(uint32_t width, uint32_t height) :
 
 
 
-bool Dimension::contains(const uint32_t x, const uint32_t y) const
-{
-    return (x >= 0 && x < _width && y >= 0 && y < _height);
-}
-
-bool Dimension::contains(const float x, const float y) const
-{
-    return (x >= 0 && x < _width && y >= 0 && y < _height);
-}
-
-bool Dimension::contains(const Platec::Point2D<float_t>& p) const
-{
-    return (p.x() >= 0.0f && p.x() < _width && p.y() >= 0.0f && p.y() < _height);
-}
+//bool Dimension::contains(const Platec::Point2D<T>& p) const
+//{
+//    return (p.x() >= 0.0f && p.x() < _width && p.y() >= 0.0f && p.y() < _height);
+//}
 
 void Dimension::grow(uint32_t amountX, uint32_t amountY)
 {

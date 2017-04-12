@@ -112,21 +112,10 @@ public:
         return Vector2D<T>(a.x() - b.x(), a.y() - b.y());
     }
     
-    template<class R>
-    void shift(const Vector2D<T>& delta, const Point2D<R>& _worldDimension)
+    void shift(const Vector2D<T>& delta)
     {
-        //TODO. Shift should be replace with the + operator.
-        // Boundchecking is not something a Point should do,
-        // but we have to solve the int <-> float issue here first
-        const uint32_t world_width = _worldDimension.x();
         x_value += delta.x();
-        x_value += x_value > 0 ? 0.0f : world_width;
-        x_value -= x_value < world_width ? 0.0f  : world_width;
-
-        const uint32_t world_height = _worldDimension.y();
         y_value += delta.y();
-        y_value += y_value > 0 ? 0.0f  : world_height;
-        y_value -= y_value < world_height ? 0.0f  : world_height;
     }  
 };
 
@@ -152,9 +141,12 @@ public:
     uint32_t getArea() const {
         return _width * _height;
     }
-    bool contains(const uint32_t x, const uint32_t y) const;
-    bool contains(const float x, const float y) const;
-    bool contains(const Platec::Point2D<float_t>& p) const;
+
+    template <class T>
+    bool contains(const Platec::Point2D<T>& p) const
+    {
+       return (p.x() >= 0.0f && p.x() < _width && p.y() >= 0.0f && p.y() < _height);
+    }
     void grow(uint32_t amountX, uint32_t amountY);
 
 };
