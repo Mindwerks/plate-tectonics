@@ -124,7 +124,7 @@ TEST(Bounds, Shift)
 {
     Bounds bounds(wd, topLeft, plateDim);
     // topLeft = 10.2, 48.9
-    bounds.shift(10.7f, 100.1f);
+    bounds.shift(Platec::Vector2D<float_t>(10.7f, 100.1f));
     // now topLeft should be = 20.9, 149.0
     EXPECT_EQ(20, bounds.leftAsUint());
     EXPECT_EQ(149, bounds.topAsUint());

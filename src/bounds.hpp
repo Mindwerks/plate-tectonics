@@ -69,7 +69,7 @@ public:
 
     /// Shift the position of the top left corner by the given amount.
     /// It preserves the dimension of the plate.
-    virtual void shift(float dx, float dy) = 0;
+    virtual void shift(const Platec::Vector2D<float_t> delta) = 0;
 
     /// Grow the plate towards the right and the bottom.
     /// @param dx must be positive or zero
@@ -122,7 +122,7 @@ public:
     uint32_t bottomAsUintNonInclusive() const;
     bool containsWorldPoint(uint32_t x, uint32_t y) const;
     bool isInLimits(float x, float y) const;
-    void shift(float dx, float dy);
+    void shift(const Platec::Vector2D<float_t> delta);
     void grow(uint32_t dx, uint32_t dy);
     uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
     uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;

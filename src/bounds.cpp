@@ -32,7 +32,8 @@ Bounds::Bounds(const WorldDimension& worldDimension, const Platec::Point2D<float
 uint32_t Bounds::index(uint32_t x, uint32_t y) const {
     ASSERT(x < _dimension.getWidth() && y < _dimension.getHeight(),
            "Invalid coordinates");
-    return y * _dimension.getWidth() + x;
+    return _dimension.indexOf(Platec::Point2D<uint32_t>(x,y));
+    
 }
 
 uint32_t Bounds::area() const {
@@ -48,11 +49,11 @@ uint32_t Bounds::height() const {
 }
 
 uint32_t Bounds::leftAsUint() const {
-    return (uint32_t)_position.x();
+    return static_cast<uint32_t>(_position.x());
 }
 
 uint32_t Bounds::topAsUint() const {
-    return (uint32_t)_position.y();
+    return static_cast<uint32_t>(_position.y());
 }
 
 uint32_t Bounds::rightAsUintNonInclusive() const {
@@ -75,31 +76,11 @@ bool Bounds::isInLimits(float x, float y) const {
     return ux < _dimension.getWidth() && uy < _dimension.getHeight();
 }
 
-void Bounds::shift(float dx, float dy) {
-    _position.shift(Platec::Vector2D<float_t>(dx, dy));
+void Bounds::shift(const Platec::Vector2D<float_t> delta) {
+    _position.shift(delta);
     if(!_worldDimension.contains(_position))
     {
-        
-        float_t xval = _position.x(), yval = _position.y();
-        
-        if(std::floor(xval) < 0)
-        {
-            xval += static_cast<float_t>(_worldDimension.getWidth());
-        }
-        else if (std::floor(xval) > _worldDimension.getWidth())
-        {
-            xval -= static_cast<float_t>(_worldDimension.getWidth());
-        }
-        
-        if(std::floor(yval) < 0)
-        {
-            yval += static_cast<float_t>(_worldDimension.getHeight());
-        }
-        else if (std::floor(yval) > _worldDimension.getHeight())
-        {
-            yval -= static_cast<float_t>(_worldDimension.getHeight());
-        }
-        _position = Platec::Point2D<float_t> (xval,yval);
+        _position = _worldDimension.wrap(_position);
     }
 }
 

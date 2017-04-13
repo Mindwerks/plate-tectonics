@@ -61,12 +61,12 @@ Platec::Point2D<uint32_t>  WorldDimension::normalize(const Platec::Point2D<uint3
                                       (point.y() >= height) ? point.y() -height : point.y() );
 }
 
-uint32_t WorldDimension::indexOf(const uint32_t x, const uint32_t y) const
+uint32_t Dimension::indexOf(const uint32_t x, const uint32_t y) const
 {
     return y * getWidth() + x;
 }
 
-uint32_t WorldDimension::indexOf(const Platec::Point2D<uint32_t>& point) const 
+uint32_t Dimension::indexOf(const Platec::Point2D<uint32_t>& point) const 
 {
     return point.y() * getWidth() + point.x();
 }
@@ -143,5 +143,3 @@ Platec::Point2D<uint32_t> WorldDimension::yCap(const Platec::Point2D<uint32_t>& 
 {
     return Platec::Point2D<uint32_t> (point.x(),std::min(point.y(),height-1));
 }
-
-
