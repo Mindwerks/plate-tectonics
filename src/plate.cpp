@@ -539,8 +539,11 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t irgt = _bounds->rightAsUintNonInclusive();
         const uint32_t ibtm = _bounds->bottomAsUintNonInclusive();
 
-        _worldDimension.normalize(x, y);
-
+        Platec::Point2D<uint32_t> point = _worldDimension.normalize(Platec::Point2D<uint32_t>(x,y));
+        
+        x = point.x();
+        y = point.y();
+        
         // Calculate distance of new point from plate edges.
         const uint32_t _lft = ilft - x;
         const uint32_t _rgt = (_worldDimension.getWidth() & -(x < ilft)) + x - irgt;

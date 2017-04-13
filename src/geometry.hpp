@@ -125,27 +125,28 @@ public:
 class Dimension {
     
 protected:
-    uint32_t _width;
-    uint32_t _height;
+    uint32_t width;
+    uint32_t height;
 public:
 
     /// Initialize the dimension with the given values
     Dimension(uint32_t width, uint32_t height);
 
     uint32_t getWidth() const {
-        return _width;
+        return width;
     }
     uint32_t getHeight() const {
-        return _height;
+        return height;
     }
     uint32_t getArea() const {
-        return _width * _height;
+        return width * height;
     }
 
     template <class T>
     bool contains(const Platec::Point2D<T>& p) const
     {
-       return (p.x() >= 0.0f && p.x() < _width && p.y() >= 0.0f && p.y() < _height);
+        //using std::floor here to avoid floating point inaccuarcy
+       return (std::floor(p.x()) >= 0 && std::floor(p.x()) < width && std::floor(p.y()) >= 0.0f && std::floor(p.y()) < height);
     }
     void grow(uint32_t amountX, uint32_t amountY);
 
@@ -155,16 +156,24 @@ class WorldDimension : public Dimension {
 public:
     WorldDimension(uint32_t width, uint32_t height);
     uint32_t getMax() const;
-    uint32_t xMod(uint32_t x) const;
-    uint32_t yMod(uint32_t y) const;
-    void normalize(uint32_t& x, uint32_t& y) const;
+    uint32_t xMod(const uint32_t x) const;
+    Platec::Point2D<uint32_t> xMod(const Platec::Point2D<uint32_t>& point) const;
+    uint32_t yMod(const uint32_t y) const;
+    Platec::Point2D<uint32_t> yMod(const Platec::Point2D<uint32_t>& point) const;
+    Platec::Point2D<uint32_t> pointMod(const Platec::Point2D<uint32_t>& point) const;
+    Platec::Point2D<uint32_t>  normalize(const Platec::Point2D<uint32_t>& point) const;
     uint32_t indexOf(const uint32_t x, const uint32_t y) const;
+    uint32_t indexOf(const Platec::Point2D<uint32_t>& point) const;
     uint32_t lineIndex(const uint32_t y) const;
     uint32_t yFromIndex(const uint32_t index) const;
     uint32_t xFromIndex(const uint32_t index) const;
     uint32_t normalizedIndexOf(const uint32_t x, const uint32_t y) const;
+    uint32_t normalizedIndexOf(const Platec::Point2D<uint32_t>& point) const; 
     uint32_t xCap(const uint32_t x) const;
+    Platec::Point2D<uint32_t> xCap(const Platec::Point2D<uint32_t>& point) const;
     uint32_t yCap(const uint32_t y) const;
+    Platec::Point2D<uint32_t> yCap(const Platec::Point2D<uint32_t>& point) const;
+    
 };
 
 #endif

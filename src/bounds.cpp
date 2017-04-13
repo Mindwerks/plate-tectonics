@@ -82,19 +82,29 @@ void Bounds::shift(float dx, float dy) {
         
         float_t xval = _position.x(), yval = _position.y();
         
-        xval += xval > 0 ? 0.f : _worldDimension.getWidth();
-        xval -= xval < _worldDimension.getWidth() ? 0.0f  : _worldDimension.getWidth();
-    
-         yval += yval > 0 ? 0.f  : _worldDimension.getHeight();
-        yval -= yval < _worldDimension.getHeight() ? 0.0f  : _worldDimension.getHeight();
+        if(std::floor(xval) < 0)
+        {
+            xval += static_cast<float_t>(_worldDimension.getWidth());
+        }
+        else if (std::floor(xval) > _worldDimension.getWidth())
+        {
+            xval -= static_cast<float_t>(_worldDimension.getWidth());
+        }
         
-        
+        if(std::floor(yval) < 0)
+        {
+            yval += static_cast<float_t>(_worldDimension.getHeight());
+        }
+        else if (std::floor(yval) > _worldDimension.getHeight())
+        {
+            yval -= static_cast<float_t>(_worldDimension.getHeight());
+        }
         _position = Platec::Point2D<float_t> (xval,yval);
     }
 }
 
-void Bounds::grow(int dx, int dy) {
-    ASSERT(dx >= 0 && dy >= 0, "Negative delta is not allowed");
+void Bounds::grow(uint32_t dx, uint32_t dy) {
+
     _dimension.grow(dx, dy);
 
     ASSERT(_dimension.getWidth() <= _worldDimension.getWidth(),

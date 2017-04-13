@@ -74,7 +74,7 @@ public:
     /// Grow the plate towards the right and the bottom.
     /// @param dx must be positive or zero
     /// @param dy must be positive or zero
-    virtual void grow(int dx, int dy) = 0;
+    virtual void grow(uint32_t dx, uint32_t dy) = 0;
 
     /// Translate world coordinates into offset within plate's height map.
     ///
@@ -123,7 +123,7 @@ public:
     bool containsWorldPoint(uint32_t x, uint32_t y) const;
     bool isInLimits(float x, float y) const;
     void shift(float dx, float dy);
-    void grow(int dx, int dy);
+    void grow(uint32_t dx, uint32_t dy);
     uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
     uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 
