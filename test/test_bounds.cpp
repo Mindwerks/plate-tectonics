@@ -27,9 +27,9 @@ const Bounds b(wd, topLeft, plateDim);
 
 TEST(Bounds, Index)
 {
-    EXPECT_EQ(0, b.index(0, 0));
-    EXPECT_EQ(100100, b.index(100, 200));
-    EXPECT_EQ(199999, b.index(499, 399));
+    EXPECT_EQ(0, b.index(Platec::Point2D<uint32_t>(0, 0)));
+    EXPECT_EQ(100100, b.index(Platec::Point2D<uint32_t>(100, 200)));
+    EXPECT_EQ(199999, b.index(Platec::Point2D<uint32_t>(499, 399)));
 }
 
 TEST(Bounds, Area)
@@ -105,19 +105,19 @@ TEST(Bounds, ContainsWorldPoint)
 TEST(Bounds, IsInLimits)
 {
     // negative coordinates
-    EXPECT_EQ(false, b.isInLimits(-1, 10));
-    EXPECT_EQ(false, b.isInLimits(10, -1));
-    EXPECT_EQ(false, b.isInLimits(-1, -1));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(-1, 10)));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(10, -1)));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(-1, -1)));
 
-    EXPECT_EQ(true, b.isInLimits(0, 0));
-    EXPECT_EQ(true, b.isInLimits(124.3f, 245.56f));
-    EXPECT_EQ(true, b.isInLimits(499, 399));
-    EXPECT_EQ(true, b.isInLimits(499.1f, 399.1f));
-    EXPECT_EQ(true, b.isInLimits(499.999f, 399.999f));
+    EXPECT_EQ(true, b.isInLimits(Platec::Point2D<uint32_t>(0, 0)));
+    EXPECT_EQ(true, b.isInLimits(Platec::Point2D<uint32_t>(124.3f, 245.56f)));
+    EXPECT_EQ(true, b.isInLimits(Platec::Point2D<uint32_t>(499, 399)));
+    EXPECT_EQ(true, b.isInLimits(Platec::Point2D<uint32_t>(499.1f, 399.1f)));
+    EXPECT_EQ(true, b.isInLimits(Platec::Point2D<uint32_t>(499.999f, 399.999f)));
 
-    EXPECT_EQ(false, b.isInLimits(500, 399));
-    EXPECT_EQ(false, b.isInLimits(499, 400));
-    EXPECT_EQ(false, b.isInLimits(500, 400));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(500, 399)));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(499, 400)));
+    EXPECT_EQ(false, b.isInLimits(Platec::Point2D<uint32_t>(500, 400)));
 }
 
 TEST(Bounds, Shift)
@@ -136,7 +136,7 @@ TEST(Bounds, Shift)
 TEST(Bounds, Grow)
 {
     Bounds bounds(wd, topLeft, plateDim);
-    bounds.grow(123, 0);
+    bounds.grow(Platec::Vector2D<uint32_t>(123, 0));
 
     EXPECT_EQ(623, bounds.width());
     // height should not be affected
@@ -146,7 +146,7 @@ TEST(Bounds, Grow)
     EXPECT_EQ(48, bounds.topAsUint());
 
     Bounds bounds2(wd, topLeft, plateDim);
-    bounds2.grow(0, 123);
+    bounds2.grow(Platec::Vector2D<uint32_t>(0, 123));
 
     EXPECT_EQ(523, bounds2.height());
     // width should not be affected

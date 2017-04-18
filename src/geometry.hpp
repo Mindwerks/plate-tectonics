@@ -38,7 +38,7 @@ template<class T, class Enable = void>
 class Vector2D {};
     
 template<class T>  
-class Vector2D<T, typename std::enable_if<std::is_signed<T>::value>::type>
+class Vector2D<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
 private:    
     T x_value, y_value;
@@ -125,21 +125,20 @@ public:
 class Dimension {
     
 protected:
-    uint32_t width;
-    uint32_t height;
+    Platec::Vector2D<uint32_t> dim;
 public:
 
     /// Initialize the dimension with the given values
-    Dimension(uint32_t width, uint32_t height);
+    Dimension(const uint32_t width,const uint32_t height);
 
     uint32_t getWidth() const {
-        return width;
+        return dim.x();
     }
     uint32_t getHeight() const {
-        return height;
+        return dim.y();
     }
     uint32_t getArea() const {
-        return width * height;
+        return getWidth() * getHeight();
     }
     uint32_t indexOf(const uint32_t x, const uint32_t y) const;
     uint32_t indexOf(const Platec::Point2D<uint32_t>& point) const;
@@ -148,15 +147,15 @@ public:
     bool contains(const Platec::Point2D<T>& p) const
     {
         //using std::floor here to avoid floating point inaccuarcy
-       return (std::floor(p.x()) >= 0 && std::floor(p.x()) < width && std::floor(p.y()) >= 0.0f && std::floor(p.y()) < height);
+       return (std::floor(p.x()) >= 0 && std::floor(p.x()) < getWidth()  && std::floor(p.y()) >= 0.0f && std::floor(p.y()) < getHeight());
     }
-    void grow(uint32_t amountX, uint32_t amountY);
+    void grow(Platec::Vector2D<uint32_t> growSize);
 
 };
 
 class WorldDimension : public Dimension {
 public:
-    WorldDimension(uint32_t width, uint32_t height);
+    WorldDimension(const uint32_t width,const uint32_t height);
     uint32_t getMax() const;
     uint32_t xMod(const uint32_t x) const;
     Platec::Point2D<uint32_t> xMod(const Platec::Point2D<uint32_t>& point) const;
@@ -180,20 +179,20 @@ public:
         T xval = point.x(), yval = point.y();
         if(std::floor(xval) < 0)
         {
-            xval += static_cast<T>(width);
+            xval += static_cast<T>(getWidth());
         }
-        else if (std::floor(xval) > width)
+        else if (std::floor(xval) > getWidth())
         {
-            xval -= static_cast<T>(width);
+            xval -= static_cast<T>(getWidth());
         }
         
         if(std::floor(yval) < 0)
         {
-            yval += static_cast<T>(height);
+            yval += static_cast<T>(getHeight());
         }
-        else if (std::floor(yval) > height)
+        else if (std::floor(yval) > getHeight())
         {
-            yval -= static_cast<T>(height);
+            yval -= static_cast<T>(getHeight());
         }
         return Platec::Point2D<T> (xval,yval);
     }

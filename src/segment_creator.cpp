@@ -86,7 +86,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
 {
     const uint32_t bounds_width = _bounds.width();
     const uint32_t bounds_height = _bounds.height();
-    const uint32_t origin_index = _bounds.index(x, y);
+    const uint32_t origin_index = _bounds.index(Platec::Point2D<uint32_t>(x, y));
     const uint32_t ID = _segments->size();
 
     if (_segments->id(origin_index) < ID) {

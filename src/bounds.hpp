@@ -36,7 +36,7 @@ public:
     /// Accept plate relative coordinates and return the index inside the plate.
     /// The index can be used with other classes to retrieve information about specific points.
     /// Throw an exception if the coordinates are not valid.
-    virtual uint32_t index(uint32_t px, uint32_t py) const = 0;
+    virtual uint32_t index(const Platec::Point2D<uint32_t>& p) const = 0;
 
     /// Total area occupied by the plate (width * height).
     virtual uint32_t area() const = 0;
@@ -65,16 +65,16 @@ public:
     virtual bool containsWorldPoint(uint32_t x, uint32_t y) const = 0;
 
     /// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
-    virtual bool isInLimits(float x, float y) const = 0;
+    virtual bool isInLimits(const Platec::Point2D<uint32_t>& p) const = 0;
 
     /// Shift the position of the top left corner by the given amount.
     /// It preserves the dimension of the plate.
-    virtual void shift(const Platec::Vector2D<float_t> delta) = 0;
+    virtual void shift(const Platec::Vector2D<float_t>& delta) = 0;
 
     /// Grow the plate towards the right and the bottom.
     /// @param dx must be positive or zero
     /// @param dy must be positive or zero
-    virtual void grow(uint32_t dx, uint32_t dy) = 0;
+    virtual void grow(const Platec::Vector2D<uint32_t>& delta) = 0;
 
     /// Translate world coordinates into offset within plate's height map.
     ///
@@ -112,7 +112,7 @@ public:
            const Platec::Point2D<float_t>& position,
            const Dimension& dimension);
 
-    uint32_t index(uint32_t x, uint32_t y) const;
+    uint32_t index(const Platec::Point2D<uint32_t>& p) const;
     uint32_t area() const;
     uint32_t width() const;
     uint32_t height() const;
@@ -121,9 +121,9 @@ public:
     uint32_t rightAsUintNonInclusive() const;
     uint32_t bottomAsUintNonInclusive() const;
     bool containsWorldPoint(uint32_t x, uint32_t y) const;
-    bool isInLimits(float x, float y) const;
-    void shift(const Platec::Vector2D<float_t> delta);
-    void grow(uint32_t dx, uint32_t dy);
+    bool isInLimits(const Platec::Point2D<uint32_t>& p) const;
+    void shift(const Platec::Vector2D<float_t>& delta);
+    void grow(const Platec::Vector2D<uint32_t>& delta);
     uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
     uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
 

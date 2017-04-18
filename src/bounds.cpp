@@ -29,10 +29,10 @@ Bounds::Bounds(const WorldDimension& worldDimension, const Platec::Point2D<float
            "Bounds are larger than the world containing it");
 }
 
-uint32_t Bounds::index(uint32_t x, uint32_t y) const {
-    ASSERT(x < _dimension.getWidth() && y < _dimension.getHeight(),
+uint32_t Bounds::index(const Platec::Point2D<uint32_t>& p) const {
+    ASSERT(_dimension.contains(p),
            "Invalid coordinates");
-    return _dimension.indexOf(Platec::Point2D<uint32_t>(x,y));
+    return _dimension.indexOf(p);
     
 }
 
@@ -68,15 +68,12 @@ bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const {
     return asRect().contains(x, y);
 }
 
-bool Bounds::isInLimits(float x, float y) const {
-    if (x<0) return false;
-    if (y<0) return false;
-    uint32_t ux = (uint32_t)x;
-    uint32_t uy = (uint32_t)y;
-    return ux < _dimension.getWidth() && uy < _dimension.getHeight();
+bool Bounds::isInLimits(const Platec::Point2D<uint32_t>& p) const {
+
+    return _dimension.contains(p);
 }
 
-void Bounds::shift(const Platec::Vector2D<float_t> delta) {
+void Bounds::shift(const Platec::Vector2D<float_t>& delta) {
     _position.shift(delta);
     if(!_worldDimension.contains(_position))
     {
@@ -84,14 +81,14 @@ void Bounds::shift(const Platec::Vector2D<float_t> delta) {
     }
 }
 
-void Bounds::grow(uint32_t dx, uint32_t dy) {
+void Bounds::grow(const Platec::Vector2D<uint32_t>& delta) {
 
-    _dimension.grow(dx, dy);
-
+    _dimension.grow(delta);
+  //  _worldDimension.contains(_dimension.) TODO
     ASSERT(_dimension.getWidth() <= _worldDimension.getWidth(),
            "Bounds are larger than the world containing it");
     ASSERT(_dimension.getHeight() <= _worldDimension.getHeight(),
-           "Bounds taller than the world containing it. delta=" + Platec::to_string(dy)
+           "Bounds taller than the world containing it. delta=" + Platec::to_string(delta.y())
            + " resulting plate height=" + Platec::to_string(_dimension.getHeight())
            + " world height=" + Platec::to_string(_worldDimension.getHeight()));
 }

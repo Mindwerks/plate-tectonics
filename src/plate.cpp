@@ -134,9 +134,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     float fx = x + dx;
     float fy = y + dy;
 
-    if (_bounds->isInLimits(fx, fy))
+    Platec::Point2D<uint32_t> p = Platec::Point2D<uint32_t>(fx, fy);
+    if (_bounds->isInLimits(p))
     {
-        index = _bounds->index(fx, fy);
+        
+        index = _bounds->index(p);
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);
@@ -583,7 +585,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_height = _bounds->height();
 
         _bounds->shift(Platec::Vector2D<float_t>(-1.0*d_lft, -1.0*d_top));
-        _bounds->grow(d_lft + d_rgt, d_top + d_btm);
+        _bounds->grow(Platec::Vector2D<uint32_t>(d_lft + d_rgt, d_top + d_btm));
 
         HeightMap tmph = HeightMap(_bounds->width(), _bounds->height());
         AgeMap    tmpa = AgeMap(_bounds->width(), _bounds->height());
