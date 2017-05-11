@@ -20,7 +20,11 @@
 #ifndef BOUNDS_HPP
 #define BOUNDS_HPP
 
+#define NOMINMAX
+
+
 #include <stdio.h>
+#include <utility>
 
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
@@ -29,80 +33,18 @@
 #include "utils.hpp"
 #include "geometry.hpp"
 
-/// Represent the bounds of a Plate.
-class IBounds {
-public:
 
-    /// Accept plate relative coordinates and return the index inside the plate.
-    /// The index can be used with other classes to retrieve information about specific points.
-    /// Throw an exception if the coordinates are not valid.
-    virtual uint32_t index(const Platec::Point2D<uint32_t>& p) const = 0;
-
-    /// Total area occupied by the plate (width * height).
-    virtual uint32_t area() const = 0;
-
-    /// Width of the plate.
-    virtual uint32_t width() const = 0;
-
-    /// Height of the plate.
-    virtual uint32_t height() const = 0;
-
-    /// Left position of the Plate in world coordinates.
-    virtual uint32_t leftAsUint() const = 0;
-
-    /// Top position of the Plate in world coordinates.
-    virtual uint32_t topAsUint() const = 0;
-
-    /// First point NOT part of the plate (on the right).
-    /// It is expressed in world coordinates.
-    virtual uint32_t rightAsUintNonInclusive() const = 0;
-
-    /// First point NOT part of the plate (on the bottom).
-    /// It is expressed in world coordinates.
-    virtual uint32_t bottomAsUintNonInclusive() const = 0;
-
-    /// Given a point in World relative coordinates, it tells if it is part of the plate or not.
-    virtual bool containsWorldPoint(uint32_t x, uint32_t y) const = 0;
-
-    /// Given a point in plate relative coordinates, it tells if it is part of the plate or not.
-    virtual bool isInLimits(const Platec::Point2D<uint32_t>& p) const = 0;
-
-    /// Shift the position of the top left corner by the given amount.
-    /// It preserves the dimension of the plate.
-    virtual void shift(const Platec::Vector2D<float_t>& delta) = 0;
-
-    /// Grow the plate towards the right and the bottom.
-    /// @param dx must be positive or zero
-    /// @param dy must be positive or zero
-    virtual void grow(const Platec::Vector2D<uint32_t>& delta) = 0;
-
-    /// Translate world coordinates into offset within plate's height map.
-    ///
-    /// If the global world map coordinates are within plate's height map,
-    /// the values of passed coordinates will be altered to contain the
-    /// X and y offset within the plate's height map. Otherwise an exception is thrown.
-    ///
-    /// @param[in, out] x   Offset on the global world map along X axis.
-    /// @param[in, out] y   Offset on the global world map along Y axis.
-    /// @return             Offset in height map or BAD_INDEX on error.
-    virtual uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const = 0;
-
-    /// Translate world coordinates into offset within plate's height map.
-    ///
-    /// Iff the global world map coordinates are within plate's height map,
-    /// the values of passed coordinates will be altered to contain the
-    /// X and y offset within the plate's height map. Otherwise values are
-    /// left intact.
-    ///
-    /// @param[in, out] x   Offset on the global world map along X axis.
-    /// @param[in, out] y   Offset on the global world map along Y axis.
-    /// @return             Offset in height map
-    virtual uint32_t getMapIndex(uint32_t* x, uint32_t* y) const = 0;
-};
 
 /// Plate bounds.
-class Bounds : public IBounds
+class Bounds
 {
+    
+private:
+    
+    const WorldDimension _worldDimension;
+    Platec::Point2D<float_t> _position;
+    Dimension _dimension;
+    
 public:
 
     /// @param worldDimension dimension of the world containing the plate
@@ -112,29 +54,77 @@ public:
            const Platec::Point2D<float_t>& position,
            const Dimension& dimension);
 
+    /// Accept plate relative coordinates and return the index inside the plate.
+    /// The index can be used with other classes to retrieve information about specific points.
+    /// Throw an exception if the coordinates are not valid.
     uint32_t index(const Platec::Point2D<uint32_t>& p) const;
+    
+    /// Total area occupied by the plate (width * height).
     uint32_t area() const;
+    
+    /// Width of the plate.
     uint32_t width() const;
+
+    /// Height of the plate.    
     uint32_t height() const;
-    uint32_t leftAsUint() const;
-    uint32_t topAsUint() const;
+    
+    /// Left position of the Plate in world coordinates.
+    uint32_t left() const;
+    
+    /// Top position of the Plate in world coordinates.
+    uint32_t top() const;
+    
+    /// Right position of the Plate in world coordinates.
+    uint32_t right() const;
+    
+    /// Bottom position of the Plate in world coordinates.
+    uint32_t bottom() const;
+    
+    /// First point NOT part of the plate (on the right).
+    /// It is expressed in world coordinates.    
     uint32_t rightAsUintNonInclusive() const;
+    
+    /// First point NOT part of the plate (on the bottom).
+    /// It is expressed in world coordinates.    
     uint32_t bottomAsUintNonInclusive() const;
-    bool containsWorldPoint(uint32_t x, uint32_t y) const;
+    
+    /// Given a point in World relative coordinates, it tells if it is part of the plate or not.   
+    bool containsWorldPoint(const Platec::Point2D<uint32_t>& p) const;
+    
+    /// Given a point in plate relative coordinates, it tells if it is part of the plate or not.    
     bool isInLimits(const Platec::Point2D<uint32_t>& p) const;
+    
+    /// Shift the position of the top left corner by the given amount.
+    /// It preserves the dimension of the plate.    
     void shift(const Platec::Vector2D<float_t>& delta);
+    
+     /// Grow the plate towards the right and the bottom.   
     void grow(const Platec::Vector2D<uint32_t>& delta);
-    uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
-    uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
+    
+    /// Translate world coordinates into offset within plate's height map.
+    ///
+    /// If the global world map coordinates are within plate's height map,
+    /// the values of passed coordinates will be altered to contain the
+    /// X and y offset within the plate's height map. Otherwise an exception is thrown.
+    ///
+    /// @param[in, out] x   Offset on the global world map along X axis.
+    /// @param[in, out] y   Offset on the global world map along Y axis.
+    /// @return             Offset in height map or BAD_INDEX on error.    
+    std::pair<uint32_t,Platec::Point2D<uint32_t>>
+            getValidMapIndex(const Platec::Point2D<uint32_t>& p) const;
+    
+    /// Translate world coordinates into offset within plate's height map.
+    ///
+    /// Iff the global world map coordinates are within plate's height map,
+    /// the values of passed coordinates will be altered to contain the
+    /// X and y offset within the plate's height map. Otherwise values are
+    /// left intact.
+    ///
+    /// @param[in, out] x   Offset on the global world map along X axis.
+    /// @param[in, out] y   Offset on the global world map along Y axis.
+    /// @return             Offset in height map    
+    std::pair<uint32_t,Platec::Point2D<uint32_t>> getMapIndex(const Platec::Point2D<uint32_t>& p) const;
 
-private:
-
-    /// Return a rectangle representing the Bounds inside the world.
-    Platec::Rectangle asRect() const;
-
-    const WorldDimension _worldDimension;
-    Platec::Point2D<float_t> _position;
-    Dimension _dimension;
 };
 
 #endif

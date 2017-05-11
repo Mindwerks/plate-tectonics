@@ -213,10 +213,10 @@ public:
         return _bounds->height();
     }
     uint32_t  getLeftAsUint() const throw() {
-        return _bounds->leftAsUint();
+        return _bounds->left();
     }
     uint32_t  getTopAsUint() const throw() {
-        return _bounds->topAsUint();
+        return _bounds->top();
     }
     float getVelocity() const throw() {
         return _movement.getVelocity();
@@ -277,7 +277,7 @@ public:
     }
 
     // Visible for testing
-    void injectBounds(IBounds* bounds)
+    void injectBounds(Bounds* bounds)
     {
         delete _bounds;
         _bounds = bounds;
@@ -295,7 +295,7 @@ private:
     SimpleRandom _randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
     AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-    IBounds* _bounds;
+    Bounds* _bounds;
     Mass _mass;
     Movement _movement;
     ISegments* _segments;

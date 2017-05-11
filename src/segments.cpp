@@ -87,16 +87,16 @@ ContinentId Segments::getContinentAt(int x, int y) const
 {
     ASSERT(_bounds, "Bounds not set");
     ASSERT(_segmentCreator, "SegmentCreator not set");
-    uint32_t lx = x, ly = y;
-    uint32_t index = _bounds->getValidMapIndex(&lx, &ly);
-    ContinentId seg = id(index);
+
+    auto index = _bounds->getValidMapIndex(Platec::Point2D<uint32_t>(x, y));
+    ContinentId seg = id(index.first);
 
     if (seg >= size()) {
         // in this case, we consider as const this call because we calculate
         // something that we would calculate anyway, so the segments are
         // a sort of cache
         //seg = const_cast<plate*>(this)->createSegment(lx, ly);
-        seg = _segmentCreator->createSegment(lx, ly);
+        seg = _segmentCreator->createSegment(index.second.x(), index.second.y());
     }
 
     ASSERT(seg < size(), "Could not create segment");

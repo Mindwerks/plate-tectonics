@@ -20,6 +20,8 @@
 #ifndef RECTANGLE_HPP
 #define RECTANGLE_HPP
 
+#define NOMINMAX
+
 #include <cstring> // for size_t
 #include <stdexcept>
 #include "utils.hpp"
@@ -27,7 +29,7 @@
 
 using namespace std;
 
-#define BAD_INDEX 0xFFFFFFFF
+constexpr uint32_t BAD_INDEX = (std::numeric_limits<uint32_t>::max)();
 
 namespace Platec {
 
@@ -104,16 +106,6 @@ public:
         _right  += dx;
         _top    += dy;
         _bottom += dy;
-    }
-
-    bool contains(uint32_t x, uint32_t y) const
-    {
-        uint32_t cleanX = _worldDimension.xMod(x);
-        uint32_t cleanY = _worldDimension.yMod(y);
-        if (cleanX < getLeft()) cleanX += _worldDimension.getWidth();
-        if (cleanY < getTop()) cleanY += _worldDimension.getHeight();
-        return cleanX >= getLeft() && cleanX < getRight()
-               && cleanY >= getTop()  && cleanY < getBottom();
     }
 
 private:

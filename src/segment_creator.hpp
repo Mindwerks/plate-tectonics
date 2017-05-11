@@ -27,7 +27,7 @@
 
 typedef uint32_t ContinentId;
 
-class IBounds;
+class Bounds;
 class ISegments;
 
 class ISegmentCreator
@@ -39,7 +39,7 @@ public:
 class MySegmentCreator : public ISegmentCreator
 {
 public:
-    MySegmentCreator(IBounds& bounds, ISegments* segments, HeightMap& map_,
+    MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMap& map_,
                      const WorldDimension& worldDimension)
         : _bounds(bounds), _segments(segments), map(map_),
           _worldDimension(worldDimension)
@@ -60,7 +60,7 @@ private:
     void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
                    std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const;
     const WorldDimension _worldDimension;
-    IBounds& _bounds;
+    Bounds& _bounds;
     ISegments* _segments;
     HeightMap& map;
 };
