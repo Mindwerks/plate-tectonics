@@ -142,12 +142,17 @@ public:
     }
     uint32_t indexOf(const uint32_t x, const uint32_t y) const;
     uint32_t indexOf(const Platec::Point2D<uint32_t>& point) const;
+    
+    uint32_t yFromIndex(const uint32_t index) const;
+    uint32_t xFromIndex(const uint32_t index) const;    
+    
+    const Platec::Vector2D<uint32_t> coordOF(const uint32_t index) const;
 
     template <class T>
-    bool contains(const Platec::Point2D<T>& p) const
-    {
+    bool contains(const Platec::Point2D<T>& p) const {
         //using std::floor here to avoid floating point inaccuarcy
-       return (std::floor(p.x()) >= 0 && std::floor(p.x()) < getWidth()  && std::floor(p.y()) >= 0.0f && std::floor(p.y()) < getHeight());
+       return (std::floor(p.x()) >= 0 && std::floor(p.x()) < getWidth()  
+               && std::floor(p.y()) >= 0.0f && std::floor(p.y()) < getHeight());
     }
     void grow(Platec::Vector2D<uint32_t> growSize);
 
@@ -164,8 +169,6 @@ public:
     Platec::Point2D<uint32_t> pointMod(const Platec::Point2D<uint32_t>& point) const;
     Platec::Point2D<uint32_t>  normalize(const Platec::Point2D<uint32_t>& point) const;
     uint32_t lineIndex(const uint32_t y) const;
-    uint32_t yFromIndex(const uint32_t index) const;
-    uint32_t xFromIndex(const uint32_t index) const;
     uint32_t normalizedIndexOf(const uint32_t x, const uint32_t y) const;
     uint32_t normalizedIndexOf(const Platec::Point2D<uint32_t>& point) const; 
     uint32_t xCap(const uint32_t x) const;

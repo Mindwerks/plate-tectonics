@@ -18,8 +18,10 @@
 *****************************************************************************/
 
 #include "bounds.hpp"
+#include <utility>
 
-Bounds::Bounds(const WorldDimension& worldDimension, const Platec::Point2D<float_t>& position,
+Bounds::Bounds(const WorldDimension& worldDimension, 
+                const Platec::Point2D<float_t>& position,
                const Dimension& dimension)
     : _worldDimension(worldDimension),
       _position(position),
@@ -92,20 +94,19 @@ bool Bounds::containsWorldPoint(const Platec::Point2D<uint32_t>& p) const {
            && (tmp.y() +_worldDimension.getHeight() < bot);
 
     // check if coordinates in bounds
-    if ( ( x1 || x2) && ( y1 || y2)  ){
+    if ((x1 || x2) && (y1 || y2)) {
         return true;
     }
     return false;
 }
 
 bool Bounds::isInLimits(const Platec::Point2D<uint32_t>& p) const {
-
     return _dimension.contains(p);
 }
 
 void Bounds::shift(const Platec::Vector2D<float_t>& delta) {
     _position.shift(delta);
-    if ( !_worldDimension.contains(_position)) {
+    if (!_worldDimension.contains(_position)) {
         _position = _worldDimension.wrap(_position);
     }
 }

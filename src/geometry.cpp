@@ -17,15 +17,15 @@
  *  License along with this library; if not, see http://www.gnu.org/licenses/
  *****************************************************************************/
 
+#include <algorithm>
+
 #include "geometry.hpp"
 
 Dimension::Dimension(uint32_t width, uint32_t height) :
-dim(width,height)
-{
+dim(width, height) {
 }
 
-void Dimension::grow(Platec::Vector2D<uint32_t> growSize) 
-{
+void Dimension::grow(Platec::Vector2D<uint32_t> growSize) {
     dim = dim+growSize;
 }
 
@@ -34,11 +34,11 @@ void Dimension::grow(Platec::Vector2D<uint32_t> growSize)
 // WorldDimension
 //
 
-WorldDimension::WorldDimension(const uint32_t width, const uint32_t height) 
+WorldDimension::WorldDimension(const uint32_t width, const uint32_t height)
                                 : Dimension(width, height) {
 }
 
-uint32_t WorldDimension::getMax() const{
+uint32_t WorldDimension::getMax() const {
     return std::max(getWidth(), getHeight());
 }
 
@@ -63,6 +63,12 @@ uint32_t Dimension::indexOf(const Platec::Point2D<uint32_t>& point) const {
     return point.y() * getWidth() + point.x();
 }
 
+const Platec::Vector2D<uint32_t>
+                    Dimension::coordOF(const uint32_t index) const {
+    return Platec::Vector2D<uint32_t>(xFromIndex(index), yFromIndex(index));
+}
+
+
 
 
 uint32_t WorldDimension::lineIndex(const uint32_t y) const {
@@ -70,11 +76,11 @@ uint32_t WorldDimension::lineIndex(const uint32_t y) const {
     return indexOf(0, y);
 }
 
-uint32_t WorldDimension::yFromIndex(const uint32_t index) const {
+uint32_t Dimension::yFromIndex(const uint32_t index) const {
     return index / getWidth();
 }
 
-uint32_t WorldDimension::xFromIndex(const uint32_t index) const {
+uint32_t Dimension::xFromIndex(const uint32_t index) const {
     return index - yFromIndex(index) * getWidth();
 }
 
@@ -93,8 +99,7 @@ uint32_t WorldDimension::yCap(const uint32_t y) const {
 
 Platec::Point2D<uint32_t> WorldDimension::xMod
                             (const Platec::Point2D<uint32_t>& point) const {
-    if ( point.x()>= getWidth())
-    {
+    if (point.x()>= getWidth()) {
         return Platec::Point2D<uint32_t>(point.x()-getWidth(), point.y());
     }
     return point;
@@ -102,7 +107,7 @@ Platec::Point2D<uint32_t> WorldDimension::xMod
 
 Platec::Point2D<uint32_t> WorldDimension::yMod
                         (const Platec::Point2D<uint32_t>& point) const {
-    if ( point.y()>= getHeight()) {
+    if (point.y()>= getHeight()) {
         return Platec::Point2D<uint32_t>(point.x(), point.y()-getHeight());
     }
     return point;

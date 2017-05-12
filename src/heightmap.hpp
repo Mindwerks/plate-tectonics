@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <vector>
 
+#include "geometry.hpp"
+
 
 template <typename Value>
 class Matrix
@@ -31,85 +33,86 @@ class Matrix
 private:
 
     std::vector<Value> data;
-    uint32_t dataWidth;
-    uint32_t dataHeight;    
-    
-    uint32_t calcIndex(const uint32_t x,const uint32_t y) const
-    {
-        return y * dataWidth + x;
-    }
+    Dimension dimension;   
     
 public:
     
-    Matrix(uint32_t width, uint32_t height)
-        : dataWidth(width), dataHeight(height), data(width*height)
-    {
-    }
-    Matrix(Value* data, uint32_t width, uint32_t height)
-        : dataWidth(width), dataHeight(height), data(data, data+(width*height))
-    {
+    Matrix(const uint32_t width,const uint32_t height)
+        : data(width*height), dimension(width, height)  {
     }
 
-    void set_all(const Value& value) 
-    {
+    Matrix(const std::vector<Value>& data,
+            const uint32_t width,const uint32_t height)
+        : data(data), dimension(width, height) {
+    }
+    
+    Matrix(const Dimension& dim) : data(dim.getArea()), dimension(dim) {
+    }
+    
+    Matrix(const std::vector<Value>& data,const Dimension& dim)
+        : data(data), dimension(dim) {
+    }    
+
+    void set_all(const Value value) {
         data = std::vector<Value>(data.size(),value);
     }
     
 
-    const Value& set(const uint32_t x,const uint32_t y, const Value& value)
-    {
-        data.at(calcIndex(x,y)) = value;
-        return value;
+    void set(const Platec::Point2D<uint32_t>& point, const Value value) {
+        data.at(dimension.indexOf(point)) = value;
     }
 
-    const Value& get(const uint32_t x,const uint32_t y) const
-    {
-        return data.at(calcIndex(x,y));
+    const Value get(const Platec::Point2D<uint32_t>& point) const {
+        return data.at(dimension.indexOf(point));
     }
     
-    const Value& get(uint32_t index) const
-    {
+    const Value get(const uint32_t index) const {
         return data.at(index);
     }
     
-    Value& operator[](uint32_t index)
-    {
+    Value& operator[](uint32_t index) {
         return data.at(index);
     }
-
-    const Value& operator[](uint32_t index) const
-    {
+    const Value& operator[](uint32_t index) const {
         return data.at(index);;
+    }        
+
+    const Value& operator[](const Platec::Point2D<uint32_t>& point) const {
+        return data.at(dimension.indexOf(point));;
+    }
+    
+    Value& operator[](const Platec::Point2D<uint32_t>& point) {
+        return data.at(dimension.indexOf(point));
     }
 
-    const Value* raw_data() const
-    {
-        //cant use .data() because msvc
+    const Value* raw_data() const {
+        // cant use .data() because msvc
         return &data[0];
     }
     
-    Value* raw_data()
-    {
-        //cant use .data() because msvc
+    Value* raw_data() {
+        // cant use .data() because msvc
         return &data[0];
     }
         
-    const uint32_t width() const
-    {
-        return dataWidth;
-    }
-    const uint32_t height() const
-    {
-        return dataHeight;
-    }
-    uint32_t area() const
-    {
-        return data.size();
+    const uint32_t width() const {
+        return dimension.getWidth();
     }
     
+    const uint32_t height() const {
+        return dimension.getHeight();
+    }
+    const uint32_t area() const {
+        return dimension.getArea(); 
+    }
 
+    const Dimension& getDimension() const {
+        return dimension;
+    }
 
-
+    const std::vector<Value>& getData() const {
+        return data;
+    }
 };
 
 typedef Matrix<float> HeightMap;
