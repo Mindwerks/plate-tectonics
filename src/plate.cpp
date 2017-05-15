@@ -39,7 +39,7 @@ using namespace std;
 plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
     _randsource(seed),
-    _mass(MassBuilder(m, Dimension(w, h)).build()),
+    _mass(MassBuilder(HeightMap(std::vector<float>(m, m+(w*h)), Dimension(w, h))).build()),
     map(std::vector<float>(m, m+(w*h)), w, h),
     age_map(w, h),
     _worldDimension(worldDimension),
@@ -216,7 +216,7 @@ void plate::applyFriction(float deformed_mass)
 {
     // Remove the energy that deformation consumed from plate's kinetic
     // energy: F - dF = ma - dF => a = dF/m.
-    if (!_mass.null())
+    if (!_mass.isNull())
     {
         _movement.applyFriction(deformed_mass, _mass.getMass());
     }
@@ -224,7 +224,7 @@ void plate::applyFriction(float deformed_mass)
 
 void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
 {
-    if (!_mass.null() && coll_mass > 0) {
+    if (!_mass.isNull() && coll_mass > 0) {
         _movement.collide(_mass, p, wx, wy, coll_mass);
     }
 }
@@ -370,7 +370,7 @@ void plate::erode(float lower_bound)
         for (uint32_t x = 0; x < _bounds->width(); ++x)
         {
             const uint32_t index = y * _bounds->width() + x;
-            massBuilder.addPoint(x, y, map[index]);
+            massBuilder.addPoint(Platec::Vector2D<uint32_t>(x, y), map[index]);
             tmpHm[index] += map[index]; // Careful not to overwrite earlier amounts.
 
             if (map[index] < lower_bound)

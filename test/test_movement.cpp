@@ -163,7 +163,7 @@ public:
         return _mass;
     }
 
-    Platec::Point2D<float_t> massCenter() const {
+    const Platec::Point2D<float_t> massCenter() const {
         return _massCenter;
     }
 
@@ -184,7 +184,7 @@ TEST(Movement, Collide)
     EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
     EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
 
-    Mass thisMass(100.0, 70.0, 90.0);
+    Mass thisMass(100.0, Platec::Point2D<float_t>(70.0, 90.0));
     Platec::Vector2D<float_t> otherPlateVelocityUnitVector(0.0f, -1.0f);
     float otherPlateMass = 10000.0f;
     Platec::Point2D<float_t>  otherPlateMassCenter(100.0f, 400.0f);

@@ -20,54 +20,46 @@
 #ifndef MASS_HPP
 #define MASS_HPP
 
-#include <vector>
-#include <cmath>     // sin, cos
-#include "simplerandom.hpp"
+#define NOMINMAX
+
 #include "heightmap.hpp"
-#include "rectangle.hpp"
-#include "segment_data.hpp"
-#include "utils.hpp"
-#include "bounds.hpp"
-#include "movement.hpp"
+#include "geometry.hpp"
 
 class Mass;
 
-class MassBuilder
-{
-public:
-    // FIXME: take a HeightMap instead of float*
-    MassBuilder(const float* m, const Dimension& dimension);
-    MassBuilder();
-    void addPoint(uint32_t x, uint32_t y, float crust);
-    Mass build();
+class MassBuilder {
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
-    float cx, cy;         ///< X and Y components of the center of mass of plate.
-};
-
-class IMass
-{
-public: 
-    virtual float getMass() const = 0;
-    virtual Platec::Point2D<float_t>  massCenter() const = 0;
-};
-
-class Mass : public IMass
-{
+    ///< X and Y components of the center of mass of plate.
+    Platec::Point2D<float_t> center; 
+    
 public:
-    Mass(float mass_, float cx_, float cy_);
+    MassBuilder(const HeightMap& map);
+    
+    MassBuilder();
+
+    void addPoint(const Platec::Vector2D<uint32_t>& point,const float crust);
+    Mass build();
+};
+
+class IMass {
+public:
+    virtual float getMass() const = 0;
+    virtual const Platec::Point2D<float_t>  massCenter() const = 0;
+};
+
+class Mass : public IMass {
+private:
+    float mass;           ///< Amount of crust that constitutes the plate.
+    ///< X and Y components of the center of mass of plate.
+    Platec::Point2D<float_t> center;     
+public:
+    Mass(float mass, Platec::Point2D<float_t> center);
     void incMass(float delta);
     float getMass() const;
-    float getCx() const;
-    float getCy() const;
-    Platec::Point2D<float_t> massCenter() const {
-        return Platec::Point2D<float_t>(cx, cy);
-    }
-    bool null() const;
-private:
-    float mass;           ///< Amount of crust that constitutes the plate.
-    float_t cx, cy;         ///< X and Y components of the center of mass of plate.
-    float _totalX, _totalY;
+
+    const Platec::Point2D<float_t> massCenter() const;
+    bool isNull() const;
 };
 
 #endif

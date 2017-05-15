@@ -41,9 +41,9 @@ class Bounds
     
 private:
     
-    const WorldDimension _worldDimension;
-    Platec::Point2D<float_t> _position;
-    Dimension _dimension;
+    const WorldDimension worldDimension;
+    Platec::Point2D<float_t> position;
+    Dimension dimension;
     
 public:
 

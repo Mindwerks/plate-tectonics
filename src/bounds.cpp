@@ -20,42 +20,41 @@
 #include "bounds.hpp"
 #include <utility>
 
-Bounds::Bounds(const WorldDimension& worldDimension, 
+Bounds::Bounds(const WorldDimension& worldDimension,
                 const Platec::Point2D<float_t>& position,
                const Dimension& dimension)
-    : _worldDimension(worldDimension),
-      _position(position),
-      _dimension(dimension) {
-    ASSERT(_dimension.getWidth() <= _worldDimension.getWidth() &&
-           _dimension.getHeight() <= _worldDimension.getHeight(),
+    : worldDimension(worldDimension),
+      position(position),
+      dimension(dimension) {
+    ASSERT(dimension.getWidth() <= worldDimension.getWidth() &&
+           dimension.getHeight() <= worldDimension.getHeight(),
            "Bounds are larger than the world containing it");
 }
 
 uint32_t Bounds::index(const Platec::Point2D<uint32_t>& p) const {
-    ASSERT(_dimension.contains(p),
+    ASSERT(dimension.contains(p),
            "Invalid coordinates");
-    return _dimension.indexOf(p);
-    
+    return dimension.indexOf(p);
 }
 
 uint32_t Bounds::area() const {
-    return _dimension.getArea();
+    return dimension.getArea();
 }
 
 uint32_t Bounds::width() const {
-    return _dimension.getWidth();
+    return dimension.getWidth();
 }
 
 uint32_t Bounds::height() const {
-    return _dimension.getHeight();
+    return dimension.getHeight();
 }
 
 uint32_t Bounds::left() const {
-    return static_cast<uint32_t>(_position.x());
+    return static_cast<uint32_t>(position.x());
 }
 
 uint32_t Bounds::top() const {
-    return static_cast<uint32_t>(_position.y());
+    return static_cast<uint32_t>(position.y());
 }
 
 uint32_t Bounds::bottom() const {
@@ -79,19 +78,19 @@ bool Bounds::containsWorldPoint(const Platec::Point2D<uint32_t>& p) const {
     auto bot = bottom();
     auto rgt = right();
     if ( bottom() < top())
-        bot += _worldDimension.getHeight();
+        bot += worldDimension.getHeight();
     if ( right() < left())
-        rgt += _worldDimension.getWidth();
+        rgt += worldDimension.getWidth();
 
-    auto tmp = Platec::Point2D<uint32_t>(p.x() % _worldDimension.getWidth(),
-                                         p.y() % _worldDimension.getHeight());
+    auto tmp = Platec::Point2D<uint32_t>(p.x() % worldDimension.getWidth(),
+                                         p.y() % worldDimension.getHeight());
 
     bool x1 = (tmp.x() >= left()) && (tmp.x() < rgt);
-    bool x2 = (tmp.x() + _worldDimension.getWidth() >= left())
-           && (tmp.x() + _worldDimension.getWidth() < rgt);
+    bool x2 = (tmp.x() + worldDimension.getWidth() >= left())
+           && (tmp.x() + worldDimension.getWidth() < rgt);
     bool y1 = (tmp.y() >= top()) && (tmp.y() < bot);
-    bool y2 = (tmp.y() +_worldDimension.getHeight() >= top())
-           && (tmp.y() +_worldDimension.getHeight() < bot);
+    bool y2 = (tmp.y() +worldDimension.getHeight() >= top())
+           && (tmp.y() +worldDimension.getHeight() < bot);
 
     // check if coordinates in bounds
     if ((x1 || x2) && (y1 || y2)) {
@@ -101,26 +100,27 @@ bool Bounds::containsWorldPoint(const Platec::Point2D<uint32_t>& p) const {
 }
 
 bool Bounds::isInLimits(const Platec::Point2D<uint32_t>& p) const {
-    return _dimension.contains(p);
+    return dimension.contains(p);
 }
 
 void Bounds::shift(const Platec::Vector2D<float_t>& delta) {
-    _position.shift(delta);
-    if (!_worldDimension.contains(_position)) {
-        _position = _worldDimension.wrap(_position);
+    position.shift(delta);
+    if (!worldDimension.contains(position)) {
+        position = worldDimension.wrap(position);
     }
 }
 
 void Bounds::grow(const Platec::Vector2D<uint32_t>& delta) {
-
-    _dimension.grow(delta);
+    dimension.grow(delta);
   //  _worldDimension.contains(_dimension.) TODO
-    ASSERT(_dimension.getWidth() <= _worldDimension.getWidth(),
+    ASSERT(dimension.getWidth() <= worldDimension.getWidth(),
            "Bounds are larger than the world containing it");
-    ASSERT(_dimension.getHeight() <= _worldDimension.getHeight(),
-           "Bounds taller than the world containing it. delta=" + Platec::to_string(delta.y())
-           + " resulting plate height=" + Platec::to_string(_dimension.getHeight())
-           + " world height=" + Platec::to_string(_worldDimension.getHeight()));
+    ASSERT(dimension.getHeight() <= worldDimension.getHeight(),
+           "Bounds taller than the world containing it. delta="
+            + Platec::to_string(delta.y())
+           + " resulting plate height="
+            + Platec::to_string(dimension.getHeight())
+           + " world height=" + Platec::to_string(worldDimension.getHeight()));
 }
 
 
@@ -128,15 +128,15 @@ std::pair<uint32_t, Platec::Point2D<uint32_t>>
         Bounds::getMapIndex(const Platec::Point2D<uint32_t>& p) const {
      // check if coordinates in bounds
     if (containsWorldPoint(p)) {
-       auto tmp = Platec::Point2D<uint32_t>(p.x() % _worldDimension.getWidth(),
-                                           p.y() % _worldDimension.getHeight());
+       auto tmp = Platec::Point2D<uint32_t>(p.x() % worldDimension.getWidth(),
+                                           p.y() % worldDimension.getHeight());
        // calculate coordinates in Bounds
        const auto x = tmp.x() + ((tmp.x() < left())
-                            ? _worldDimension.getWidth() : 0) - left();
+                            ? worldDimension.getWidth() : 0) - left();
        const auto y = tmp.y() + ((tmp.y() < top())
-                            ? _worldDimension.getHeight() : 0) - top();
+                            ? worldDimension.getHeight() : 0) - top();
 
-       return std::make_pair(_dimension.indexOf(x, y),
+       return std::make_pair(dimension.indexOf(x, y),
                     Platec::Point2D<uint32_t>(x, y));
     } else {
         // return bad index

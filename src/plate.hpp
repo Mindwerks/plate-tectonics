@@ -239,15 +239,15 @@ public:
         return _bounds->width();
     }
     bool   isEmpty() const throw() {
-        return _mass.null();
+        return _mass.isNull();
     }
     float getCx() const {
-        return _mass.getCx();
+        return _mass.massCenter().x();
     }
     float getCy() const {
-        return _mass.getCy();
+        return _mass.massCenter().y();
     }
-    Platec::Point2D<float_t> massCenter() const {
+    const Platec::Point2D<float_t> massCenter() const {
         return _mass.massCenter();
     }
 

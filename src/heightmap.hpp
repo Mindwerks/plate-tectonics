@@ -38,7 +38,7 @@ private:
 public:
     
     Matrix(const uint32_t width,const uint32_t height)
-        : data(width*height), dimension(width, height)  {
+        : data(width*height,0.0), dimension(width, height)  {
     }
 
     Matrix(const std::vector<Value>& data,
@@ -46,7 +46,7 @@ public:
         : data(data), dimension(width, height) {
     }
     
-    Matrix(const Dimension& dim) : data(dim.getArea()), dimension(dim) {
+    Matrix(const Dimension& dim) : data(dim.getArea(),0.0), dimension(dim) {
     }
     
     Matrix(const std::vector<Value>& data,const Dimension& dim)
