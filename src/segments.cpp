@@ -88,7 +88,7 @@ ContinentId Segments::getContinentAt(int x, int y) const
     ASSERT(_bounds, "Bounds not set");
     ASSERT(_segmentCreator, "SegmentCreator not set");
 
-    auto index = _bounds->getValidMapIndex(Platec::Point2D<uint32_t>(x, y));
+    auto index = _bounds->getValidMapIndex(Platec::vec2ui(x, y));
     ContinentId seg = id(index.first);
 
     if (seg >= size()) {

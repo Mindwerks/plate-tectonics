@@ -109,7 +109,7 @@ public:
     uint32_t getIterationCount() const throw() {
         return iter_count;
     }
-    const WorldDimension& getWorldDimension() const throw() {
+    const Dimension& getWorldDimension() const throw() {
         return _worldDimension;
     }
     uint32_t getPlateCount() const throw(); ///< Return number of plates.
@@ -125,8 +125,8 @@ public:
 protected:
 private:
 
-    void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
-    void createSlowNoise(float* tmp, const WorldDimension& tmpDim);
+    void createNoise(float* tmp, const Dimension& tmpDim, bool useSimplex = false);
+    void createSlowNoise(float* tmp, const Dimension& tmpDim);
     void updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                                        uint32_t& oceanic_collisions,
                                        uint32_t& continental_collisions);
@@ -166,7 +166,6 @@ private:
     };
 
     void restart(); //< Replace plates with a new population.
-    WorldPoint randomPosition();
 
     HeightMap hmap; ///< Height map representing the topography of system.
     IndexMap imap; ///< Plate index map of the "owner" of each map point.
@@ -192,7 +191,7 @@ private:
     float peak_Ek; ///< Max total kinetic energy in the system so far.
     uint32_t last_coll_count; ///< Iterations since last cont. collision.
 
-    const WorldDimension _worldDimension;
+    const Dimension _worldDimension;
     SimpleRandom _randsource;
     int _steps;
 };

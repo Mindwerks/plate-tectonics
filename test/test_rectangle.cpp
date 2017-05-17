@@ -25,7 +25,7 @@ using Platec::Rectangle;
 
 TEST(Rectangle, MapIndexInsideRectNotWrapping)
 {
-    Platec::Rectangle r = Platec::Rectangle(WorldDimension(50, 30), 42, 48, 8, 15);
+    Platec::Rectangle r = Platec::Rectangle(Dimension(50, 30), 42, 48, 8, 15);
     uint32_t px, py, res;
 
     px = 42;
@@ -52,7 +52,7 @@ TEST(Rectangle, MapIndexInsideRectNotWrapping)
 
 TEST(Rectangle, MapIndexOutsideRect)
 {
-    Platec::Rectangle r = Platec::Rectangle(WorldDimension(50, 30), 42, 48, 8, 15);
+    Platec::Rectangle r = Platec::Rectangle(Dimension(50, 30), 42, 48, 8, 15);
     uint32_t px, py, res;
 
     px = 49;
@@ -79,7 +79,7 @@ TEST(Rectangle, MapIndexOutsideRect)
 
 TEST(Rectangle, MapIndexInsideRectWrappingOnX)
 {
-    Platec::Rectangle r = Platec::Rectangle(WorldDimension(50, 30), 42, 6, 8, 12);
+    Platec::Rectangle r = Platec::Rectangle(Dimension(50, 30), 42, 6, 8, 12);
     uint32_t px, py, res;
 
     px = 42;
@@ -106,7 +106,7 @@ TEST(Rectangle, MapIndexInsideRectWrappingOnX)
 
 TEST(Rectangle, MapIndexInsideRectWrappingOnY)
 {
-    Platec::Rectangle r = Platec::Rectangle(WorldDimension(50, 30), 42, 48, 25, 5);
+    Platec::Rectangle r = Platec::Rectangle(Dimension(50, 30), 42, 48, 25, 5);
     uint32_t px, py, res;
 
     px = 42;
@@ -131,9 +131,9 @@ TEST(Rectangle, MapIndexInsideRectWrappingOnY)
     ASSERT_EQ(res, 44);
 }
 
-TEST(Rectangle, MapIndexInsideRectLargeAsWorld)
+TEST(Rectangle, MapIndexInsideRectLargeAs)
 {
-    Platec::Rectangle r = Platec::Rectangle(WorldDimension(50, 30), 0, 50, 0, 30);
+    Platec::Rectangle r = Platec::Rectangle(Dimension(50, 30), 0, 50, 0, 30);
     uint32_t px, py, res;
 
     px = 0;

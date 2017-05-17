@@ -20,7 +20,7 @@
 #include "mass.hpp"
 
 #include <algorithm>
-
+#include "vector2D.h"
 // ----------------------------------------------
 // MassBuilder
 // ----------------------------------------------
@@ -38,33 +38,33 @@ MassBuilder::MassBuilder()
     : mass(0), center(0.f, 0.f) {
 }
 
-void MassBuilder::addPoint(const Platec::Vector2D<uint32_t>& point,
+void MassBuilder::addPoint(const Platec::vec2ui& point,
                             const float crust) {
     auto testCrust = std::max(crust, 0.f);
     mass += testCrust;
     // Update the center coordinates weighted by mass.
-    center.shift(Platec::Vector2D<float_t>(point.x(), point.y()) * testCrust);
+    //Explicit convertsion from int to float
+    center.shift(Platec::vec2f(point.x(), point.y()) * testCrust);
 }
 
 Mass MassBuilder::build() {
     if (mass <= 0.f) {
-        return Mass(0.f, Platec::Point2D<float>(0.0, 0.0));
+        return Mass(0.f, Platec::vec2f(0.0, 0.0));
     }
     float inv_mass = 1 / mass;
 
-    return Mass(mass, Platec::Point2D<float>(center.x() * inv_mass
-                                , center.y() *inv_mass));
+    return Mass(mass, center * inv_mass);
 }
 
 // ----------------------------------------------
 // Mass
 // ----------------------------------------------
 
-Mass::Mass(float mass, Platec::Point2D<float_t> center) :
+Mass::Mass(float mass, Platec::vec2f center) :
         mass(mass), center(center) {
 }
 
-const Platec::Point2D<float_t> Mass::massCenter() const {
+const Platec::vec2f Mass::massCenter() const {
     return center;
 }
 

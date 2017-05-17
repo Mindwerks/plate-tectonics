@@ -23,7 +23,7 @@
 #define NOMINMAX
 
 #include "heightmap.hpp"
-#include "geometry.hpp"
+#include "dimension.h"
 
 class Mass;
 
@@ -31,34 +31,34 @@ class MassBuilder {
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
     ///< X and Y components of the center of mass of plate.
-    Platec::Point2D<float_t> center; 
+    Platec::vec2f center; 
     
 public:
     MassBuilder(const HeightMap& map);
     
     MassBuilder();
 
-    void addPoint(const Platec::Vector2D<uint32_t>& point,const float crust);
+    void addPoint(const Platec::vec2ui& point,const float crust);
     Mass build();
 };
 
 class IMass {
 public:
     virtual float getMass() const = 0;
-    virtual const Platec::Point2D<float_t>  massCenter() const = 0;
+    virtual const Platec::vec2f  massCenter() const = 0;
 };
 
 class Mass : public IMass {
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
     ///< X and Y components of the center of mass of plate.
-    Platec::Point2D<float_t> center;     
+    Platec::vec2f center;     
 public:
-    Mass(float mass, Platec::Point2D<float_t> center);
+    Mass(float mass, Platec::vec2f center);
     void incMass(float delta);
     float getMass() const;
 
-    const Platec::Point2D<float_t> massCenter() const;
+    const Platec::vec2f massCenter() const;
     bool isNull() const;
 };
 

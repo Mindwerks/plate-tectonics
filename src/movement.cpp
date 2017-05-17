@@ -26,7 +26,7 @@
 #define M_PI 3.141592654
 #endif
 
-Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
+Movement::Movement(SimpleRandom randsource, const Dimension& worldDimension)
     : _randsource(randsource),
       velocity(1),
       rot_dir(randsource.next() % 2 ? 1 : -1),

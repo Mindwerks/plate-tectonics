@@ -28,7 +28,7 @@
 #include "segment_data.hpp"
 #include "utils.hpp"
 #include "bounds.hpp"
-#include "geometry.hpp"
+#include "dimension.h"
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 #define INITIAL_SPEED_X 1
@@ -51,7 +51,7 @@ public:
 class Movement : public IMovement
 {
 public:
-    Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
+    Movement(SimpleRandom randsource, const Dimension& worldDimension);
     void applyFriction(float deformed_mass, float mass);
     void move();
     Platec::Vector2D<float_t> velocityUnitVector() const {
@@ -97,7 +97,7 @@ private:
     float relativeUnitVelocityOnY(float otherVy) const;
 
     SimpleRandom _randsource;
-    const WorldDimension _worldDimension;
+    const Dimension _worldDimension;
     float velocity;       ///< Plate's velocity.
     float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
     float dx, dy;         ///< X and Y components of plate's acceleration vector.

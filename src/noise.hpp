@@ -26,7 +26,7 @@
 #include "rectangle.hpp"
 #include "simplerandom.hpp"
 
-void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom _randsource, bool useSimplex = false);
-void createSlowNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom _randsource);
+void createNoise(float* tmp, const Dimension& tmpDim, SimpleRandom _randsource, bool useSimplex = false);
+void createSlowNoise(float* tmp, const Dimension& tmpDim, SimpleRandom _randsource);
 
 #endif

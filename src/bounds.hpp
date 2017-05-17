@@ -31,7 +31,7 @@
 #include "rectangle.hpp"
 #include "segment_data.hpp"
 #include "utils.hpp"
-#include "geometry.hpp"
+#include "dimension.h"
 
 
 
@@ -41,8 +41,8 @@ class Bounds
     
 private:
     
-    const WorldDimension worldDimension;
-    Platec::Point2D<float_t> position;
+    const Dimension worldDimension;
+    Platec::vec2f position;
     Dimension dimension;
     
 public:
@@ -50,14 +50,14 @@ public:
     /// @param worldDimension dimension of the world containing the plate
     /// @param position Position of the top left corner of the plae
     /// @param dimension Dimension of the plate
-    Bounds(const WorldDimension& worldDimension,
-           const Platec::Point2D<float_t>& position,
+    Bounds(const Dimension& worldDimension,
+           const Platec::vec2f& position,
            const Dimension& dimension);
 
     /// Accept plate relative coordinates and return the index inside the plate.
     /// The index can be used with other classes to retrieve information about specific points.
     /// Throw an exception if the coordinates are not valid.
-    uint32_t index(const Platec::Point2D<uint32_t>& p) const;
+    uint32_t index(const Platec::vec2ui& p) const;
     
     /// Total area occupied by the plate (width * height).
     uint32_t area() const;
@@ -88,11 +88,11 @@ public:
     /// It is expressed in world coordinates.    
     uint32_t bottomAsUintNonInclusive() const;
     
-    /// Given a point in World relative coordinates, it tells if it is part of the plate or not.   
-    bool containsWorldPoint(const Platec::Point2D<uint32_t>& p) const;
+    /// Given a point in  relative coordinates, it tells if it is part of the plate or not.   
+    bool containsWorldPoint(const Platec::vec2ui& p) const;
     
     /// Given a point in plate relative coordinates, it tells if it is part of the plate or not.    
-    bool isInLimits(const Platec::Point2D<uint32_t>& p) const;
+    bool isInLimits(const Platec::vec2ui& p) const;
     
     /// Shift the position of the top left corner by the given amount.
     /// It preserves the dimension of the plate.    
@@ -110,8 +110,8 @@ public:
     /// @param[in, out] x   Offset on the global world map along X axis.
     /// @param[in, out] y   Offset on the global world map along Y axis.
     /// @return             Offset in height map or BAD_INDEX on error.    
-    std::pair<uint32_t, Platec::Point2D<uint32_t>>
-            getValidMapIndex(const Platec::Point2D<uint32_t>& p) const;
+    std::pair<uint32_t, Platec::vec2ui>
+            getValidMapIndex(const Platec::vec2ui& p) const;
     
     /// Translate world coordinates into offset within plate's height map.
     ///
@@ -123,8 +123,8 @@ public:
     /// @param[in, out] x   Offset on the global world map along X axis.
     /// @param[in, out] y   Offset on the global world map along Y axis.
     /// @return             Offset in height map    
-    std::pair<uint32_t, Platec::Point2D<uint32_t>> getMapIndex
-            (const Platec::Point2D<uint32_t>& p) const;
+    std::pair<uint32_t, Platec::vec2ui> getMapIndex
+            (const Platec::vec2ui& p) const;
 
 };
 

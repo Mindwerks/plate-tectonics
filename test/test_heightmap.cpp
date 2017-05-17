@@ -33,58 +33,58 @@ TEST(HeightMap, Area) {
 
 TEST(HeightMap, SetAndGet) {
     HeightMap hm = HeightMap(50, 20);
-    hm.set(Platec::Point2D<uint32_t>(0, 0), 0.2f);
-    hm.set(Platec::Point2D<uint32_t>(20, 18), 0.7f);
-    hm.set(Platec::Point2D<uint32_t>(40, 18), 0.5f);
-    hm.set(Platec::Point2D<uint32_t>(49, 19), 0.9f);
-    ASSERT_FLOAT_EQ(0.2f , hm.get(Platec::Point2D<uint32_t>(0,  0)));
-    ASSERT_FLOAT_EQ(0.7f , hm.get(Platec::Point2D<uint32_t>(20, 18)));
-    ASSERT_FLOAT_EQ(0.5f , hm.get(Platec::Point2D<uint32_t>(40, 18)));
-    ASSERT_FLOAT_EQ(0.9f , hm.get(Platec::Point2D<uint32_t>(49, 19)));
+    hm.set(Platec::vec2ui(0, 0), 0.2f);
+    hm.set(Platec::vec2ui(20, 18), 0.7f);
+    hm.set(Platec::vec2ui(40, 18), 0.5f);
+    hm.set(Platec::vec2ui(49, 19), 0.9f);
+    ASSERT_FLOAT_EQ(0.2f , hm.get(Platec::vec2ui(0,  0)));
+    ASSERT_FLOAT_EQ(0.7f , hm.get(Platec::vec2ui(20, 18)));
+    ASSERT_FLOAT_EQ(0.5f , hm.get(Platec::vec2ui(40, 18)));
+    ASSERT_FLOAT_EQ(0.9f , hm.get(Platec::vec2ui(49, 19)));
 }
 
 TEST(HeightMap, CopyConstructor) {
     HeightMap hm = HeightMap(50, 20);
-    hm.set(Platec::Point2D<uint32_t>(0, 0), 0.2f);
-    hm.set(Platec::Point2D<uint32_t>(20, 18), 0.7f);
-    hm.set(Platec::Point2D<uint32_t>(40, 18), 0.5f);
-    hm.set(Platec::Point2D<uint32_t>(49, 19), 0.9f);
+    hm.set(Platec::vec2ui(0, 0), 0.2f);
+    hm.set(Platec::vec2ui(20, 18), 0.7f);
+    hm.set(Platec::vec2ui(40, 18), 0.5f);
+    hm.set(Platec::vec2ui(49, 19), 0.9f);
     HeightMap hm2 = hm;
-    ASSERT_FLOAT_EQ(0.2f , hm2.get(Platec::Point2D<uint32_t>(0, 0)));
-    ASSERT_FLOAT_EQ(0.7f , hm2.get(Platec::Point2D<uint32_t>(20, 18)));
-    ASSERT_FLOAT_EQ(0.5f , hm2.get(Platec::Point2D<uint32_t>(40, 18)));
-    ASSERT_FLOAT_EQ(0.9f , hm2.get(Platec::Point2D<uint32_t>(49, 19)));
+    ASSERT_FLOAT_EQ(0.2f , hm2.get(Platec::vec2ui(0, 0)));
+    ASSERT_FLOAT_EQ(0.7f , hm2.get(Platec::vec2ui(20, 18)));
+    ASSERT_FLOAT_EQ(0.5f , hm2.get(Platec::vec2ui(40, 18)));
+    ASSERT_FLOAT_EQ(0.9f , hm2.get(Platec::vec2ui(49, 19)));
 }
 
 TEST(HeightMap, AssignmentOperator) {
     HeightMap hm = HeightMap(50, 20);
-    hm.set(Platec::Point2D<uint32_t>(0, 0), 0.2f);
-    hm.set(Platec::Point2D<uint32_t>(20, 18), 0.7f);
-    hm.set(Platec::Point2D<uint32_t>(40, 18), 0.5f);
-    hm.set(Platec::Point2D<uint32_t>(49, 19), 0.9f);
+    hm.set(Platec::vec2ui(0, 0), 0.2f);
+    hm.set(Platec::vec2ui(20, 18), 0.7f);
+    hm.set(Platec::vec2ui(40, 18), 0.5f);
+    hm.set(Platec::vec2ui(49, 19), 0.9f);
     HeightMap hm2 = HeightMap(10, 10);
     hm2 = hm;
-    ASSERT_FLOAT_EQ(0.2f , hm2.get(Platec::Point2D<uint32_t>(0, 0)));
-    ASSERT_FLOAT_EQ(0.7f , hm2.get(Platec::Point2D<uint32_t>(20, 18)));
-    ASSERT_FLOAT_EQ(0.5f , hm2.get(Platec::Point2D<uint32_t>(40, 18)));
-    ASSERT_FLOAT_EQ(0.9f , hm2.get(Platec::Point2D<uint32_t>(49, 19)));
+    ASSERT_FLOAT_EQ(0.2f , hm2.get(Platec::vec2ui(0, 0)));
+    ASSERT_FLOAT_EQ(0.7f , hm2.get(Platec::vec2ui(20, 18)));
+    ASSERT_FLOAT_EQ(0.5f , hm2.get(Platec::vec2ui(40, 18)));
+    ASSERT_FLOAT_EQ(0.9f , hm2.get(Platec::vec2ui(49, 19)));
 }
 
 TEST(HeightMap, SetAll) {
     HeightMap hm = HeightMap(50, 20);
     hm.set_all(1.789f);
-    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::Point2D<uint32_t>(0, 0)));
-    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::Point2D<uint32_t>(20, 18)));
-    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::Point2D<uint32_t>(40, 18)));
-    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::Point2D<uint32_t>(49, 19)));
+    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::vec2ui(0, 0)));
+    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::vec2ui(20, 18)));
+    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::vec2ui(40, 18)));
+    ASSERT_FLOAT_EQ(1.789f , hm.get(Platec::vec2ui(49, 19)));
 }
 
 TEST(HeightMap, IndexedAccessOperatorFromIndex) {
     HeightMap hm = HeightMap(50, 20);
-    hm.set(Platec::Point2D<uint32_t>(0, 0), 0.2f);
-    hm.set(Platec::Point2D<uint32_t>(20, 18), 0.7f);
-    hm.set(Platec::Point2D<uint32_t>(40, 18), 0.5f);
-    hm.set(Platec::Point2D<uint32_t>(49, 19), 0.9f);
+    hm.set(Platec::vec2ui(0, 0), 0.2f);
+    hm.set(Platec::vec2ui(20, 18), 0.7f);
+    hm.set(Platec::vec2ui(40, 18), 0.5f);
+    hm.set(Platec::vec2ui(49, 19), 0.9f);
 
     ASSERT_FLOAT_EQ(0.2f , hm[0]);
     ASSERT_FLOAT_EQ(0.7f , hm[920]);

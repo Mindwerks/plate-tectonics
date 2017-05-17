@@ -25,7 +25,7 @@
 #include <cstring> // for size_t
 #include <stdexcept>
 #include "utils.hpp"
-#include "geometry.hpp"
+#include "dimension.h"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ namespace Platec {
 
 class Rectangle {
 public:
-    Rectangle(const WorldDimension& worldDimension,
+    Rectangle(const Dimension& worldDimension,
               uint32_t left, uint32_t right,
               uint32_t top, uint32_t bottom)
         : _worldDimension(worldDimension),
@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    const WorldDimension _worldDimension;
+    const Dimension _worldDimension;
     uint32_t _left, _right;
     uint32_t _top, _bottom;
 };

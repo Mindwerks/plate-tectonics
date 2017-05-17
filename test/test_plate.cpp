@@ -22,7 +22,7 @@
 #include "noise.hpp"
 #include "simplexnoise.hpp"
 
-void initializeHeightmapWithNoise(long seed, float *heightmap, const WorldDimension& wd)
+void initializeHeightmapWithNoise(long seed, float *heightmap, const Dimension& wd)
 {
     createNoise(heightmap, wd, SimpleRandom(seed), true);
     for (uint32_t i=0; i<wd.getArea(); i++) {
@@ -56,7 +56,7 @@ TEST(Noise, SimplexRawNoiseRepeatability)
 
 TEST(Noise, SimplexNoiseRepeatability)
 {
-    WorldDimension wd(233, 111);
+    Dimension wd(233, 111);
     float *heightmap = new float[wd.getArea()];
     initializeHeightmapWithNoise(123, heightmap, wd);
 
@@ -74,23 +74,23 @@ TEST(Noise, SimplexNoiseRepeatability)
 TEST(CreatePlate, SquareDoesNotExplode)
 {
     float *heightmap = new float[40000]; // 200 x 200
-    initializeHeightmapWithNoise(678, heightmap, WorldDimension(200, 200));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 200));
+    initializeHeightmapWithNoise(678, heightmap, Dimension(200, 200));
+    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(200, 200));
 }
 
 TEST(CreatePlate, NotSquareDoesNotExplode)
 {
     float *heightmap = new float[80000]; // 200 x 400
-    initializeHeightmapWithNoise(678, heightmap, WorldDimension(200, 400));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(200, 400));
+    initializeHeightmapWithNoise(678, heightmap, Dimension(200, 400));
+    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(200, 400));
 }
 
 // TODO test also when plate is large as world
 TEST(Plate, calculateCrust)
 {
     float *heightmap = new float[256 * 128];
-    initializeHeightmapWithNoise(678, heightmap, WorldDimension(256, 128));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
+    initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
+    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(256, 128));
     uint32_t x, y, index;
     float w_crust, e_crust, n_crust, s_crust;
     uint32_t w, e, n, s;
@@ -141,7 +141,7 @@ public:
         _area++;
     }
     virtual void enlarge_to_contain(uint32_t x, uint32_t y) {
-        _enlargePoint = new Platec::Point2D<int32_t>(x, y);
+        _enlargePoint = new Platec::vec2ui(x, y);
     }
     virtual void markNonExistent() {
         throw runtime_error("Not implemented");
@@ -171,19 +171,19 @@ public:
     virtual uint32_t collCount() const {
         return _collCount;
     }
-    Platec::Point2D<int32_t>* enlargedPoint() {
+    Platec::vec2ui* enlargedPoint() {
         return _enlargePoint;
     }
 private:
     uint32_t _collCount;
     uint32_t _area;
-    Platec::Point2D<int32_t>* _enlargePoint;
+    Platec::vec2ui* _enlargePoint;
 };
 
 class MockSegments : public ISegments
 {
 public:
-    MockSegments(Platec::Point2D<int32_t> p, ContinentId id, ISegmentData* data)
+    MockSegments(Platec::vec2ui p, ContinentId id, ISegmentData* data)
         : _p(p), _id(id), _data(data)
     {
 
@@ -237,7 +237,7 @@ public:
         }
     }
 private:
-    Platec::Point2D<int32_t> _p;
+    Platec::vec2ui _p;
     ContinentId _id;
     ISegmentData* _data;
 };
@@ -245,11 +245,11 @@ private:
 TEST(Plate, addCollision)
 {
     float *heightmap = new float[256 * 128];
-    initializeHeightmapWithNoise(678, heightmap, WorldDimension(256, 128));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, WorldDimension(256, 128));
+    initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
+    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(256, 128));
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments* mSegments = new MockSegments(Platec::Point2D<int32_t>(123, 78), 99, mSeg);
+    MockSegments* mSegments = new MockSegments(Platec::vec2ui(123, 78), 99, mSeg);
     p.injectSegments(mSegments);
 
     uint32_t area = p.addCollision(123, 78);
@@ -261,7 +261,7 @@ TEST(Plate, addCollision)
 class MockSegments2 : public ISegments
 {
 public:
-    MockSegments2(Platec::Point2D<int32_t> p, ContinentId id, ISegmentData* data, uint32_t index)
+    MockSegments2(Platec::vec2ui p, ContinentId id, ISegmentData* data, uint32_t index)
         : _p(p), _id(id), _data(data), _index(index)
     {
 
@@ -331,7 +331,7 @@ public:
         }
     }
 private:
-    Platec::Point2D<int32_t> _p;
+    Platec::vec2ui _p;
     ContinentId _id;
     ISegmentData* _data;
     uint32_t _index;
@@ -343,11 +343,11 @@ TEST(Plate, addCrustByCollision)
     const uint32_t worldHeight = 128;
 
     float *heightmap = new float[worldWidth * worldHeight];
-    WorldDimension wd(worldWidth, worldHeight);
+    Dimension wd(worldWidth, worldHeight);
     initializeHeightmapWithNoise(1, heightmap, wd);
 
     // Suppose the plate start at 170, 70 and ends at 250, 125
-    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
+    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, Dimension(256, 128));
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -357,7 +357,7 @@ TEST(Plate, addCrustByCollision)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(Platec::Point2D<int32_t>(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    MockSegments2* mSegments = new MockSegments2(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
     uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
@@ -399,10 +399,10 @@ TEST(Plate, addCrustBySubduction)
     const uint32_t worldHeight = 128;
 
     float *heightmap = new float[worldWidth * worldHeight];
-    initializeHeightmapWithNoise(1, heightmap, WorldDimension(worldWidth, worldHeight));
+    initializeHeightmapWithNoise(1, heightmap, Dimension(worldWidth, worldHeight));
 
     // Suppose the plate start at 170, 70 and ends at 250, 125
-    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, WorldDimension(256, 128));
+    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, Dimension(256, 128));
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -412,7 +412,7 @@ TEST(Plate, addCrustBySubduction)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(Platec::Point2D<int32_t>(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    MockSegments2* mSegments = new MockSegments2(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
     uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);

@@ -50,7 +50,7 @@ public:
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
     plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
-          uint32_t plate_age, WorldDimension worldDimension);
+          uint32_t plate_age, Dimension worldDimension);
 
     ~plate();
 
@@ -247,11 +247,11 @@ public:
     float getCy() const {
         return _mass.massCenter().y();
     }
-    const Platec::Point2D<float_t> massCenter() const {
+    const Platec::vec2f massCenter() const {
         return _mass.massCenter();
     }
 
-    void decImpulse(const Platec::Vector2D<float_t>& delta) {
+    void decImpulse(const Platec::vec2f& delta) {
         _movement.decDx(delta.x());
         _movement.decDy(delta.y());
     }
@@ -291,7 +291,7 @@ private:
     void flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp);
     uint32_t createSegment(uint32_t x, uint32_t y) throw();
 
-    const WorldDimension _worldDimension;
+    const Dimension _worldDimension;
     SimpleRandom _randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
     AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.

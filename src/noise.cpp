@@ -39,7 +39,7 @@ static uint32_t nearest_pow(uint32_t num)
     return n;
 }
 
-void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom randsource)
+void createSlowNoise(float* map, const Dimension& tmpDim, SimpleRandom randsource)
 {
     long seed = randsource.next();
     uint32_t width = tmpDim.getWidth();
@@ -76,7 +76,7 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
     }
 }
 
-void createNoise(float* tmp, const WorldDimension& tmpDim, SimpleRandom randsource, bool useSimplex)
+void createNoise(float* tmp, const Dimension& tmpDim, SimpleRandom randsource, bool useSimplex)
 {
     try {
         if (useSimplex) {

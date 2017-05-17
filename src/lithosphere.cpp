@@ -52,20 +52,12 @@ uint32_t findBound(const uint32_t* map, uint32_t length, uint32_t x0, uint32_t y
                    int dx, int dy);
 uint32_t findPlate(plate** plates, float x, float y, uint32_t num_plates);
 
-WorldPoint lithosphere::randomPosition()
+void lithosphere::createNoise(float* tmp, const Dimension& tmpDim, bool useSimplex)
 {
-    return WorldPoint(
-               _randsource.next() % _worldDimension.getWidth(),
-               _randsource.next() % _worldDimension.getHeight(),
-               _worldDimension);
+  ::createNoise(tmp, tmpDim, _randsource, useSimplex);
 }
 
-void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
-{
-    ::createNoise(tmp, tmpDim, _randsource, useSimplex);
-}
-
-void lithosphere::createSlowNoise(float* tmp, const WorldDimension& tmpDim)
+void lithosphere::createSlowNoise(float* tmp, const Dimension& tmpDim)
 {
     ::createSlowNoise(tmp, tmpDim, _randsource);
 }
@@ -97,7 +89,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
         throw runtime_error("Width and height should be >=5");
     }
 
-    WorldDimension tmpDim = WorldDimension(width+1, height+1);
+    Dimension tmpDim = Dimension(width+1, height+1);
     const uint32_t A = tmpDim.getArea();
     std::vector<float> tmp = std::vector<float>(A);
 
@@ -310,7 +302,7 @@ void lithosphere::createPlates()
             // Copy plate's height data from global map into local map.
             for (uint32_t y = y0, j = 0; y < y1; ++y) {
                 for (uint32_t x = x0; x < x1; ++x, ++j) {
-                    uint32_t k = _worldDimension.normalizedIndexOf(x, y);
+                    uint32_t k = _worldDimension.normalizedIndexOf(Platec::vec2ui(x, y));
                     pmap[j] = hmap[k] * (imap[k] == i);
                 }
             }
@@ -763,15 +755,17 @@ void lithosphere::restart()
             {
                 for (uint32_t x = x0; x < x1; ++x, ++j)
                 {
-                    const uint32_t x_mod = _worldDimension.xMod(x);
-                    const uint32_t y_mod = _worldDimension.yMod(y);
-                    const float h0 = hmap[_worldDimension.indexOf(x_mod, y_mod)];
+                    const auto index = _worldDimension.indexOf(
+                                        Platec::vec2ui(_worldDimension.xMod(x),
+                                                _worldDimension.yMod(y)));
+
+                    const float h0 = hmap[index];
                     const float h1 = this_map[j];
-                    const uint32_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
+                    const uint32_t a0 = amap[index];
                     const uint32_t a1 =  this_age[j];
 
-                    amap[_worldDimension.indexOf(x_mod, y_mod)] = (h0 *a0 +h1 *a1) /(h0 +h1);
-                    hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
+                    amap[index] = (h0 *a0 +h1 *a1) /(h0 +h1);
+                    hmap[index] += this_map[j];
                 }
             }
         }
@@ -803,10 +797,11 @@ void lithosphere::restart()
                 {
                     for (uint32_t x = x0; x < x1; ++x, ++j)
                     {
-                        const uint32_t x_mod = _worldDimension.xMod(x);
-                        const uint32_t y_mod = _worldDimension.yMod(y);
+                        const auto index = _worldDimension.indexOf(
+                                        Platec::vec2ui(_worldDimension.xMod(x),
+                                                _worldDimension.yMod(y)));
 
-                        this_age[j] = amap[_worldDimension.indexOf(x_mod, y_mod)];
+                        this_age[j] = amap[index];
                     }
                 }
             }

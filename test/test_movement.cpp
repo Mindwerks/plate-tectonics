@@ -27,7 +27,7 @@ using namespace Platec;
 TEST(Movement, Constructor)
 {
     SimpleRandom sr(123);
-    WorldDimension wd(5, 4);
+    Dimension wd(5, 4);
     Movement mov(sr, wd);
     EXPECT_FLOAT_EQ(0.99992257f, mov.velX());
     EXPECT_FLOAT_EQ(0.01244594f, mov.velY());
@@ -37,7 +37,7 @@ TEST(Movement, Constructor)
 TEST(Movement, ApplyFriction)
 {
     SimpleRandom sr(456);
-    WorldDimension wd(50, 40);
+    Dimension wd(50, 40);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(0.9989379f, mov.velX());
@@ -55,7 +55,7 @@ TEST(Movement, ApplyFriction)
 TEST(Movement, ApplyFrictionWithNullMass)
 {
     SimpleRandom sr(456);
-    WorldDimension wd(50, 40);
+    Dimension wd(50, 40);
     Movement mov(sr, wd);
 
     mov.applyFriction(7.2f, 0.0f);
@@ -65,7 +65,7 @@ TEST(Movement, ApplyFrictionWithNullMass)
 TEST(Movement, Move)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
@@ -81,7 +81,7 @@ TEST(Movement, Move)
 TEST(Movement, VelocityOnXNoParams)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
@@ -92,7 +92,7 @@ TEST(Movement, VelocityOnXNoParams)
 TEST(Movement, VelocityOnYNoParams)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
@@ -103,7 +103,7 @@ TEST(Movement, VelocityOnYNoParams)
 TEST(Movement, VelocityOnXOneParam)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
@@ -114,7 +114,7 @@ TEST(Movement, VelocityOnXOneParam)
 TEST(Movement, VelocityOnYOneParam)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
@@ -125,7 +125,7 @@ TEST(Movement, VelocityOnYOneParam)
 TEST(Movement, Dot)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
@@ -135,7 +135,7 @@ TEST(Movement, Dot)
 
 class MockPlate : public IPlate {
 public:
-    MockPlate(const Platec::Vector2D<float_t>& velocityUnitVector, float mass, const Platec::Point2D<float_t> & massCenter)
+    MockPlate(const Platec::vec2f& velocityUnitVector, float mass, const Platec::vec2f & massCenter)
         : _velocityUnitVector(velocityUnitVector),
           _mass(mass),
           _massCenter(massCenter),
@@ -146,15 +146,15 @@ public:
         if (_decImpulseDelta) delete _decImpulseDelta;
     }
 
-    Platec::Vector2D<float_t> velocityUnitVector() const {
+    Platec::vec2f velocityUnitVector() const {
         return _velocityUnitVector;
     }
 
-    void decImpulse(const Platec::Vector2D<float_t>& delta) {
-        _decImpulseDelta = new Platec::Vector2D<float_t>(delta);
+    void decImpulse(const Platec::vec2f& delta) {
+        _decImpulseDelta = new Platec::vec2f(delta);
     }
 
-    Platec::Vector2D<float_t> decImpulseDelta() {
+    Platec::vec2f decImpulseDelta() {
         if (_decImpulseDelta == NULL) throw runtime_error("(MockPlate::decImpulseDelta) Data not ready");
         return *_decImpulseDelta;
     }
@@ -163,31 +163,31 @@ public:
         return _mass;
     }
 
-    const Platec::Point2D<float_t> massCenter() const {
+    const Platec::vec2f massCenter() const {
         return _massCenter;
     }
 
 private:
-    Platec::Vector2D<float_t> _velocityUnitVector;
-    Platec::Vector2D<float_t>* _decImpulseDelta;
+    Platec::vec2f _velocityUnitVector;
+    Platec::vec2f* _decImpulseDelta;
     float _mass;
-    Platec::Point2D<float_t>  _massCenter;
+    Platec::vec2f  _massCenter;
 };
 
 TEST(Movement, Collide)
 {
     SimpleRandom sr(789890);
-    WorldDimension wd(500, 400);
+    Dimension wd(500, 400);
     Movement mov(sr, wd);
 
     EXPECT_FLOAT_EQ(-0.29389676f, mov.velX());
     EXPECT_FLOAT_EQ(-0.95583719f, mov.velY());
     EXPECT_FLOAT_EQ(1.0f, mov.getVelocity());
 
-    Mass thisMass(100.0, Platec::Point2D<float_t>(70.0, 90.0));
-    Platec::Vector2D<float_t> otherPlateVelocityUnitVector(0.0f, -1.0f);
+    Mass thisMass(100.0, Platec::vec2f(70.0, 90.0));
+    Platec::vec2f otherPlateVelocityUnitVector(0.0f, -1.0f);
     float otherPlateMass = 10000.0f;
-    Platec::Point2D<float_t>  otherPlateMassCenter(100.0f, 400.0f);
+    Platec::vec2f  otherPlateMassCenter(100.0f, 400.0f);
     MockPlate otherPlate(otherPlateVelocityUnitVector, otherPlateMass, otherPlateMassCenter);
     mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
 
