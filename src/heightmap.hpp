@@ -41,16 +41,16 @@ public:
         : data(width*height,0.0), dimension(width, height)  {
     }
 
-    Matrix(const std::vector<Value>& data,
+    Matrix(const std::vector<Value>& dataVal,
             const uint32_t width,const uint32_t height)
-        : data(data), dimension(width, height) {
+        : data(dataVal), dimension(width, height) {
     }
     
     Matrix(const Dimension& dim) : data(dim.getArea(),0.0), dimension(dim) {
     }
     
-    Matrix(const std::vector<Value>& data,const Dimension& dim)
-        : data(data), dimension(dim) {
+    Matrix(const std::vector<Value>& dataVal,const Dimension& dim)
+        : data(dataVal), dimension(dim) {
     }    
 
     void set_all(const Value value) {

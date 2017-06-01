@@ -44,7 +44,8 @@ void MassBuilder::addPoint(const Platec::vec2ui& point,
     mass += testCrust;
     // Update the center coordinates weighted by mass.
     //Explicit convertsion from int to float
-    center.shift(Platec::vec2f(point.x(), point.y()) * testCrust);
+    center.shift(Platec::vec2f(static_cast<float_t>(point.x()), 
+                               static_cast<float_t>(point.y())) * testCrust);
 }
 
 Mass MassBuilder::build() {

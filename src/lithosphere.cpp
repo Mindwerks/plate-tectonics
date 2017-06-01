@@ -146,6 +146,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
 
 lithosphere::~lithosphere() throw()
 {
+
     clearPlates();
     delete[] plates;
     plates = 0;
@@ -637,7 +638,7 @@ void lithosphere::update()
             if (erosion_period > 0 && iter_count % erosion_period == 0)
                 plates[i]->erode(CONTINENTAL_BASE);
 
-            plates[i]->move();
+            plates[i]->move(_worldDimension);
         }
 
         uint32_t oceanic_collisions = 0;

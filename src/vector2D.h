@@ -61,6 +61,10 @@ public:
         return Vector2D<T>(v.x() * f, v.y() * f);
     }
     
+    friend Vector2D<T> operator/(const Vector2D<T>& v, T f) {
+        return Vector2D<T>(v.x() / f, v.y() / f);
+    }    
+    
     void shift(const Vector2D<T>& delta) {
         x_value += delta.x();
         y_value += delta.y();

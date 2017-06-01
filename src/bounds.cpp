@@ -20,12 +20,12 @@
 #include "bounds.hpp"
 #include <utility>
 
-Bounds::Bounds(const Dimension& worldDimension,
-                const Platec::vec2f& position,
-               const Dimension& dimension)
-    : worldDimension(worldDimension),
-      position(position),
-      dimension(dimension) {
+Bounds::Bounds(const Dimension& worldDimensionVal,
+                const Platec::vec2f& positionVal,
+               const Dimension& dimensionVal)
+    : worldDimension(worldDimensionVal),
+      position(positionVal),
+      dimension(dimensionVal) {
     ASSERT(dimension.getWidth() <= worldDimension.getWidth() &&
            dimension.getHeight() <= worldDimension.getHeight(),
            "Bounds are larger than the world containing it");

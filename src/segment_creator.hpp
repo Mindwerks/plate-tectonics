@@ -25,6 +25,8 @@
 #include "dimension.h"
 #include "heightmap.hpp"
 
+static constexpr float CONT_BASE = 1.0; ///< Height limit that separates seas from dry land.
+
 typedef uint32_t ContinentId;
 
 class Bounds;
@@ -63,6 +65,7 @@ private:
     Bounds& _bounds;
     ISegments* _segments;
     HeightMap& map;
+
 };
 
 #endif

@@ -43,7 +43,7 @@ plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t 
     map(std::vector<float>(m, m+(w*h)), w, h),
     age_map(w, h),
     _worldDimension(worldDimension),
-    _movement(_randsource, worldDimension) {
+    _movement(_randsource) {
     const uint32_t plate_area = w * h;
 
     _bounds = new Bounds(worldDimension,
@@ -119,9 +119,9 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     //
     // Use of "this" pointer is not necessary, but it make code clearer.
     // Cursed be those who use "m_" prefix in member names! >(
-    float dot = _movement.dot(dx, dy);
-    dx -= _movement.velocityOnX(dot > 0);
-    dy -= _movement.velocityOnY(dot > 0);
+    float dot = _movement.dot(Platec::vec2f(dx,dy));
+    dx -= _movement.velocityOn(dot > 0).x();
+    dy -= _movement.velocityOn(dot > 0).y();
 
     float offset = (float)_randsource.next_double();
     float offset_sign = 2 * (int)(_randsource.next() % 2) - 1;
@@ -225,7 +225,7 @@ void plate::applyFriction(float deformed_mass)
 void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
 {
     if (!_mass.isNull() && coll_mass > 0) {
-        _movement.collide(_mass, p, wx, wy, coll_mass);
+        _movement.collide(_mass, p, coll_mass);
     }
 }
 
@@ -506,14 +506,14 @@ void plate::getMap(const float** c, const uint32_t** t) const
     }
 }
 
-void plate::move()
+void plate::move(const Dimension& worldDimension)
 {
-    _movement.move();
+    _movement.move(worldDimension);
 
     // Location modulations into range [0..world width/height[ are a have to!
     // If left undone SOMETHING WILL BREAK DOWN SOMEWHERE in the code!
 
-    _bounds->shift(Platec::Vector2D<float_t>(_movement.velocityOnX(), _movement.velocityOnY()));
+    _bounds->shift(_movement.velocityVector());
 }
 
 void plate::resetSegments()
@@ -584,8 +584,8 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_width  = _bounds->width();
         const uint32_t old_height = _bounds->height();
 
-        _bounds->shift(Platec::Vector2D<float_t>(-1.0*d_lft, -1.0*d_top));
-        _bounds->grow(Platec::Vector2D<uint32_t>(d_lft + d_rgt, d_top + d_btm));
+        _bounds->shift(Platec::vec2f(-1.0*d_lft, -1.0*d_top));
+        _bounds->grow(Platec::vec2ui(d_lft + d_rgt, d_top + d_btm));
 
         HeightMap tmph = HeightMap(_bounds->width(), _bounds->height());
         AgeMap    tmpa = AgeMap(_bounds->width(), _bounds->height());

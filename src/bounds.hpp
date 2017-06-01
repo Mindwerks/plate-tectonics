@@ -50,9 +50,9 @@ public:
     /// @param worldDimension dimension of the world containing the plate
     /// @param position Position of the top left corner of the plae
     /// @param dimension Dimension of the plate
-    Bounds(const Dimension& worldDimension,
-           const Platec::vec2f& position,
-           const Dimension& dimension);
+    Bounds(const Dimension& worldDimensionVal,
+           const Platec::vec2f& positionVal,
+           const Dimension& dimensionVal);
 
     /// Accept plate relative coordinates and return the index inside the plate.
     /// The index can be used with other classes to retrieve information about specific points.

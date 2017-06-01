@@ -171,7 +171,7 @@ public:
     /// @param  t   Adress of crust timestamp map is stored here.
     void getMap(const float** c, const uint32_t** t) const;
 
-    void move(); ///< Moves plate along it's trajectory.
+    void move(const Dimension& worldDimension); ///< Moves plate along it's trajectory.
 
     /// Clear any earlier continental crust partitions.
     ///
@@ -228,11 +228,11 @@ public:
 
     /// @Deprecated, use velocityUnitVector instead
     float getVelX() const throw() {
-        return _movement.velX();
+        return _movement.velocityVector().x();
     }
     /// @Deprecated, use velocityUnitVector instead
     float getVelY() const throw() {
-        return _movement.velY();
+        return _movement.velocityVector().y();
     }
 
     uint32_t getWidth() const throw() {
@@ -252,16 +252,15 @@ public:
     }
 
     void decImpulse(const Platec::vec2f& delta) {
-        _movement.decDx(delta.x());
-        _movement.decDy(delta.y());
+        _movement.decImpulse(delta);
     }
 
     // @Deprecated, use decImpulse instead
     void decDx(float delta) {
-        _movement.decDx(delta);
+        _movement.decImpulse(Platec::vec2f(delta, 0.0));
     }
     void decDy(float delta) {
-        _movement.decDy(delta);
+        _movement.decImpulse(Platec::vec2f(0.0, delta));
     }
 
     // visible for testing
