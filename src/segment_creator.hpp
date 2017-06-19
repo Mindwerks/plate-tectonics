@@ -20,6 +20,8 @@
 #ifndef SEGMENT_CREATOR_HPP
 #define SEGMENT_CREATOR_HPP
 
+#define NOMINMAX 
+
 #include <vector>
 #include "utils.hpp"
 #include "dimension.h"
@@ -35,19 +37,34 @@ class ISegments;
 class ISegmentCreator
 {
 public:
-    virtual ContinentId createSegment(uint32_t wx, uint32_t wy) const = 0;
+    virtual ContinentId createSegment(const Platec::vec2ui& point, 
+                                    const Dimension& worldDimension) = 0;
+};
+
+class Span
+{
+public:
+    uint32_t start;
+    uint32_t end;    
+    Span():start(0),end(0){}
+    Span(const uint32_t val):start(val),end(val){}
+    Span(const uint32_t start, const uint32_t end):start(start),end(end){}
+    
+    bool inside(const uint32_t val) const
+    {
+        return val >= start &&  val <= end;
+    }
+    
+    bool notValid()
+    {
+       return start > end;
+    }
 };
 
 class MySegmentCreator : public ISegmentCreator
 {
 public:
-    MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMap& map_,
-                     const Dimension& worldDimension)
-        : _bounds(bounds), _segments(segments), map(map_),
-          _worldDimension(worldDimension)
-    {
-
-    }
+    MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMap& map_);
     /// Separate a continent at (X, Y) to its own partition.
     ///
     /// Method analyzes the pixels 4-ways adjacent at the given location
@@ -56,14 +73,23 @@ public:
     /// @param	x	Offset on the local height map along X axis.
     /// @param	y	Offset on the local height map along Y axis.
     /// @return	ID of created segment on success, otherwise -1.
-    ContinentId createSegment(uint32_t wx, uint32_t wy) const throw();
+    ContinentId createSegment(const Platec::vec2ui& point, 
+                                    const Dimension& worldDimension);
 private:
-    uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID) const;
-    void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
-                   std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const;
-    const Dimension _worldDimension;
-    Bounds& _bounds;
-    ISegments* _segments;
+    uint32_t calcDirection(const Platec::vec2ui& point, const uint32_t origin_index, const uint32_t ID) const;
+    Span scanSpans( std::vector<Span>& spans_todo, std::vector<Span>& spans_done) const;
+    
+    const uint32_t getLeftIndex(const int32_t originIndex) const;
+    const uint32_t getRightIndex(const int32_t originIndex) const;
+    const uint32_t getTopIndex(const int32_t originIndex) const;
+    const uint32_t getBottomIndex(const int32_t originIndex) const;
+
+    const bool hasLowerID(const uint32_t index, const ContinentId ID) const;
+    const bool usablePoint(const uint32_t index, const ContinentId ID) const;
+    std::vector<Span> fillLineWithID(const Span& span, const uint32_t line,
+                                        const ContinentId ID ) ;
+    Bounds& bounds;
+    ISegments* segments;
     HeightMap& map;
 
 };

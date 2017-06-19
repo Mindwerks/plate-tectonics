@@ -24,7 +24,6 @@
 #include <cmath>     // sin, cos
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
-#include "rectangle.hpp"
 #include "segment_data.hpp"
 #include "utils.hpp"
 #include "bounds.hpp"
@@ -37,59 +36,49 @@ typedef uint32_t ContinentId;
 class ISegments
 {
 public:
-    virtual uint32_t area() = 0;
+    virtual const uint32_t getArea() const = 0;
     virtual void reset() = 0;
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) = 0;
-    virtual void shift(uint32_t d_lft, uint32_t d_top) = 0;
-    virtual uint32_t size() const = 0;
-    virtual const ISegmentData& operator[](uint32_t index) const = 0;
-    virtual ISegmentData& operator[](uint32_t index) = 0;
-    virtual void add(ISegmentData* data) = 0;
+    virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) = 0;
+    virtual void shift(const Platec::vec2ui& dir) = 0;
+    virtual const uint32_t size() const = 0;
+    virtual const ISegmentData& operator[](const uint32_t index) const = 0;
+    virtual ISegmentData& operator[](const uint32_t index) = 0;
+    virtual void add(const SegmentData& data) = 0;
     // Continent at the give world index
-    virtual const ContinentId& id(uint32_t index) const = 0;
+    virtual const ContinentId& id(const uint32_t index) const = 0;
     // Continent at the give world index
-    virtual ContinentId& id(uint32_t index) = 0;
-    virtual void setId(uint32_t index, ContinentId id) = 0;
-    virtual ContinentId getContinentAt(int x, int y) const = 0;
+    virtual ContinentId& id(const uint32_t index) = 0;
+    virtual void setId(const uint32_t index,const ContinentId id) = 0;
+    virtual ContinentId getContinentAt(const Platec::vec2ui& point,
+                                       const Dimension& worldDimension ) const = 0;
 };
 
 class Segments : public ISegments
 {
+private:
+    std::vector<SegmentData> seg_data; ///< Details of each crust segment.
+    std::vector<ContinentId> segment;              ///< Segment ID of each piece of continental crust.
+    uint32_t area; /// Should be the same as the bounds area of the plate
+    ISegmentCreator* segmentCreator;
+    Bounds* bounds;    
+    
 public:
     Segments(uint32_t plate_area);
-    ~Segments();
-    void setSegmentCreator(ISegmentCreator* segmentCreator)
-    {
-        _segmentCreator = segmentCreator;
-    }
-    void setBounds(Bounds* bounds)
-    {
-        _bounds = bounds;
-    }
-    uint32_t area();
-    void reset();
-    void reassign(uint32_t newarea, uint32_t* tmps);
-    void shift(uint32_t d_lft, uint32_t d_top);
-    uint32_t size() const;
-    const ISegmentData& operator[](uint32_t index) const;
-    ISegmentData& operator[](uint32_t index);
-    void add(ISegmentData* data);
-    const ContinentId& id(uint32_t index) const {
-        return segment[index];
-    }
-    ContinentId& id(uint32_t index) {
-        return segment[index];
-    }
-    void setId(uint32_t index, ContinentId id) {
-        segment[index] = id;
-    }
-    ContinentId getContinentAt(int x, int y) const;
-private:
-    std::vector<ISegmentData*> seg_data; ///< Details of each crust segment.
-    ContinentId* segment;              ///< Segment ID of each piece of continental crust.
-    int _area; /// Should be the same as the bounds area of the plate
-    ISegmentCreator* _segmentCreator;
-    Bounds* _bounds;
+    void setSegmentCreator(ISegmentCreator* segmentCreator);
+    void setBounds(Bounds* bounds);
+    const uint32_t getArea() const override;
+    void reset() override;
+    void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) override;
+    void shift(const Platec::vec2ui& dir) override;
+    const uint32_t size() const override;
+    const ISegmentData& operator[](const uint32_t index) const override; 
+    ISegmentData& operator[](const uint32_t index) override;
+    void add(const SegmentData& data) override;
+    const ContinentId& id(const uint32_t index) const override;
+    ContinentId& id(const uint32_t index) override;
+    void setId(const uint32_t index,const ContinentId id) override;
+    ContinentId getContinentAt(const Platec::vec2ui& point,
+                              const Dimension& worldDimension) const override;
 };
 
 #endif

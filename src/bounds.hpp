@@ -28,17 +28,17 @@
 
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
-#include "rectangle.hpp"
-#include "segment_data.hpp"
 #include "utils.hpp"
 #include "dimension.h"
 
 
+static constexpr uint32_t BAD_INDEX = (std::numeric_limits<uint32_t>::max)();
 
 /// Plate bounds.
 class Bounds
 {
     
+
 private:
     
     const Dimension worldDimension;

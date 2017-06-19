@@ -88,9 +88,9 @@ void createNoise(float* tmp, const Dimension& tmpDim, SimpleRandom randsource, b
             uint32_t side = tmpDim.getMax();
             side = nearest_pow(side)+1;
             float* squareTmp = new float[side*side];
-            memset(squareTmp, 0, sizeof(float)*side*side);
+            std::memset(squareTmp, 0, sizeof(float)*side*side);
             for (int y=0; y<tmpDim.getHeight(); y++) {
-                memcpy(&squareTmp[y*side],&tmp[y*tmpDim.getWidth()],sizeof(float)*tmpDim.getWidth());
+                std::memcpy(&squareTmp[y*side],&tmp[y*tmpDim.getWidth()],sizeof(float)*tmpDim.getWidth());
             }
             // to make it tileable we need to insert proper values in the padding area
             // 1) on the right of the valid area
@@ -136,10 +136,10 @@ void createNoise(float* tmp, const Dimension& tmpDim, SimpleRandom randsource, b
             delete[] deltas;
             delete[] squareTmp;
         }
-    } catch (const exception& e) {
+    } catch (const std::exception& e) {
         std::string msg = "Problem during lithosphere::createNoise, tmpDim+=";
         msg = msg + Platec::to_string(tmpDim.getWidth()) + "x" + Platec::to_string(tmpDim.getHeight()) + " ";
         msg = msg + e.what();
-        throw runtime_error(msg.c_str());
+        throw std::runtime_error(msg.c_str());
     }
 }

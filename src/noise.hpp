@@ -23,8 +23,10 @@
 #ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
 #undef __STRICT_ANSI__
 #endif
-#include "rectangle.hpp"
+#include <cstring>
 #include "simplerandom.hpp"
+#include "dimension.h"
+
 
 void createNoise(float* tmp, const Dimension& tmpDim, SimpleRandom _randsource, bool useSimplex = false);
 void createSlowNoise(float* tmp, const Dimension& tmpDim, SimpleRandom _randsource);

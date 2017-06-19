@@ -22,9 +22,9 @@
 
 #include <vector>
 #include <cmath>     // sin, cos
+#include <cstring>
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
-#include "rectangle.hpp"
 #include "segment_data.hpp"
 #include "utils.hpp"
 #include "bounds.hpp"
@@ -286,8 +286,8 @@ private:
 
     ISegmentData& getContinentAt(int x, int y);
     const ISegmentData& getContinentAt(int x, int y) const;
-    void findRiverSources(float lower_bound, vector<uint32_t>* sources);
-    void flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp);
+    void findRiverSources(float lower_bound, std::vector<uint32_t>* sources);
+    void flowRivers(float lower_bound, std::vector<uint32_t>* sources, HeightMap& tmp);
     uint32_t createSegment(uint32_t x, uint32_t y) throw();
 
     const Dimension _worldDimension;

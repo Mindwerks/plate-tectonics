@@ -31,7 +31,6 @@
 #endif
 #include <cmath>
 #include "heightmap.hpp"
-#include "rectangle.hpp"
 #include "simplerandom.hpp"
 
 using namespace std;

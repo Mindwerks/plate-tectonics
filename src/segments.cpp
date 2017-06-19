@@ -17,78 +17,64 @@
  *  License along with this library; if not, see http://www.gnu.org/licenses/
  *****************************************************************************/
 
+#include <cstring>
 #include "segments.hpp"
 
-Segments::Segments(uint32_t plate_area)
+
+Segments::Segments(uint32_t plate_area) : area(plate_area),
+        segment(std::vector<uint32_t>(plate_area,255))
 {
-    _area = plate_area;
-    segment = new uint32_t[plate_area];
-    memset(segment, 255, plate_area * sizeof(uint32_t));
 }
 
-Segments::~Segments()
+const uint32_t Segments::getArea() const
 {
-    delete[] segment;
-    segment = NULL;
-    _area = 0;
-    for (int i=0; i<seg_data.size(); i++) {
-        delete seg_data[i];
-    }
-}
-
-uint32_t Segments::area()
-{
-    return _area;
+    return area;
 }
 
 void Segments::reset()
 {
-    memset(segment, -1, sizeof(uint32_t) * _area);
     seg_data.clear();
+    std::vector<uint32_t>(area,-1).swap(segment);
 }
 
-void Segments::reassign(uint32_t newarea, uint32_t* tmps)
+void Segments::reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps)
 {
-    delete[] segment;
-    _area = newarea;
-    segment = tmps;
+    area = newarea;
+    segment = std::move(tmps);
 }
 
-void Segments::shift(uint32_t d_lft, uint32_t d_top)
+void Segments::shift(const Platec::vec2ui& dir)
 {
-    for (uint32_t s = 0; s < seg_data.size(); ++s)
+    for (auto& data : seg_data)
     {
-        seg_data[s]->shift(d_lft, d_top);
+        data.shift(dir);
     }
 }
 
-uint32_t Segments::size() const
+const uint32_t Segments::size() const
 {
-    return (uint32_t)seg_data.size();
+    return seg_data.size();
 }
 
 const ISegmentData& Segments::operator[](uint32_t index) const
 {
-    ASSERT(index < seg_data.size(), "Invalid index");
-    return *seg_data[index];
+    return seg_data.at(index);
 }
 
 ISegmentData& Segments::operator[](uint32_t index)
 {
-    ASSERT(index < seg_data.size(), "Invalid index");
-    return *seg_data[index];
+    return seg_data.at(index);
 }
 
-void Segments::add(ISegmentData* data) {
-    seg_data.push_back(data);
+void Segments::add(const SegmentData& data) {
+    seg_data.emplace_back(data);
 }
 
-ContinentId Segments::getContinentAt(int x, int y) const
+ContinentId Segments::getContinentAt(const Platec::vec2ui& point,
+                                       const Dimension& worldDimension) const
 {
-    ASSERT(_bounds, "Bounds not set");
-    ASSERT(_segmentCreator, "SegmentCreator not set");
 
-    auto index = _bounds->getValidMapIndex(Platec::vec2ui(x, y));
+    auto index = bounds->getValidMapIndex(point);
     ContinentId seg = id(index.first);
 
     if (seg >= size()) {
@@ -96,9 +82,30 @@ ContinentId Segments::getContinentAt(int x, int y) const
         // something that we would calculate anyway, so the segments are
         // a sort of cache
         //seg = const_cast<plate*>(this)->createSegment(lx, ly);
-        seg = _segmentCreator->createSegment(index.second.x(), index.second.y());
+        seg = segmentCreator->createSegment(index.second,worldDimension);
     }
 
     ASSERT(seg < size(), "Could not create segment");
     return seg;
 }
+
+const ContinentId& Segments::id(const uint32_t index) const {
+    return segment[index];
+}
+
+ContinentId& Segments::id(const uint32_t index) {
+    return segment.at(index);
+}
+
+void Segments::setBounds(Bounds* bounds) {
+    this->bounds = bounds;
+}
+
+void Segments::setId(const uint32_t index, const ContinentId id) {
+    segment.at(index) = id;
+}
+
+void Segments::setSegmentCreator(ISegmentCreator* segmentCreator) {
+    this->segmentCreator = segmentCreator;
+}
+

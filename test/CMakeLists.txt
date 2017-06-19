@@ -1,7 +1,7 @@
 add_subdirectory (googletest)
 
 
-add_executable(PlateTectonicsTests test_acceptance.cpp test_heightmap.cpp test_plate.cpp test_rectangle.cpp test_sqrdmd.cpp test_randomness.cpp test_portability.cpp test_bounds.cpp test_mass.cpp test_movement.cpp)
+add_executable(PlateTectonicsTests test_acceptance.cpp test_heightmap.cpp test_plate.cpp test_sqrdmd.cpp test_randomness.cpp test_portability.cpp test_bounds.cpp test_mass.cpp test_movement.cpp)
 
 add_test(NAME PlateTectonicsTests COMMAND PlateTectonicsTests)
 

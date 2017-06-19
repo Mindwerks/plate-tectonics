@@ -21,7 +21,6 @@
 #define PLATE_FUNCTIONS_HPP
 
 #include "utils.hpp"
-#include "rectangle.hpp"
 #include "heightmap.hpp"
 
 void calculateCrust(uint32_t x, uint32_t y, uint32_t index,

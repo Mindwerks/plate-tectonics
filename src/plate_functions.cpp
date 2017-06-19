@@ -65,13 +65,13 @@ void calculateCrust(
         e_crust = map[e] * (e_mask & (map[e] < map[index]));
         n_crust = map[n] * (n_mask & (map[n] < map[index]));
         s_crust = map[s] * (s_mask & (map[s] < map[index]));
-    } catch (const exception& e) {
-        string msg = "Problem during plate::calculateCrust (width: ";
+    } catch (const std::exception& e) {
+        std::string msg = "Problem during plate::calculateCrust (width: ";
         msg = msg + Platec::to_string(width)
               + ", height: " + Platec::to_string(height)
               + ", x: " + Platec::to_string(x)
               + ", y:" + Platec::to_string(y) + ") :"
               + e.what();
-        throw runtime_error(msg.c_str());
+        throw std::runtime_error(msg.c_str());
     }
 }

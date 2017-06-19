@@ -140,44 +140,44 @@ public:
     virtual void incArea() {
         _area++;
     }
-    virtual void enlarge_to_contain(uint32_t x, uint32_t y) {
-        _enlargePoint = new Platec::vec2ui(x, y);
+    virtual void enlarge_to_contain(const Platec::vec2ui& point) {
+        _enlargePoint = point;
     }
     virtual void markNonExistent() {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t dx, uint32_t dy) {
-        throw runtime_error("Not implemented");
+    virtual void shift(const Platec::vec2ui& shiftDir) {
+        throw std::runtime_error("Not implemented");
     }
 
     virtual uint32_t getLeft() const {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
     virtual uint32_t getRight() const {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
     virtual uint32_t getTop() const {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
     virtual uint32_t getBottom() const {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
     virtual bool isEmpty() const {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
-    virtual uint32_t area() const {
+    virtual uint32_t getArea() const {
         return _area;
     }
     virtual uint32_t collCount() const {
         return _collCount;
     }
-    Platec::vec2ui* enlargedPoint() {
+    Platec::vec2ui enlargedPoint() {
         return _enlargePoint;
     }
 private:
     uint32_t _collCount;
     uint32_t _area;
-    Platec::vec2ui* _enlargePoint;
+    Platec::vec2ui _enlargePoint = Platec::vec2ui(0,0);
 };
 
 class MockSegments : public ISegments
@@ -188,52 +188,53 @@ public:
     {
 
     }
-    virtual uint32_t area() {
-        throw runtime_error("Not implemented");
+    virtual const uint32_t getArea() const {
+        throw std::runtime_error("Not implemented");
     }
     virtual void reset() {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
-        throw runtime_error("Not implemented");
+    virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) {
+        throw std::runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
-        throw runtime_error("Not implemented");
+    virtual void shift(const Platec::vec2ui& dir) {
+        throw std::runtime_error("Not implemented");
     }
-    virtual uint32_t size() const {
-        throw runtime_error("(MockSegments::size) Not implemented");
+    virtual const uint32_t size() const {
+        throw std::runtime_error("(MockSegments::size) Not implemented");
     }
     virtual const ISegmentData& operator[](uint32_t index) const {
         if (index == _id) {
             return *_data;
         } else {
-            throw runtime_error("(MockSegments::operator[]) Unexpected call");
+            throw std::runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
     virtual ISegmentData& operator[](uint32_t index) {
         if (index == _id) {
             return *_data;
         } else {
-            throw runtime_error("(MockSegments::operator[]) Unexpected call");
+            throw std::runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual void add(ISegmentData* data) {
-        throw runtime_error("Not implemented");
+    virtual void add(const SegmentData& data) {
+        throw std::runtime_error("Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {
-        throw runtime_error("(MockSegments::id) Not implemented");
+        throw std::runtime_error("(MockSegments::id) Not implemented");
     }
     virtual ContinentId& id(uint32_t index) {
-        throw runtime_error("(MockSegments::id) Not implemented");
+        throw std::runtime_error("(MockSegments::id) Not implemented");
     }
     virtual void setId(uint32_t index, ContinentId id) {
-        throw runtime_error("Not implemented");
+        throw std::runtime_error("Not implemented");
     }
-    virtual ContinentId getContinentAt(int x, int y) const {
-        if (x==_p.x() && y==_p.y()) {
+    virtual ContinentId getContinentAt(const Platec::vec2ui& point,
+                                    const Dimension& worldDimension) const {
+        if (_p == point) {
             return _id;
         } else {
-            throw runtime_error("(MockSegments::getContinentAt) Unexpected call");
+            throw std::runtime_error("(MockSegments::getContinentAt) Unexpected call");
         }
     }
 private:
@@ -266,51 +267,51 @@ public:
     {
 
     }
-    virtual uint32_t area() {
-        throw runtime_error("(MockSegments2::area) Not implemented");
+    virtual const uint32_t getArea() const{
+        throw std::runtime_error("(MockSegments2::area) Not implemented");
     }
     virtual void reset() {
-        throw runtime_error("(MockSegments2::reset) Not implemented");
+        throw std::runtime_error("(MockSegments2::reset) Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
-        throw runtime_error("(MockSegments2::reassign) Not implemented");
+    virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) {
+        throw std::runtime_error("(MockSegments2::reassign) Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
-        throw runtime_error("(MockSegments2::shift) Not implemented");
+    virtual void shift(const Platec::vec2ui& dir) {
+        throw std::runtime_error("(MockSegments2::shift) Not implemented");
     }
-    virtual uint32_t size() const {
-        throw runtime_error("(MockSegments2::size) Not implemented");
+    virtual const uint32_t size() const {
+        throw std::runtime_error("(MockSegments2::size) Not implemented");
     }
     virtual const ISegmentData& operator[](uint32_t index) const {
         if (index == _id) {
             return *_data;
         } else {
-            throw runtime_error("(MockSegments2::operator[]) Unexpected call");
+            throw std::runtime_error("(MockSegments2::operator[]) Unexpected call");
         }
     }
     virtual ISegmentData& operator[](uint32_t id) {
         if (id == _id) {
             return *_data;
         } else {
-            throw runtime_error(string("(MockSegments2::operator[]) Unexpected call with id "
+            throw std::runtime_error(std::string("(MockSegments2::operator[]) Unexpected call with id "
                                        + Platec::to_string(id)));
         }
     }
-    virtual void add(ISegmentData* data) {
-        throw runtime_error("(MockSegments2::add) Not implemented");
+    virtual void add(const SegmentData& data) {
+        throw std::runtime_error("(MockSegments2::add) Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {
         if (_index == index) return _id;
-        throw runtime_error(
-            string("(MockSegments2::id) Unexpected value ")
+        throw std::runtime_error(
+            std::string("(MockSegments2::id) Unexpected value ")
             + Platec::to_string(index)
             + " expected was "
             + Platec::to_string(_index));
     }
     virtual ContinentId& id(uint32_t index) {
         if (_index == index) return _id;
-        throw runtime_error(
-            string("(MockSegments2::id) Unexpected value ")
+        throw std::runtime_error(
+            std::string("(MockSegments2::id) Unexpected value ")
             + Platec::to_string(index)
             + " expected was "
             + Platec::to_string(_index));
@@ -319,15 +320,16 @@ public:
         if (_index == index) {
             _id = id;
         } else {
-            throw runtime_error(string("(MockSegments2::setId) Unexpected call with index ")
+            throw std::runtime_error(std::string("(MockSegments2::setId) Unexpected call with index ")
                                 + Platec::to_string(index));
         }
     }
-    virtual ContinentId getContinentAt(int x, int y) const {
-        if (x==_p.x() && y==_p.y()) {
+    virtual ContinentId getContinentAt(const Platec::vec2ui& point,
+                                    const Dimension& worldDimension) const {
+        if (_p == point) {
             return _id;
         } else {
-            throw runtime_error("(MockSegments2::getContinentAt) Unexpected call");
+            throw std::runtime_error("(MockSegments2::getContinentAt) Unexpected call");
         }
     }
 private:
@@ -382,15 +384,16 @@ TEST(Plate, addCrustByCollision)
     EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);
 
     // The activeContinent should now owns the point
-    EXPECT_EQ(99, mSegments->getContinentAt(worldPointX, worldPointY));
+    EXPECT_EQ(99, mSegments->getContinentAt(Platec::vec2ui(worldPointX, worldPointY),
+                                                wd));
 
     // The activeContinent should contains the point
-    ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
-    EXPECT_EQ(70, mSeg->enlargedPoint()->x());
-    EXPECT_EQ(50, mSeg->enlargedPoint()->y());
+ //   ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
+    EXPECT_EQ(70, mSeg->enlargedPoint().x());
+    EXPECT_EQ(50, mSeg->enlargedPoint().y());
 
     // The activeContinent are should be increased
-    EXPECT_EQ(790, mSeg->area());
+    EXPECT_EQ(790, mSeg->getArea());
 }
 
 TEST(Plate, addCrustBySubduction)
