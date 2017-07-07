@@ -102,13 +102,13 @@ public:
      */
     void createPlates();
 
-    uint32_t getCycleCount() const throw() {
+    uint32_t getCycleCount() const {
         return cycle_count;
     }
-    uint32_t getIterationCount() const throw() {
+    uint32_t getIterationCount() const {
         return iter_count;
     }
-    const Dimension& getWorldDimension() const throw() {
+    const Dimension& getWorldDimension() const {
         return _worldDimension;
     }
     uint32_t getPlateCount() const throw(); ///< Return number of plates.
@@ -135,7 +135,7 @@ private:
     void removeEmptyPlates();
     void resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
                                const uint32_t& x_mod, const uint32_t& y_mod,
-                               const float*& this_map, const uint32_t*& this_age, uint32_t& continental_collisions);
+                               const HeightMap& this_map, const AgeMap& this_age);
 
     /**
      * Container for collision details between two plates.
@@ -156,8 +156,7 @@ private:
     {
     public:
         plateCollision(uint32_t _index, uint32_t x, uint32_t y, float z)
-        throw() : index(_index), wx(x), wy(y), crust(z) {
-            ASSERT(crust >= 0, "Crust must be a positive value");
+        : index(_index), wx(x), wy(y), crust(std::max(z,0.f)) {
         }
         uint32_t index; ///< Index of the other plate involved in the event.
         uint32_t wx, wy; ///< Coordinates of collision in world space.

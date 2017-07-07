@@ -132,7 +132,7 @@ float_t Movement::momentum(const Mass& mass) const {
 }
 
 void Movement::collide(const IMass& thisMass,
-                       IPlate& otherPlate, float_t coll_mass) {
+                       IPlate& otherPlate,const float_t coll_mass) {
     const auto coeff_rest = 0.f; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
     const auto massCentersDistance = otherPlate.massCenter() - thisMass.massCenter();

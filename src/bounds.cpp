@@ -144,6 +144,10 @@ std::pair<uint32_t, Platec::vec2ui>
     }
 }
 
+Dimension Bounds::getDimension() const {
+    return dimension;
+}
+
 std::pair<uint32_t, Platec::vec2ui>
         Bounds::getValidMapIndex(const Platec::vec2ui& p) const {
     auto res = getMapIndex(p);

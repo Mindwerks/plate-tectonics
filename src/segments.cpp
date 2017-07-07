@@ -56,12 +56,12 @@ const uint32_t Segments::size() const
     return seg_data.size();
 }
 
-const ISegmentData& Segments::operator[](uint32_t index) const
+const ISegmentData& Segments::getSegmentData(uint32_t index) const
 {
     return seg_data.at(index);
 }
 
-ISegmentData& Segments::operator[](uint32_t index)
+ISegmentData& Segments::getSegmentData(uint32_t index)
 {
     return seg_data.at(index);
 }
@@ -89,6 +89,10 @@ ContinentId Segments::getContinentAt(const Platec::vec2ui& point,
     return seg;
 }
 
+const std::vector<ContinentId>& Segments::getSegment() const {
+    return segment;
+}
+
 const ContinentId& Segments::id(const uint32_t index) const {
     return segment[index];
 }
@@ -97,7 +101,7 @@ ContinentId& Segments::id(const uint32_t index) {
     return segment.at(index);
 }
 
-void Segments::setBounds(Bounds* bounds) {
+void Segments::setBounds(const std::shared_ptr<Bounds>& bounds) {
     this->bounds = bounds;
 }
 
@@ -105,7 +109,7 @@ void Segments::setId(const uint32_t index, const ContinentId id) {
     segment.at(index) = id;
 }
 
-void Segments::setSegmentCreator(ISegmentCreator* segmentCreator) {
+void Segments::setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator) {
     this->segmentCreator = segmentCreator;
 }
 

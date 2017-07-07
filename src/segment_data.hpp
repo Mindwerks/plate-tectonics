@@ -43,6 +43,8 @@ public:
     virtual void enlarge_to_contain(const Platec::vec2ui& point) = 0;
     virtual void markNonExistent() = 0;
     virtual void shift(const Platec::vec2ui& shiftDir) = 0;
+    virtual Platec::vec2ui getPointLeftTop() const = 0;
+    
 };
 
 /// Container for details about a segmented crust area on this plate.
@@ -62,7 +64,7 @@ public:
     uint32_t getLeft() const override;
     uint32_t getRight() const override;
     uint32_t getTop() const override;
-    uint32_t getBottom() const;
+    uint32_t getBottom() const override;
     void shift(const Platec::vec2ui& shiftDir) override;
     void setLeft(const uint32_t v);
     void setRight(const uint32_t v);
@@ -75,6 +77,8 @@ public:
     uint32_t getArea() const override;
     uint32_t collCount() const override;
     void markNonExistent() override;
+    Platec::vec2ui getPointLeftTop() const;
+    Platec::vec2ui getPointRightBottom() const;
 
 };
 

@@ -125,6 +125,7 @@ public:
     /// @return             Offset in height map    
     std::pair<uint32_t, Platec::vec2ui> getMapIndex
             (const Platec::vec2ui& p) const;
+    Dimension getDimension() const;
 
 };
 

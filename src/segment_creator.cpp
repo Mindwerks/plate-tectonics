@@ -24,7 +24,7 @@
 #include "segments.hpp"
 #include "bounds.hpp"
 
-MySegmentCreator::MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMap& map_)
+MySegmentCreator::MySegmentCreator(std::shared_ptr<Bounds>  bounds, std::shared_ptr<ISegments> segments, HeightMap& map_)
 : bounds(bounds), segments(segments), map(map_) {
 
 }
@@ -32,7 +32,7 @@ MySegmentCreator::MySegmentCreator(Bounds& bounds, ISegments* segments, HeightMa
 
 uint32_t MySegmentCreator::calcDirection(const Platec::vec2ui& point, const uint32_t origin_index, const uint32_t ID) const
 {
-    if(bounds.isInLimits(point))
+    if(bounds->isInLimits(point))
     {
         return ID;
     }
@@ -71,7 +71,7 @@ Span MySegmentCreator::scanSpans(std::vector<Span>& spans_todo, std::vector<Span
                 span.end = getLeftIndex(tmpSpan.start);
         }
 
-        if(span.end >= bounds.width())
+        if(span.end >= bounds->width())
         {
             span.start = std::numeric_limits<uint32_t>::max();
             return span;
@@ -83,9 +83,9 @@ Span MySegmentCreator::scanSpans(std::vector<Span>& spans_todo, std::vector<Span
 ContinentId MySegmentCreator::createSegment(const Platec::vec2ui& point, 
                                     const Dimension& worldDimension) 
 {
-    const uint32_t bounds_width = bounds.width();
-    const uint32_t bounds_height = bounds.height();
-    const uint32_t origin_index = bounds.index(point);
+    const uint32_t bounds_width = bounds->width();
+    const uint32_t bounds_height = bounds->height();
+    const uint32_t origin_index = bounds->index(point);
     const uint32_t ID = segments->size();
 
     if (segments->id(origin_index) < ID) {
@@ -97,9 +97,9 @@ ContinentId MySegmentCreator::createSegment(const Platec::vec2ui& point,
     if (nbour_id < ID)
     {
         segments->setId(origin_index, nbour_id);
-        (*segments)[nbour_id].incArea();
+        segments->getSegmentData(nbour_id).incArea();
 
-        (*segments)[nbour_id].enlarge_to_contain(point);
+        segments->getSegmentData(nbour_id).enlarge_to_contain(point);
 
         return nbour_id;
     }
@@ -215,7 +215,7 @@ ContinentId MySegmentCreator::createSegment(const Platec::vec2ui& point,
 }
 
 const uint32_t MySegmentCreator::getBottomIndex(const int32_t originIndex) const {
-    return originIndex + bounds.width();
+    return originIndex + bounds->width();
 }
 
 const uint32_t MySegmentCreator::getLeftIndex(const int32_t originIndex) const {
@@ -227,7 +227,7 @@ const uint32_t MySegmentCreator::getRightIndex(const int32_t originIndex) const 
 }
 
 const uint32_t MySegmentCreator::getTopIndex(const int32_t originIndex) const {
-    return originIndex - bounds.width();
+    return originIndex - bounds->width();
 }
 
 const bool MySegmentCreator::hasLowerID(const uint32_t index, const ContinentId ID) const {

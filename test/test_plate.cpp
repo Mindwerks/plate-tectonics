@@ -75,14 +75,18 @@ TEST(CreatePlate, SquareDoesNotExplode)
 {
     float *heightmap = new float[40000]; // 200 x 200
     initializeHeightmapWithNoise(678, heightmap, Dimension(200, 200));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(200, 200));
+    
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+40000),200,200);
+    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(200, 200));
 }
 
 TEST(CreatePlate, NotSquareDoesNotExplode)
 {
     float *heightmap = new float[80000]; // 200 x 400
     initializeHeightmapWithNoise(678, heightmap, Dimension(200, 400));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(200, 400));
+    
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+80000),200,400);
+    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(200, 400));
 }
 
 // TODO test also when plate is large as world
@@ -90,40 +94,42 @@ TEST(Plate, calculateCrust)
 {
     float *heightmap = new float[256 * 128];
     initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(256, 128));
+    
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
+    Dimension dim = Dimension(100, 3);
+    plate p = plate(123, m, dim,Platec::vec2f( 50, 23), 18, Dimension(256, 128));
     uint32_t x, y, index;
-    float w_crust, e_crust, n_crust, s_crust;
-    uint32_t w, e, n, s;
+
 
     // top left corner
     x = 0;
     y = 0;
     index = 1;
-    p.calculateCrust(x,y,index,w_crust,e_crust,n_crust,s_crust,w,e,n,s);
-    EXPECT_EQ(0, w);
-    EXPECT_EQ(1, e);
-    EXPECT_EQ(0, n);
-    EXPECT_EQ(100, s);
+    surroundingPoints neighbors = p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
+    EXPECT_EQ(0,   neighbors.westIndex );
+    EXPECT_EQ(1,   neighbors.eastIndex );
+    EXPECT_EQ(0,   neighbors.northIndex);
+    EXPECT_EQ(100, neighbors.southIndex);
 
     // bottom right corner
     x = 99;
     y = 2;
     index = 1;
-    p.calculateCrust(x,y,index,w_crust,e_crust,n_crust,s_crust,w,e,n,s);
-    EXPECT_EQ(298, w);
-    EXPECT_EQ(200, e);
-    EXPECT_EQ(199, n);
-    EXPECT_EQ(99, s);
+    neighbors =  p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
+    EXPECT_EQ(298, neighbors.westIndex );
+    EXPECT_EQ(0, neighbors.eastIndex );
+    EXPECT_EQ(199, neighbors.northIndex);
+    EXPECT_EQ(0,  neighbors.southIndex);
 
     // point in the middle
     x = 50;
     y = 1;
     index = 1;
-    p.calculateCrust(x,y,index,w_crust,e_crust,n_crust,s_crust,w,e,n,s);
-    EXPECT_EQ(149, w);
-    EXPECT_EQ(151, e);
-    EXPECT_EQ(50, n);
-    EXPECT_EQ(250, s);
+    neighbors =  p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
+    EXPECT_EQ(149, neighbors.westIndex );
+    EXPECT_EQ(151, neighbors.eastIndex );
+    EXPECT_EQ(50,  neighbors.northIndex);
+    EXPECT_EQ(250, neighbors.southIndex);
 }
 
 class MockSegmentData : public ISegmentData
@@ -174,6 +180,12 @@ public:
     Platec::vec2ui enlargedPoint() {
         return _enlargePoint;
     }
+   Platec::vec2ui getPointLeftTop() const override
+   {
+        throw std::runtime_error("Not implemented");       
+   }
+ 
+
 private:
     uint32_t _collCount;
     uint32_t _area;
@@ -203,14 +215,14 @@ public:
     virtual const uint32_t size() const {
         throw std::runtime_error("(MockSegments::size) Not implemented");
     }
-    virtual const ISegmentData& operator[](uint32_t index) const {
+    virtual const ISegmentData& getSegmentData(uint32_t index) const {
         if (index == _id) {
             return *_data;
         } else {
             throw std::runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual ISegmentData& operator[](uint32_t index) {
+    virtual ISegmentData& getSegmentData(uint32_t index) {
         if (index == _id) {
             return *_data;
         } else {
@@ -237,6 +249,8 @@ public:
             throw std::runtime_error("(MockSegments::getContinentAt) Unexpected call");
         }
     }
+   
+
 private:
     Platec::vec2ui _p;
     ContinentId _id;
@@ -247,13 +261,15 @@ TEST(Plate, addCollision)
 {
     float *heightmap = new float[256 * 128];
     initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
-    plate p = plate(123, heightmap, 100, 3, 50, 23, 18, Dimension(256, 128));
+    
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
+    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(256, 128));
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments* mSegments = new MockSegments(Platec::vec2ui(123, 78), 99, mSeg);
+    std::shared_ptr<MockSegments> mSegments = std::make_shared<MockSegments>(Platec::vec2ui(123, 78), 99, mSeg);
     p.injectSegments(mSegments);
 
-    uint32_t area = p.addCollision(123, 78);
+    uint32_t area = p.addCollision(Platec::vec2ui(123, 78));
 
     EXPECT_EQ(789, area);
     EXPECT_EQ(8, mSeg->collCount());
@@ -282,14 +298,14 @@ public:
     virtual const uint32_t size() const {
         throw std::runtime_error("(MockSegments2::size) Not implemented");
     }
-    virtual const ISegmentData& operator[](uint32_t index) const {
+    virtual const ISegmentData& getSegmentData(uint32_t index) const {
         if (index == _id) {
             return *_data;
         } else {
             throw std::runtime_error("(MockSegments2::operator[]) Unexpected call");
         }
     }
-    virtual ISegmentData& operator[](uint32_t id) {
+    virtual ISegmentData& getSegmentData(uint32_t id) {
         if (id == _id) {
             return *_data;
         } else {
@@ -332,6 +348,8 @@ public:
             throw std::runtime_error("(MockSegments2::getContinentAt) Unexpected call");
         }
     }
+    
+
 private:
     Platec::vec2ui _p;
     ContinentId _id;
@@ -349,7 +367,8 @@ TEST(Plate, addCrustByCollision)
     initializeHeightmapWithNoise(1, heightmap, wd);
 
     // Suppose the plate start at 170, 70 and ends at 250, 125
-    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, Dimension(256, 128));
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
+    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18, Dimension(256, 128));
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -359,28 +378,27 @@ TEST(Plate, addCrustByCollision)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    std::shared_ptr<MockSegments2> mSegments = std::make_shared<MockSegments2>(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
-    uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
-    float crustIn_240_120before = p.getCrust(worldPointX, worldPointY);
+    uint32_t timestampIn_240_120before = p.getCrustTimestamp(Platec::vec2ui(worldPointX, worldPointY));
+    float crustIn_240_120before = p.getCrust(Platec::vec2ui(worldPointX, worldPointY));
 
     // Assumptions:
     // the point is in the plate bounds
 
-    p.addCrustByCollision(
-        worldPointX, worldPointY, // Point of impact
+    p.addCrustByCollision(Platec::vec2ui(worldPointX, worldPointY), // Point of impact
         0.8f, // Amount of crust
         123, // Current age
         99); // Active continent
 
     // Age of the point should be updated
-    uint32_t timestampIn_240_120after = p.getCrustTimestamp(worldPointX, worldPointY);
+    uint32_t timestampIn_240_120after = p.getCrustTimestamp(Platec::vec2ui(worldPointX, worldPointY));
     ASSERT_EQ(true, timestampIn_240_120after > timestampIn_240_120before);
     ASSERT_EQ(true, timestampIn_240_120after < 123 );
 
     // Crust should be increased
-    float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
+    float crustIn_240_120after = p.getCrust(Platec::vec2ui(worldPointX, worldPointY));
     EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);
 
     // The activeContinent should now owns the point
@@ -404,8 +422,9 @@ TEST(Plate, addCrustBySubduction)
     float *heightmap = new float[worldWidth * worldHeight];
     initializeHeightmapWithNoise(1, heightmap, Dimension(worldWidth, worldHeight));
 
+    HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
+    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18, Dimension(256, 128));
     // Suppose the plate start at 170, 70 and ends at 250, 125
-    plate p = plate(123, heightmap, 80, 55, 170, 70, 18, Dimension(256, 128));
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -415,11 +434,11 @@ TEST(Plate, addCrustBySubduction)
     uint32_t indexInPlate = platePointY * 80 + platePointX;
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
-    MockSegments2* mSegments = new MockSegments2(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
+    std::shared_ptr<MockSegments2>  mSegments = std::make_shared<MockSegments2>(Platec::vec2ui(worldPointX, worldPointY), 99, mSeg, indexInPlate);
     p.injectSegments(mSegments);
 
-    uint32_t timestampIn_240_120before = p.getCrustTimestamp(worldPointX, worldPointY);
-    float crustIn_240_120before = p.getCrust(worldPointX, worldPointY);
+    uint32_t timestampIn_240_120before = p.getCrustTimestamp(Platec::vec2ui(worldPointX, worldPointY));
+    float crustIn_240_120before = p.getCrust(Platec::vec2ui(worldPointX, worldPointY));
 
     float massBefore = p.getMass();
 
@@ -428,13 +447,13 @@ TEST(Plate, addCrustBySubduction)
     float dx = 0.0f;
     float dy = 0.0f;
     p.addCrustBySubduction(
-        worldPointX, worldPointY, // Point of impact
+        Platec::vec2ui(worldPointX, worldPointY), // Point of impact
         0.8f, // Amount of crust
         123, // Current age
-        dx, dy); // Direction of the subducting plate
+        Platec::vec2f(dx, dy)); // Direction of the subducting plate
 
     // Crust should be increased
-    float crustIn_240_120after = p.getCrust(worldPointX, worldPointY);
+    float crustIn_240_120after = p.getCrust(Platec::vec2ui(worldPointX, worldPointY));
     EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);
 
     // The mass should be increased
@@ -442,7 +461,7 @@ TEST(Plate, addCrustBySubduction)
     EXPECT_EQ(massBefore + 0.8f, massAfter);
 
     // Age of the point should be updated
-    uint32_t timestampIn_240_120after = p.getCrustTimestamp(worldPointX, worldPointY);
+    uint32_t timestampIn_240_120after = p.getCrustTimestamp(Platec::vec2ui(worldPointX, worldPointY));
     ASSERT_EQ(true, timestampIn_240_120after > timestampIn_240_120before);
     ASSERT_EQ(true, timestampIn_240_120after < 123 );
 }

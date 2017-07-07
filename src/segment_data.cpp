@@ -120,3 +120,11 @@ void SegmentData::markNonExistent()
 {
     area = 0;
 }
+
+Platec::vec2ui SegmentData::getPointLeftTop() const {
+    return pointLeftTop;
+}
+
+Platec::vec2ui SegmentData::getPointRightBottom() const {
+    return pointRightBottom;
+}

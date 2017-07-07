@@ -113,6 +113,9 @@ public:
     const std::vector<Value>& getData() const {
         return data;
     }
+    std::vector<Value>& getData() {
+        return data;
+    }
 };
 
 typedef Matrix<float_t> HeightMap;

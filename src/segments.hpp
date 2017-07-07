@@ -41,8 +41,8 @@ public:
     virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) = 0;
     virtual void shift(const Platec::vec2ui& dir) = 0;
     virtual const uint32_t size() const = 0;
-    virtual const ISegmentData& operator[](const uint32_t index) const = 0;
-    virtual ISegmentData& operator[](const uint32_t index) = 0;
+    virtual const ISegmentData& getSegmentData(const uint32_t index) const = 0;
+    virtual ISegmentData& getSegmentData(const uint32_t index) = 0;
     virtual void add(const SegmentData& data) = 0;
     // Continent at the give world index
     virtual const ContinentId& id(const uint32_t index) const = 0;
@@ -59,26 +59,27 @@ private:
     std::vector<SegmentData> seg_data; ///< Details of each crust segment.
     std::vector<ContinentId> segment;              ///< Segment ID of each piece of continental crust.
     uint32_t area; /// Should be the same as the bounds area of the plate
-    ISegmentCreator* segmentCreator;
-    Bounds* bounds;    
+    std::shared_ptr<ISegmentCreator> segmentCreator;
+    std::shared_ptr<Bounds> bounds;    
     
 public:
     Segments(uint32_t plate_area);
-    void setSegmentCreator(ISegmentCreator* segmentCreator);
-    void setBounds(Bounds* bounds);
+    void setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator);
+    void setBounds(const std::shared_ptr<Bounds>&  bounds);
     const uint32_t getArea() const override;
     void reset() override;
     void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) override;
     void shift(const Platec::vec2ui& dir) override;
     const uint32_t size() const override;
-    const ISegmentData& operator[](const uint32_t index) const override; 
-    ISegmentData& operator[](const uint32_t index) override;
+    const ISegmentData& getSegmentData(const uint32_t index) const override; 
+    ISegmentData& getSegmentData(const uint32_t index) override;
     void add(const SegmentData& data) override;
     const ContinentId& id(const uint32_t index) const override;
     ContinentId& id(const uint32_t index) override;
     void setId(const uint32_t index,const ContinentId id) override;
     ContinentId getContinentAt(const Platec::vec2ui& point,
                               const Dimension& worldDimension) const override;
+    const std::vector<ContinentId>& getSegment() const;
 };
 
 #endif

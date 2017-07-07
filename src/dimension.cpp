@@ -18,6 +18,10 @@ Dimension::Dimension(uint32_t width, uint32_t height) :
 dim(width, height) {
 }
 
+Platec::vec2ui Dimension::getDimensions() const {
+    return dim;
+}
+
 void Dimension::grow(Platec::Vector2D<uint32_t> growSize) {
     dim = dim+growSize;
 }
