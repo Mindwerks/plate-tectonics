@@ -133,9 +133,8 @@ private:
     void clearPlates();
     void growPlates();
     void removeEmptyPlates();
-    void resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
-                               const uint32_t& x_mod, const uint32_t& y_mod,
-                               const HeightMap& this_map, const AgeMap& this_age);
+    void resolveJuxtapositions(const uint32_t i, const uint32_t ageMapValue, const float_t mapValue, 
+                                        const uint32_t k,const Platec::vec2ui& p);
 
     /**
      * Container for collision details between two plates.
@@ -155,12 +154,12 @@ private:
     class plateCollision
     {
     public:
-        plateCollision(uint32_t _index, uint32_t x, uint32_t y, float z)
-        : index(_index), wx(x), wy(y), crust(std::max(z,0.f)) {
+        plateCollision(const uint32_t _index, const Platec::vec2ui& _point,const  float_t z)
+        : index(_index), point(_point), crust(std::max(z,0.f)) {
         }
-        uint32_t index; ///< Index of the other plate involved in the event.
-        uint32_t wx, wy; ///< Coordinates of collision in world space.
-        float crust; ///< Amount of crust that will deform/subduct.
+        const uint32_t index; ///< Index of the other plate involved in the event.
+        const Platec::vec2ui point; ///< Coordinates of collision in world space.
+        const float_t crust; ///< Amount of crust that will deform/subduct.
     };
 
     void restart(); //< Replace plates with a new population.

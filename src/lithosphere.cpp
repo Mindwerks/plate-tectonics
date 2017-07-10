@@ -353,50 +353,49 @@ bool lithosphere::isFinished() const
 
 // At least two plates are at same location.
 // Move some crust from the SMALLER plate onto LARGER one.
-void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
-                                        const uint32_t& x_mod, const uint32_t& y_mod,
-                                        const HeightMap& this_map, const AgeMap& this_age)
+void lithosphere::resolveJuxtapositions(const uint32_t i, const uint32_t ageMapValue, const float_t mapValue, 
+                                        const uint32_t k,const Platec::vec2ui& p)
 {
     ASSERT(i<num_plates, "Given invalid plate index");
+    
 
     // Record collisions to both plates. This also creates
     // continent segment at the collided location to plates.
-    uint32_t this_area = plates[i]->addCollision(Platec::vec2ui(x_mod, y_mod));
-    uint32_t prev_area = plates[imap[k]]->addCollision(Platec::vec2ui(x_mod, y_mod));
+    uint32_t this_area = plates[i]->addCollision(p);
+    uint32_t prev_area = plates[imap[k]]->addCollision(p);
 
     if (this_area < prev_area)
     {
-        plateCollision coll(imap[k], x_mod, y_mod,
-                            this_map[j] * folding_ratio);
+        plateCollision coll(imap[k],p,
+                            mapValue * folding_ratio);
 
         // Give some...
         hmap[k] += coll.crust;
-        plates[imap[k]]->setCrust(Platec::vec2ui(x_mod, y_mod), hmap[k],
-                                  this_age[j]);
+        plates[imap[k]]->setCrust(p, hmap[k], ageMapValue);
 
         // And take some.
-        plates[i]->setCrust(Platec::vec2ui(x_mod, y_mod), this_map[j] *
-                            (1.0 - folding_ratio), this_age[j]);
+        plates[i]->setCrust(p, mapValue *
+                            (1.0 - folding_ratio), ageMapValue);
 
         // Add collision to the earlier plate's list.
         collisions[i].push_back(coll);
     }
     else
     {
-        plateCollision coll(i, x_mod, y_mod,
+        plateCollision coll(i, p,
                             hmap[k] * folding_ratio);
 
-        plates[i]->setCrust(Platec::vec2ui(x_mod, y_mod),
-                            this_map[j]+coll.crust, amap[k]);
+        plates[i]->setCrust(p,
+                            mapValue+coll.crust, amap[k]);
 
-        plates[imap[k]]->setCrust(Platec::vec2ui(x_mod, y_mod), hmap[k]
+        plates[imap[k]]->setCrust(p, hmap[k]
                                   * (1.0 - folding_ratio), amap[k]);
 
         collisions[imap[k]].push_back(coll);
         // Give the location to the larger plate.
-        hmap[k] = this_map[j];
+        hmap[k] = mapValue;
         imap[k] = i;
-        amap[k] = this_age[j];
+        amap[k] = ageMapValue;
     }
 }
 
@@ -478,7 +477,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                                            CONTINENTAL_BASE;
 
                     // Save collision to the receiving plate's list.
-                    plateCollision coll(i, x_mod, y_mod, sediment);
+                    plateCollision coll(i, Platec::vec2ui(x_mod, y_mod), sediment);
                     subductions[imap[k]].push_back(coll);
                     ++oceanic_collisions;
 
@@ -497,7 +496,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                                            (CONTINENTAL_BASE - hmap[k]) /
                                            CONTINENTAL_BASE;
 
-                    plateCollision coll(imap[k], x_mod, y_mod, sediment);
+                    plateCollision coll(imap[k], Platec::vec2ui(x_mod, y_mod), sediment);
                     subductions[i].push_back(coll);
                     ++oceanic_collisions;
 
@@ -514,8 +513,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                     }
                 }
 
-                resolveJuxtapositions(i, j, k, x_mod, y_mod,
-                                      this_map, this_age);
+                resolveJuxtapositions(i, this_age[j],this_map[j], k, Platec::vec2ui(x_mod, y_mod));
                 ++continental_collisions;
             }
         }
@@ -538,10 +536,10 @@ void lithosphere::updateCollisions()
             plates[i]->applyFriction(coll.crust);
             plates[coll.index]->applyFriction(coll.crust);
 
-            auto pair1 = plates[i]->getCollisionInfo(Platec::vec2ui(coll.wx, coll.wy));
+            auto pair1 = plates[i]->getCollisionInfo(coll.point);
             coll_count_i = pair1.first;
             coll_ratio_i = pair1.second;
-            auto pair2 = plates[coll.index]->getCollisionInfo(Platec::vec2ui(coll.wx, coll.wy));
+            auto pair2 = plates[coll.index]->getCollisionInfo(coll.point);
             coll_count_j = pair2.first;
             coll_ratio_j = pair2.second;
             // Find the minimum count of collisions between two
@@ -568,7 +566,7 @@ void lithosphere::updateCollisions()
             {
                 float amount = plates[i]->aggregateCrust(
                                    *plates[coll.index],
-                                   Platec::vec2ui(coll.wx, coll.wy));
+                                   coll.point);
 
                 // Calculate new direction and speed for the
                 // merged plate system, that is, for the
@@ -597,11 +595,10 @@ void lithosphere::removeEmptyPlates()
             // Life is seldom as simple as seems at first.
             // Replace the moved plate's index in the index map
             // to match its current position in the array!
-            for (uint32_t j = 0; j < _worldDimension.getArea(); ++j)
-                if (imap[j] == num_plates - 1)
-                    imap[j] = i;
-
             --num_plates;
+            std::replace_if(imap.getData().begin(),imap.getData().end(),
+                    [&](const auto& val){return val == num_plates;},i
+                  );
             --i;
         }
     }
@@ -639,12 +636,16 @@ void lithosphere::update()
         for (uint32_t i = 0; i < num_plates; ++i)
         {
             plates[i]->resetSegments();
-
-            if (erosion_period > 0 && iter_count % erosion_period == 0)
-                plates[i]->erode(CONTINENTAL_BASE);
-
             plates[i]->move(_worldDimension);
         }
+        if (erosion_period > 0 && iter_count % erosion_period == 0)
+        {
+            for (uint32_t i = 0; i < num_plates; ++i)
+            {
+                plates[i]->erode(CONTINENTAL_BASE);
+            }            
+        }
+                
 
         uint32_t oceanic_collisions = 0;
         uint32_t continental_collisions = 0;
@@ -667,7 +668,7 @@ void lithosphere::update()
                 // Just perform subduction and on our way we go!
                 
                 plates[i]->addCrustBySubduction(
-                    Platec::vec2ui(coll.wx, coll.wy), coll.crust, iter_count,
+                    coll.point, coll.crust, iter_count,
                   plates[coll.index]->getVelocityVector());
             }
 
@@ -738,10 +739,12 @@ void lithosphere::restart()
     try {
 
         const uint32_t map_area = _worldDimension.getArea();
-
-        cycle_count += max_cycles > 0; // No increment if running for ever.
-        if (cycle_count > max_cycles)
-            return;
+        if(max_cycles != 0)
+        {
+            ++cycle_count; // No increment if running for ever.
+            if (cycle_count > max_cycles)
+                return;
+        }
 
         // Update height map to include all recent changes.
         hmap.set_all(0);
