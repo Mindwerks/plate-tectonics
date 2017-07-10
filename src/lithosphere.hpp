@@ -26,6 +26,7 @@
 #include <cstring> // For size_t.
 #include <stdexcept>
 #include <vector>
+#include <memory>
 #ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
 #undef __STRICT_ANSI__
 #endif
@@ -89,9 +90,7 @@ public:
                 float sea_level,
                 uint32_t _erosion_period, float _folding_ratio,
                 uint32_t aggr_ratio_abs, float aggr_ratio_rel,
-                uint32_t num_cycles, uint32_t _max_plates) throw(std::invalid_argument);
-
-    ~lithosphere() throw(); ///< Standard destructor.
+                uint32_t num_cycles, uint32_t _max_plates);
 
     /**
      * Split the current topography into given number of (rigid) plates.
@@ -111,10 +110,10 @@ public:
     const Dimension& getWorldDimension() const {
         return _worldDimension;
     }
-    uint32_t getPlateCount() const throw(); ///< Return number of plates.
-    const uint32_t* getAgemap() const throw(); ///< Return surface age map.
-    float* getTopography() throw(); ///< Return height map.
-    uint32_t* getPlatesMap() throw(); ///< Return a map of the plates owning eaach point
+    uint32_t getPlateCount() const; ///< Return number of plates.
+    const uint32_t* getAgemap() const; ///< Return surface age map.
+    float* getTopography(); ///< Return height map.
+    uint32_t* getPlatesMap(); ///< Return a map of the plates owning eaach point
     void update(); ///< Simulate one step of plate tectonics.
     uint32_t getWidth() const;
     uint32_t getHeight() const;
@@ -126,15 +125,13 @@ private:
 
     void createNoise(float* tmp, const Dimension& tmpDim, bool useSimplex = false);
     void createSlowNoise(float* tmp, const Dimension& tmpDim);
-    void updateHeightAndPlateIndexMaps(const uint32_t& map_area,
-                                       uint32_t& oceanic_collisions,
-                                       uint32_t& continental_collisions);
+    uint32_t updateHeightAndPlateIndexMaps();
     void updateCollisions();
     void clearPlates();
     void growPlates();
     void removeEmptyPlates();
     void resolveJuxtapositions(const uint32_t i, const uint32_t ageMapValue, const float_t mapValue, 
-                                        const uint32_t k,const Platec::vec2ui& p);
+                                  const Platec::vec2ui& p);
 
     /**
      * Container for collision details between two plates.
@@ -168,7 +165,7 @@ private:
     IndexMap imap; ///< Plate index map of the "owner" of each map point.
     IndexMap prev_imap; ///< Plate index map from the last update
     AgeMap amap; ///< Age map of the system's surface (topography).
-    plate** plates; ///< Array of plates that constitute the system.
+    std::vector<std::unique_ptr<plate>> plates; ///< Array of plates that constitute the system.
     vector<plateArea> plate_areas;
     vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
 

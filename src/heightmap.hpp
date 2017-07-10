@@ -54,7 +54,7 @@ public:
     }    
 
     void set_all(const Value value) {
-        data = std::vector<Value>(data.size(),value);
+        std::vector<Value>(data.size(),value).swap(data);
     }
     
 

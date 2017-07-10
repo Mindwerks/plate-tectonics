@@ -369,6 +369,7 @@ void plate::erode(float lower_bound)
     }
 
 
+
     MassBuilder massBuilder;
 
     for (uint32_t index = 0; index < bounds->area(); ++index)

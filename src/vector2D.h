@@ -69,6 +69,26 @@ public:
         x_value += delta.x();
         y_value += delta.y();
     } 
+    
+    Vector2D<T> getTopPosition() const
+    {
+        return Vector2D<T>(x_value, y_value-1);
+    }
+    
+    Vector2D<T> getBottomPosition() const
+    {
+        return Vector2D<T>(x_value, y_value+1);
+    }
+    
+     Vector2D<T> getLeftPosition() const
+    {
+        return Vector2D<T>(x_value-1, y_value);
+    }
+     
+     Vector2D<T> getRightPosition() const
+    {
+        return Vector2D<T>(x_value+1, y_value);
+    }     
 };
 
 typedef Vector2D<float_t> vec2f;
