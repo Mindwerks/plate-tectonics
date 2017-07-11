@@ -19,12 +19,12 @@
 
 #include "segment_data.hpp"
 
-SegmentData::SegmentData(const Platec::vec2ui& pointLeftTop,
-                        const Platec::vec2ui& pointRightBottom,
-                         uint32_t area) 
-                    : pointLeftTop(pointLeftTop), 
-                      pointRightBottom(pointRightBottom),      
-                     area(area), coll_count(0) {};
+SegmentData::SegmentData(const Platec::vec2ui& pointLeftTop_,
+                        const Platec::vec2ui& pointRightBottom_,
+                         uint32_t area_) 
+                    : pointLeftTop(pointLeftTop_), 
+                      pointRightBottom(pointRightBottom_),      
+                     area(area_), coll_count(0) {}
 
 void SegmentData::enlarge_to_contain(const Platec::vec2ui& point)
 {
@@ -38,78 +38,78 @@ void SegmentData::enlarge_to_contain(const Platec::vec2ui& point)
     } else if (point.x() > getRight()) {
          pointRightBottom = Platec::vec2ui( point.x(),getBottom());
     }
-};
+}
 
 uint32_t SegmentData::getLeft() const
 {
     return pointLeftTop.x();
-};
+}
 
 uint32_t SegmentData::getRight() const
 {
     return pointRightBottom.x();
-};
+}
 
 uint32_t SegmentData::getTop() const
 {
     return pointLeftTop.y();
-};
+}
 
 uint32_t SegmentData::getBottom() const
 {
     return pointRightBottom.y();
-};
+}
 
 void SegmentData::shift(const Platec::vec2ui& shiftDir)
 {
     pointRightBottom.shift(shiftDir);
     pointLeftTop.shift(shiftDir);
-};
+}
 
 void SegmentData::setLeft(const uint32_t v)
 {
     pointLeftTop = Platec::vec2ui(v, getTop());
-};
+}
 
 void SegmentData::setRight(const uint32_t v)
 {
     pointRightBottom = Platec::vec2ui(v, getBottom());
-};
+}
 
 void SegmentData::setTop(const uint32_t v)
 {
     pointLeftTop = Platec::vec2ui(getLeft(),v);
-};
+}
 
 void SegmentData::setBottom(const uint32_t v)
 {
     pointRightBottom = Platec::vec2ui(getRight(),v);
-};
+}
 
 bool SegmentData::isEmpty() const
 {
     return area == 0;
-};
+}
 
 void SegmentData::incCollCount()
 {
     ++coll_count;
-};
+}
 
 void SegmentData::incArea()
 {
     ++area;
-};
+}
 
 void SegmentData::incArea(const uint32_t amount)
 {
     area += amount;
-};
+}
 
 uint32_t SegmentData::getArea() const
 {
     return area;
-};
+}
 
 uint32_t SegmentData::collCount() const
 {

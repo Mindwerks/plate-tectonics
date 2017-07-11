@@ -24,7 +24,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     int code = 0;
     FILE *fp;
     png_structp png_ptr;
-    png_infop info_ptr;
+    png_infop info_ptr = NULL;
     png_bytep row;
 
     // Open file for writing (binary mode)
@@ -69,7 +69,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     if (title != NULL) {
         png_text title_text;
         title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-        title_text.key = "Title";
+        title_text.key = png_charp("Title");
         title_text.text = (char*)title;
         png_set_text(png_ptr, info_ptr, &title_text, 1);
     }
@@ -84,7 +84,8 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
 
     // End write
     png_write_end(png_ptr, NULL);
-
+    code = 0;
+    
 finalise:
     if (fp != NULL) fclose(fp);
     if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);

@@ -54,9 +54,9 @@ private:
     ///< X and Y components of the center of mass of plate.
     Platec::vec2f center;     
 public:
-    Mass(float mass, Platec::vec2f center);
-    void incMass(float delta);
-    float getMass() const;
+    Mass(float_t mass_, Platec::vec2f center_);
+    void incMass(float_t delta);
+    float_t getMass() const;
 
     const Platec::vec2f massCenter() const;
     bool isNull() const;

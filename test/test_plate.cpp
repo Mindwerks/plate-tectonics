@@ -35,14 +35,14 @@ void initializeHeightmapWithNoise(long seed, float *heightmap, const Dimension& 
 TEST(SimpleRandom, NextRepeatability)
 {
     SimpleRandom sr1(1);
-    EXPECT_EQ(81414, sr1.next());
-    EXPECT_EQ(1328228615, sr1.next());
-    EXPECT_EQ(3215746516, sr1.next());
+    EXPECT_EQ(81414u, sr1.next());
+    EXPECT_EQ(1328228615u, sr1.next());
+    EXPECT_EQ(3215746516u, sr1.next());
 
     SimpleRandom sr999(999);
-    EXPECT_EQ(69012276, sr999.next());
-    EXPECT_EQ(3490172125, sr999.next());
-    EXPECT_EQ(3364058674, sr999.next());
+    EXPECT_EQ(69012276u, sr999.next());
+    EXPECT_EQ(3490172125u, sr999.next());
+    EXPECT_EQ(3364058674u, sr999.next());
 }
 
 TEST(Noise, SimplexRawNoiseRepeatability)
@@ -77,7 +77,7 @@ TEST(CreatePlate, SquareDoesNotExplode)
     initializeHeightmapWithNoise(678, heightmap, Dimension(200, 200));
     
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+40000),200,200);
-    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(200, 200));
+    plate p = plate(Dimension(200, 200),123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18 );
 }
 
 TEST(CreatePlate, NotSquareDoesNotExplode)
@@ -86,7 +86,7 @@ TEST(CreatePlate, NotSquareDoesNotExplode)
     initializeHeightmapWithNoise(678, heightmap, Dimension(200, 400));
     
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+80000),200,400);
-    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(200, 400));
+    plate p = plate(Dimension(200, 400),123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
 }
 
 // TODO test also when plate is large as world
@@ -97,39 +97,36 @@ TEST(Plate, calculateCrust)
     
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
     Dimension dim = Dimension(100, 3);
-    plate p = plate(123, m, dim,Platec::vec2f( 50, 23), 18, Dimension(256, 128));
-    uint32_t x, y, index;
+    plate p = plate(Dimension(256, 128),123, m, dim,Platec::vec2f( 50, 23), 18 );
+    uint32_t x, y;
 
 
     // top left corner
     x = 0;
     y = 0;
-    index = 1;
     surroundingPoints neighbors = p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
-    EXPECT_EQ(0,   neighbors.westIndex );
-    EXPECT_EQ(1,   neighbors.eastIndex );
-    EXPECT_EQ(0,   neighbors.northIndex);
-    EXPECT_EQ(100, neighbors.southIndex);
+    EXPECT_EQ(0u,   neighbors.westIndex );
+    EXPECT_EQ(1u,   neighbors.eastIndex );
+    EXPECT_EQ(0u,   neighbors.northIndex);
+    EXPECT_EQ(100u, neighbors.southIndex);
 
     // bottom right corner
     x = 99;
     y = 2;
-    index = 1;
     neighbors =  p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
-    EXPECT_EQ(298, neighbors.westIndex );
-    EXPECT_EQ(0, neighbors.eastIndex );
-    EXPECT_EQ(199, neighbors.northIndex);
-    EXPECT_EQ(0,  neighbors.southIndex);
+    EXPECT_EQ(298u, neighbors.westIndex );
+    EXPECT_EQ(0u, neighbors.eastIndex );
+    EXPECT_EQ(199u, neighbors.northIndex);
+    EXPECT_EQ(0u,  neighbors.southIndex);
 
     // point in the middle
     x = 50;
     y = 1;
-    index = 1;
     neighbors =  p.calculateCrust(dim.indexOf(Platec::vec2ui(x,y)));
-    EXPECT_EQ(149, neighbors.westIndex );
-    EXPECT_EQ(151, neighbors.eastIndex );
-    EXPECT_EQ(50,  neighbors.northIndex);
-    EXPECT_EQ(250, neighbors.southIndex);
+    EXPECT_EQ(149u, neighbors.westIndex );
+    EXPECT_EQ(151u, neighbors.eastIndex );
+    EXPECT_EQ(50u,  neighbors.northIndex);
+    EXPECT_EQ(250u, neighbors.southIndex);
 }
 
 class MockSegmentData : public ISegmentData
@@ -153,6 +150,7 @@ public:
         throw std::runtime_error("Not implemented");
     }
     virtual void shift(const Platec::vec2ui& shiftDir) {
+        (void)shiftDir;
         throw std::runtime_error("Not implemented");
     }
 
@@ -200,19 +198,22 @@ public:
     {
 
     }
-    virtual const uint32_t getArea() const {
+    virtual  uint32_t getArea() const {
         throw std::runtime_error("Not implemented");
     }
     virtual void reset() {
         throw std::runtime_error("Not implemented");
     }
     virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) {
+        (void)newarea;
+        (void)tmps;
         throw std::runtime_error("Not implemented");
     }
     virtual void shift(const Platec::vec2ui& dir) {
+        (void)dir;
         throw std::runtime_error("Not implemented");
     }
-    virtual const uint32_t size() const {
+    virtual uint32_t size() const {
         throw std::runtime_error("(MockSegments::size) Not implemented");
     }
     virtual const ISegmentData& getSegmentData(uint32_t index) const {
@@ -230,19 +231,25 @@ public:
         }
     }
     virtual void add(const SegmentData& data) {
+        (void)data;
         throw std::runtime_error("Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {
+        (void)index;
         throw std::runtime_error("(MockSegments::id) Not implemented");
     }
     virtual ContinentId& id(uint32_t index) {
+        (void)index;
         throw std::runtime_error("(MockSegments::id) Not implemented");
     }
     virtual void setId(uint32_t index, ContinentId id) {
+        (void)index;
+        (void)id;
         throw std::runtime_error("Not implemented");
     }
     virtual ContinentId getContinentAt(const Platec::vec2ui& point,
                                     const Dimension& worldDimension) const {
+        (void)worldDimension;
         if (_p == point) {
             return _id;
         } else {
@@ -263,7 +270,7 @@ TEST(Plate, addCollision)
     initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
     
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18, Dimension(256, 128));
+    plate p = plate(Dimension(256, 128), 123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
     std::shared_ptr<MockSegments> mSegments = std::make_shared<MockSegments>(Platec::vec2ui(123, 78), 99, mSeg);
@@ -271,8 +278,8 @@ TEST(Plate, addCollision)
 
     uint32_t area = p.addCollision(Platec::vec2ui(123, 78));
 
-    EXPECT_EQ(789, area);
-    EXPECT_EQ(8, mSeg->collCount());
+    EXPECT_EQ(789u, area);
+    EXPECT_EQ(8u, mSeg->collCount());
 }
 
 class MockSegments2 : public ISegments
@@ -283,19 +290,22 @@ public:
     {
 
     }
-    virtual const uint32_t getArea() const{
+    virtual uint32_t getArea() const{
         throw std::runtime_error("(MockSegments2::area) Not implemented");
     }
     virtual void reset() {
         throw std::runtime_error("(MockSegments2::reset) Not implemented");
     }
     virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) {
+        (void)newarea;
+        (void)tmps;
         throw std::runtime_error("(MockSegments2::reassign) Not implemented");
     }
     virtual void shift(const Platec::vec2ui& dir) {
+        (void)dir,
         throw std::runtime_error("(MockSegments2::shift) Not implemented");
     }
-    virtual const uint32_t size() const {
+    virtual uint32_t size() const {
         throw std::runtime_error("(MockSegments2::size) Not implemented");
     }
     virtual const ISegmentData& getSegmentData(uint32_t index) const {
@@ -314,6 +324,7 @@ public:
         }
     }
     virtual void add(const SegmentData& data) {
+        (void)data;
         throw std::runtime_error("(MockSegments2::add) Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {
@@ -342,6 +353,7 @@ public:
     }
     virtual ContinentId getContinentAt(const Platec::vec2ui& point,
                                     const Dimension& worldDimension) const {
+        (void)worldDimension;
         if (_p == point) {
             return _id;
         } else {
@@ -368,7 +380,7 @@ TEST(Plate, addCrustByCollision)
 
     // Suppose the plate start at 170, 70 and ends at 250, 125
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18, Dimension(256, 128));
+    plate p = plate(Dimension(256, 128),123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -402,16 +414,16 @@ TEST(Plate, addCrustByCollision)
     EXPECT_FLOAT_EQ(crustIn_240_120before + 0.8f, crustIn_240_120after);
 
     // The activeContinent should now owns the point
-    EXPECT_EQ(99, mSegments->getContinentAt(Platec::vec2ui(worldPointX, worldPointY),
+    EXPECT_EQ(99u, mSegments->getContinentAt(Platec::vec2ui(worldPointX, worldPointY),
                                                 wd));
 
     // The activeContinent should contains the point
  //   ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
-    EXPECT_EQ(70, mSeg->enlargedPoint().x());
-    EXPECT_EQ(50, mSeg->enlargedPoint().y());
+    EXPECT_EQ(70u, mSeg->enlargedPoint().x());
+    EXPECT_EQ(50u, mSeg->enlargedPoint().y());
 
     // The activeContinent are should be increased
-    EXPECT_EQ(790, mSeg->getArea());
+    EXPECT_EQ(790u, mSeg->getArea());
 }
 
 TEST(Plate, addCrustBySubduction)
@@ -423,7 +435,7 @@ TEST(Plate, addCrustBySubduction)
     initializeHeightmapWithNoise(1, heightmap, Dimension(worldWidth, worldHeight));
 
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18, Dimension(256, 128));
+    plate p = plate(Dimension(256, 128),123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
     // Suppose the plate start at 170, 70 and ends at 250, 125
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;

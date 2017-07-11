@@ -35,7 +35,6 @@
 
 #define BOOL_REGENERATE_CRUST   1
 
-using namespace std;
 
 static const float SUBDUCT_RATIO = 0.5f;
 
@@ -58,11 +57,10 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
                          uint32_t _erosion_period, float _folding_ratio, uint32_t aggr_ratio_abs,
                          float aggr_ratio_rel, uint32_t num_cycles, uint32_t _max_plates) :
     hmap(width, height),
+    imap(width, height),        
     amap(width, height),
-    imap(width, height),
-    prev_imap(width, height),
+    plate_areas(_max_plates),        
     plate_indices_found(_max_plates),
-    plate_areas(_max_plates),
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel),
     cycle_count(0),
@@ -126,7 +124,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
     // Scalp the +1 away from map side to get a power of two side length!
     // Practically only the redundant map edges become removed.
 
-    std::copy_if(tmp.begin(),tmp.end(),hmap.getData().begin(),[&](auto& val)
+    std::copy_if(tmp.begin(),tmp.end(),hmap.getData().begin(),[&](auto)
     {
         static uint32_t counter = 0;
         ++counter;
@@ -294,18 +292,18 @@ void lithosphere::createPlates()
             }
             // Create plate.
             Dimension plaDim = Dimension(width, height);
-            plates[i] = std::make_unique<plate>(_randsource.next(), HeightMap(std::move(pmap),plaDim)
-                        , plaDim, Platec::vec2f(x0, y0), i, _worldDimension);
+            plates[i] = std::make_unique<plate>(_worldDimension,_randsource.next(), HeightMap(std::move(pmap),plaDim)
+                        , plaDim, Platec::vec2f(x0, y0), i);
         }
 
         iter_count = num_plates + MAX_BUOYANCY_AGE;
         peak_Ek = 0;
         last_coll_count = 0;
 
-    } catch (const exception& e) {
-        string msg = "Problem during createPlates: ";
+    } catch (const std::exception& e) {
+        std::string msg = "Problem during createPlates: ";
         msg = msg + e.what();
-        throw runtime_error(msg.c_str());
+        throw std::runtime_error(msg.c_str());
     }
 }
 
@@ -394,29 +392,26 @@ uint32_t lithosphere::updateHeightAndPlateIndexMaps()
         const uint32_t x1 = x0 + plates[i]->getWidth();
         const uint32_t y1 = y0 + plates[i]->getHeight();
 
-        const HeightMap& this_map = plates[i]->getHeigthMap();
-        const AgeMap& this_age = plates[i]->getAgeMap();
+        auto this_map = plates[i]->getHeigthMap().getData().begin();
+        auto this_age = plates[i]->getAgeMap().getData().begin();
         
 
         // Copy first part of plate onto world map.
-        for (uint32_t y = y0, j = 0; y < y1; ++y)
+        for (uint32_t y = y0; y < y1; ++y)
         {
-
-            for (uint32_t x = x0; x < x1; ++x, ++j)
+            for (uint32_t x = x0; x < x1; ++x, ++this_map,++this_age)
             {
-                if (this_map[j] < 2 * FLT_EPSILON) // No crust here...
+                if (*this_map < 2 * FLT_EPSILON) // No crust here...
                     continue;
                 const auto p = _worldDimension.pointMod(Platec::vec2ui(x, y));
-            //    const uint32_t k = _worldDimension.indexOf(point);
-
 
                 if (imap[p] >= num_plates) // No one here yet?
                 {
                     // This plate becomes the "owner" of current location
                     // if it is the first plate to have crust on it.
-                    hmap[p] = this_map[j];
+                    hmap[p] = *this_map;
                     imap[p] = i;
-                    amap[p] = this_age[j];
+                    amap[p] = *this_age;
 
                     continue;
                 }
@@ -425,14 +420,14 @@ uint32_t lithosphere::updateHeightAndPlateIndexMaps()
                 // of shore that 's barely above sea level. It's a lot less
                 // serious problem to treat very shallow waters as continent...
                 const bool prev_is_oceanic = hmap[p] < CONTINENTAL_BASE;
-                const bool this_is_oceanic = this_map[j] < CONTINENTAL_BASE;
+                const bool this_is_oceanic = *this_map < CONTINENTAL_BASE;
 
                 const uint32_t prev_timestamp = plates[imap[p]]->
                                                 getCrustTimestamp(p);
-                const uint32_t this_timestamp = this_age[j];
-                const bool prev_is_bouyant = (hmap[p] > this_map[j]) |
-                                                 ((hmap[p] + 2 * FLT_EPSILON > this_map[j]) &
-                                                  (hmap[p] < 2 * FLT_EPSILON + this_map[j]) &
+                const uint32_t this_timestamp = *this_age;
+                const bool prev_is_bouyant = (hmap[p] > *this_map) |
+                                                 ((hmap[p] + 2 * FLT_EPSILON > *this_map) &
+                                                  (hmap[p] < 2 * FLT_EPSILON + *this_map) &
                                                   (prev_timestamp >= this_timestamp));
 
                 // Handle subduction of oceanic crust as special case.
@@ -442,7 +437,7 @@ uint32_t lithosphere::updateHeightAndPlateIndexMaps()
                     // is directly related to the amount of water
                     // on top of the subducting plate.
                     const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
-                                           (CONTINENTAL_BASE - this_map[j]) /
+                                           (CONTINENTAL_BASE - *this_map) /
                                            CONTINENTAL_BASE;
 
                     // Save collision to the receiving plate's list.
@@ -454,10 +449,10 @@ uint32_t lithosphere::updateHeightAndPlateIndexMaps()
                     // a) having correct amount of colliding crust (below)
                     // b) protecting subducted locations from receiving
                     //    crust from other subductions/collisions.
-                    plates[i]->setCrust(p, this_map[j] -
+                    plates[i]->setCrust(p, *this_map -
                                         OCEANIC_BASE, this_timestamp);
 
-                    if (this_map[j] <= 0)
+                    if (*this_map <= 0)
                         continue; // Nothing more to collide.
                 } else if (prev_is_oceanic) {
                     const float sediment = SUBDUCT_RATIO * OCEANIC_BASE *
@@ -473,15 +468,16 @@ uint32_t lithosphere::updateHeightAndPlateIndexMaps()
 
                     if (hmap[p] <= 0) {
                         imap[p] = i;
-                        hmap[p] = this_map[j];
-                        amap[p] = this_age[j];
+                        hmap[p] = *this_map;
+                        amap[p] = *this_age;
 
                         continue;
                     }
                 }
 
-                resolveJuxtapositions(i, this_age[j],this_map[j], p);
+                resolveJuxtapositions(i, *this_age,*this_map, p);
                 ++continental_collisions;
+
             }
         }
     }
@@ -562,8 +558,8 @@ void lithosphere::removeEmptyPlates()
            /// delete plates[i];
             plates[i] = std::move(plates[num_plates - 1]);
             plates.erase(plates.end() -1);
-            plate_indices_found[i] = plate_indices_found[num_plates - 1];
-
+            plate_indices_found[i]= std::move(plate_indices_found[num_plates - 1]);
+            plate_indices_found.erase(plate_indices_found.end() -1);
             // Life is seldom as simple as seems at first.
             // Replace the moved plate's index in the index map
             // to match its current position in the array!
@@ -601,13 +597,13 @@ void lithosphere::update()
         }
 
         // Keep a copy of the previous index map
-        prev_imap = imap;
+        IndexMap prev_imap = imap;
 
         // Realize accumulated external forces to each plate.
         for (auto& val : plates)
         {
             val->resetSegments();
-            val->move(_worldDimension);
+            val->move();
         }
         if (erosion_period > 0 && iter_count % erosion_period == 0)
         {
@@ -644,35 +640,54 @@ void lithosphere::update()
 
         updateCollisions();
 
-        fill(plate_indices_found.begin(), plate_indices_found.end(), 0);
-
-        // Fill divergent boundaries with new crustal material, molten magma.
-        for (uint32_t y = 0, i = 0; y < BOOL_REGENERATE_CRUST * _worldDimension.getHeight(); ++y) {
-            for (uint32_t x = 0; x < _worldDimension.getWidth(); ++x, ++i) {
-                if (imap[i] >= num_plates) {
-                    // The owner of this new crust is that neighbour plate
-                    // who was located at this point before plates moved.
-                    imap[i] = prev_imap[i];
-
-                    // If this is oceanic crust then add buoyancy to it.
-                    // Magma that has just crystallized into oceanic crust
-                    // is more buoyant than that which has had a lot of
-                    // time to cool down and become more dense.
-                    amap[i] = iter_count;
-                    hmap[i] = OCEANIC_BASE * BUOYANCY_BONUS_X;
-
-                    // This should probably not happen
-                    if (imap[i] < num_plates) {
-                        plates[imap[i]]->setCrust(Platec::vec2ui(x, y), OCEANIC_BASE,
-                                                  iter_count);
-                    }
-
-                } else if (++plate_indices_found[imap[i]] && hmap[i] <= 0) {
-                    puts("Occupied point has no land mass!");
-                    exit(1);
+        std::fill(plate_indices_found.begin(), plate_indices_found.end(), 0);
+        
+        if(BOOL_REGENERATE_CRUST)
+        {
+            auto amapPrt = amap.getData().begin();
+            auto hmapPtr = hmap.getData().begin();
+            std::for_each(imap.getData().begin(),imap.getData().end(),
+            [&](const auto& index) 
+            {
+                if(index >= num_plates) 
+                {
+                    *amapPrt = iter_count;
+                    *hmapPtr = OCEANIC_BASE * BUOYANCY_BONUS_X;
                 }
-            }
+                ++amapPrt;
+                ++hmapPtr;
+            });
+            
+            uint32_t i = 0;
+            auto prevImapItr = prev_imap.getData().begin();
+            std::for_each(imap.getData().begin(), imap.getData().end(),
+                    [&](auto& val)
+                    {
+                        if(val >= num_plates)
+                        {
+                            val = *prevImapItr;
+                            if(val < num_plates)
+                            {
+                                plates[val]->setCrust(_worldDimension.coordOF(i), OCEANIC_BASE,
+                                                  iter_count);
+                            }
+                        }
+                        ++i;
+                        ++prevImapItr;
+                    }
+                    );
+            std::for_each(imap.getData().begin(), imap.getData().end(),
+                    [&](auto& val) {
+                        if(val < num_plates)
+                        {
+                            ++plate_indices_found[val];
+                        }
+                    });      
+            std::replace_if(hmap.getData().begin(), hmap.getData().end(), [&](const auto& h)
+                    {return h <= 0;},2 * FLT_EPSILON);
+            
         }
+
 
         removeEmptyPlates();
 
@@ -701,11 +716,11 @@ void lithosphere::update()
         }
 
         ++iter_count;
-    } catch (const exception& e) {
-        string msg = "Problem during update: ";
+    } catch (const std::exception& e) {
+        std::string msg = "Problem during update: ";
         msg = msg + e.what();
-        cerr << msg << endl;
-        throw runtime_error(msg.c_str());
+        std::cerr << msg << std::endl;
+        throw std::runtime_error(msg.c_str());
     }
 }
 
@@ -738,7 +753,7 @@ void lithosphere::restart()
             {
                 for (uint32_t x = x0; x < x1; ++x, ++j)
                 {
-                    const auto index = _worldDimension.normalizedIndexOf(
+                    const auto index = _worldDimension.normalize(
                                         Platec::vec2ui(x,y));
 
                     const float h0 = hmap[index];
@@ -774,10 +789,7 @@ void lithosphere::restart()
                 {
                     for (uint32_t x = x0; x < x1; ++x)
                     {
-                        const auto index = _worldDimension.normalizedIndexOf(
-                                        Platec::vec2ui(x,y));
-
-                        *this_age = amap[index];
+                        *this_age = amap[_worldDimension.normalize(Platec::vec2ui(x,y))];
                         ++this_age;
                     }
                 }
@@ -798,10 +810,10 @@ void lithosphere::restart()
                            OCEANIC_BASE * crust_age * MULINV_MAX_BUOYANCY_AGE;
             }
         }
-    } catch (const exception& e) {
+    } catch (const std::exception& e) {
         std::string msg = "Problem during restart: ";
         msg = msg + e.what();
-        throw runtime_error(msg.c_str());
+        throw std::runtime_error(msg.c_str());
     }
 }
 

@@ -68,7 +68,7 @@ public:
             return centerIndex;
         }
         float lowest_crust = std::numeric_limits<float_t>::max();
-        uint32_t dest;
+        uint32_t dest = 0;
         
        if (westCrust < lowest_crust && westCrust != 0.f) {
             lowest_crust = westCrust;
@@ -99,6 +99,17 @@ public:
 
 class plate : public IPlate
 {
+private:
+    const Dimension worldDimension;
+    SimpleRandom randsource;
+    HeightMap map;        ///< Bitmap of plate's structure/height.
+    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
+    std::shared_ptr<Bounds> bounds;
+    Mass mass;
+    Movement movement;
+    std::shared_ptr<Segments> segments;
+    std::shared_ptr<MySegmentCreator> mySegmentCreator;    
+    
 public:
 
     /// Initializes plate with the supplied height map.
@@ -109,10 +120,10 @@ public:
     /// @param  _x             X of height map's left-top corner on world map.
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
-    plate(const long seed,const HeightMap& m, 
+    plate(const Dimension& worldDimension_, const long seed,const HeightMap&  m, 
             const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
-         const uint32_t plate_age,const Dimension& worldDimension);
+         const uint32_t plate_age) ;
 
 
     /// Increment collision counter of the continent at given location.
@@ -231,7 +242,7 @@ public:
     
     HeightMap& getHeigthMap();
 
-    void move(const Dimension& worldDimension); ///< Moves plate along it's trajectory.
+    void move();///< Moves plate along it's trajectory.
 
     /// Clear any earlier continental crust partitions.
     ///
@@ -310,9 +321,9 @@ public:
     const surroundingPoints calculateCrust(const uint32_t index) const;
 
     // Visible for testing
-    void injectSegments( std::shared_ptr<ISegments> segments)
+    void injectSegments( std::shared_ptr<ISegments> newSegment)
     {
-        this->segments = std::static_pointer_cast<Segments>(segments);
+        this->segments = std::static_pointer_cast<Segments>(newSegment);
     }
 private:
 
@@ -322,15 +333,7 @@ private:
     std::vector<uint32_t> flowRivers(std::vector<surroundingPoints> sources,std::vector<uint32_t> foundIndices = std::vector<uint32_t>());
     uint32_t createSegment(const Platec::vec2ui& point);
 
-    const Dimension worldDimension;
-    SimpleRandom randsource;
-    HeightMap map;        ///< Bitmap of plate's structure/height.
-    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-    std::shared_ptr<Bounds> bounds;
-    Mass mass;
-    Movement movement;
-    std::shared_ptr<Segments> segments;
-    std::shared_ptr<MySegmentCreator> mySegmentCreator;
+
 };
 
 #endif

@@ -29,37 +29,37 @@ const Bounds b2(wd, topLeftWrapping, plateDim);
 
 
 TEST(Bounds, Index) {
-    EXPECT_EQ(0, b.index(Platec::vec2ui(0, 0)));
-    EXPECT_EQ(100100, b.index(Platec::vec2ui(100, 200)));
-    EXPECT_EQ(199999, b.index(Platec::vec2ui(499, 399)));
+    EXPECT_EQ(0u, b.index(Platec::vec2ui(0, 0)));
+    EXPECT_EQ(100100u, b.index(Platec::vec2ui(100, 200)));
+    EXPECT_EQ(199999u, b.index(Platec::vec2ui(499, 399)));
 }
 
 TEST(Bounds, Area) {
-    EXPECT_EQ(200000, b.area());
+    EXPECT_EQ(200000u, b.area());
 }
 
 TEST(Bounds, Width) {
-    EXPECT_EQ(500, b.width());
+    EXPECT_EQ(500u, b.width());
 }
 
 TEST(Bounds, Height) {
-    EXPECT_EQ(400, b.height());
+    EXPECT_EQ(400u, b.height());
 }
 
 TEST(Bounds, LeftAsUint) {
-    EXPECT_EQ(10, b.left());
+    EXPECT_EQ(10u, b.left());
 }
 
 TEST(Bounds, TopAsUint) {
-    EXPECT_EQ(48, b.top());
+    EXPECT_EQ(48u, b.top());
 }
 
 TEST(Bounds, RightAsUintNonInclusive) {
-    EXPECT_EQ(509, b.rightAsUintNonInclusive());
+    EXPECT_EQ(509u, b.rightAsUintNonInclusive());
 }
 
 TEST(Bounds, BottomAsUintNonInclusive) {
-    EXPECT_EQ(447, b.bottomAsUintNonInclusive());
+    EXPECT_EQ(447u, b.bottomAsUintNonInclusive());
 }
 
 TEST(Bounds, ContainsWorldPoint) {
@@ -118,33 +118,33 @@ TEST(Bounds, Shift) {
     // topLeft = 10.2, 48.9
     bounds.shift(Platec::Vector2D<float_t>(10.7f, 100.1f));
     // now topLeft should be = 20.9, 149.0
-    EXPECT_EQ(20, bounds.left());
-    EXPECT_EQ(149, bounds.top());
+    EXPECT_EQ(20u, bounds.left());
+    EXPECT_EQ(149u, bounds.top());
     // width and heigh should not be affected
-    EXPECT_EQ(500, bounds.width());
-    EXPECT_EQ(400, bounds.height());
+    EXPECT_EQ(500u, bounds.width());
+    EXPECT_EQ(400u, bounds.height());
 }
 
 TEST(Bounds, Grow) {
     Bounds bounds(wd, topLeft, plateDim);
     bounds.grow(Platec::Vector2D<uint32_t>(123, 0));
 
-    EXPECT_EQ(623, bounds.width());
+    EXPECT_EQ(623u, bounds.width());
     // height should not be affected
-    EXPECT_EQ(400, bounds.height());
+    EXPECT_EQ(400u, bounds.height());
     // topLeft not be affected
-    EXPECT_EQ(10, bounds.left());
-    EXPECT_EQ(48, bounds.top());
+    EXPECT_EQ(10u, bounds.left());
+    EXPECT_EQ(48u, bounds.top());
 
     Bounds bounds2(wd, topLeft, plateDim);
     bounds2.grow(Platec::Vector2D<uint32_t>(0, 123));
 
-    EXPECT_EQ(523, bounds2.height());
+    EXPECT_EQ(523u, bounds2.height());
     // width should not be affected
-    EXPECT_EQ(500, bounds2.width());
+    EXPECT_EQ(500u, bounds2.width());
     // topLeft not be affected
-    EXPECT_EQ(10, bounds2.left());
-    EXPECT_EQ(48, bounds2.top());
+    EXPECT_EQ(10u, bounds2.left());
+    EXPECT_EQ(48u, bounds2.top());
 }
 
 TEST(Bounds, GetMapIndex) {
@@ -153,64 +153,64 @@ TEST(Bounds, GetMapIndex) {
     px = 10;
     py = 48;
     auto res = b.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 0);
-    ASSERT_EQ(res.second.y(), 0);
-    ASSERT_EQ(res.first, 0);
+    ASSERT_EQ(res.second.x(), 0u);
+    ASSERT_EQ(res.second.y(), 0u);
+    ASSERT_EQ(res.first, 0u);
 
     px = 510;
     py =  48;
     res = b.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 510);
-    ASSERT_EQ(res.second.y(), 48);
+    ASSERT_EQ(res.second.x(), 510u);
+    ASSERT_EQ(res.second.y(), 48u);
     ASSERT_EQ(res.first, BAD_INDEX);
 
     px = 10;
     py = 448;
     res = b.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 10);
-    ASSERT_EQ(res.second.y(), 448);
+    ASSERT_EQ(res.second.x(), 10u);
+    ASSERT_EQ(res.second.y(), 448u);
     ASSERT_EQ(res.first, BAD_INDEX);
 
     px = 110;
     py = 98;
     res = b.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 100);
-    ASSERT_EQ(res.second.y(), 50);
-    ASSERT_EQ(res.first, 25100);
+    ASSERT_EQ(res.second.x(), 100u);
+    ASSERT_EQ(res.second.y(), 50u);
+    ASSERT_EQ(res.first, 25100u);
 
     px = 750;
     py = 550;
     res = b2.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 50);
-    ASSERT_EQ(res.second.y(), 50);
-    ASSERT_EQ(res.first, 25050);
+    ASSERT_EQ(res.second.x(), 50u);
+    ASSERT_EQ(res.second.y(), 50u);
+    ASSERT_EQ(res.first, 25050u);
 
     px = 0;
     py = 0;
     res = b2.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 100);
-    ASSERT_EQ(res.second.y(), 100);
-    ASSERT_EQ(res.first, 50100);
+    ASSERT_EQ(res.second.x(), 100u);
+    ASSERT_EQ(res.second.y(), 100u);
+    ASSERT_EQ(res.first, 50100u);
 
     px = 0;
     py = 600;
     res = b2.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 100);
-    ASSERT_EQ(res.second.y(), 100);
-    ASSERT_EQ(res.first, 50100);
+    ASSERT_EQ(res.second.x(), 100u);
+    ASSERT_EQ(res.second.y(), 100u);
+    ASSERT_EQ(res.first, 50100u);
 
     px = 800;
     py = 0;
     res = b2.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 100);
-    ASSERT_EQ(res.second.y(), 100);
-    ASSERT_EQ(res.first, 50100);
+    ASSERT_EQ(res.second.x(), 100u);
+    ASSERT_EQ(res.second.y(), 100u);
+    ASSERT_EQ(res.first, 50100u);
 
     px = 500;
     py = 200;
     res = b2.getMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 500);
-    ASSERT_EQ(res.second.y(), 200);
+    ASSERT_EQ(res.second.x(), 500u);
+    ASSERT_EQ(res.second.y(), 200u);
     ASSERT_EQ(res.first, BAD_INDEX);
 }
 
@@ -220,16 +220,16 @@ TEST(Bounds, GetValidMapIndex) {
     px = 10;
     py = 48;
     auto res = b.getValidMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 0);
-    ASSERT_EQ(res.second.y(), 0);
-    ASSERT_EQ(res.first, 0);
+    ASSERT_EQ(res.second.x(), 0u);
+    ASSERT_EQ(res.second.y(), 0u);
+    ASSERT_EQ(res.first, 0u);
 
     px = 110;
     py = 98;
     res = b.getValidMapIndex(Platec::vec2ui(px, py));
-    ASSERT_EQ(res.second.x(), 100);
-    ASSERT_EQ(res.second.y(), 50);
-    ASSERT_EQ(res.first, 25100);
+    ASSERT_EQ(res.second.x(), 100u);
+    ASSERT_EQ(res.second.y(), 50u);
+    ASSERT_EQ(res.first, 25100u);
 }
 
 

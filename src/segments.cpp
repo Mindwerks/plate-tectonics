@@ -21,12 +21,12 @@
 #include "segments.hpp"
 
 
-Segments::Segments(uint32_t plate_area) : area(plate_area),
-        segment(std::vector<uint32_t>(plate_area,255))
+Segments::Segments(uint32_t plate_area) : segment(std::vector<uint32_t>(plate_area,255)),
+        area(plate_area)
 {
 }
 
-const uint32_t Segments::getArea() const
+uint32_t Segments::getArea() const
 {
     return area;
 }
@@ -51,7 +51,7 @@ void Segments::shift(const Platec::vec2ui& dir)
     }
 }
 
-const uint32_t Segments::size() const
+ uint32_t Segments::size() const
 {
     return seg_data.size();
 }
@@ -93,7 +93,7 @@ const std::vector<ContinentId>& Segments::getSegment() const {
     return segment;
 }
 
-const ContinentId& Segments::id(const uint32_t index) const {
+ const ContinentId& Segments::id(const uint32_t index) const {
     return segment[index];
 }
 
@@ -101,15 +101,15 @@ ContinentId& Segments::id(const uint32_t index) {
     return segment.at(index);
 }
 
-void Segments::setBounds(const std::shared_ptr<Bounds>& bounds) {
-    this->bounds = bounds;
+void Segments::setBounds(const std::shared_ptr<Bounds>& bounds_) {
+    this->bounds = bounds_;
 }
 
 void Segments::setId(const uint32_t index, const ContinentId id) {
     segment.at(index) = id;
 }
 
-void Segments::setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator) {
-    this->segmentCreator = segmentCreator;
+void Segments::setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator_) {
+    this->segmentCreator = segmentCreator_;
 }
 

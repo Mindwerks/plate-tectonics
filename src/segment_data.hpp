@@ -56,9 +56,9 @@ private:
     uint32_t area; ///< Number of locations this area consists of.
     uint32_t coll_count; ///< Number of collisions on this segment.    
 public:
-    SegmentData(const Platec::vec2ui& pointLeftTop,
-                const Platec::vec2ui& pointRightBottom,
-                uint32_t area);
+    SegmentData(const Platec::vec2ui& pointLeftTop_,
+                const Platec::vec2ui& pointRightBottom_,
+                uint32_t area_);
 
     void enlarge_to_contain(const Platec::vec2ui& point) override;
     uint32_t getLeft() const override;

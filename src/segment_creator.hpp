@@ -49,7 +49,7 @@ public:
     uint32_t end;    
     Span():start(0),end(0){}
     Span(const uint32_t val):start(val),end(val){}
-    Span(const uint32_t start, const uint32_t end):start(start),end(end){}
+    Span(const uint32_t start_, const uint32_t end_):start(start_),end(end_){}
     
     bool inside(const uint32_t val) const
     {
@@ -65,7 +65,7 @@ public:
 class MySegmentCreator : public ISegmentCreator
 {
 public:
-    MySegmentCreator(std::shared_ptr<Bounds> bounds, std::shared_ptr<ISegments> segments, HeightMap& map_);
+    MySegmentCreator(std::shared_ptr<Bounds> bounds_, std::shared_ptr<ISegments> segments_, HeightMap& map_);
     /// Separate a continent at (X, Y) to its own partition.
     ///
     /// Method analyzes the pixels 4-ways adjacent at the given location
@@ -80,13 +80,13 @@ private:
     uint32_t calcDirection(const Platec::vec2ui& point, const uint32_t origin_index, const uint32_t ID) const;
     Span scanSpans( std::vector<Span>& spans_todo, std::vector<Span>& spans_done) const;
     
-    const uint32_t getLeftIndex(const int32_t originIndex) const;
-    const uint32_t getRightIndex(const int32_t originIndex) const;
-    const uint32_t getTopIndex(const int32_t originIndex) const;
-    const uint32_t getBottomIndex(const int32_t originIndex) const;
+     uint32_t getLeftIndex(const int32_t originIndex) const;
+     uint32_t getRightIndex(const int32_t originIndex) const;
+     uint32_t getTopIndex(const int32_t originIndex) const;
+     uint32_t getBottomIndex(const int32_t originIndex) const;
 
-    const bool hasLowerID(const uint32_t index, const ContinentId ID) const;
-    const bool usablePoint(const uint32_t index, const ContinentId ID) const;
+     bool hasLowerID(const uint32_t index, const ContinentId ID) const;
+     bool usablePoint(const uint32_t index, const ContinentId ID) const;
     std::vector<Span> fillLineWithID(const Span& span, const uint32_t line,
                                         const ContinentId ID ) ;
     std::shared_ptr<Bounds>  bounds;

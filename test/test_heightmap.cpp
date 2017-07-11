@@ -22,13 +22,13 @@
 
 TEST(HeightMap, ConstructorWidthHeight) {
     HeightMap hm = HeightMap(50, 20);
-    ASSERT_EQ(50, hm.width());
-    ASSERT_EQ(20, hm.height());
+    ASSERT_EQ(50u, hm.width());
+    ASSERT_EQ(20u, hm.height());
 }
 
 TEST(HeightMap, Area) {
     HeightMap hm = HeightMap(50, 20);
-    ASSERT_EQ(1000, hm.area());
+    ASSERT_EQ(1000u, hm.area());
 }
 
 TEST(HeightMap, SetAndGet) {

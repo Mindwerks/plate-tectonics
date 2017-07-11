@@ -24,8 +24,8 @@
 #include "segments.hpp"
 #include "bounds.hpp"
 
-MySegmentCreator::MySegmentCreator(std::shared_ptr<Bounds>  bounds, std::shared_ptr<ISegments> segments, HeightMap& map_)
-: bounds(bounds), segments(segments), map(map_) {
+MySegmentCreator::MySegmentCreator(std::shared_ptr<Bounds>  bounds_, std::shared_ptr<ISegments> segments_, HeightMap& map_)
+: bounds(bounds_), segments(segments_), map(map_) {
 
 }
 
@@ -129,8 +129,8 @@ ContinentId MySegmentCreator::createSegment(const Platec::vec2ui& point,
                 continue;
                         
             // Calculate line indices. Allow wrapping around map edges.
-            const uint32_t row_above = (line == 0 ) ? bounds_height - 1 : line -1;
-            const uint32_t row_below = (line < bounds_height - 1) ? line +1 : 0;
+            const uint32_t row_above = bounds->getDimension().yCap(line -1);
+            const uint32_t row_below = bounds->getDimension().yMod(line +1 );
             const uint32_t line_here = line * bounds_width;
 
             const uint32_t line_above = row_above * bounds_width;
@@ -214,29 +214,29 @@ ContinentId MySegmentCreator::createSegment(const Platec::vec2ui& point,
     return ID;
 }
 
-const uint32_t MySegmentCreator::getBottomIndex(const int32_t originIndex) const {
+ uint32_t MySegmentCreator::getBottomIndex(const int32_t originIndex) const {
     return originIndex + bounds->width();
 }
 
-const uint32_t MySegmentCreator::getLeftIndex(const int32_t originIndex) const {
+ uint32_t MySegmentCreator::getLeftIndex(const int32_t originIndex) const {
     return originIndex-1;
 }
 
-const uint32_t MySegmentCreator::getRightIndex(const int32_t originIndex) const {
+ uint32_t MySegmentCreator::getRightIndex(const int32_t originIndex) const {
     return originIndex+1;
 }
 
-const uint32_t MySegmentCreator::getTopIndex(const int32_t originIndex) const {
+ uint32_t MySegmentCreator::getTopIndex(const int32_t originIndex) const {
     return originIndex - bounds->width();
 }
 
-const bool MySegmentCreator::hasLowerID(const uint32_t index, const ContinentId ID) const {
+ bool MySegmentCreator::hasLowerID(const uint32_t index, const ContinentId ID) const {
     //check if the value of the index is higher than CONT_BASE and
     //if ID is lower than the given ID
     return map.get(index) >= CONT_BASE && segments->id(index) < ID;
 }
 
-const bool MySegmentCreator::usablePoint(const uint32_t index, const ContinentId ID) const {
+ bool MySegmentCreator::usablePoint(const uint32_t index, const ContinentId ID) const {
     return segments->id(index) > ID &&   map[index] >= CONT_BASE;
 }
 

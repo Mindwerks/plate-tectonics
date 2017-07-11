@@ -34,7 +34,6 @@
 #include "heightmap.hpp"
 #include "simplerandom.hpp"
 
-using namespace std;
 
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
@@ -49,7 +48,7 @@ class plate;
 class plateArea
 {
 public:
-    vector<uint32_t> border; ///< Plate's unprocessed border pixels.
+    std::vector<uint32_t> border; ///< Plate's unprocessed border pixels.
     uint32_t btm; ///< Most bottom pixel of plate.
     uint32_t lft; ///< Most left pixel of plate.
     uint32_t rgt; ///< Most right pixel of plate.
@@ -163,31 +162,30 @@ private:
 
     HeightMap hmap; ///< Height map representing the topography of system.
     IndexMap imap; ///< Plate index map of the "owner" of each map point.
-    IndexMap prev_imap; ///< Plate index map from the last update
     AgeMap amap; ///< Age map of the system's surface (topography).
     std::vector<std::unique_ptr<plate>> plates; ///< Array of plates that constitute the system.
-    vector<plateArea> plate_areas;
-    vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
+    std::vector<plateArea> plate_areas;
+    std::vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
 
     uint32_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
-    float  aggr_overlap_rel; ///< % of overlapping area -> aggregation.
+    float_t  aggr_overlap_rel; ///< % of overlapping area -> aggregation.
     uint32_t cycle_count; ///< Number of times the system's been restarted.
     uint32_t erosion_period; ///< # of iterations between global erosion.
-    float  folding_ratio; ///< Percent of overlapping crust that's folded.
+    float_t  folding_ratio; ///< Percent of overlapping crust that's folded.
     uint32_t iter_count; ///< Iteration count. Used to timestamp new crust.
     uint32_t max_cycles; ///< Max n:o of times the system'll be restarted.
     uint32_t max_plates; ///< Number of plates in the initial setting.
     uint32_t num_plates; ///< Number of plates in the current setting.
 
-    vector<vector<plateCollision> > collisions;
-    vector<vector<plateCollision> > subductions;
+    std::vector<std::vector<plateCollision> > collisions;
+    std::vector<std::vector<plateCollision> > subductions;
 
-    float peak_Ek; ///< Max total kinetic energy in the system so far.
+    float_t peak_Ek; ///< Max total kinetic energy in the system so far.
     uint32_t last_coll_count; ///< Iterations since last cont. collision.
 
     const Dimension _worldDimension;
     SimpleRandom _randsource;
-    int _steps;
+    uint32_t _steps;
 };
 
 

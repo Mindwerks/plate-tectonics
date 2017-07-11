@@ -36,11 +36,11 @@ typedef uint32_t ContinentId;
 class ISegments
 {
 public:
-    virtual const uint32_t getArea() const = 0;
+    virtual  uint32_t getArea() const = 0;
     virtual void reset() = 0;
     virtual void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) = 0;
     virtual void shift(const Platec::vec2ui& dir) = 0;
-    virtual const uint32_t size() const = 0;
+    virtual  uint32_t size() const = 0;
     virtual const ISegmentData& getSegmentData(const uint32_t index) const = 0;
     virtual ISegmentData& getSegmentData(const uint32_t index) = 0;
     virtual void add(const SegmentData& data) = 0;
@@ -64,13 +64,13 @@ private:
     
 public:
     Segments(uint32_t plate_area);
-    void setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator);
-    void setBounds(const std::shared_ptr<Bounds>&  bounds);
-    const uint32_t getArea() const override;
+    void setSegmentCreator(const std::shared_ptr<ISegmentCreator>& segmentCreator_);
+    void setBounds(const std::shared_ptr<Bounds>&  bounds_);
+    uint32_t getArea() const override;
     void reset() override;
     void reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps) override;
     void shift(const Platec::vec2ui& dir) override;
-    const uint32_t size() const override;
+     uint32_t size() const override;
     const ISegmentData& getSegmentData(const uint32_t index) const override; 
     ISegmentData& getSegmentData(const uint32_t index) override;
     void add(const SegmentData& data) override;

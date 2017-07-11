@@ -32,18 +32,17 @@
 #include "plate.hpp"
 #include "heightmap.hpp"
 #include "utils.hpp"
-#include "plate_functions.hpp"
 
 
-plate::plate(const long seed,const HeightMap&  m, 
-            const Dimension& plateDimension,
+plate::plate(const Dimension& worldDimension_, const long seed,const HeightMap&  m, 
+        const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
-         const uint32_t plate_age,const Dimension& worldDimension) :
+         const uint32_t plate_age) :
+    worldDimension(worldDimension_),
     randsource(seed),
+    map(m),        
+    age_map(plateDimension), 
     mass(MassBuilder(m).build()),
-    map(m),
-    age_map(std::vector<uint32_t>(plateDimension.getArea(),0),plateDimension),
-    worldDimension(worldDimension),
     movement(randsource) {
     const uint32_t plate_area = plateDimension.getArea();
 
@@ -54,7 +53,7 @@ plate::plate(const long seed,const HeightMap&  m,
     auto mapItr = map.getData().begin();
     
     std::replace_if(age_map.getData().begin(),age_map.getData().end(),
-                    [&](const auto& val)
+                    [&](auto)
                     {
                         auto ret = *mapItr != 0;
                         ++mapItr;
@@ -233,10 +232,10 @@ void plate::collide(plate& p,const float_t coll_mass)
 
 const surroundingPoints plate::calculateCrust(const uint32_t index) const
 {
-    const Platec::vec2ui& position = bounds->getDimension().coordOF(index);
-    const Platec::vec2ui& position_world = worldDimension.pointMod(position);
-    const float_t height = map.get(index);
-    surroundingPoints ret;
+    const auto& position = bounds->getDimension().coordOF(index);
+    const auto& position_world = worldDimension.pointMod(position);
+    const auto height = map.get(index);
+    auto ret = surroundingPoints();
 
     ret.centerIndex = index;
     if(position.x() > 0 || bounds->width()==worldDimension.getWidth() )
@@ -330,7 +329,7 @@ std::vector<surroundingPoints> plate::findRiverSources(const float_t lower_bound
 
 std::vector<uint32_t> plate::flowRivers( std::vector<surroundingPoints> sources, std::vector<uint32_t> foundIndices)
 {
-    std::vector<surroundingPoints> newSources;
+    auto newSources = std::vector<surroundingPoints>();
     if(sources.empty())
     {
         return foundIndices;
@@ -340,13 +339,12 @@ std::vector<uint32_t> plate::flowRivers( std::vector<surroundingPoints> sources,
     {
         if(!val.centerIsLowest()) // if center is not the lowest
         {
-            newSources.push_back(calculateCrust(val.getLowestIndex())); //add lowest neighbor as source
+            newSources.emplace_back(calculateCrust(val.getLowestIndex())); //add lowest neighbor as source
             foundIndices.emplace_back(val.centerIndex);
-
         }
     }
 
-    return flowRivers(newSources,foundIndices);
+    return flowRivers(std::move(newSources),std::move(foundIndices));
 }
 
 void plate::erode(float lower_bound)
@@ -523,7 +521,7 @@ HeightMap& plate::getHeigthMap() {
 }
 
 
-void plate::move(const Dimension& worldDimension)
+void plate::move()
 {
     movement.move(worldDimension);
     bounds->shift(movement.velocityVector());
@@ -585,15 +583,15 @@ void plate::setCrust(const Platec::vec2ui& point, float_t z, uint32_t t)
         // Index out of bounds, but nowhere to grow!
         ASSERT(d_lft + d_rgt + d_top + d_btm != 0, "Invalid plate growth deltas");
 
-        const uint32_t old_width  = bounds->width();
-        const uint32_t old_height = bounds->height();
+        const auto old_width  = bounds->width();
+        const auto old_height = bounds->height();
 
         bounds->shift(Platec::vec2f(-1.0*d_lft, -1.0*d_top));
         bounds->grow(Platec::vec2ui(d_lft + d_rgt, d_top + d_btm));
 
-        HeightMap tmph = HeightMap(bounds->getDimension());
-        AgeMap    tmpa = AgeMap(bounds->getDimension());
-        std::vector<uint32_t> tmps = std::vector<uint32_t>(bounds->area(),255);
+        auto tmph = HeightMap(bounds->getDimension());
+        auto    tmpa = AgeMap(bounds->getDimension());
+        auto tmps = std::vector<uint32_t>(bounds->area());
 
         // copy old plate into new.
         for (uint32_t j = 0; j < old_height; ++j)

@@ -60,7 +60,7 @@ public:
     Platec::vec2f velocityOn(const float_t length) const;
     float_t dot(const Platec::vec2f& dotVector) const;
     float_t momentum(const Mass& mass) const;
-    float_t getVelocity() const;;
+    float_t getVelocity() const;
 
     void collide(const IMass& thisMass, IPlate& p,const float_t coll_mass);
 

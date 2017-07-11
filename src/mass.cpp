@@ -52,7 +52,7 @@ Mass MassBuilder::build() {
     if (mass <= 0.f) {
         return Mass(0.f, Platec::vec2f(0.0, 0.0));
     }
-    float inv_mass = 1 / mass;
+    auto inv_mass = 1 / mass;
 
     return Mass(mass, center * inv_mass);
 }
@@ -61,8 +61,8 @@ Mass MassBuilder::build() {
 // Mass
 // ----------------------------------------------
 
-Mass::Mass(float mass, Platec::vec2f center) :
-        mass(mass), center(center) {
+Mass::Mass(float_t mass_, Platec::vec2f center_) :
+        mass(mass_), center(center_) {
 }
 
 const Platec::vec2f Mass::massCenter() const {
@@ -70,11 +70,11 @@ const Platec::vec2f Mass::massCenter() const {
 }
 
 
-void Mass::incMass(float delta) {
+void Mass::incMass(float_t delta) {
     mass = std::max(0.0f, mass + delta);
 }
 
-float Mass::getMass() const {
+float_t Mass::getMass() const {
     return mass;
 }
 
