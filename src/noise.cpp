@@ -25,7 +25,6 @@
 #include "utils.hpp"
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
-static const float SIMPLEX_PERSISTENCE = 0.25f;
 #define PI 3.14159265
 
 static uint32_t nearest_pow(uint32_t num)

@@ -85,7 +85,7 @@ void Movement::move(const Dimension& worldDimension) {
     const float_t alpha_vel = rotDir * alpha * velocity;
     const float_t cosVel = cosf(alpha_vel);
     const float_t sinVel = sinf(alpha_vel);
-
+    
     velVec = Platec::vec2f(velVec.x() * cosVel - velVec.y() * sinVel,
                             velVec.y() * cosVel + velVec.x() * sinVel);
     

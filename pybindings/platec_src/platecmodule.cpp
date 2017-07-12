@@ -76,7 +76,6 @@ PyObject *makelist_int(uint32_t array[], uint32_t size) {
 
 static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
         return NULL;
@@ -92,7 +91,6 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
 
 static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
         return NULL;
@@ -108,7 +106,6 @@ static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
 
 static PyObject * platec_is_finished(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
     if (!PyArg_ParseTuple(args, "l", &litho))
         return NULL;

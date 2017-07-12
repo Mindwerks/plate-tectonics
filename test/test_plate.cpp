@@ -183,6 +183,11 @@ public:
         throw std::runtime_error("Not implemented");       
    }
  
+   Platec::vec2ui getPointRightBottom() const override
+   {
+        throw std::runtime_error("Not implemented");  
+   }
+
 
 private:
     uint32_t _collCount;

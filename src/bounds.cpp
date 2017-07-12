@@ -129,7 +129,7 @@ std::pair<uint32_t, Platec::vec2ui>
      // check if coordinates in bounds
     if (containsWorldPoint(p)) {
        auto tmp = Platec::vec2ui(p.x() % worldDimension.getWidth(),
-                                           p.y() % worldDimension.getHeight());
+                                 p.y() % worldDimension.getHeight());
        // calculate coordinates in Bounds
        const auto x = tmp.x() + ((tmp.x() < left())
                             ? worldDimension.getWidth() : 0) - left();

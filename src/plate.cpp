@@ -335,6 +335,7 @@ std::vector<uint32_t> plate::flowRivers( std::vector<surroundingPoints> sources,
         return foundIndices;
     }
     
+    newSources.reserve(50);
     for(auto& val : sources) //get all sources
     {
         if(!val.centerIsLowest()) // if center is not the lowest
