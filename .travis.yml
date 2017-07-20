@@ -3,7 +3,6 @@ language: cpp
 dist: trusty
 sudo: required
 
-group: deprecated-2017Q2
 
 cache:
     apt: true   

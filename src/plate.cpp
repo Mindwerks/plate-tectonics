@@ -364,7 +364,7 @@ void plate::erode(float lower_bound)
     // Add random noise (10 %) to heightmap.
     for(auto& val : map.getData())
     {
-        val += 0.1 * val - (0.2 * (float)randsource.next_double() * val);
+        val *= 1.1  - (0.2* (float)randsource.next_double());
     }
 
 

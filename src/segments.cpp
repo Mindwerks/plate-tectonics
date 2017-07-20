@@ -34,7 +34,7 @@ uint32_t Segments::getArea() const
 void Segments::reset()
 {
     seg_data.clear();
-    std::vector<uint32_t>(area,-1).swap(segment);
+    std::vector<uint32_t>(area,std::numeric_limits<uint32_t>::max()).swap(segment);
 }
 
 void Segments::reassign(const uint32_t newarea,const std::vector<uint32_t>& tmps)
