@@ -21,6 +21,7 @@
 #include "gtest/gtest.h"
 #include "noise.hpp"
 #include "simplexnoise.hpp"
+#include "world_properties.h"
 
 void initializeHeightmapWithNoise(long seed, float *heightmap, const Dimension& wd)
 {
@@ -74,19 +75,20 @@ TEST(Noise, SimplexNoiseRepeatability)
 TEST(CreatePlate, SquareDoesNotExplode)
 {
     float *heightmap = new float[40000]; // 200 x 200
-    initializeHeightmapWithNoise(678, heightmap, Dimension(200, 200));
     
+    initializeHeightmapWithNoise(678, heightmap, Dimension(200, 200));
+    world_properties::get().setWorldDimension(Dimension(200, 200));
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+40000),200,200);
-    plate p = plate(Dimension(200, 200),123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18 );
+    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18 );
 }
 
 TEST(CreatePlate, NotSquareDoesNotExplode)
 {
     float *heightmap = new float[80000]; // 200 x 400
     initializeHeightmapWithNoise(678, heightmap, Dimension(200, 400));
-    
+     world_properties::get().setWorldDimension(Dimension(200, 200));   
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+80000),200,400);
-    plate p = plate(Dimension(200, 400),123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
+    plate p = plate(123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
 }
 
 // TODO test also when plate is large as world
@@ -95,9 +97,10 @@ TEST(Plate, calculateCrust)
     float *heightmap = new float[256 * 128];
     initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
     
+    world_properties::get().setWorldDimension(Dimension(256, 128)); 
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
     Dimension dim = Dimension(100, 3);
-    plate p = plate(Dimension(256, 128),123, m, dim,Platec::vec2f( 50, 23), 18 );
+    plate p = plate(123, m, dim,Platec::vec2f( 50, 23), 18 );
     uint32_t x, y;
 
 
@@ -273,9 +276,9 @@ TEST(Plate, addCollision)
 {
     float *heightmap = new float[256 * 128];
     initializeHeightmapWithNoise(678, heightmap, Dimension(256, 128));
-    
+    world_properties::get().setWorldDimension(Dimension(256, 128));
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(Dimension(256, 128), 123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
+    plate p = plate( 123, m, Dimension(100, 3),Platec::vec2f( 50, 23), 18);
 
     MockSegmentData* mSeg = new MockSegmentData(7, 789);
     std::shared_ptr<MockSegments> mSegments = std::make_shared<MockSegments>(Platec::vec2ui(123, 78), 99, mSeg);
@@ -382,10 +385,11 @@ TEST(Plate, addCrustByCollision)
     float *heightmap = new float[worldWidth * worldHeight];
     Dimension wd(worldWidth, worldHeight);
     initializeHeightmapWithNoise(1, heightmap, wd);
+    world_properties::get().setWorldDimension(Dimension(256, 128));
 
     // Suppose the plate start at 170, 70 and ends at 250, 125
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(Dimension(256, 128),123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
+    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;
     const uint32_t worldPointY = 120;
@@ -438,9 +442,9 @@ TEST(Plate, addCrustBySubduction)
 
     float *heightmap = new float[worldWidth * worldHeight];
     initializeHeightmapWithNoise(1, heightmap, Dimension(worldWidth, worldHeight));
-
+    world_properties::get().setWorldDimension(Dimension(256, 128));
     HeightMap m = HeightMap(std::vector<float>(heightmap,heightmap+(256 * 128)),256, 128);
-    plate p = plate(Dimension(256, 128),123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
+    plate p = plate(123, m, Dimension(80, 55),Platec::vec2f( 170, 70), 18);
     // Suppose the plate start at 170, 70 and ends at 250, 125
     // the point of collision in world coordinates
     const uint32_t worldPointX = 240;

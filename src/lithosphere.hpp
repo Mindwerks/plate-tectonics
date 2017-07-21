@@ -33,10 +33,9 @@
 #include <cmath>
 #include "heightmap.hpp"
 #include "simplerandom.hpp"
+#include "world_properties.h"
 
 
-#define CONTINENTAL_BASE 1.0f
-#define OCEANIC_BASE     0.1f
 
 class plate;
 
@@ -69,6 +68,51 @@ public:
  */
 class lithosphere
 {
+private:
+     
+    class plateCollision
+    {
+    public:
+        plateCollision(const uint32_t _index, const Platec::vec2ui& _point,const  float_t z)
+        : index(_index), point(_point), crust(std::max(z,0.f)) {
+        }
+        const uint32_t index; ///< Index of the other plate involved in the event.
+        const Platec::vec2ui point; ///< Coordinates of collision in world space.
+        const float_t crust; ///< Amount of crust that will deform/subduct.
+    };
+    
+    HeightMap hmap; ///< Height map representing the topography of system.
+    IndexMap imap; ///< Plate index map of the "owner" of each map point.
+    AgeMap amap; ///< Age map of the system's surface (topography).
+    std::vector<std::unique_ptr<plate>> plates; ///< Array of plates that constitute the system.
+    std::vector<plateArea> plate_areas;
+    std::vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
+
+    uint32_t iter_count; ///< Iteration count. Used to timestamp new crust.
+    uint32_t num_plates; ///< Number of plates in the current setting.
+    /**
+     * Container for collision details between two plates.
+     *
+     * In simulation there's usually 2-5 % collisions of the entire map
+     * area. In a 512*512 map that means 5000-13000 collisions.
+     *
+     * When plate collisions are recorded and processed pair-by-pair, some
+     * of the information is lost if more than two plates collide at the
+     * same point (there will be no record of the two lower plates
+     * colliding together, just that they both collided with the tallest
+     * plate) ONLY IF ALL the collisions between ANY TWO plates of that
+     * group always include a third, taller/higher  plate. This happens
+     * most often when plates have long, sharp spikes i.e. in the
+     * beginning*/
+
+    std::vector<std::vector<plateCollision> > collisions;
+    std::vector<std::vector<plateCollision> > subductions;
+
+    float_t peak_Ek; ///< Max total kinetic energy in the system so far.
+    uint32_t last_coll_count; ///< Iterations since last cont. collision.
+
+    SimpleRandom _randsource;
+    uint32_t _steps;
 public:
 
     /**
@@ -87,9 +131,9 @@ public:
     lithosphere(long seed,
                 uint32_t width, uint32_t height,
                 float sea_level,
-                uint32_t _erosion_period, float _folding_ratio,
+                uint32_t erosion_period, float folding_ratio,
                 uint32_t aggr_ratio_abs, float aggr_ratio_rel,
-                uint32_t num_cycles, uint32_t _max_plates);
+                uint32_t num_cycles, uint32_t max_plates);
 
     /**
      * Split the current topography into given number of (rigid) plates.
@@ -101,14 +145,12 @@ public:
     void createPlates();
 
     uint32_t getCycleCount() const {
-        return cycle_count;
+        return world_properties::get().getCycle_count();
     }
     uint32_t getIterationCount() const {
         return iter_count;
     }
-    const Dimension& getWorldDimension() const {
-        return _worldDimension;
-    }
+
     uint32_t getPlateCount() const; ///< Return number of plates.
     const uint32_t* getAgemap() const; ///< Return surface age map.
     float* getTopography(); ///< Return height map.
@@ -132,60 +174,11 @@ private:
     void resolveJuxtapositions(const uint32_t i, const uint32_t ageMapValue, const float_t mapValue, 
                                   const Platec::vec2ui& p);
 
-    /**
-     * Container for collision details between two plates.
-     *
-     * In simulation there's usually 2-5 % collisions of the entire map
-     * area. In a 512*512 map that means 5000-13000 collisions.
-     *
-     * When plate collisions are recorded and processed pair-by-pair, some
-     * of the information is lost if more than two plates collide at the
-     * same point (there will be no record of the two lower plates
-     * colliding together, just that they both collided with the tallest
-     * plate) ONLY IF ALL the collisions between ANY TWO plates of that
-     * group always include a third, taller/higher  plate. This happens
-     * most often when plates have long, sharp spikes i.e. in the
-     * beginning.
-     */
-    class plateCollision
-    {
-    public:
-        plateCollision(const uint32_t _index, const Platec::vec2ui& _point,const  float_t z)
-        : index(_index), point(_point), crust(std::max(z,0.f)) {
-        }
-        const uint32_t index; ///< Index of the other plate involved in the event.
-        const Platec::vec2ui point; ///< Coordinates of collision in world space.
-        const float_t crust; ///< Amount of crust that will deform/subduct.
-    };
+
 
     void restart(); //< Replace plates with a new population.
 
-    HeightMap hmap; ///< Height map representing the topography of system.
-    IndexMap imap; ///< Plate index map of the "owner" of each map point.
-    AgeMap amap; ///< Age map of the system's surface (topography).
-    std::vector<std::unique_ptr<plate>> plates; ///< Array of plates that constitute the system.
-    std::vector<plateArea> plate_areas;
-    std::vector<uint32_t> plate_indices_found; ///< Used in update loop to remove plates
 
-    uint32_t aggr_overlap_abs; ///< # of overlapping pixels -> aggregation.
-    float_t  aggr_overlap_rel; ///< % of overlapping area -> aggregation.
-    uint32_t cycle_count; ///< Number of times the system's been restarted.
-    uint32_t erosion_period; ///< # of iterations between global erosion.
-    float_t  folding_ratio; ///< Percent of overlapping crust that's folded.
-    uint32_t iter_count; ///< Iteration count. Used to timestamp new crust.
-    uint32_t max_cycles; ///< Max n:o of times the system'll be restarted.
-    uint32_t max_plates; ///< Number of plates in the initial setting.
-    uint32_t num_plates; ///< Number of plates in the current setting.
-
-    std::vector<std::vector<plateCollision> > collisions;
-    std::vector<std::vector<plateCollision> > subductions;
-
-    float_t peak_Ek; ///< Max total kinetic energy in the system so far.
-    uint32_t last_coll_count; ///< Iterations since last cont. collision.
-
-    const Dimension _worldDimension;
-    SimpleRandom _randsource;
-    uint32_t _steps;
 };
 
 

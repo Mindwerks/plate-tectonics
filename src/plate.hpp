@@ -100,7 +100,6 @@ public:
 class plate : public IPlate
 {
 private:
-    const Dimension worldDimension;
     SimpleRandom randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
     AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
@@ -120,7 +119,7 @@ public:
     /// @param  _x             X of height map's left-top corner on world map.
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
-    plate(const Dimension& worldDimension_, const long seed,const HeightMap&  m, 
+    plate( const long seed,const HeightMap&  m, 
             const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
          const uint32_t plate_age) ;

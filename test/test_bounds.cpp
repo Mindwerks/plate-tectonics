@@ -19,16 +19,18 @@
 
 #include "bounds.hpp"
 #include "gtest/gtest.h"
+#include "world_properties.h"
 
 const Dimension wd(800, 600);
 const Platec::vec2f topLeft(10.2f, 48.9f);
 const Platec::vec2f topLeftWrapping(700.4f, 500.3);
 const Dimension plateDim(500, 400);
-const Bounds b(wd, topLeft, plateDim);
-const Bounds b2(wd, topLeftWrapping, plateDim);
+const Bounds b( topLeft, plateDim);
+const Bounds b2(topLeftWrapping, plateDim);
 
 
 TEST(Bounds, Index) {
+    world_properties::get().setWorldDimension(wd);
     EXPECT_EQ(0u, b.index(Platec::vec2ui(0, 0)));
     EXPECT_EQ(100100u, b.index(Platec::vec2ui(100, 200)));
     EXPECT_EQ(199999u, b.index(Platec::vec2ui(499, 399)));
@@ -114,7 +116,7 @@ TEST(Bounds, IsInLimits) {
 }
 
 TEST(Bounds, Shift) {
-    Bounds bounds(wd, topLeft, plateDim);
+    Bounds bounds(topLeft, plateDim);
     // topLeft = 10.2, 48.9
     bounds.shift(Platec::Vector2D<float_t>(10.7f, 100.1f));
     // now topLeft should be = 20.9, 149.0
@@ -126,7 +128,7 @@ TEST(Bounds, Shift) {
 }
 
 TEST(Bounds, Grow) {
-    Bounds bounds(wd, topLeft, plateDim);
+    Bounds bounds(topLeft, plateDim);
     bounds.grow(Platec::Vector2D<uint32_t>(123, 0));
 
     EXPECT_EQ(623u, bounds.width());
@@ -136,7 +138,7 @@ TEST(Bounds, Grow) {
     EXPECT_EQ(10u, bounds.left());
     EXPECT_EQ(48u, bounds.top());
 
-    Bounds bounds2(wd, topLeft, plateDim);
+    Bounds bounds2(topLeft, plateDim);
     bounds2.grow(Platec::Vector2D<uint32_t>(0, 123));
 
     EXPECT_EQ(523u, bounds2.height());

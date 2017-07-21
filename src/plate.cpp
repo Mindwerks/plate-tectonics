@@ -32,13 +32,13 @@
 #include "plate.hpp"
 #include "heightmap.hpp"
 #include "utils.hpp"
+#include "world_properties.h"
 
 
-plate::plate(const Dimension& worldDimension_, const long seed,const HeightMap&  m, 
+plate::plate( const long seed,const HeightMap&  m, 
         const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
          const uint32_t plate_age) :
-    worldDimension(worldDimension_),
     randsource(seed),
     map(m),        
     age_map(plateDimension), 
@@ -46,8 +46,7 @@ plate::plate(const Dimension& worldDimension_, const long seed,const HeightMap& 
     movement(randsource) {
     const uint32_t plate_area = plateDimension.getArea();
 
-    bounds = std::make_shared<Bounds>(worldDimension,
-                    topLeftCorner, plateDimension);
+    bounds = std::make_shared<Bounds>(topLeftCorner, plateDimension);
 
     
     auto mapItr = map.getData().begin();
@@ -181,7 +180,7 @@ float plate::aggregateCrust(plate& p, Platec::vec2ui point)
     ContinentId activeContinent = p.selectCollisionSegment(point);
 
     // Wrap coordinates around world edges to safeguard subtractions.
-    point = point + worldDimension.getDimensions();
+    point = point + world_properties::get().getWorldDimension().getDimensions();
 
     // Aggregating segment [%u, %u]x[%u, %u] vs. [%u, %u]@[%u, %u]\n",
     //      seg_data[seg_id].x0, seg_data[seg_id].y0,
@@ -233,16 +232,16 @@ void plate::collide(plate& p,const float_t coll_mass)
 const surroundingPoints plate::calculateCrust(const uint32_t index) const
 {
     const auto& position = bounds->getDimension().coordOF(index);
-    const auto& position_world = worldDimension.pointMod(position);
+    const auto& position_world = world_properties::get().getWorldDimension().pointMod(position);
     const auto height = map.get(index);
     auto ret = surroundingPoints();
 
     ret.centerIndex = index;
-    if(position.x() > 0 || bounds->width()==worldDimension.getWidth() )
+    if(position.x() > 0 || bounds->width()==world_properties::get().getWorldDimension().getWidth() )
     {
         if(position_world.x() == 0)
         {
-            ret.westIndex = bounds->index(Platec::vec2ui(worldDimension.getWidth() -1, position.y()));
+            ret.westIndex = bounds->index(Platec::vec2ui(world_properties::get().getWorldDimension().getWidth() -1, position.y()));
         }
         else
         {
@@ -255,9 +254,9 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
     }
 
     
-    if(position.x() < bounds->width()-1 || bounds->width()==worldDimension.getWidth() )
+    if(position.x() < bounds->width()-1 || bounds->width()==world_properties::get().getWorldDimension().getWidth() )
     {
-        if(position_world.x()+1 == worldDimension.getWidth())
+        if(position_world.x()+1 == world_properties::get().getWorldDimension().getWidth())
         {
             ret.eastIndex = bounds->index(Platec::vec2ui(0, position.y()));
         }
@@ -273,11 +272,11 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
 
 
     
-    if(position.y() > 0 || bounds->height()==worldDimension.getHeight() )
+    if(position.y() > 0 || bounds->height()==world_properties::get().getWorldDimension().getHeight() )
     {
         if(position_world.y() == 0)
         {
-            ret.northIndex = bounds->index(Platec::vec2ui( position.x(),worldDimension.getHeight() -1));
+            ret.northIndex = bounds->index(Platec::vec2ui( position.x(),world_properties::get().getWorldDimension().getHeight() -1));
         }
         else
         {
@@ -290,9 +289,9 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
     }
 
       
-    if(position.y() < bounds->height()-1 || bounds->height()==worldDimension.getHeight() )
+    if(position.y() < bounds->height()-1 || bounds->height()==world_properties::get().getWorldDimension().getHeight() )
     {
-        if(position_world.y()+1 == worldDimension.getHeight())
+        if(position_world.y()+1 == world_properties::get().getWorldDimension().getHeight())
         {
             ret.southIndex = bounds->index(Platec::vec2ui(position.x(),0));
         }
@@ -352,19 +351,25 @@ void plate::erode(float lower_bound)
 {
     HeightMap tmpHm(bounds->getDimension());
     
-    auto sinks = flowRivers(findRiverSources(lower_bound));
-   //remove duplicates
-    std::sort( sinks.begin(), sinks.end() );
-    sinks.erase( std::unique( sinks.begin(), sinks.end() ), sinks.end() );
-    for(const auto& index : sinks)
+    if(world_properties::get().isRiver_erosion_enable())
     {
-        map[index] -= (map[index] - lower_bound) * 0.2;
+        auto sinks = flowRivers(findRiverSources(lower_bound));
+       //remove duplicates
+        std::sort( sinks.begin(), sinks.end() );
+        sinks.erase( std::unique( sinks.begin(), sinks.end() ), sinks.end() );
+        for(const auto& index : sinks)
+        {
+            map[index] -= (map[index] - lower_bound) * world_properties::get().getRiver_erosion_strength();
+        }
     }
 
     // Add random noise (10 %) to heightmap.
-    for(auto& val : map.getData())
+    if(world_properties::get().isNoise_enabel())
     {
-        val *= 1.1  - (0.2* (float)randsource.next_double());
+        for(auto& val : map.getData())
+        {
+            val *= world_properties::get().getNoise_strength() - (0.2* (float)randsource.next_double());
+        }
     }
 
 
@@ -429,7 +434,7 @@ void plate::erode(float lower_bound)
             // tallest lower neighbour. Thus first step is make ALL
             // lower neighbours and this point equally tall.
             float median_min_diff = (min_diff - diff_sum)/( 1 + (neighbors.westCrust > 0) + (neighbors.eastCrust > 0) +
-                        (neighbors.northCrust > 0) + (neighbors.southCrust > 0));
+                        (neighbors.northCrust > 0) + (neighbors.southCrust > 0)) * world_properties::get().getDiffuse_strength();
             if(neighbors.westCrust > 0)
             {
                 tmpHm[neighbors.westIndex ] += (w_diff - min_diff) + median_min_diff;
@@ -450,7 +455,7 @@ void plate::erode(float lower_bound)
         }
         else
         {
-            float unit = min_diff / diff_sum;
+            float unit = (min_diff / diff_sum) * world_properties::get().getDiffuse_strength();
 
             // Remove all crust from this location making it as tall as
             // its tallest lower neighbour.
@@ -524,7 +529,7 @@ HeightMap& plate::getHeigthMap() {
 
 void plate::move()
 {
-    movement.move(worldDimension);
+    movement.move(world_properties::get().getWorldDimension());
     bounds->shift(movement.velocityVector());
 }
 
@@ -553,32 +558,32 @@ void plate::setCrust(const Platec::vec2ui& point, float_t z, uint32_t t)
         const uint32_t irgt = bounds->rightAsUintNonInclusive();
         const uint32_t ibtm = bounds->bottomAsUintNonInclusive();
         
-        auto normPoint = worldDimension.normalize(point);
+        auto normPoint = world_properties::get().getWorldDimension().normalize(point);
         
         // Calculate distance of new point from plate edges.
         const uint32_t _lft = ilft - normPoint.x();
-        const uint32_t _rgt = (worldDimension.getWidth() & -(normPoint.x() < ilft)) + normPoint.x() - irgt;
+        const uint32_t _rgt = (world_properties::get().getWorldDimension().getWidth() & -(normPoint.x() < ilft)) + normPoint.x() - irgt;
         const uint32_t _top = itop - normPoint.y();
-        const uint32_t _btm = (worldDimension.getHeight() & -(normPoint.y() < itop)) + normPoint.y() - ibtm;
+        const uint32_t _btm = (world_properties::get().getWorldDimension().getHeight() & -(normPoint.y() < itop)) + normPoint.y() - ibtm;
 
         // Set larger of horizontal/vertical distance to zero.
         // A valid distance is NEVER larger than world's side's length!
-        uint32_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < worldDimension.getWidth());
-        uint32_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < worldDimension.getWidth());
-        uint32_t d_top = _top & -(_top <  _btm) & -(_top < worldDimension.getHeight());
-        uint32_t d_btm = _btm & -(_btm <= _top) & -(_btm < worldDimension.getHeight());
+        uint32_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < world_properties::get().getWorldDimension().getWidth());
+        uint32_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < world_properties::get().getWorldDimension().getWidth());
+        uint32_t d_top = _top & -(_top <  _btm) & -(_top < world_properties::get().getWorldDimension().getHeight());
+        uint32_t d_btm = _btm & -(_btm <= _top) & -(_btm < world_properties::get().getWorldDimension().getHeight());
 
         // Make sure plate doesn't grow bigger than the system it's in!
-        if (bounds->width() + d_lft + d_rgt > worldDimension.getWidth())
+        if (bounds->width() + d_lft + d_rgt > world_properties::get().getWorldDimension().getWidth())
         {
             d_lft = 0;
-            d_rgt = worldDimension.getWidth() - bounds->width();
+            d_rgt = world_properties::get().getWorldDimension().getWidth() - bounds->width();
         }
 
-        if (bounds->height() + d_top + d_btm > worldDimension.getHeight())
+        if (bounds->height() + d_top + d_btm > world_properties::get().getWorldDimension().getHeight())
         {
             d_top = 0;
-            d_btm = worldDimension.getHeight() - bounds->height();
+            d_btm = world_properties::get().getWorldDimension().getHeight() - bounds->height();
         }
 
         // Index out of bounds, but nowhere to grow!
@@ -650,15 +655,15 @@ ContinentId plate::selectCollisionSegment(const Platec::vec2ui& point) const
 
 uint32_t plate::createSegment(const Platec::vec2ui& point)
 {
-    return mySegmentCreator->createSegment(point,worldDimension);
+    return mySegmentCreator->createSegment(point,world_properties::get().getWorldDimension());
 }
 
 ISegmentData& plate::getContinentAt(const Platec::vec2ui& point)
 {
-    return segments->getSegmentData(segments->getContinentAt(point,worldDimension));
+    return segments->getSegmentData(segments->getContinentAt(point,world_properties::get().getWorldDimension()));
 }
 
 const ISegmentData& plate::getContinentAt(const Platec::vec2ui& point) const
 {
-    return segments->getSegmentData(segments->getContinentAt(point,worldDimension));
+    return segments->getSegmentData(segments->getContinentAt(point,world_properties::get().getWorldDimension()));
 }
