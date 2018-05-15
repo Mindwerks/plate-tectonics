@@ -19,91 +19,112 @@
 
 #include "segment_data.hpp"
 
-SegmentData::SegmentData(const Platec::Rectangle& rectangle,
-                         uint32_t area) : _rectangle(rectangle),
-    _area(area), _coll_count(0) {};
+SegmentData::SegmentData(const Platec::vec2ui& pointLeftTop_,
+                        const Platec::vec2ui& pointRightBottom_,
+                         uint32_t area_) 
+                    : pointLeftTop(pointLeftTop_), 
+                      pointRightBottom(pointRightBottom_),      
+                     area(area_), coll_count(0) {}
 
-void SegmentData::enlarge_to_contain(uint32_t x, uint32_t y)
+void SegmentData::enlarge_to_contain(const Platec::vec2ui& point)
 {
-    _rectangle.enlarge_to_contain(x, y);
-};
+    if (point.y() < getTop()) {
+        pointLeftTop = Platec::vec2ui(getLeft(), point.y());
+    } else if (point.y() > getBottom()) {
+        pointRightBottom = Platec::vec2ui(getRight(), point.y());
+    }
+    if (point.x() < getLeft()) {
+        pointLeftTop = Platec::vec2ui( point.x(),getTop());
+    } else if (point.x() > getRight()) {
+         pointRightBottom = Platec::vec2ui( point.x(),getBottom());
+    }
+}
 
 uint32_t SegmentData::getLeft() const
 {
-    return _rectangle.getLeft();
-};
+    return pointLeftTop.x();
+}
 
 uint32_t SegmentData::getRight() const
 {
-    return _rectangle.getRight();
-};
+    return pointRightBottom.x();
+}
 
 uint32_t SegmentData::getTop() const
 {
-    return _rectangle.getTop();
-};
+    return pointLeftTop.y();
+}
 
 uint32_t SegmentData::getBottom() const
 {
-    return _rectangle.getBottom();
-};
+    return pointRightBottom.y();
+}
 
-void SegmentData::shift(uint32_t dx, uint32_t dy)
+void SegmentData::shift(const Platec::vec2ui& shiftDir)
 {
-    _rectangle.shift(dx, dy);
-};
+    pointRightBottom.shift(shiftDir);
+    pointLeftTop.shift(shiftDir);
+}
 
-void SegmentData::setLeft(uint32_t v)
+void SegmentData::setLeft(const uint32_t v)
 {
-    _rectangle.setLeft(v);
-};
+    pointLeftTop = Platec::vec2ui(v, getTop());
+}
 
-void SegmentData::setRight(uint32_t v)
+void SegmentData::setRight(const uint32_t v)
 {
-    _rectangle.setRight(v);
-};
+    pointRightBottom = Platec::vec2ui(v, getBottom());
+}
 
-void SegmentData::setTop(uint32_t v)
+void SegmentData::setTop(const uint32_t v)
 {
-    _rectangle.setTop(v);
-};
+    pointLeftTop = Platec::vec2ui(getLeft(),v);
+}
 
-void SegmentData::setBottom(uint32_t v)
+void SegmentData::setBottom(const uint32_t v)
 {
-    _rectangle.setBottom(v);
-};
+    pointRightBottom = Platec::vec2ui(getRight(),v);
+}
 
 bool SegmentData::isEmpty() const
 {
-    return _area == 0;
-};
+    return area == 0;
+}
 
 void SegmentData::incCollCount()
 {
-    _coll_count++;
-};
+    ++coll_count;
+}
 
 void SegmentData::incArea()
 {
-    _area++;
-};
+    ++area;
+}
 
-void SegmentData::incArea(uint32_t amount)
+void SegmentData::incArea(const uint32_t amount)
 {
-    _area += amount;
-};
+    area += amount;
+}
 
-uint32_t SegmentData::area() const
+uint32_t SegmentData::getArea() const
 {
-    return _area;
-};
+    return area;
+}
 
 uint32_t SegmentData::collCount() const
 {
-    return _coll_count;
+    return coll_count;
 }
 
 void SegmentData::markNonExistent()
 {
-    _area = 0;
+    area = 0;
+}
+
+Platec::vec2ui SegmentData::getPointLeftTop() const {
+    return pointLeftTop;
+}
+
+Platec::vec2ui SegmentData::getPointRightBottom() const {
+    return pointRightBottom;
 }

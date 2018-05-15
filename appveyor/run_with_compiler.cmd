@@ -37,7 +37,7 @@ echo WINDOWS_SDK_VERSION %WINDOWS_SDK_VERSION%
 
 IF "%PYTHON_ARCH%"=="64" (
     ECHO Configuring Windows SDK %WINDOWS_SDK_VERSION% for Python %MAJOR_PYTHON_VERSION% on a 64 bit architecture
-    SET DISTUTILS_USE_SDK=1
+::   SET DISTUTILS_USE_SDK=1
     SET MSSdk=1
     echo "Next step (64)"
     "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Setup\WindowsSdkVer.exe" -q -version:%WINDOWS_SDK_VERSION%

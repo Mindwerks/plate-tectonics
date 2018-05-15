@@ -20,122 +20,105 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <stdexcept> // std::invalid_argument
-#include <cstring>
-#include <string>
-#include "utils.hpp"
-#include "rectangle.hpp"
-#include "world_point.hpp"
 
-using namespace std;
+#include <stdint.h>
+#include <vector>
+
+#include "dimension.h"
+
 
 template <typename Value>
 class Matrix
 {
-public:
-
-    Matrix(unsigned int width, unsigned int height)
-        : _width(width), _height(height)
-    {
-        ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
-        _area = width * height;
-        _data = new Value[_area];
-    }
-    Matrix(Value* data, unsigned int width, unsigned int height)
-        : _width(width), _height(height) {
-        ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
-        _area = width * height;
-        _data = data;
-    }
-
-    Matrix(const Matrix<Value>& other)
-        : _width(other._width), _height(other._height), _area(other._area)
-    {
-        _data = new Value[_area];
-        copy(other);
-    }
-
-    ~Matrix()
-    {
-        delete[] _data;
-    }
-
-    void set_all(const Value& value)
-    {
-        // we cannot use memset to make it very general
-        const uint32_t my_area = area();
-        for (uint32_t i = 0; i < my_area; i++) {
-            _data[i] = value;
-        }
-    }
-    void copy(const Matrix& other)
-    {
-        if (_area != other._area) {
-            _width = other._width;
-            _height = other._height;
-            _area = other._area;
-            delete[] _data;
-            _data = new Value[_area];
-        }
-        for (uint32_t i = 0; i < _area; i++) {
-            _data[i] = other._data[i];
-        }
-    }
-
-    inline const Value& set(unsigned int x, unsigned y, const Value& value)
-    {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        _data[y * _width + x] = value;
-        return value;
-    }
-
-    inline const Value& get(unsigned int x, unsigned y) const
-    {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        return _data[y * _width + x];
-    }
-
-    Matrix<Value>& operator=(const Matrix<Value>& other)
-    {
-        copy(other);
-        return *this;
-    }
-
-    Value& operator[](unsigned int index)
-    {
-        return this->_data[index];
-    }
-
-    const Value& operator[](unsigned int index) const
-    {
-        return this->_data[index];
-    }
-
-    Value* raw_data() const
-    {
-        return _data;
-    }
-    const uint32_t width() const
-    {
-        return _width;
-    }
-    const uint32_t height() const
-    {
-        return _height;
-    }
-    inline uint32_t area() const
-    {
-        return _area;
-    }
 private:
 
-    Value* _data;
-    unsigned int _width;
-    unsigned int _height;
-    unsigned int _area;
+    std::vector<Value> data;
+    Dimension dimension;   
+    
+public:
+    
+    Matrix(const uint32_t width,const uint32_t height)
+        : data(width*height,0.0), dimension(width, height)  {
+    }
+
+    Matrix(const std::vector<Value>& dataVal,
+            const uint32_t width,const uint32_t height)
+        : data(dataVal), dimension(width, height) {
+    }
+    
+    Matrix(const Dimension& dim) : data(dim.getArea(),0.0), dimension(dim) {
+    }
+    
+    Matrix(const std::vector<Value>& dataVal,const Dimension& dim)
+        : data(dataVal), dimension(dim) {
+    }    
+
+    void set_all(const Value value) {
+        std::vector<Value>(data.size(),value).swap(data);
+    }
+    
+
+    void set(const Platec::vec2ui& point, const Value value) {
+        data.at(dimension.indexOf(point)) = value;
+    }
+
+    const Value get(const Platec::vec2ui& point) const {
+        return data.at(dimension.indexOf(point));
+    }
+    
+    const Value get(const uint32_t index) const {
+        return data.at(index);
+    }
+    
+    Value& operator[](uint32_t index) {
+        return data.at(index);
+    }
+    const Value& operator[](uint32_t index) const {
+        return data.at(index);;
+    }        
+
+    const Value& operator[](const Platec::vec2ui& point) const {
+        return data.at(dimension.indexOf(point));;
+    }
+    
+    Value& operator[](const Platec::vec2ui& point) {
+        return data.at(dimension.indexOf(point));
+    }
+
+    const Value* raw_data() const {
+        // cant use .data() because msvc
+        return &data[0];
+    }
+    
+    Value* raw_data() {
+        // cant use .data() because msvc
+        return &data[0];
+    }
+        
+    uint32_t width() const {
+        return dimension.getWidth();
+    }
+    
+    uint32_t height() const {
+       return dimension.getHeight();
+    }
+    uint32_t area() const {
+        return dimension.getArea(); 
+    }
+
+    const Dimension& getDimension() const {
+        return dimension;
+    }
+
+    const std::vector<Value>& getData() const {
+        return data;
+    }
+    std::vector<Value>& getData() {
+        return data;
+    }
 };
 
-typedef Matrix<float> HeightMap;
+typedef Matrix<float_t> HeightMap;
 typedef Matrix<uint32_t> AgeMap;
 typedef Matrix<uint32_t> IndexMap;
 

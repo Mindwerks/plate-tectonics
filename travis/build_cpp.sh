@@ -1,6 +1,6 @@
 #!/bin/bash
 $CXX --version
-cmake . -G 'Unix Makefiles'
+cmake . -DCMAKE_BUILD_TYPE=Release
 make
 cd test
 make

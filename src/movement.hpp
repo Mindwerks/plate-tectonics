@@ -20,87 +20,55 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
+#define NOMINMAX
+
 #include <vector>
 #include <cmath>     // sin, cos
 #include "simplerandom.hpp"
-#include "heightmap.hpp"
-#include "rectangle.hpp"
-#include "segment_data.hpp"
 #include "utils.hpp"
 #include "bounds.hpp"
-
-#define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
-#define INITIAL_SPEED_X 1
-#define DEFORMATION_WEIGHT 2
-
-typedef uint32_t ContinentId;
+#include "dimension.h"
+#include "mass.hpp"
 
 class IPlate;
-class plate;
-class IMass;
-class Mass;
+
 
 class IMovement
 {
 public:
-    virtual Platec::FloatVector velocityUnitVector() const = 0;
-    virtual void decImpulse(const Platec::FloatVector& delta) = 0;
+    virtual Platec::vec2f velocityUnitVector() const = 0;
+    virtual void decImpulse(const Platec::vec2f& delta) = 0;
 };
 
-class Movement : public IMovement
-{
-public:
-    Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
-    void applyFriction(float deformed_mass, float mass);
-    void move();
-    Platec::FloatVector velocityUnitVector() const {
-        return Platec::FloatVector(vx, vy);
-    }
-    Platec::FloatVector velocityVector() const {
-        return Platec::FloatVector(vx * velocity, vy * velocity);
-    }
-    float velocityOnX() const;
-    float velocityOnY() const;
-    float velocityOnX(float length) const;
-    float velocityOnY(float length) const;
-    float dot(float dx_, float dy_) const;
-    float momentum(const Mass& mass) const throw();
-    float getVelocity() const {
-        return velocity;
-    };
-    /// @Deprecated, use velocityUnitVector instead
-    float velX() const throw() {
-        return vx;
-    }
-    /// @Deprecated, use velocityUnitVector instead
-    float velY() const throw() {
-        return vy;
-    }
-    void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
-    void decDx(float delta) {
-        dx -= delta;
-    }
-    void decDy(float delta) {
-        dy -= delta;
-    }
-    void addImpulse(const Platec::FloatVector& impulse) {
-        dx += impulse.x();
-        dy += impulse.y();
-    }
-    void decImpulse(const Platec::FloatVector& delta) {
-        dx -= delta.x();
-        dy -= delta.y();
-    };
+class Movement : public IMovement {
+    
 private:
-    float relativeUnitVelocityOnX(float otherVx) const;
-    float relativeUnitVelocityOnY(float otherVy) const;
+    SimpleRandom randSource;
+    float_t velocity;       ///< Plate's velocity.
+    const signed char rotDir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
+    Platec::vec2f accVec = Platec::vec2f(0.f, 0.f);    ///< X and Y components of plate's acceleration vector.
+    Platec::vec2f velVec = Platec::vec2f(0.f, 0.f); ///< X and Y components of plate's direction unit vector.
+    float_t DeformationWeight = 2.f;
+    
+public:
+    Movement(SimpleRandom randsource);
+    void applyFriction(const float_t deformed_mass,const float_t mass);
+    void move(const Dimension& worldDimension);
+    Platec::vec2f velocityUnitVector() const;
+    Platec::vec2f velocityVector() const;
 
-    SimpleRandom _randsource;
-    const WorldDimension _worldDimension;
-    float velocity;       ///< Plate's velocity.
-    float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
-    float dx, dy;         ///< X and Y components of plate's acceleration vector.
-    float vx, vy;         ///< X and Y components of plate's direction unit vector.
+    Platec::vec2f velocityOn(const float_t length) const;
+    float_t dot(const Platec::vec2f& dotVector) const;
+    float_t momentum(const Mass& mass) const;
+    float_t getVelocity() const;
+
+    void collide(const IMass& thisMass, IPlate& p,const float_t coll_mass);
+
+    void addImpulse(const Platec::vec2f& impulse);
+    void decImpulse(const Platec::vec2f& delta);
+    void setDeformationWeight(float deformationWeight);
+    float getDeformationWeight() const;
+
 };
 
 

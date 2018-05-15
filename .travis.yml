@@ -1,7 +1,17 @@
 language: cpp
+
+dist: trusty
+sudo: required
+
+
+cache:
+    apt: true   
+   
+   
 compiler:
     - gcc
-    - clang
+    - clang   
+   
 env:
     - TARGET=cpp
     - PYVERSION=2.6.9
@@ -13,15 +23,19 @@ env:
 before_install:
     # contains mostly new versions of gcc
     - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - echo "yes" | sudo add-apt-repository "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" -y
     # this one contains python 2.6.9
     - if [ "$PYVERSION" = "2.6.9" ]; then sudo add-apt-repository ppa:fkrull/deadsnakes -y ; fi
     - sudo apt-get update -qq
-    - sudo apt-get install -qq
 
 install:
   - echo "== Install step =="
+  - if [[ "$CC" == gcc* ]]; then sudo apt-get install -y --no-install-recommends gcc-6 g++-6 ; fi
+  - if [[ "$CC" == clang* ]]; then sudo apt-get install -y --no-install-recommends clang-3.8 libc++-dev ; fi
 
 script: 
+  - if [[ "$CC" == gcc* ]]; then export CXX=g++-6 CC=gcc-6 ; fi
+  - if [[ "$CC" == clang* ]]; then export CXXFLAGS="-stdlib=libc++" CXX=clang++-3.8 CC=clang-3.8 ; fi
   - if [ "$TARGET" = "cpp" ]; then sh travis/build_cpp.sh ; fi
   - if [ ! "$TARGET" = "cpp" ]; then cd pybindings ; fi
   - if [ ! "$TARGET" = "cpp" ] && [ "$PYVERSION" = "2.6.9" ]; then source ../travis/prepare_py26.sh ; fi

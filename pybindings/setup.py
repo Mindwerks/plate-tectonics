@@ -1,6 +1,10 @@
 from setuptools import setup, Extension, Command
+from distutils.command.build_ext import build_ext
+
 import os
 import shutil
+import sys
+import re
 
 def ensure_clean_dir(f):
   if os.path.exists(f):
@@ -29,9 +33,31 @@ for f in os.listdir(cpp_src_dir):
   if f.endswith(".cpp"):
     sources.append("%s/%s" % (cpp_src_dir, f))
 
+
+class build_ext_subclass( build_ext ):
+    def build_extensions(self):
+        compileArgs = ""
+        regexClang = re.compile('clang*')
+        regexGCC = re.compile('g*')
+        regexMSVC = re.compile('ms*')
+        if re.match(regexMSVC, self.compiler.compiler_type) is not None:
+            for e in self.extensions:
+                e.extra_compile_args += ['/std:c++14']
+        elif re.match(regexClang, os.environ["CXX"]) is not None:
+            for e in self.extensions:
+                e.extra_compile_args += ['-stdlib=libc++', '-std=c++14']
+                e.extra_link_args += ['-stdlib=libc++']
+        elif re.match(regexGCC, os.environ["CXX"]) is not None:
+            for e in self.extensions:
+                e.extra_compile_args += ['-std=c++14']
+        build_ext.build_extensions(self)
+
+
 pyplatec = Extension('platec',                    
                      sources = sources,
-                     language='c++')
+                    language='c++',
+                  )
+
 
 setup (name = 'PyPlatec',
        version = '1.4.0',
@@ -42,6 +68,7 @@ setup (name = 'PyPlatec',
        ext_modules = [pyplatec],
        include_package_data=True,
        include_dirs = [cpp_src_dir, 'platec_src'],
+       cmdclass = {'build_ext': build_ext_subclass },
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

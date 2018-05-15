@@ -20,10 +20,15 @@
 #ifndef SEGMENT_DATA_HPP
 #define SEGMENT_DATA_HPP
 
-#include "utils.hpp"
-#include "rectangle.hpp"
 
-class ISegmentDataAccess
+#define NOMINMAX
+
+#include "utils.hpp"
+#include "vector2D.h"
+#include <limits>
+
+
+class ISegmentData
 {
 public:
     virtual uint32_t getLeft() const = 0;
@@ -31,48 +36,50 @@ public:
     virtual uint32_t getTop() const = 0;
     virtual uint32_t getBottom() const = 0;
     virtual bool isEmpty() const = 0;
-    virtual uint32_t area() const = 0;
-    virtual uint32_t collCount() const = 0;
-};
-
-class ISegmentData : public ISegmentDataAccess
-{
-public:
+    virtual uint32_t getArea() const = 0;
+    virtual uint32_t collCount() const = 0;    
     virtual void incCollCount() = 0;
     virtual void incArea() = 0;
-    virtual void enlarge_to_contain(uint32_t x, uint32_t y) = 0;
+    virtual void enlarge_to_contain(const Platec::vec2ui& point) = 0;
     virtual void markNonExistent() = 0;
-    virtual void shift(uint32_t dx, uint32_t dy) = 0;
+    virtual void shift(const Platec::vec2ui& shiftDir) = 0;
+    virtual Platec::vec2ui getPointLeftTop() const = 0;
+    virtual Platec::vec2ui getPointRightBottom() const = 0;
 };
 
 /// Container for details about a segmented crust area on this plate.
 class SegmentData : public ISegmentData
 {
-public:
-    SegmentData(const Platec::Rectangle& rectangle,
-                uint32_t area);
-
-    void enlarge_to_contain(uint32_t x, uint32_t y);
-    uint32_t getLeft() const;
-    uint32_t getRight() const;
-    uint32_t getTop() const;
-    uint32_t getBottom() const;
-    void shift(uint32_t dx, uint32_t dy);
-    void setLeft(uint32_t v);
-    void setRight(uint32_t v);
-    void setTop(uint32_t v);
-    void setBottom(uint32_t v);
-    bool isEmpty() const;
-    void incCollCount();
-    void incArea();
-    void incArea(uint32_t amount);
-    uint32_t area() const;
-    uint32_t collCount() const;
-    void markNonExistent();
 private:
-    Platec::Rectangle _rectangle;
-    uint32_t _area; ///< Number of locations this area consists of.
-    uint32_t _coll_count; ///< Number of collisions on this segment.
+    Platec::vec2ui pointLeftTop = Platec::vec2ui(0,0);
+    Platec::vec2ui pointRightBottom = Platec::vec2ui(0,0);
+    uint32_t area; ///< Number of locations this area consists of.
+    uint32_t coll_count; ///< Number of collisions on this segment.    
+public:
+    SegmentData(const Platec::vec2ui& pointLeftTop_,
+                const Platec::vec2ui& pointRightBottom_,
+                uint32_t area_);
+
+    void enlarge_to_contain(const Platec::vec2ui& point) override;
+    uint32_t getLeft() const override;
+    uint32_t getRight() const override;
+    uint32_t getTop() const override;
+    uint32_t getBottom() const override;
+    void shift(const Platec::vec2ui& shiftDir) override;
+    void setLeft(const uint32_t v);
+    void setRight(const uint32_t v);
+    void setTop(const uint32_t v);
+    void setBottom(const uint32_t v);
+    bool isEmpty() const override;
+    void incCollCount() override;
+    void incArea() override;
+    void incArea(const uint32_t amount);
+    uint32_t getArea() const override;
+    uint32_t collCount() const override;
+    void markNonExistent() override;
+    Platec::vec2ui getPointLeftTop() const override;
+    Platec::vec2ui getPointRightBottom() const override;
+
 };
 
 #endif

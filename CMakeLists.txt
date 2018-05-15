@@ -1,6 +1,6 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.1)
 project (PlateTectonics)
-add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/rectangle.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp src/utils.cpp src/simplerandom.cpp src/plate_functions.cpp src/bounds.cpp src/movement.cpp src/mass.cpp src/segments.cpp src/world_point.cpp src/geometry.cpp src/segment_creator.cpp src/segment_data.cpp)
+add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp src/utils.cpp src/simplerandom.cpp src/bounds.cpp src/movement.cpp src/mass.cpp src/segments.cpp src/vector2D.cpp src/dimension.cpp src/segment_creator.cpp src/segment_data.cpp src/world_properties.cpp)
 
 include_directories("src")
 
@@ -42,20 +42,21 @@ if(MSVC)
 	    endif()
 	  endforeach()
 	endif()
-endif()
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
 
-# -fp-model disable floating point optimization, for the sake of having
-# reproducible results across platforms 
-IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-ELSE()
-	set(CMAKE_C_FLAGS "-std=c99 -O3")
-	set(CMAKE_CXX_FLAGS "-O3 -g -rdynamic")
-ENDIF()
+else()
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
+#
+## -fp-model disable floating point optimization, for the sake of having
+## reproducible results across platforms 
+
 
 option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)
 
 IF(WITH_TESTS)
+	enable_testing()
 	add_subdirectory (test)
 ENDIF(WITH_TESTS)
 IF(WITH_EXAMPLES)

@@ -20,11 +20,16 @@
 #ifndef PLATE_HPP
 #define PLATE_HPP
 
+#define NOMINMAX
+
+#include <algorithm>
+
 #include <vector>
+#include <memory>
 #include <cmath>     // sin, cos
+#include <cstring>
 #include "simplerandom.hpp"
 #include "heightmap.hpp"
-#include "rectangle.hpp"
 #include "segment_data.hpp"
 #include "utils.hpp"
 #include "bounds.hpp"
@@ -37,8 +42,75 @@ class IPlate : public IMass, public IMovement
 public:
 };
 
+
+struct surroundingPoints
+{
+public:
+    float_t westCrust = 0.f, eastCrust= 0.f, northCrust= 0.f, southCrust= 0.f;
+    uint32_t westIndex = 0, eastIndex= 0,  northIndex= 0, southIndex= 0, centerIndex=0;
+
+    surroundingPoints(){};
+    
+    bool centerIsLowest() const
+    {
+        return (westCrust +eastCrust+northCrust+eastCrust) == 0;
+    }
+    
+    bool oneIsLower() const
+    {
+        return (westCrust *eastCrust*northCrust*eastCrust) == 0;
+    }
+    
+    uint32_t getLowestIndex()
+    {
+        if(centerIsLowest())
+        {
+            return centerIndex;
+        }
+        float lowest_crust = std::numeric_limits<float_t>::max();
+        uint32_t dest = 0;
+        
+       if (westCrust < lowest_crust && westCrust != 0.f) {
+            lowest_crust = westCrust;
+            dest = westIndex;
+        }
+
+        if (eastCrust < lowest_crust && eastCrust != 0.f) {
+            lowest_crust = eastCrust;
+            dest = eastIndex;
+        }
+
+        if (northCrust < lowest_crust && northCrust != 0.f) {
+            lowest_crust = northCrust;
+            dest = northIndex;
+        }
+
+        if (southCrust < lowest_crust && southCrust != 0.f) {
+            lowest_crust = southCrust;
+            dest = southIndex;
+        }
+        
+        return dest;
+
+    }
+
+};
+
+
 class plate : public IPlate
 {
+private:
+    const Dimension& worldDimension;    
+    SimpleRandom randsource;
+    HeightMap map;        ///< Bitmap of plate's structure/height.
+    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
+    std::shared_ptr<Bounds> bounds;
+    Mass mass;
+    Movement movement;
+    std::shared_ptr<Segments> segments;
+    std::shared_ptr<MySegmentCreator> mySegmentCreator;   
+    uint32_t index;
+    
 public:
 
     /// Initializes plate with the supplied height map.
@@ -49,17 +121,18 @@ public:
     /// @param  _x             X of height map's left-top corner on world map.
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
-    plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
-          uint32_t plate_age, WorldDimension worldDimension);
+    plate( const long seed,const HeightMap&  m, 
+            const Dimension& plateDimension,
+            const Platec::vec2f& topLeftCorner,
+         const uint32_t index) ;
 
-    ~plate();
 
     /// Increment collision counter of the continent at given location.
     ///
     /// @param  wx  X coordinate of collision point on world map.
     /// @param  wy  Y coordinate of collision point on world map.
     /// @return Surface area of the collided continent (HACK!)
-    uint32_t addCollision(uint32_t wx, uint32_t wy);
+    uint32_t addCollision(const Platec::vec2ui& point);
 
     /// Add crust to plate as result of continental collision.
     ///
@@ -68,7 +141,8 @@ public:
     /// @param  z   Amount of crust to add.
     /// @param  t   Time of creation of new crust.
     /// @param activeContinent Segment ID of the continent that's processed.
-    void addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t t, ContinentId activeContinent);
+    void addCrustByCollision(const Platec::vec2ui& point,const float_t z,
+                            const uint32_t time,const ContinentId activeContinent);
 
     /// Simulates subduction of oceanic plate under this plate.
     ///
@@ -83,8 +157,8 @@ public:
     /// @param  t   Time of creation of new crust.
     /// @param  dx  Direction of the subducting plate (X).
     /// @param  dy  Direction of the subducting plate (Y).
-    void addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
-                              float dx, float dy);
+    void addCrustBySubduction(const Platec::vec2ui& originPoint,const float_t sediment,const uint32_t time,
+                              const Platec::vec2f& dir);
 
     /// Add continental crust from this plate as part of other plate.
     ///
@@ -101,7 +175,7 @@ public:
     /// @param  wx  X coordinate of collision point on world map.
     /// @param  wy  Y coordinate of collision point on world map.
     /// @return Amount of crust aggregated to destination plate.
-    float aggregateCrust(plate* p, uint32_t wx, uint32_t wy);
+    float aggregateCrust(plate& p, Platec::vec2ui point);
 
     /// Decrease the speed of plate amount relative to its total mass.
     ///
@@ -112,7 +186,7 @@ public:
     /// a small plate will halt it but have little effect on a huge plate.
     ///
     /// @param  deforming_mass Amount of mass deformed in collision.
-    void applyFriction(float deforming_mass);
+    void applyFriction(const float_t deforming_mass);
 
     /// Method collides two plates according to Newton's laws of motion.
     ///
@@ -125,7 +199,7 @@ public:
     /// @param  wx  X coordinate of collision point on world map.
     /// @param  wy  Y coordinate of collision point on world map.
     /// @param  coll_mass Amount of colliding mass from source plate.
-    void collide(plate& p, uint32_t xw, uint32_t wy, float coll_mass);
+    void collide(plate& p, const float_t coll_mass);
 
     /// Apply plate wide erosion algorithm.
     ///
@@ -140,22 +214,21 @@ public:
     /// @param  wy  Y coordinate of collision point on world map.
     /// @param[in, out] count Destination for the count of collisions.
     /// @param[in, out] count Destination for the % of area that collided.
-    void getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count,
-                          float* ratio) const;
+    const std::pair<uint32_t,float_t> getCollisionInfo(const Platec::vec2ui& point) const;
 
     /// Retrieve the surface area of continent lying at desired location.
     ///
     /// @param  wx  X coordinate of collision point on world map.
     /// @param  wy  Y coordinate of collision point on world map.
     /// @return Area of continent at desired location or 0 if none.
-    uint32_t getContinentArea(uint32_t wx, uint32_t wy) const;
+    uint32_t getContinentArea(const Platec::vec2ui& point) const;
 
     /// Get the amount of plate's crustal material at some location.
     ///
     /// @param  x   Offset on the global world map along X axis.
     /// @param  y   Offset on the global world map along Y axis.
     /// @return     Amount of crust at requested location.
-    float getCrust(uint32_t x, uint32_t y) const;
+    float_t getCrust(const Platec::vec2ui& point) const;
 
     /// Get the timestamp of plate's crustal material at some location.
     ///
@@ -163,15 +236,14 @@ public:
     /// @param  y   Offset on the global world map along Y axis.
     /// @return     Timestamp of creation of crust at the location.
     ///                     Zero is returned if location contains no crust.
-    uint32_t getCrustTimestamp(uint32_t x, uint32_t y) const;
+    uint32_t getCrustTimestamp(const Platec::vec2ui& point) const;
 
-    /// Get pointers to plate's data.
-    ///
-    /// @param  c   Adress of crust height map is stored here.
-    /// @param  t   Adress of crust timestamp map is stored here.
-    void getMap(const float** c, const uint32_t** t) const;
+   
+    AgeMap& getAgeMap();
+    
+    HeightMap& getHeigthMap();
 
-    void move(); ///< Moves plate along it's trajectory.
+    void move();///< Moves plate along it's trajectory.
 
     /// Clear any earlier continental crust partitions.
     ///
@@ -191,7 +263,7 @@ public:
     /// @param  coll_x  Origin of collision on global world map (X).
     /// @param  coll_y  Origin of collision on global world map (Y).
     /// @return the Id of the continent being processed
-    ContinentId selectCollisionSegment(uint32_t coll_x, uint32_t coll_y);
+    ContinentId selectCollisionSegment(const Platec::vec2ui& point) const ;
 
     /// Set the amount of plate's crustal material at some location.
     ///
@@ -201,105 +273,70 @@ public:
     /// @param  y   Offset on the global world map along Y axis.
     /// @param  z   Amount of crust at given location.
     /// @param  t   Time of creation of new crust.
-    void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
+    void setCrust(const Platec::vec2ui& point, float_t z, uint32_t t);
 
-    float getMass() const throw() {
-        return _mass.getMass();
+    float getMass() const {
+        return mass.getMass();
     }
-    float getMomentum() const throw() {
-        return _movement.momentum(_mass);
+    float getMomentum() const  {
+        return movement.momentum(mass);
     }
-    uint32_t getHeight() const throw() {
-        return _bounds->height();
+    uint32_t getHeight() const  {
+        return bounds->height();
     }
-    uint32_t  getLeftAsUint() const throw() {
-        return _bounds->leftAsUint();
+    uint32_t  getLeftAsUint() const  {
+        return bounds->left();
     }
-    uint32_t  getTopAsUint() const throw() {
-        return _bounds->topAsUint();
+    uint32_t  getTopAsUint() const  {
+        return bounds->top();
     }
-    float getVelocity() const throw() {
-        return _movement.getVelocity();
-    }
-
-    Platec::FloatVector velocityUnitVector() const {
-        return _movement.velocityUnitVector();
+    float_t getVelocity() const {
+        return movement.getVelocity();
     }
 
-    /// @Deprecated, use velocityUnitVector instead
-    float getVelX() const throw() {
-        return _movement.velX();
-    }
-    /// @Deprecated, use velocityUnitVector instead
-    float getVelY() const throw() {
-        return _movement.velY();
+    Platec::vec2f velocityUnitVector() const {
+        return movement.velocityUnitVector();
     }
 
-    uint32_t getWidth() const throw() {
-        return _bounds->width();
-    }
-    bool   isEmpty() const throw() {
-        return _mass.null();
-    }
-    float getCx() const {
-        return _mass.getCx();
-    }
-    float getCy() const {
-        return _mass.getCy();
-    }
-    FloatPoint massCenter() const {
-        return _mass.massCenter();
+    const Platec::vec2f getVelocityVector() const {
+        return movement.velocityVector();
     }
 
-    void decImpulse(const Platec::FloatVector& delta) {
-        _movement.decDx(delta.x());
-        _movement.decDy(delta.y());
+
+    uint32_t getWidth() const  {
+        return bounds->width();
+    }
+    bool   isEmpty() const  {
+        return mass.isNull();
     }
 
-    // @Deprecated, use decImpulse instead
-    void decDx(float delta) {
-        _movement.decDx(delta);
+    const Platec::vec2f massCenter() const {
+        return mass.massCenter();
     }
-    void decDy(float delta) {
-        _movement.decDy(delta);
+
+    void decImpulse(const Platec::vec2f& delta) {
+        movement.decImpulse(delta);
     }
 
     // visible for testing
-    void calculateCrust(uint32_t x, uint32_t y, uint32_t index,
-                        float& w_crust, float& e_crust, float& n_crust, float& s_crust,
-                        uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
+    const surroundingPoints calculateCrust(const uint32_t index) const;
 
     // Visible for testing
-    void injectSegments(ISegments* segments)
+    void injectSegments( std::shared_ptr<ISegments> newSegment)
     {
-        delete _segments;
-        _segments = segments;
+        this->segments = std::static_pointer_cast<Segments>(newSegment);
     }
-
-    // Visible for testing
-    void injectBounds(IBounds* bounds)
-    {
-        delete _bounds;
-        _bounds = bounds;
-    }
-
+    void setIndex(uint32_t index);
+    uint32_t getIndex() const;
 private:
 
-    ISegmentData& getContinentAt(int x, int y);
-    const ISegmentData& getContinentAt(int x, int y) const;
-    void findRiverSources(float lower_bound, vector<uint32_t>* sources);
-    void flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& tmp);
-    uint32_t createSegment(uint32_t x, uint32_t y) throw();
+    ISegmentData& getContinentAt(const Platec::vec2ui& point);
+    const ISegmentData& getContinentAt(const Platec::vec2ui& point) const;
+    std::vector<surroundingPoints> findRiverSources(const float_t lower_bound);
+    std::vector<uint32_t> flowRivers(std::vector<surroundingPoints> sources,std::vector<uint32_t> foundIndices = std::vector<uint32_t>());
+    uint32_t createSegment(const Platec::vec2ui& point);
 
-    const WorldDimension _worldDimension;
-    SimpleRandom _randsource;
-    HeightMap map;        ///< Bitmap of plate's structure/height.
-    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
-    IBounds* _bounds;
-    Mass _mass;
-    Movement _movement;
-    ISegments* _segments;
-    MySegmentCreator* _mySegmentCreator;
+
 };
 
 #endif

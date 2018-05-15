@@ -20,54 +20,46 @@
 #ifndef MASS_HPP
 #define MASS_HPP
 
-#include <vector>
-#include <cmath>     // sin, cos
-#include "simplerandom.hpp"
+#define NOMINMAX
+
 #include "heightmap.hpp"
-#include "rectangle.hpp"
-#include "segment_data.hpp"
-#include "utils.hpp"
-#include "bounds.hpp"
-#include "movement.hpp"
+#include "dimension.h"
 
 class Mass;
 
-class MassBuilder
-{
-public:
-    // FIXME: take a HeightMap instead of float*
-    MassBuilder(const float* m, const Dimension& dimension);
-    MassBuilder();
-    void addPoint(uint32_t x, uint32_t y, float crust);
-    Mass build();
+class MassBuilder {
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
-    float cx, cy;         ///< X and Y components of the center of mass of plate.
+    ///< X and Y components of the center of mass of plate.
+    Platec::vec2f center; 
+    
+public:
+    MassBuilder(const HeightMap& map);
+    
+    MassBuilder();
+
+    void addPoint(const Platec::vec2ui& point,const float crust);
+    Mass build();
 };
 
-class IMass
-{
+class IMass {
 public:
     virtual float getMass() const = 0;
-    virtual FloatPoint massCenter() const = 0;
+    virtual const Platec::vec2f  massCenter() const = 0;
 };
 
-class Mass : public IMass
-{
-public:
-    Mass(float mass_, float cx_, float cy_);
-    void incMass(float delta);
-    float getMass() const;
-    float getCx() const;
-    float getCy() const;
-    FloatPoint massCenter() const {
-        return FloatPoint(cx, cy);
-    }
-    bool null() const;
+class Mass : public IMass {
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
-    float cx, cy;         ///< X and Y components of the center of mass of plate.
-    float _totalX, _totalY;
+    ///< X and Y components of the center of mass of plate.
+    Platec::vec2f center;     
+public:
+    Mass(float_t mass_, Platec::vec2f center_);
+    void incMass(float_t delta);
+    float_t getMass() const;
+
+    const Platec::vec2f massCenter() const;
+    bool isNull() const;
 };
 
 #endif

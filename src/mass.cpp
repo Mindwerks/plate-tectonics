@@ -19,87 +19,65 @@
 
 #include "mass.hpp"
 
+#include <algorithm>
+#include "vector2D.h"
 // ----------------------------------------------
 // MassBuilder
 // ----------------------------------------------
 
-MassBuilder::MassBuilder(const float* m, const Dimension& dimension)
-    : mass(0), cx(0), cy(0)
-{
-    uint32_t k;
-    for (uint32_t y = k = 0; y < dimension.getHeight(); ++y) {
-        for (uint32_t x = 0; x < dimension.getWidth(); ++x, ++k) {
-            ASSERT(m[k] >= 0.0f, "Crust should be not negative");
-            addPoint(x, y, m[k]);
-        }
+MassBuilder::MassBuilder(const HeightMap& map)
+    : mass(0), center(0.f, 0.f) {
+    uint32_t index = 0;
+    for (const auto& data : map.getData()) {
+        addPoint(map.getDimension().coordOF(index),data);
+        ++index;
     }
 }
 
 MassBuilder::MassBuilder()
-    : mass(0), cx(0), cy(0)
-{
-
+    : mass(0), center(0.f, 0.f) {
 }
 
-void MassBuilder::addPoint(uint32_t x, uint32_t y, float crust)
-{
-    ASSERT(crust >= 0.0f, "Crust should be not negative");
-    mass += crust;
+void MassBuilder::addPoint(const Platec::vec2ui& point,
+                            const float crust) {
+    auto testCrust = std::max(crust, 0.f);
+    mass += testCrust;
     // Update the center coordinates weighted by mass.
-    cx += x * crust;
-    cy += y * crust;
+    //Explicit convertsion from int to float
+    center.shift(Platec::vec2f(static_cast<float_t>(point.x()), 
+                               static_cast<float_t>(point.y())) * testCrust);
 }
 
-Mass MassBuilder::build()
-{
-    if (mass <= 0) {
-        return Mass(0, 0, 0);
-    } else {
-        ASSERT(mass > 0, "Mass was zero!");
-        float inv_mass = 1 / mass;
-        return Mass(mass, cx * inv_mass, cy * inv_mass);
+Mass MassBuilder::build() {
+    if (mass <= 0.f) {
+        return Mass(0.f, Platec::vec2f(0.0, 0.0));
     }
+    auto inv_mass = 1 / mass;
+
+    return Mass(mass, center * inv_mass);
 }
 
 // ----------------------------------------------
 // Mass
 // ----------------------------------------------
 
-Mass::Mass(float mass_, float cx_, float cy_)
-    : mass(mass_), cx(cx_), cy(cy_), _totalX(0), _totalY(0)
-{
-
+Mass::Mass(float_t mass_, Platec::vec2f center_) :
+        mass(mass_), center(center_) {
 }
 
-void Mass::incMass(float delta)
-{
-    mass += delta;
-    if (mass < 0.0f) {
-        if (mass > -0.01f) {
-            mass = 0.0f;
-        } else {
-            ASSERT(0, "A negative mass is not allowed");
-        }
-    }
+const Platec::vec2f Mass::massCenter() const {
+    return center;
 }
 
-float Mass::getMass() const
-{
+
+void Mass::incMass(float_t delta) {
+    mass = std::max(0.0f, mass + delta);
+}
+
+float_t Mass::getMass() const {
     return mass;
 }
 
-float Mass::getCx() const
-{
-    return cx;
+bool Mass::isNull() const {
+    return mass <= 0.f;
 }
-
-float Mass::getCy() const
-{
-    return cy;
-}
-
-bool Mass::null() const
-{
-    return mass <= 0;
-}
-

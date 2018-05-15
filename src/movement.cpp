@@ -17,6 +17,8 @@
 *  License along with this library; if not, see http://www.gnu.org/licenses/
 *****************************************************************************/
 
+#include <complex>
+
 #include "movement.hpp"
 #include "plate.hpp"
 #include "mass.hpp"
@@ -26,106 +28,115 @@
 #define M_PI 3.141592654
 #endif
 
-Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
-    : _randsource(randsource),
-      velocity(1),
-      rot_dir(randsource.next() % 2 ? 1 : -1),
-      dx(0), dy(0),
-      _worldDimension(worldDimension) {
-    const double angle = 2 * M_PI * _randsource.next_double();
-    vx = cos(angle) * INITIAL_SPEED_X;
-    vy = sin(angle) * INITIAL_SPEED_X;
+Movement::Movement(SimpleRandom randsource)
+    : randSource(randsource),
+      velocity(1.0),
+      rotDir(randsource.next() % 2 ? 1 : -1)
+{
+    const double angle = 2.0 * M_PI * randSource.next_double();
+    velVec = Platec::vec2f(cosf(angle),sinf(angle));
 }
 
-void Movement::applyFriction(float deformed_mass, float mass) {
+void Movement::applyFriction(float_t deformed_mass, float_t mass) {
     if (0.0f == mass) {
-        velocity = 0;
+        velocity = 0.f;
         return;
     }
-    float vel_dec = DEFORMATION_WEIGHT * deformed_mass / mass;
-    vel_dec = vel_dec < velocity ? vel_dec : velocity;
-
-    // Altering the source variable causes the order of calls to
-    // this function to have difference when it shouldn't!
-    // However, it's a hack well worth the outcome. :)
-    velocity -= vel_dec;
+    
+    const auto vel_dec = DeformationWeight * deformed_mass / mass;
+    
+    if(vel_dec < velocity) {
+        velocity -= vel_dec;
+    } else {
+        velocity = 0.f;
+    }
+//    vel_dec = vel_dec < velocity ? vel_dec : velocity;
+//
+//    // Altering the source variable causes the order of calls to
+//    // this function to have difference when it shouldn't!
+//    // However, it's a hack well worth the outcome. :)
+//    velocity -= vel_dec;
 }
 
-void Movement::move() {
+void Movement::move(const Dimension& worldDimension) {
     // Apply any new impulses to the plate's trajectory.
-    vx += dx;
-    vy += dy;
-    dx = 0;
-    dy = 0;
+
+    velVec = velVec + accVec;
+    accVec = Platec::vec2f(0.0, 0.0);
+
 
     // Force direction of plate to be unit vector.
     // Update velocity so that the distance of movement doesn't change.
-    float len = sqrt(vx*vx + vy*vy);
-    ASSERT(len > 0, "Velocity is zero!");
+    auto len = velVec.length();
+    ASSERT(len != 0.f, "Velocity is zero!");
     // MK: Calculating the inverse length and multiplying changes the output data for maps!
     // I have held off on optimizations like these until the more important optimizations
     // are finished
-    vx /= len;
-    vy /= len;
-    velocity += len - 1.0;
-    velocity *= velocity > 0; // Round negative values to zero.
+    velVec = velVec / len;
+    
+    velocity += len - 1.f;
+    velocity = std::max(0.f,velocity); // Round negative values to zero.
 
     // Apply some circular motion to the plate.
     // Force the radius of the circle to remain fixed by adjusting
     // angular velocity (which depends on plate's velocity).
-    uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
-    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
-    float alpha_vel = alpha * velocity;
-    float _cos = cos(alpha_vel);
-    float _sin = sin(alpha_vel);
-    float _vx = vx * _cos - vy * _sin;
-    float _vy = vy * _cos + vx * _sin;
-    vx = _vx;
-    vy = _vy;
+    const float_t world_avg_side = (worldDimension.getWidth() + worldDimension.getHeight()) / 2.f;
+    const float_t alpha = velocity / (world_avg_side * 0.33f);
+    const float_t alpha_vel = rotDir * alpha * velocity;
+    const float_t cosVel = cosf(alpha_vel);
+    const float_t sinVel = sinf(alpha_vel);
+    
+    velVec = Platec::vec2f(velVec.x() * cosVel - velVec.y() * sinVel,
+                            velVec.y() * cosVel + velVec.x() * sinVel);
+    
 }
 
-float Movement::velocityOnX() const {
-    return vx * velocity;
+void Movement::addImpulse(const Platec::vec2f& impulse) {
+    accVec = accVec + impulse;
 }
 
-float Movement::velocityOnY() const {
-    return vy * velocity;
+void Movement::decImpulse(const Platec::vec2f& delta) {
+    accVec = accVec - delta;
 }
 
-float Movement::velocityOnX(float length) const {
-    ASSERT(length >= 0, "Negative length makes no sense");
-    return vx * length;
+void Movement::setDeformationWeight(float deformationWeight) {
+    this->DeformationWeight = deformationWeight;
 }
 
-float Movement::velocityOnY(float length) const {
-    ASSERT(length >= 0, "Negative length makes no sense");
-    return vy * length;
+float Movement::getDeformationWeight() const {
+    return DeformationWeight;
 }
 
-float Movement::dot(float dx_, float dy_) const {
-    return vx * dx_ + vy * dy_;
+float_t Movement::dot(const Platec::vec2f& dotVector) const {
+    return velVec.dotProduct(dotVector);
 }
 
-float Movement::relativeUnitVelocityOnX(float otherVx) const {
-    return vx - otherVx;
+float_t Movement::getVelocity() const {
+    return velocity;
 }
 
-float Movement::relativeUnitVelocityOnY(float otherVy) const {
-    return vy - otherVy;
+Platec::vec2f Movement::velocityOn(const float_t length)  const {
+    return velVec * length;
 }
 
-float Movement::momentum(const Mass& mass) const throw() {
+Platec::vec2f Movement::velocityUnitVector() const {
+    return velVec;
+}
+
+Platec::vec2f Movement::velocityVector() const {
+    return velVec * velocity;
+}
+
+float_t Movement::momentum(const Mass& mass) const {
     return mass.getMass() * velocity;
 }
 
 void Movement::collide(const IMass& thisMass,
-                       IPlate& otherPlate,
-                       uint32_t wx, uint32_t wy, float coll_mass) {
-    const float coeff_rest = 0.0; // Coefficient of restitution.
+                       IPlate& otherPlate,const float_t coll_mass) {
+    const auto coeff_rest = 0.f; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
-    Platec::IntVector massCentersDistance =
-        otherPlate.massCenter().toInt() - thisMass.massCenter().toInt();
-    float distance = massCentersDistance.length();
+    const auto massCentersDistance = otherPlate.massCenter() - thisMass.massCenter();
+    const auto distance = massCentersDistance.length();
     if (distance <= 0) {
         return; // Avoid division by zero!
     }
@@ -133,13 +144,13 @@ void Movement::collide(const IMass& thisMass,
     // Scaling is required at last when impulses are added to plates!
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    Platec::FloatVector collisionDirection = Platec::FloatVector(massCentersDistance.x()/distance,massCentersDistance.y()/distance);
-    Platec::FloatVector relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
+    const auto collisionDirection = massCentersDistance/distance;
+    const auto relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
 
     // Get the dot product of relative velocity vector and collision vector.
     // Then get the projection of v_ab along collision vector.
     // Note that vector n must be a unit vector!
-    const float rel_dot_n = collisionDirection.dotProduct(relativeVelocity);
+    const auto rel_dot_n = collisionDirection.dotProduct(relativeVelocity);
     if (rel_dot_n <= 0) {
         return; // Exit if objects are moving away from each other.
     }
@@ -147,12 +158,12 @@ void Movement::collide(const IMass& thisMass,
     // Calculate the denominator of impulse: n . n * (1 / m_1 + 1 / m_2).
     // Use the mass of the colliding crust for the "donator" plate.
     // MK: Is this a bug? collisionDirection has length 1 because it's a unit vector
-    // I have kept the old code here just in case a float roundoff would change the map
-    float col_len = collisionDirection.length();
-    float denom = col_len * col_len * (1.0 / otherPlate.getMass() + 1.0 / coll_mass);
+    // I have kept the old code here just in case a float_t roundoff would change the map
+    const float_t col_len = std::pow(collisionDirection.length(), 2);
+    const float_t denom = col_len * (1.f / otherPlate.getMass() + 1.f / coll_mass);
 
     // Calculate force of impulse.
-    float J = -(1 + coeff_rest) * rel_dot_n / denom;
+    const float_t J = -(1 + coeff_rest) * rel_dot_n / denom;
 
     // Compute final change of trajectory.
     // The plate that is the "giver" of the impulse should receive a

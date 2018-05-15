@@ -66,21 +66,6 @@ void normalize(float* arr, int size)
             arr[i] = (arr[i] - min) / diff;
 }
 
-class Coord
-{
-public:
-    Coord(int width, int height) : _width(width), _height(height)
-    {};
-    int indexOf(int x, int y) const
-    {
-        ASSERT(x >= 0 && x < _width && y >= 0 && y < _height,
-               "Coordinates are not valid");
-        return y * _width + x;
-    }
-private:
-    int _width, _height;
-};
-
 int sqrdmd(long seed, float* map, int size, float rgh)
 {
     SimpleRandom _randsource(seed);

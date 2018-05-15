@@ -75,12 +75,6 @@ uint32_t SimpleRandom::maximum()
     return 4294967295;
 }
 
-uint32_t simplerandom_cong_num_seeds(const SimpleRandomCong_t * p_cong)
-{
-    (const void *)p_cong;   /* We only use this parameter for type checking. */
-
-    return 1u;
-}
 
 uint32_t simplerandom_cong_seed_array(SimpleRandomCong_t * p_cong, const uint32_t * p_seeds, uint32_t num_seeds, bool mix_extras)
 {
@@ -108,11 +102,7 @@ void simplerandom_cong_seed(SimpleRandomCong_t * p_cong, uint32_t seed)
     /* No sanitize is needed because for Cong, all state values are valid. */
 }
 
-void simplerandom_cong_sanitize(SimpleRandomCong_t * p_cong)
-{
-    /* All state values are valid for Cong. No sanitizing needed. */
-    (const void *) p_cong;
-}
+
 
 uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong)
 {
@@ -132,7 +122,6 @@ void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data,
         {
             --num_data;
             p_cong->cong ^= *p_data++;
-            simplerandom_cong_sanitize(p_cong);
             simplerandom_cong_next(p_cong);
         }
     }
