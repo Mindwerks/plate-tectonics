@@ -24,7 +24,9 @@
 Bounds::Bounds(const Platec::vec2f& positionVal,
                const Dimension& dimensionVal) :
       position(positionVal),
-      dimension(dimensionVal) {
+      dimension(dimensionVal),
+      worldDimensions(world_properties::get().getWorldDimension())
+{
 }
 
 uint32_t Bounds::index(const Platec::vec2ui& p) const {
@@ -74,19 +76,19 @@ bool Bounds::containsWorldPoint(const Platec::vec2ui& p) const {
     auto bot = bottom();
     auto rgt = right();
     if ( bottom() < top())
-        bot += world_properties::get().getWorldDimension().getHeight();
+        bot += worldDimensions.getHeight();
     if ( right() < left())
-        rgt += world_properties::get().getWorldDimension().getWidth();
+        rgt += worldDimensions.getWidth();
 
-    auto tmp = Platec::vec2ui(p.x() % world_properties::get().getWorldDimension().getWidth(),
-                                         p.y() % world_properties::get().getWorldDimension().getHeight());
+    auto tmp = Platec::vec2ui(p.x() % worldDimensions.getWidth(),
+                                         p.y() % worldDimensions.getHeight());
 
     bool x1 = (tmp.x() >= left()) && (tmp.x() < rgt);
-    bool x2 = (tmp.x() + world_properties::get().getWorldDimension().getWidth() >= left())
-           && (tmp.x() + world_properties::get().getWorldDimension().getWidth() < rgt);
+    bool x2 = (tmp.x() + worldDimensions.getWidth() >= left())
+           && (tmp.x() + worldDimensions.getWidth() < rgt);
     bool y1 = (tmp.y() >= top()) && (tmp.y() < bot);
-    bool y2 = (tmp.y() +world_properties::get().getWorldDimension().getHeight() >= top())
-           && (tmp.y() +world_properties::get().getWorldDimension().getHeight() < bot);
+    bool y2 = (tmp.y() +worldDimensions.getHeight() >= top())
+           && (tmp.y() +worldDimensions.getHeight() < bot);
 
     // check if coordinates in bounds
     if ((x1 || x2) && (y1 || y2)) {
@@ -101,22 +103,22 @@ bool Bounds::isInLimits(const Platec::vec2ui& p) const {
 
 void Bounds::shift(const Platec::vec2f& delta) {
     position.shift(delta);
-    if (!world_properties::get().getWorldDimension().contains(position)) {
-        position = world_properties::get().getWorldDimension().wrap(position);
+    if (!worldDimensions.contains(position)) {
+        position = worldDimensions.wrap(position);
     }
 }
 
 void Bounds::grow(const Platec::vec2ui& delta) {
     dimension.grow(delta);
   //  _worldDimension.contains(_dimension.) TODO
-    ASSERT(dimension.getWidth() <= world_properties::get().getWorldDimension().getWidth(),
+    ASSERT(dimension.getWidth() <= worldDimensions.getWidth(),
            "Bounds are larger than the world containing it");
-    ASSERT(dimension.getHeight() <= world_properties::get().getWorldDimension().getHeight(),
+    ASSERT(dimension.getHeight() <= worldDimensions.getHeight(),
            "Bounds taller than the world containing it. delta="
             + Platec::to_string(delta.y())
            + " resulting plate height="
             + Platec::to_string(dimension.getHeight())
-           + " world height=" + Platec::to_string(world_properties::get().getWorldDimension().getHeight()));
+           + " world height=" + Platec::to_string(worldDimensions.getHeight()));
 }
 
 
@@ -124,13 +126,13 @@ std::pair<uint32_t, Platec::vec2ui>
         Bounds::getMapIndex(const Platec::vec2ui& p) const {
      // check if coordinates in bounds
     if (containsWorldPoint(p)) {
-       auto tmp = Platec::vec2ui(p.x() % world_properties::get().getWorldDimension().getWidth(),
-                                 p.y() % world_properties::get().getWorldDimension().getHeight());
+       auto tmp = Platec::vec2ui(p.x() % worldDimensions.getWidth(),
+                                 p.y() % worldDimensions.getHeight());
        // calculate coordinates in Bounds
        const auto x = tmp.x() + ((tmp.x() < left())
-                            ? world_properties::get().getWorldDimension().getWidth() : 0) - left();
+                            ? worldDimensions.getWidth() : 0) - left();
        const auto y = tmp.y() + ((tmp.y() < top())
-                            ? world_properties::get().getWorldDimension().getHeight() : 0) - top();
+                            ? worldDimensions.getHeight() : 0) - top();
 
        tmp = Platec::vec2ui(x, y);
        return std::make_pair(dimension.indexOf(tmp),tmp);

@@ -42,6 +42,7 @@ class Bounds
 private:
     Platec::vec2f position;
     Dimension dimension;
+    const Dimension& worldDimensions;
     
 public:
 

@@ -68,7 +68,7 @@ public:
     void setAggr_overlap_abs(uint32_t aggr_overlap_abs_) noexcept;
     uint32_t getAggr_overlap_abs() const noexcept;
     void setWorldDimension(Dimension worldDimension_) noexcept;
-    Dimension getWorldDimension() const noexcept;
+    const Dimension& getWorldDimension() const noexcept;
     void setRegenerate_crust_enable(bool regenerate_crust_enable_) noexcept;
     bool isRegenerate_crust_enable() const noexcept;
     void setDiffuse_strength(float_t diffuse_strength_) noexcept;

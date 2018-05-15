@@ -20,6 +20,8 @@
 #ifndef SEGMENTS_HPP
 #define SEGMENTS_HPP
 
+#define NOMINMAX
+
 #include <vector>
 #include <cmath>     // sin, cos
 #include "simplerandom.hpp"

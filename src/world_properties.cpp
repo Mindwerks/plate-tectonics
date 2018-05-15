@@ -186,7 +186,7 @@ void world_properties::setWorldDimension(Dimension worldDimension_) noexcept {
     this->worldDimension = Dimension(std::max(5u,worldDimension_.getWidth()),
                                       std::max(5u,worldDimension_.getHeight()));}
 
-Dimension world_properties::getWorldDimension() const noexcept {
+const Dimension& world_properties::getWorldDimension() const noexcept {
     return worldDimension;
 }
 

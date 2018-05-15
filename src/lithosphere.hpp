@@ -80,7 +80,7 @@ private:
         const Platec::vec2ui point; ///< Coordinates of collision in world space.
         const float_t crust; ///< Amount of crust that will deform/subduct.
     };
-    
+    const Dimension& worldDimension;
     HeightMap hmap; ///< Height map representing the topography of system.
     IndexMap imap; ///< Plate index map of the "owner" of each map point.
     AgeMap amap; ///< Age map of the system's surface (topography).
@@ -171,7 +171,7 @@ private:
     void clearPlates();
     void growPlates();
     void removeEmptyPlates();
-    void resolveJuxtapositions(const uint32_t i, const uint32_t ageMapValue, const float_t mapValue, 
+    void resolveJuxtapositions(std::unique_ptr<plate>& pla, const uint32_t ageMapValue, const float_t mapValue, 
                                   const Platec::vec2ui& p);
 
 

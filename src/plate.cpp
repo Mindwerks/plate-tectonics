@@ -38,12 +38,15 @@
 plate::plate( const long seed,const HeightMap&  m, 
         const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
-         const uint32_t plate_age) :
+         const uint32_t index) :
     randsource(seed),
     map(m),        
     age_map(plateDimension), 
     mass(MassBuilder(m).build()),
-    movement(randsource) {
+    movement(randsource),
+    worldDimension(world_properties::get().getWorldDimension()),
+        index(index)
+{
     const uint32_t plate_area = plateDimension.getArea();
 
     bounds = std::make_shared<Bounds>(topLeftCorner, plateDimension);
@@ -57,13 +60,21 @@ plate::plate( const long seed,const HeightMap&  m,
                         auto ret = *mapItr != 0;
                         ++mapItr;
                         return ret;
-                    }, plate_age);
+                    }, index); //use index als default plate age
 
 
     segments = std::make_shared<Segments>(plate_area);
     mySegmentCreator = std::make_shared<MySegmentCreator>(bounds, segments, map);
     segments->setSegmentCreator(mySegmentCreator);
     segments->setBounds(bounds);
+}
+
+void plate::setIndex(uint32_t index) {
+    this->index = index;
+}
+
+uint32_t plate::getIndex() const {
+    return index;
 }
 
 
@@ -180,7 +191,7 @@ float plate::aggregateCrust(plate& p, Platec::vec2ui point)
     ContinentId activeContinent = p.selectCollisionSegment(point);
 
     // Wrap coordinates around world edges to safeguard subtractions.
-    point = point + world_properties::get().getWorldDimension().getDimensions();
+    point = point + worldDimension.getDimensions();
 
     // Aggregating segment [%u, %u]x[%u, %u] vs. [%u, %u]@[%u, %u]\n",
     //      seg_data[seg_id].x0, seg_data[seg_id].y0,
@@ -232,16 +243,16 @@ void plate::collide(plate& p,const float_t coll_mass)
 const surroundingPoints plate::calculateCrust(const uint32_t index) const
 {
     const auto& position = bounds->getDimension().coordOF(index);
-    const auto& position_world = world_properties::get().getWorldDimension().pointMod(position);
+    const auto& position_world = worldDimension.pointMod(position);
     const auto height = map.get(index);
     auto ret = surroundingPoints();
 
     ret.centerIndex = index;
-    if(position.x() > 0 || bounds->width()==world_properties::get().getWorldDimension().getWidth() )
+    if(position.x() > 0 || bounds->width()==worldDimension.getWidth() )
     {
         if(position_world.x() == 0)
         {
-            ret.westIndex = bounds->index(Platec::vec2ui(world_properties::get().getWorldDimension().getWidth() -1, position.y()));
+            ret.westIndex = bounds->index(Platec::vec2ui(worldDimension.getWidth() -1, position.y()));
         }
         else
         {
@@ -254,9 +265,9 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
     }
 
     
-    if(position.x() < bounds->width()-1 || bounds->width()==world_properties::get().getWorldDimension().getWidth() )
+    if(position.x() < bounds->width()-1 || bounds->width()==worldDimension.getWidth() )
     {
-        if(position_world.x()+1 == world_properties::get().getWorldDimension().getWidth())
+        if(position_world.x()+1 == worldDimension.getWidth())
         {
             ret.eastIndex = bounds->index(Platec::vec2ui(0, position.y()));
         }
@@ -272,11 +283,11 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
 
 
     
-    if(position.y() > 0 || bounds->height()==world_properties::get().getWorldDimension().getHeight() )
+    if(position.y() > 0 || bounds->height()==worldDimension.getHeight() )
     {
         if(position_world.y() == 0)
         {
-            ret.northIndex = bounds->index(Platec::vec2ui( position.x(),world_properties::get().getWorldDimension().getHeight() -1));
+            ret.northIndex = bounds->index(Platec::vec2ui( position.x(),worldDimension.getHeight() -1));
         }
         else
         {
@@ -289,9 +300,9 @@ const surroundingPoints plate::calculateCrust(const uint32_t index) const
     }
 
       
-    if(position.y() < bounds->height()-1 || bounds->height()==world_properties::get().getWorldDimension().getHeight() )
+    if(position.y() < bounds->height()-1 || bounds->height()==worldDimension.getHeight() )
     {
-        if(position_world.y()+1 == world_properties::get().getWorldDimension().getHeight())
+        if(position_world.y()+1 == worldDimension.getHeight())
         {
             ret.southIndex = bounds->index(Platec::vec2ui(position.x(),0));
         }
@@ -317,7 +328,7 @@ std::vector<surroundingPoints> plate::findRiverSources(const float_t lower_bound
     for(const auto& val : map.getData())
     {
         tmp = calculateCrust(index);
-        if(val >= lower_bound && !tmp.oneIsLower())
+        if(val >= lower_bound && !tmp.centerIsLowest())
         {
             sources.emplace_back(tmp);
         }
@@ -329,22 +340,22 @@ std::vector<surroundingPoints> plate::findRiverSources(const float_t lower_bound
 std::vector<uint32_t> plate::flowRivers( std::vector<surroundingPoints> sources, std::vector<uint32_t> foundIndices)
 {
     auto newSources = std::vector<surroundingPoints>();
-    if(sources.empty())
-    {
-        return foundIndices;
-    }
+    newSources.reserve(50);    
     
-    newSources.reserve(50);
-    for(auto& val : sources) //get all sources
+    while(!sources.empty())
     {
-        if(!val.centerIsLowest()) // if center is not the lowest
+        newSources.clear();
+        for(auto& val : sources)
         {
-            newSources.emplace_back(calculateCrust(val.getLowestIndex())); //add lowest neighbor as source
-            foundIndices.emplace_back(val.centerIndex);
+            if(val.oneIsLower()) // if center is not the lowest
+            {
+                newSources.emplace_back(calculateCrust(val.getLowestIndex())); //add lowest neighbor as source
+                foundIndices.emplace_back(val.centerIndex);
+            }   
         }
+        sources.swap(newSources);
     }
-
-    return flowRivers(std::move(newSources),std::move(foundIndices));
+    return foundIndices;
 }
 
 void plate::erode(float lower_bound)
@@ -529,7 +540,7 @@ HeightMap& plate::getHeigthMap() {
 
 void plate::move()
 {
-    movement.move(world_properties::get().getWorldDimension());
+    movement.move(worldDimension);
     bounds->shift(movement.velocityVector());
 }
 
@@ -558,32 +569,32 @@ void plate::setCrust(const Platec::vec2ui& point, float_t z, uint32_t t)
         const uint32_t irgt = bounds->rightAsUintNonInclusive();
         const uint32_t ibtm = bounds->bottomAsUintNonInclusive();
         
-        auto normPoint = world_properties::get().getWorldDimension().normalize(point);
+        auto normPoint = worldDimension.normalize(point);
         
         // Calculate distance of new point from plate edges.
         const uint32_t _lft = ilft - normPoint.x();
-        const uint32_t _rgt = (world_properties::get().getWorldDimension().getWidth() & -(normPoint.x() < ilft)) + normPoint.x() - irgt;
+        const uint32_t _rgt = (worldDimension.getWidth() & -(normPoint.x() < ilft)) + normPoint.x() - irgt;
         const uint32_t _top = itop - normPoint.y();
-        const uint32_t _btm = (world_properties::get().getWorldDimension().getHeight() & -(normPoint.y() < itop)) + normPoint.y() - ibtm;
+        const uint32_t _btm = (worldDimension.getHeight() & -(normPoint.y() < itop)) + normPoint.y() - ibtm;
 
         // Set larger of horizontal/vertical distance to zero.
         // A valid distance is NEVER larger than world's side's length!
-        uint32_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < world_properties::get().getWorldDimension().getWidth());
-        uint32_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < world_properties::get().getWorldDimension().getWidth());
-        uint32_t d_top = _top & -(_top <  _btm) & -(_top < world_properties::get().getWorldDimension().getHeight());
-        uint32_t d_btm = _btm & -(_btm <= _top) & -(_btm < world_properties::get().getWorldDimension().getHeight());
+        uint32_t d_lft = _lft & -(_lft <  _rgt) & -(_lft < worldDimension.getWidth());
+        uint32_t d_rgt = _rgt & -(_rgt <= _lft) & -(_rgt < worldDimension.getWidth());
+        uint32_t d_top = _top & -(_top <  _btm) & -(_top < worldDimension.getHeight());
+        uint32_t d_btm = _btm & -(_btm <= _top) & -(_btm < worldDimension.getHeight());
 
         // Make sure plate doesn't grow bigger than the system it's in!
-        if (bounds->width() + d_lft + d_rgt > world_properties::get().getWorldDimension().getWidth())
+        if (bounds->width() + d_lft + d_rgt > worldDimension.getWidth())
         {
             d_lft = 0;
-            d_rgt = world_properties::get().getWorldDimension().getWidth() - bounds->width();
+            d_rgt = worldDimension.getWidth() - bounds->width();
         }
 
-        if (bounds->height() + d_top + d_btm > world_properties::get().getWorldDimension().getHeight())
+        if (bounds->height() + d_top + d_btm > worldDimension.getHeight())
         {
             d_top = 0;
-            d_btm = world_properties::get().getWorldDimension().getHeight() - bounds->height();
+            d_btm = worldDimension.getHeight() - bounds->height();
         }
 
         // Index out of bounds, but nowhere to grow!
@@ -655,15 +666,15 @@ ContinentId plate::selectCollisionSegment(const Platec::vec2ui& point) const
 
 uint32_t plate::createSegment(const Platec::vec2ui& point)
 {
-    return mySegmentCreator->createSegment(point,world_properties::get().getWorldDimension());
+    return mySegmentCreator->createSegment(point,worldDimension);
 }
 
 ISegmentData& plate::getContinentAt(const Platec::vec2ui& point)
 {
-    return segments->getSegmentData(segments->getContinentAt(point,world_properties::get().getWorldDimension()));
+    return segments->getSegmentData(segments->getContinentAt(point,worldDimension));
 }
 
 const ISegmentData& plate::getContinentAt(const Platec::vec2ui& point) const
 {
-    return segments->getSegmentData(segments->getContinentAt(point,world_properties::get().getWorldDimension()));
+    return segments->getSegmentData(segments->getContinentAt(point,worldDimension));
 }

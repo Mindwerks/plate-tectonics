@@ -48,7 +48,7 @@ struct surroundingPoints
 public:
     float_t westCrust = 0.f, eastCrust= 0.f, northCrust= 0.f, southCrust= 0.f;
     uint32_t westIndex = 0, eastIndex= 0,  northIndex= 0, southIndex= 0, centerIndex=0;
-    
+
     surroundingPoints(){};
     
     bool centerIsLowest() const
@@ -100,6 +100,7 @@ public:
 class plate : public IPlate
 {
 private:
+    const Dimension& worldDimension;    
     SimpleRandom randsource;
     HeightMap map;        ///< Bitmap of plate's structure/height.
     AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
@@ -107,7 +108,8 @@ private:
     Mass mass;
     Movement movement;
     std::shared_ptr<Segments> segments;
-    std::shared_ptr<MySegmentCreator> mySegmentCreator;    
+    std::shared_ptr<MySegmentCreator> mySegmentCreator;   
+    uint32_t index;
     
 public:
 
@@ -122,7 +124,7 @@ public:
     plate( const long seed,const HeightMap&  m, 
             const Dimension& plateDimension,
             const Platec::vec2f& topLeftCorner,
-         const uint32_t plate_age) ;
+         const uint32_t index) ;
 
 
     /// Increment collision counter of the continent at given location.
@@ -324,6 +326,8 @@ public:
     {
         this->segments = std::static_pointer_cast<Segments>(newSegment);
     }
+    void setIndex(uint32_t index);
+    uint32_t getIndex() const;
 private:
 
     ISegmentData& getContinentAt(const Platec::vec2ui& point);
