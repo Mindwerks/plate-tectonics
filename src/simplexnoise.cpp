@@ -550,7 +550,7 @@ int simplexnoise(int32_t seed, float* map, int width, int height, float persiste
             float fNX = x * inv_width; // we let the x-offset define the circle
             float fNY = y * inv_height; // we let the x-offset define the circle
             float fRdx = (float)(fNX * 2 * PI); // a full circle is two pi radians
-            float fRdy = (float)(fNY * 4 * PI); // a full circle is two pi radians
+            float fRdy = (float)(fNY * 2 * PI); // a full circle is two pi radians
             float a = sinf(fRdx);
             float b = cosf(fRdx);
             float c = sinf(fRdy);
