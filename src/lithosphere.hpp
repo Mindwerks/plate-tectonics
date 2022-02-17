@@ -87,7 +87,7 @@ public:
                 float sea_level,
                 uint32_t _erosion_period, float _folding_ratio,
                 uint32_t aggr_ratio_abs, float aggr_ratio_rel,
-                uint32_t num_cycles, uint32_t _max_plates) throw(std::invalid_argument);
+                uint32_t num_cycles, uint32_t _max_plates); // throw(std::invalid_argument);
 
     ~lithosphere() throw(); ///< Standard destructor.
 
