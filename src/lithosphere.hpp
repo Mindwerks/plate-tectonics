@@ -87,9 +87,9 @@ public:
                 float sea_level,
                 uint32_t _erosion_period, float _folding_ratio,
                 uint32_t aggr_ratio_abs, float aggr_ratio_rel,
-                uint32_t num_cycles, uint32_t _max_plates) throw(std::invalid_argument);
+                uint32_t num_cycles, uint32_t _max_plates) noexcept(false);
 
-    ~lithosphere() throw(); ///< Standard destructor.
+    ~lithosphere() noexcept; ///< Standard destructor.
 
     /**
      * Split the current topography into given number of (rigid) plates.
@@ -100,19 +100,19 @@ public:
      */
     void createPlates();
 
-    uint32_t getCycleCount() const throw() {
+    uint32_t getCycleCount() const noexcept {
         return cycle_count;
     }
-    uint32_t getIterationCount() const throw() {
+    uint32_t getIterationCount() const noexcept {
         return iter_count;
     }
-    const WorldDimension& getWorldDimension() const throw() {
+    const WorldDimension& getWorldDimension() const noexcept {
         return _worldDimension;
     }
-    uint32_t getPlateCount() const throw(); ///< Return number of plates.
-    const uint32_t* getAgemap() const throw(); ///< Return surface age map.
-    float* getTopography() const throw(); ///< Return height map.
-    uint32_t* getPlatesMap() const throw(); ///< Return a map of the plates owning eaach point
+    uint32_t getPlateCount() const noexcept; ///< Return number of plates.
+    const uint32_t* getAgeMap() const noexcept; ///< Return surface age map.
+    float* getTopography() const noexcept; ///< Return height map.
+    uint32_t* getPlatesMap() const noexcept; ///< Return a map of the plates owning eaach point
     void update(); ///< Simulate one step of plate tectonics.
     uint32_t getWidth() const;
     uint32_t getHeight() const;
@@ -154,7 +154,7 @@ private:
     {
     public:
         plateCollision(uint32_t _index, uint32_t x, uint32_t y, float z)
-        throw() : index(_index), wx(x), wy(y), crust(z) {
+        noexcept : index(_index), wx(x), wy(y), crust(z) {
             ASSERT(crust >= 0, "Crust must be a positive value");
         }
         uint32_t index; ///< Index of the other plate involved in the event.
@@ -186,8 +186,8 @@ private:
     vector<vector<plateCollision> > collisions;
     vector<vector<plateCollision> > subductions;
 
-    float peak_Ek; ///< Max total kinetic energy in the system so far.
-    uint32_t last_coll_count; ///< Iterations since last cont. collision.
+    float peak_Ek{}; ///< Max total kinetic energy in the system so far.
+    uint32_t last_coll_count{}; ///< Iterations since last cont. collision.
 
     const WorldDimension _worldDimension;
     SimpleRandom _randsource;

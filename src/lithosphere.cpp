@@ -70,12 +70,12 @@ void lithosphere::createSlowNoise(float* tmp, const WorldDimension& tmpDim)
 
 lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_level,
                          uint32_t _erosion_period, float _folding_ratio, uint32_t aggr_ratio_abs,
-                         float aggr_ratio_rel, uint32_t num_cycles, uint32_t _max_plates) throw(invalid_argument) :
+                         float aggr_ratio_rel, uint32_t num_cycles, uint32_t _max_plates) noexcept(false) :
     hmap(width, height),
     amap(width, height),
     imap(width, height),
     prev_imap(width, height),
-    plates(0),
+    plates(nullptr),
     plate_indices_found(_max_plates),
     plate_areas(_max_plates),
     aggr_overlap_abs(aggr_ratio_abs),
@@ -341,7 +341,7 @@ uint32_t lithosphere::getPlateCount() const throw()
     return num_plates;
 }
 
-const uint32_t* lithosphere::getAgemap() const throw()
+const uint32_t* lithosphere::getAgeMap() const throw()
 {
     return amap.raw_data();
 }
@@ -471,13 +471,13 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                 const uint32_t prev_timestamp = plates[imap[k]]->
                                                 getCrustTimestamp(x_mod, y_mod);
                 const uint32_t this_timestamp = this_age[j];
-                const uint32_t prev_is_bouyant = (hmap[k] > this_map[j]) |
+                const uint32_t prev_is_buoyant = (hmap[k] > this_map[j]) |
                                                  ((hmap[k] + 2 * FLT_EPSILON > this_map[j]) &
                                                   (hmap[k] < 2 * FLT_EPSILON + this_map[j]) &
                                                   (prev_timestamp >= this_timestamp));
 
                 // Handle subduction of oceanic crust as special case.
-                if (this_is_oceanic & prev_is_bouyant) {
+                if (this_is_oceanic & prev_is_buoyant) {
                     // This plate will be the subducting one.
                     // The level of effect that subduction has
                     // is directly related to the amount of water
@@ -554,7 +554,7 @@ void lithosphere::updateCollisions()
             // Find the minimum count of collisions between two
             // continents on different plates.
             // It's minimum because large plate will get collisions
-            // from all over where as smaller plate will get just
+            // from all over whereas smaller plate will get just
             // a few. It's those few that matter between these two
             // plates, not what the big plate has with all the
             // other plates around it.
@@ -753,7 +753,7 @@ void lithosphere::restart()
 
         const uint32_t map_area = _worldDimension.getArea();
 
-        cycle_count += max_cycles > 0; // No increment if running for ever.
+        cycle_count += max_cycles > 0; // No increment if running forever.
         if (cycle_count > max_cycles)
             return;
 
