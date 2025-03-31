@@ -49,14 +49,6 @@ if(MSVC)
 	endif()
 endif()
 
-# -fp-model disable floating point optimization, for the sake of having
-# reproducible results across platforms 
-IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-ELSE()
-	set(CMAKE_C_FLAGS "-std=c99 -O3")
-	set(CMAKE_CXX_FLAGS "-O3 -g -rdynamic")
-ENDIF()
-
 option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)
 
