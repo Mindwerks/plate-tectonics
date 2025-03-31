@@ -24,6 +24,12 @@
 #include "simplexnoise.hpp"
 #include "utils.hpp"
 
+#if (defined(_MSC_VER) && defined(_M_X64)) || \
+    (defined(__APPLE__) && defined(__clang__))
+#define sinf(x) static_cast<float>(sin(static_cast<double>(x)))
+#define cosf(x) static_cast<float>(cos(static_cast<double>(x)))
+#endif
+
 static const float SQRDMD_ROUGHNESS = 0.35f;
 static const float SIMPLEX_PERSISTENCE = 0.25f;
 #define PI 3.14159265
@@ -41,7 +47,7 @@ static uint32_t nearest_pow(uint32_t num)
 
 void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom randsource)
 {
-    long seed = randsource.next();
+    int64_t seed = randsource.next();
     uint32_t width = tmpDim.getWidth();
     uint32_t height = tmpDim.getHeight();
     float persistence = 0.25f;

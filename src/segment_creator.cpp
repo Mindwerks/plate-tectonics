@@ -108,17 +108,17 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
     uint32_t lines_processed;
     Platec::Rectangle rect(_worldDimension, x, x, y, y);
     SegmentData* pData = new SegmentData(rect, 0);
-    static vector<uint32_t>* spans_todo = NULL;
-    static vector<uint32_t>* spans_done = NULL;
+    static vector<vector<uint32_t> > spans_todo;
+    static vector<vector<uint32_t> > spans_done;
     static uint32_t spans_size = 0;
     // MK: This code was originally allocating the 2D arrays per function call.
     // This was eating up a tremendous amount of cpu.
     // They are now static and they grow as needed, which turns out to be seldom.
     if (spans_size < bounds_height) {
-        delete[] spans_todo;
-        delete[] spans_done;
-        spans_todo = new vector<uint32_t>[bounds_height];
-        spans_done = new vector<uint32_t>[bounds_height];
+        spans_todo.clear();
+        spans_done.clear();
+        spans_todo.resize(bounds_height);
+        spans_done.resize(bounds_height);
         spans_size = bounds_height;
     }
     _segments->setId(origin_index, ID);
@@ -135,7 +135,7 @@ ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw(
             if (spans_todo[line].empty())
                 continue;
 
-            scanSpans(line, start, end, spans_todo, spans_done);
+            scanSpans(line, start, end, spans_todo.data(), spans_done.data());
 
             if (start > end) // Nothing to do here anymore...
                 continue;

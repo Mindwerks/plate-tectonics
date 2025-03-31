@@ -26,6 +26,12 @@
 #define M_PI 3.141592654
 #endif
 
+#if (defined(_MSC_VER) && defined(_M_X64)) || \
+    (defined(__APPLE__) && defined(__clang__))
+#define sin(x) static_cast<float>(sin(static_cast<double>(x)))
+#define cos(x) static_cast<float>(cos(static_cast<double>(x)))
+#endif
+
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
       velocity(1),

@@ -31,7 +31,7 @@ Segments::~Segments()
     delete[] segment;
     segment = NULL;
     _area = 0;
-    for (int i=0; i<seg_data.size(); i++) {
+    for (int i = 0; i < seg_data.size(); i++) {
         delete seg_data[i];
     }
 }
@@ -44,6 +44,9 @@ uint32_t Segments::area()
 void Segments::reset()
 {
     memset(segment, -1, sizeof(uint32_t) * _area);
+    for (int i = 0; i < seg_data.size(); i++) {
+        delete seg_data[i];
+    }
     seg_data.clear();
 }
 

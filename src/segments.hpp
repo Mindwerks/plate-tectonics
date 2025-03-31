@@ -37,6 +37,7 @@ typedef uint32_t ContinentId;
 class ISegments
 {
 public:
+    virtual ~ISegments() {}
     virtual uint32_t area() = 0;
     virtual void reset() = 0;
     virtual void reassign(uint32_t newarea, uint32_t* tmps) = 0;
