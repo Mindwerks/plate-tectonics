@@ -59,8 +59,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           cd test
-          ctest -C Release --output-on-failure
-
+          ctest -C RelWithDebInfo --output-on-failure
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
