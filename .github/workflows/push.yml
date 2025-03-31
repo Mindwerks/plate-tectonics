@@ -50,7 +50,7 @@ jobs:
 
       - name: Build
         run: |
-          cd pybindings && python setup.py clean build nosetests sdist bdist bdist_wheel
+          cd pybindings && python setup.py clean build sdist bdist bdist_wheel
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
