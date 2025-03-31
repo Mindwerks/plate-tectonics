@@ -1,0 +1,82 @@
+name: Workflow
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: "Build for Python ${{ matrix.python }}"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+          - 2.7.18
+#          - 3.4.10 broken?
+          - 3.6.15
+          - 3.8.20
+          - 3.10.16
+          - 3.11.11
+          - 3.12.8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update; sudo apt install build-essential libssl-dev zlib1g-dev \
+          libbz2-dev libreadline-dev libsqlite3-dev curl git \
+          libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+      - name: Build Plate Tectonics
+        run: |
+          cmake . -G "Unix Makefiles"
+          make -j2
+
+      - name: Test Plate Tectonics
+        run: |
+          cd test
+          make -j2
+          ./PlateTectonicsTests
+
+      - name: Install python
+        uses: gabrielfalcao/pyenv-action@v18
+        with:
+          default: "${{ matrix.python }}"
+          command: pip install -U pip wheel setuptools twine # upgrade pip after installing python
+
+      - name: Build
+        run: |
+          cd pybindings && python setup.py clean build sdist bdist bdist_wheel
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-build-${{ matrix.python }}
+          path: pybindings/dist/
+
+  collect-artifacts:
+    name: "Collect All Artefacts"
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts/
+
+      - name: Package all artifacts
+        run: |
+          mkdir -p final-builds
+          find all-artifacts/ -type f -exec mv {} final-builds/ \;
+          ls -lah final-builds/
+
+      - name: Upload final artifact package
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-python-builds
+          path: final-builds/

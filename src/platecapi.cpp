@@ -74,7 +74,7 @@ const uint32_t* platec_api_get_agemap(uint32_t id)
     if (!litho)
         return NULL;
 
-    return litho->getAgemap();
+    return litho->getAgeMap();
 }
 
 float* platec_api_get_heightmap(void *pointer)
