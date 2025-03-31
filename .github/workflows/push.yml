@@ -31,7 +31,18 @@ jobs:
           libbz2-dev libreadline-dev libsqlite3-dev curl git \
           libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
-      - name: Install python version
+      - name: Build Plate Tectonics
+        run: |
+          cmake . -G "Unix Makefiles"
+          make -j2
+
+      - name: Test Plate Tectonics
+        run: |
+          cd test
+          make -j2
+          ./test_plate_tectonics
+
+      - name: Install python
         uses: gabrielfalcao/pyenv-action@v18
         with:
           default: "${{ matrix.python }}"
