@@ -78,13 +78,9 @@ jobs:
           Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
 
       - name: Install python (Windows)
-#        shell: powershell
         if: matrix.os == 'windows-latest'
         run: |
           choco install pyenv-win
-#          $env:PATH += ";$HOME\.pyenv\bin;$HOME\.pyenv\shims"
-#          echo "$HOME\.pyenv\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-#          echo "$HOME\.pyenv\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           pyenv install ${{ matrix.python }}
           pyenv global ${{ matrix.python }}
           pyenv rehash
