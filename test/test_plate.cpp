@@ -385,7 +385,7 @@ TEST(Plate, addCrustByCollision)
     EXPECT_EQ(99, mSegments->getContinentAt(worldPointX, worldPointY));
 
     // The activeContinent should contains the point
-    ASSERT_EQ(false, NULL==mSeg->enlargedPoint());
+    ASSERT_EQ(false, nullptr==mSeg->enlargedPoint());
     EXPECT_EQ(70, mSeg->enlargedPoint()->getX());
     EXPECT_EQ(50, mSeg->enlargedPoint()->getY());
 

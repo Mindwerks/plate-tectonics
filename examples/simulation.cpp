@@ -51,7 +51,7 @@ char DEFAULT_FILENAME[] = "simulation";
 
 void fill_params(Params& params, int argc, char* argv[])
 {
-    srand(time(NULL));
+    srand(time(nullptr));
     params.seed = rand();
     params.width = 600;
     params.height = 400;
