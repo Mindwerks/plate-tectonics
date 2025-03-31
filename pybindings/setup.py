@@ -29,9 +29,14 @@ for f in os.listdir(cpp_src_dir):
   if f.endswith(".cpp"):
     sources.append("%s/%s" % (cpp_src_dir, f))
 
-pyplatec = Extension('platec',                    
-                     sources = sources,
-                     language='c++')
+pyplatec = Extension(
+    'platec',
+    sources=sources,
+    language='c++',
+    include_dirs=[cpp_src_dir, 'platec_src'],
+    extra_compile_args=['-std=c++17'],  # 🚀 Set C++17 here!
+    extra_link_args=[]
+)
 
 setup (name = 'PyPlatec',
        version = '1.4.1',
