@@ -15,12 +15,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python:
-          - 2.7.18
-          - 3.6.15
-          - 3.8.20
-          - 3.10.16
-          - 3.11.11
-          - 3.12.8
+#          - 2.7.18
+          - 3.6
+          - 3.8
+          - 3.10
+          - 3.11
+          - 3.12
         exclude:
           - os: windows-latest
             python: 2.7.18  # No MSVC support for old 2.7
