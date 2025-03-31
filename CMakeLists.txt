@@ -1,5 +1,10 @@
 cmake_minimum_required (VERSION 3.10)
 project (PlateTectonics)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp src/plate.cpp src/rectangle.cpp src/platecapi.cpp src/simplexnoise.cpp src/noise.cpp src/utils.cpp src/simplerandom.cpp src/plate_functions.cpp src/bounds.cpp src/movement.cpp src/mass.cpp src/segments.cpp src/world_point.cpp src/geometry.cpp src/segment_creator.cpp src/segment_data.cpp)
 
 include_directories("src")
@@ -43,14 +48,6 @@ if(MSVC)
 	  endforeach()
 	endif()
 endif()
-
-# -fp-model disable floating point optimization, for the sake of having
-# reproducible results across platforms 
-IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-ELSE()
-	set(CMAKE_C_FLAGS "-std=c99 -O3")
-	set(CMAKE_CXX_FLAGS "-O3 -g -rdynamic")
-ENDIF()
 
 option(WITH_EXAMPLES "compile also the example" OFF)
 option(WITH_TESTS "compile also the tests" ON)

@@ -87,14 +87,14 @@ uint32_t simplerandom_cong_seed_array(SimpleRandomCong_t * p_cong, const uint32_
     uint32_t    seed = 0;
     uint32_t      num_seeds_used = 0;
 
-    if (num_seeds >= 1u && p_seeds != NULL)
+    if (num_seeds >= 1u && p_seeds != nullptr)
     {
         seed = p_seeds[0];
         num_seeds_used = 1u;
     }
     simplerandom_cong_seed(p_cong, seed);
 
-    if (mix_extras && p_seeds != NULL)
+    if (mix_extras && p_seeds != nullptr)
     {
         simplerandom_cong_mix(p_cong, p_seeds + num_seeds_used, num_seeds - num_seeds_used);
         num_seeds_used = num_seeds;
@@ -126,7 +126,7 @@ uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong)
 
 void simplerandom_cong_mix(SimpleRandomCong_t * p_cong, const uint32_t * p_data, uint32_t num_data)
 {
-    if (p_data != NULL)
+    if (p_data != nullptr)
     {
         while (num_data)
         {

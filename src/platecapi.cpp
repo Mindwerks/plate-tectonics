@@ -72,7 +72,7 @@ const uint32_t* platec_api_get_agemap(uint32_t id)
 {
     lithosphere* litho = platec_api_get_lithosphere(id);
     if (!litho)
-        return NULL;
+        return nullptr;
 
     return litho->getAgeMap();
 }
@@ -97,7 +97,7 @@ lithosphere* platec_api_get_lithosphere(uint32_t id)
         if (lithospheres[i].id == id)
             return lithospheres[i].data;
 
-    return NULL;
+    return nullptr;
 }
 
 uint32_t platec_api_is_finished(void *pointer)
