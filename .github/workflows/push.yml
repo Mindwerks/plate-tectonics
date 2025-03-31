@@ -86,6 +86,7 @@ jobs:
           $env:PATH += ";$env:PYENV_ROOT\bin;$env:PYENV_ROOT\shims"
           echo "$env:PYENV_ROOT\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo "$env:PYENV_ROOT\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          refreshenv
           pyenv --version
           pyenv install ${{ matrix.python }}
           pyenv global ${{ matrix.python }}          
