@@ -15,10 +15,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python:
-          - "3.8"
+          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
 
     steps:
       - uses: actions/checkout@v4
@@ -59,13 +60,6 @@ jobs:
         run: |
           cd test
           ctest -C Release --output-on-failure
-
-#      - name: Install python (Linux)
-#        if: matrix.os == 'ubuntu-latest'
-#        uses: gabrielfalcao/pyenv-action@v18
-#        with:
-#          default: "${{ matrix.python }}"
-#          command: pip install -U pip wheel setuptools twine # upgrade pip after installing python
 
       - name: Setup Python
         uses: actions/setup-python@v5
