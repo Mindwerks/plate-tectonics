@@ -9,53 +9,93 @@ on:
 
 jobs:
   build:
-    name: "Build for Python ${{ matrix.python }}"
-    runs-on: ubuntu-latest
+    name: "Build for Python ${{ matrix.python }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python:
           - 2.7.18
-#          - 3.4.10 broken?
           - 3.6.15
           - 3.8.20
           - 3.10.16
           - 3.11.11
           - 3.12.8
+        exclude:
+          - os: windows-latest
+            python: 2.7.18  # No MSVC support for old 2.7
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update; sudo apt install build-essential libssl-dev zlib1g-dev \
           libbz2-dev libreadline-dev libsqlite3-dev curl git \
           libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
-      - name: Build Plate Tectonics
+      - name: Install dependencies (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          cmake . -G "Unix Makefiles"
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+
+      - name: Configure CMake (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo
           make -j2
 
-      - name: Test Plate Tectonics
+      - name: Configure CMake (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cmake . -G "Visual Studio 17 2022" -A x64
+          cmake --build . --config RelWithDebInfo
+
+      - name: Run tests (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           cd test
           make -j2
           ./PlateTectonicsTests
 
-      - name: Install python
+      - name: Run tests (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd test
+          ctest -C Release --output-on-failure
+
+      - name: Install python (Linux)
+        if: matrix.os == 'ubuntu-latest'
         uses: gabrielfalcao/pyenv-action@v18
         with:
           default: "${{ matrix.python }}"
           command: pip install -U pip wheel setuptools twine # upgrade pip after installing python
 
-      - name: Build
+      - name: Install pyenv (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          cd pybindings && python setup.py clean build sdist bdist bdist_wheel
+          Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
+
+      - name: Install python (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          pyenv install ${{ matrix.python }}
+          pyenv global ${{ matrix.python }}
+          pyenv rehash
+          setx PATH "%PATH%;%USERPROFILE%\\.pyenv\\pyenv-win\\bin;%USERPROFILE%\\.pyenv\\pyenv-win\\shims"
+          python -m pip install -U pip wheel setuptools twine # upgrade pip after installing python
+
+      - name: Build Python bindings
+        run: |
+          cd pybindings
+          python setup.py clean build sdist bdist_wheel
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-build-${{ matrix.python }}
+          name: python-build-${{ matrix.os }}-${{ matrix.python }}
           path: pybindings/dist/
 
   collect-artifacts:
