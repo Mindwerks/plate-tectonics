@@ -60,7 +60,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           cd test
-          make -j$(nproc)
+          make -j2
           ./PlateTectonicsTests
 
       - name: Run tests (Windows)
