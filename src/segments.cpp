@@ -29,7 +29,7 @@ Segments::Segments(uint32_t plate_area)
 Segments::~Segments()
 {
     delete[] segment;
-    segment = NULL;
+    segment = nullptr;
     _area = 0;
     for (int i = 0; i < seg_data.size(); i++) {
         delete seg_data[i];

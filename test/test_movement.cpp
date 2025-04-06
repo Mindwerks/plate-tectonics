@@ -139,7 +139,7 @@ public:
         : _velocityUnitVector(velocityUnitVector),
           _mass(mass),
           _massCenter(massCenter),
-          _decImpulseDelta(NULL)
+          _decImpulseDelta(nullptr)
     { }
 
     ~MockPlate() {
@@ -155,7 +155,7 @@ public:
     }
 
     FloatVector decImpulseDelta() {
-        if (_decImpulseDelta == NULL) throw runtime_error("(MockPlate::decImpulseDelta) Data not ready");
+        if (_decImpulseDelta == nullptr) throw runtime_error("(MockPlate::decImpulseDelta) Data not ready");
         return *_decImpulseDelta;
     }
 
