@@ -74,9 +74,22 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Build Python bindings
+      - name: Build Python bindings (Linux - use cibuildwheel)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          pip install -U pip wheel setuptools twine
+          pip install cibuildwheel
+          # Convert version like "3.10" to "310" for cibuildwheel
+          PYVER=$(echo "${{ matrix.python }}" | tr -d '.')
+          export CIBW_BUILD="cp${PYVER}-*"
+          export CIBW_SKIP="*-musllinux_*"
+          export CIBW_ARCHS_LINUX="x86_64"
+          # Run from root so setup.py can access ../src directory
+          cibuildwheel pybindings --platform linux --output-dir pybindings/dist
+
+      - name: Build Python bindings (macOS/Windows - regular build)
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          pip install -U pip wheel setuptools
           cd pybindings
           python setup.py clean build sdist bdist_wheel
 
