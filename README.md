@@ -1,10 +1,7 @@
 Plate-tectonics
 ===============
-Travis
-[![Build Status](https://travis-ci.org/Mindwerks/plate-tectonics.svg?branch=master)](https://travis-ci.org/Mindweks/plate-tectonics)
-AppVeyor
-[![Build status](https://ci.appveyor.com/api/projects/status/siss20palcy6rbif?svg=true)](https://ci.appveyor.com/project/ftomassetti/plate-tectonics)
 
+[![Build Status](https://github.com/Mindwerks/plate-tectonics/actions/workflows/push.yml/badge.svg)](https://github.com/Mindwerks/plate-tectonics/actions/workflows/push.yml)
 
 This is a library to simulate plate tectonics.
 It is written in C++ and it has Python bindings (as part of this project), as well as Haskell bindings ([hplatec](http://github.com/ftomassetti/hplatec)).
@@ -114,13 +111,13 @@ Currently the test coverage is still poor (but improving!_, tests are present on
 ## Python bindings
 
 Supported versions:
-* Python 2.6 (currently not supported on AppVeyor)
-* Python 2.7
-* Python 3.2 (currently not supported on AppVeyor)
-* Python 3.3
-* Python 3.4
+* Python 3.9+
+* Python 3.10
+* Python 3.11
+* Python 3.12
+* Python 3.13
 
-To use it in your program you can either add a dependency use pip (_pip install PyPlatec_) or build and install it from source code.
+To use it in your program you can either add a dependency using pip (_pip install PyPlatec_) or build and install it from source code.
 
 ### Compile (Python)
 

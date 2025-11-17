@@ -138,7 +138,6 @@ static PyMethodDef PlatecMethods[] = {
     {nullptr, nullptr, 0, nullptr} /* Sentinel */
 };
 
-#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     "platec",     /* m_name */
@@ -150,20 +149,8 @@ static struct PyModuleDef moduledef = {
     nullptr,                /* m_clear */
     nullptr,                /* m_free */
 };
-#endif
 
-#if PY_MAJOR_VERSION >= 3
-#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
-#else
-#define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
-#endif
-
-MOD_INIT(platec)
+PyMODINIT_FUNC PyInit_platec(void)
 {
-#if PY_MAJOR_VERSION >= 3
     return PyModule_Create(&moduledef);
-#else
-    Py_InitModule3("platec",
-                   PlatecMethods, "Plate tectonics simulation");
-#endif
 }
