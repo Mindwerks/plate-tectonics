@@ -1,4 +1,6 @@
 from setuptools import setup, Extension, Command
+from setuptools.command.sdist import sdist
+from setuptools.command.build_ext import build_ext
 import os
 import shutil
 
@@ -14,14 +16,28 @@ def copy_dir_contents(src, dst):
       if (os.path.isfile(full_file_name)):
           shutil.copy(full_file_name, dst)
 
-# If we are compiling from inside the tree we need to move the C++ source code
-# to cpp_src, otherwise if building from a source directory the C++ source code
-# should be already there
-cpp_src_dir = "cpp_src"
+def prepare_cpp_sources():
+  """Copy C++ sources from ../src to cpp_src if needed"""
+  cpp_src_dir = "cpp_src"
+  if os.path.exists("../src"):
+    ensure_clean_dir(cpp_src_dir)
+    copy_dir_contents("../src", cpp_src_dir)
+  return cpp_src_dir
 
-if os.path.exists("../src"):
-  ensure_clean_dir(cpp_src_dir)
-  copy_dir_contents("../src", cpp_src_dir)
+class CustomSdist(sdist):
+  """Custom sdist that ensures cpp_src is populated before creating source dist"""
+  def run(self):
+    prepare_cpp_sources()
+    sdist.run(self)
+
+class CustomBuildExt(build_ext):
+  """Custom build_ext that ensures cpp_src is populated before building"""
+  def run(self):
+    prepare_cpp_sources()
+    build_ext.run(self)
+
+# Prepare C++ sources
+cpp_src_dir = prepare_cpp_sources()
 
 # We add all .cpp files to the sources 
 sources = [ 'platec_src/platecmodule.cpp']
@@ -39,7 +55,7 @@ pyplatec = Extension(
 )
 
 setup (name = 'PyPlatec',
-       version = '1.4.1',
+       version = '1.4.2',
        author = "Federico Tomassetti, Bret Curtis",
        author_email = 'f.tomassetti@gmail.com, psi29a@gmail.com',
        url = "https://github.com/Mindwerks/pyplatec",
@@ -48,6 +64,10 @@ setup (name = 'PyPlatec',
        include_package_data=True,
        include_dirs = [cpp_src_dir, 'platec_src'],
        python_requires='>=3.9',
+       cmdclass={
+           'sdist': CustomSdist,
+           'build_ext': CustomBuildExt,
+       },
        classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
