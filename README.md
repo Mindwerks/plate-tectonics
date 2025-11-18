@@ -111,11 +111,7 @@ Currently the test coverage is still poor (but improving!_, tests are present on
 ## Python bindings
 
 Supported versions:
-* Python 3.9+
-* Python 3.10
-* Python 3.11
-* Python 3.12
-* Python 3.13
+* Python >= 3.9
 
 To use it in your program you can either add a dependency using pip (_pip install PyPlatec_) or build and install it from source code.
 
