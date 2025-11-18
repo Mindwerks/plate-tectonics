@@ -62,8 +62,8 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
             float fRdx = fNX*2.0f*PI; // a full circle is two pi radians
             float fRdy = fNY*4.0f*PI; // a full circle is two pi radians
             float fRdsSin = 1.0f;
-            float a = fRdsSin*sinf(fRdx);
-            float b = fRdsSin*cosf(fRdx);
+            float a = static_cast<float>(fRdsSin*sinf(fRdx));
+            float b = static_cast<float>(fRdsSin*cosf(fRdx));
             float c = fRdsSin*sinf(fRdy);
             float d = fRdsSin*cosf(fRdy);
             float v = scaled_octave_noise_4d(4.0f,
