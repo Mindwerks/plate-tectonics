@@ -13,6 +13,22 @@ class TestGeneration(unittest.TestCase):
         p = platec.create(seed, width, height, 0.65, 60, 0.02, 1000000, 0.33, 2, 10)
         platec.destroy(p)
 
+    def test_create_with_kwargs(self):
+        # Test that keyword arguments work
+        p = platec.create(
+            seed=1,
+            width=100,
+            height=100,
+            sea_level=0.65,
+            erosion_period=60,
+            folding_ratio=0.02,
+            aggr_overlap_abs=1000000,
+            aggr_overlap_rel=0.33,
+            cycle_count=2,
+            num_plates=10
+        )
+        platec.destroy(p)
+
     def test_get_heightmap(self):
         seed = 1
         width = 100

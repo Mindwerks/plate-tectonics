@@ -38,16 +38,19 @@ using namespace std;
 
 plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
+    _worldDimension(worldDimension),
     _randsource(seed),
-    _mass(MassBuilder(m, Dimension(w, h)).build()),
     map(m, w, h),
     age_map(w, h),
-    _worldDimension(worldDimension),
-    _movement(_randsource, worldDimension)
+    _bounds(nullptr),
+    _mass(MassBuilder(m, Dimension(w, h)).build()),
+    _movement(_randsource, worldDimension),
+    _segments(nullptr),
+    _mySegmentCreator(nullptr)
 {
     const uint32_t plate_area = w * h;
 
-    _bounds = new Bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h));
+    _bounds = new Bounds(worldDimension, FloatPoint(static_cast<float>(_x), static_cast<float>(_y)), Dimension(w, h));
 
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds->height(); ++y) {
@@ -122,11 +125,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     dx -= _movement.velocityOnX(dot > 0);
     dy -= _movement.velocityOnY(dot > 0);
 
-    float offset = (float)_randsource.next_double();
-    float offset_sign = 2 * (int)(_randsource.next() % 2) - 1;
+    float offset = static_cast<float>(_randsource.next_double());
+    float offset_sign = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset *= offset * offset * offset_sign;
-    float offset2 = (float)_randsource.next_double();
-    float offset_sign2 = 2 * (int)(_randsource.next() % 2) - 1;
+    float offset2 = static_cast<float>(_randsource.next_double());
+    float offset_sign2 = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset2 *= offset2 * offset2 * offset_sign2;
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset2;
@@ -136,11 +139,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
     if (_bounds->isInLimits(fx, fy))
     {
-        index = _bounds->index(fx, fy);
+        index = _bounds->index(static_cast<uint32_t>(fx), static_cast<uint32_t>(fy));
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);
-            age_map[index] = t * (z > 0);
+            age_map[index] = static_cast<uint32_t>(static_cast<float>(t) * static_cast<float>(z > 0));
 
             map[index] += z;
             _mass.incMass(z);
@@ -332,7 +335,7 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
             }
 
             // Erode this location with the water flow.
-            tmp[index] -= (tmp[index] - lower_bound) * 0.2;
+            tmp[index] -= (tmp[index] - lower_bound) * 0.2f;
         }
 
 
@@ -354,8 +357,8 @@ void plate::erode(float lower_bound)
 
     // Add random noise (10 %) to heightmap.
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
-        float alpha = 0.2 * (float)_randsource.next_double();
-        tmpHm[i] += 0.1 * tmpHm[i] - alpha * tmpHm[i];
+        float alpha = 0.2f * static_cast<float>(_randsource.next_double());
+        tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
     }
 
     map = tmpHm;
@@ -579,7 +582,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_width  = _bounds->width();
         const uint32_t old_height = _bounds->height();
 
-        _bounds->shift(-1.0*d_lft, -1.0*d_top);
+        _bounds->shift(-1.0f*d_lft, -1.0f*d_top);
         _bounds->grow(d_lft + d_rgt, d_top + d_btm);
 
         HeightMap tmph = HeightMap(_bounds->width(), _bounds->height());

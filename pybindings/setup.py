@@ -45,12 +45,23 @@ for f in os.listdir(cpp_src_dir):
   if f.endswith(".cpp"):
     sources.append("%s/%s" % (cpp_src_dir, f))
 
+import sys
+
+# Platform-specific compiler flags
+extra_compile_args = []
+if sys.platform == 'win32':
+    # MSVC uses /std:c++17
+    extra_compile_args = ['/std:c++17']
+else:
+    # GCC/Clang use -std=c++17
+    extra_compile_args = ['-std=c++17']
+
 pyplatec = Extension(
     'platec',
     sources=sources,
     language='c++',
     include_dirs=[cpp_src_dir, 'platec_src'],
-    extra_compile_args=['-std=c++17'],  # 🚀 Set C++17 here!
+    extra_compile_args=extra_compile_args,
     extra_link_args=[]
 )
 

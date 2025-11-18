@@ -34,10 +34,10 @@
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
+      _worldDimension(worldDimension),
       velocity(1),
-      rot_dir(randsource.next() % 2 ? 1 : -1),
-      dx(0), dy(0),
-      _worldDimension(worldDimension) {
+      rot_dir(static_cast<float>(randsource.next() % 2 ? 1 : -1)),
+      dx(0), dy(0) {
     const double angle = 2 * M_PI * _randsource.next_double();
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
@@ -73,14 +73,14 @@ void Movement::move() {
     // are finished
     vx /= len;
     vy /= len;
-    velocity += len - 1.0;
+    velocity += len - 1.0f;
     velocity *= velocity > 0; // Round negative values to zero.
 
     // Apply some circular motion to the plate.
     // Force the radius of the circle to remain fixed by adjusting
     // angular velocity (which depends on plate's velocity).
     uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
-    float alpha = rot_dir * velocity / (world_avg_side * 0.33);
+    float alpha = rot_dir * velocity / (world_avg_side * 0.33f);
     float alpha_vel = alpha * velocity;
     float _cos = cos(alpha_vel);
     float _sin = sin(alpha_vel);
@@ -155,7 +155,7 @@ void Movement::collide(const IMass& thisMass,
     // MK: Is this a bug? collisionDirection has length 1 because it's a unit vector
     // I have kept the old code here just in case a float roundoff would change the map
     float col_len = collisionDirection.length();
-    float denom = col_len * col_len * (1.0 / otherPlate.getMass() + 1.0 / coll_mass);
+    float denom = col_len * col_len * (1.0f / otherPlate.getMass() + 1.0f / coll_mass);
 
     // Calculate force of impulse.
     float J = -(1 + coeff_rest) * rel_dot_n / denom;

@@ -68,7 +68,6 @@ public:
 private:
     float mass;           ///< Amount of crust that constitutes the plate.
     float cx, cy;         ///< X and Y components of the center of mass of plate.
-    float _totalX, _totalY;
 };
 
 #endif

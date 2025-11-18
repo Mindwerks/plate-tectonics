@@ -49,10 +49,10 @@ void calculateCrust(
         uint32_t x_mod_plus_1 = x_mod + 1 == world_width ? 0 : x_mod + 1;
         uint32_t y_mod_minus_1 = y_mod == 0 ? world_height - 1 : y_mod - 1;
         uint32_t y_mod_plus_1 = y_mod + 1 == world_height ? 0 : y_mod + 1;
-        w = w_mask==-1 ? x_mod_minus_1 : 0;
-        e = e_mask==-1 ? x_mod_plus_1 : 0;
-        n = n_mask==-1 ? y_mod_minus_1 : 0;
-        s = s_mask==-1 ? y_mod_plus_1 : 0;
+        w = static_cast<int>(w_mask)==-1 ? x_mod_minus_1 : 0;
+        e = static_cast<int>(e_mask)==-1 ? x_mod_plus_1 : 0;
+        n = static_cast<int>(n_mask)==-1 ? y_mod_minus_1 : 0;
+        s = static_cast<int>(s_mask)==-1 ? y_mod_plus_1 : 0;
 
         // Calculate offsets within map memory.
         w = y * width + w;

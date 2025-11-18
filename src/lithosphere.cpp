@@ -41,8 +41,8 @@ static const float BUOYANCY_BONUS_X = 3;
 static const uint32_t MAX_BUOYANCY_AGE = 20;
 static const float MULINV_MAX_BUOYANCY_AGE = 1.0f / (float)MAX_BUOYANCY_AGE;
 
-static const float RESTART_ENERGY_RATIO = 0.15;
-static const float RESTART_SPEED_LIMIT = 2.0;
+static const float RESTART_ENERGY_RATIO = 0.15f;
+static const float RESTART_SPEED_LIMIT = 2.0f;
 static const uint32_t RESTART_ITERATIONS = 600;
 static const uint32_t NO_COLLISION_TIME_LIMIT = 10;
 
@@ -72,12 +72,12 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
                          uint32_t _erosion_period, float _folding_ratio, uint32_t aggr_ratio_abs,
                          float aggr_ratio_rel, uint32_t num_cycles, uint32_t _max_plates) noexcept(false) :
     hmap(width, height),
-    amap(width, height),
     imap(width, height),
     prev_imap(width, height),
+    amap(width, height),
     plates(nullptr),
-    plate_indices_found(_max_plates),
     plate_areas(_max_plates),
+    plate_indices_found(_max_plates),
     aggr_overlap_abs(aggr_ratio_abs),
     aggr_overlap_rel(aggr_ratio_rel),
     cycle_count(0),
@@ -294,7 +294,7 @@ void lithosphere::createPlates()
         growPlates();
 
         // check all the points of the map are owned
-        for (int i=0; i < map_area; i++) {
+        for (uint32_t i=0; i < map_area; i++) {
             ASSERT(imap[i]<num_plates, "A point was not assigned to any plate");
         }
 
@@ -381,7 +381,7 @@ void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, co
 
         // And take some.
         plates[i]->setCrust(x_mod, y_mod, this_map[j] *
-                            (1.0 - folding_ratio), this_age[j]);
+                            (1.0f - folding_ratio), this_age[j]);
 
         // Add collision to the earlier plate's list.
         collisions[i].push_back(coll);
@@ -396,7 +396,7 @@ void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, co
                             this_map[j]+coll.crust, amap[k]);
 
         plates[imap[k]]->setCrust(x_mod, y_mod, hmap[k]
-                                  * (1.0 - folding_ratio), amap[k]);
+                                  * (1.0f - folding_ratio), amap[k]);
 
         collisions[imap[k]].push_back(coll);
         ++continental_collisions;
@@ -471,13 +471,13 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                 const uint32_t prev_timestamp = plates[imap[k]]->
                                                 getCrustTimestamp(x_mod, y_mod);
                 const uint32_t this_timestamp = this_age[j];
-                const uint32_t prev_is_buoyant = (hmap[k] > this_map[j]) |
-                                                 ((hmap[k] + 2 * FLT_EPSILON > this_map[j]) &
-                                                  (hmap[k] < 2 * FLT_EPSILON + this_map[j]) &
-                                                  (prev_timestamp >= this_timestamp));
+                const bool prev_is_buoyant = (hmap[k] > this_map[j]) ||
+                                             ((hmap[k] + 2 * FLT_EPSILON > this_map[j]) &&
+                                              (hmap[k] < 2 * FLT_EPSILON + this_map[j]) &&
+                                              (prev_timestamp >= this_timestamp));
 
                 // Handle subduction of oceanic crust as special case.
-                if (this_is_oceanic & prev_is_buoyant) {
+                if (this_is_oceanic && prev_is_buoyant) {
                     // This plate will be the subducting one.
                     // The level of effect that subduction has
                     // is directly related to the amount of water
@@ -782,7 +782,7 @@ void lithosphere::restart()
                     const uint32_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
                     const uint32_t a1 =  this_age[j];
 
-                    amap[_worldDimension.indexOf(x_mod, y_mod)] = (h0 *a0 +h1 *a1) /(h0 +h1);
+                    amap[_worldDimension.indexOf(x_mod, y_mod)] = static_cast<uint32_t>((h0 *a0 +h1 *a1) /(h0 +h1));
                     hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
                 }
             }

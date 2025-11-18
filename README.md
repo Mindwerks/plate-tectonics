@@ -113,38 +113,71 @@ Currently the test coverage is still poor (but improving!_, tests are present on
 Supported versions:
 * Python >= 3.9
 
-To use it in your program you can either add a dependency using pip (_pip install PyPlatec_) or build and install it from source code.
+### Quick Start (Python)
 
-### Compile (Python)
+Install using pip:
 
-```
-python setup.py build
+```bash
+pip install PyPlatec
 ```
 
 ### Usage (Python)
 
-The library is quite simple:
+The library is quite simple. `platec.create()` requires all 10 parameters and supports both positional and keyword arguments:
 
 ```python    
     import platec
 
-    p = platec.create(seed=3)
+    # Using positional arguments
+    p = platec.create(3, 512, 512, 0.65, 60, 0.02, 1000000, 0.33, 2, 10)
+    
     while platec.is_finished(p) == 0:
         platec.step(p)
+    
     hm = platec.get_heightmap(p)
     platec.destroy(p)
 ```    
 
 
-Or if you want more control:
+With keyword arguments for clarity:
 
 ```python
     import platec
     
-    p = platec.create(seed=3, width=1000, height=800,
-                      sea_level=0.65,erosion_period=60,
-                      folding_ratio=0.02,aggr_overlap_abs=1000000,
-                      aggr_overlap_rel=0.33,cycle_count=2,num_plates=10)
+    # Using keyword arguments (recommended for readability)
+    p = platec.create(
+        seed=3,
+        width=1000,
+        height=800,
+        sea_level=0.65,
+        erosion_period=60,
+        folding_ratio=0.02,
+        aggr_overlap_abs=1000000,
+        aggr_overlap_rel=0.33,
+        cycle_count=2,
+        num_plates=10
+    )
+    
+    while platec.is_finished(p) == 0:
+        platec.step(p)
+    
+    hm = platec.get_heightmap(p)
+    platec.destroy(p)
+```
+
+### Building from Source (Python)
+
+If you need to build from source instead of using pre-built wheels:
+
+```bash
+cd pybindings
+python setup.py build
+python setup.py install
+```
+
+For development:
+```bash
+pip install -e .
 ```
 
 Plans for the future

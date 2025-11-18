@@ -20,6 +20,7 @@
 #include "platecapi.hpp"
 #include "gtest/gtest.h"
 #include <cstdlib>
+#include <limits>
 #include "simplerandom.hpp"
 #include <math.h>
 
@@ -33,17 +34,24 @@ TEST(Portability, FloatOps)
     for (int i=0; i<2; i++) {
         v *= v + 812345.0123f;
     }
-    EXPECT_FLOAT_EQ((float)1.3347527e+22, v);
+    EXPECT_FLOAT_EQ(1.3347527e+22f, v);
 
+#ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable: 4756)  // Intentional overflow to infinity in this test
+#endif
     for (int i=0; i<3; i++) {
         v *= v + 812345.0123f;
     }
-    EXPECT_FLOAT_EQ(INFINITY, v);
+    EXPECT_FLOAT_EQ(std::numeric_limits<float>::infinity(), v);
 
     for (int i=0; i<95; i++) {
         v *= v + 812345.0123f;
     }
-    EXPECT_FLOAT_EQ(INFINITY, v);
+    EXPECT_FLOAT_EQ(std::numeric_limits<float>::infinity(), v);
+#ifdef _MSC_VER
+    #pragma warning(pop)
+#endif
 }
 
 /* We want the float to behave consistently across platforms */

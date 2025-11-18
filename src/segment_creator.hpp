@@ -40,11 +40,11 @@ class MySegmentCreator : public ISegmentCreator
 public:
     MySegmentCreator(IBounds& bounds, ISegments* segments, HeightMap& map_,
                      const WorldDimension& worldDimension)
-        : _bounds(bounds), _segments(segments), map(map_),
-          _worldDimension(worldDimension)
+        : _worldDimension(worldDimension), _bounds(bounds), _segments(segments), map(map_)
     {
 
     }
+    virtual ~MySegmentCreator() = default;
     /// Separate a continent at (X, Y) to its own partition.
     ///
     /// Method analyzes the pixels 4-ways adjacent at the given location
