@@ -61,8 +61,7 @@ jobs:
       - name: Run tests (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          cd test
-          ctest -C RelWithDebInfo --output-on-failure
+          ctest -C RelWithDebInfo --output-on-failure --test-dir test
 
       - name: Setup Python
         uses: actions/setup-python@v5

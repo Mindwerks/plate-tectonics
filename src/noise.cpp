@@ -64,8 +64,8 @@ void createSlowNoise(float* map, const WorldDimension& tmpDim, SimpleRandom rand
             float fRdsSin = 1.0f;
             float a = static_cast<float>(fRdsSin*sinf(fRdx));
             float b = static_cast<float>(fRdsSin*cosf(fRdx));
-            float c = fRdsSin*sinf(fRdy);
-            float d = fRdsSin*cosf(fRdy);
+            float c = static_cast<float>(fRdsSin*sinf(fRdy));
+            float d = static_cast<float>(fRdsSin*cosf(fRdy));
             float v = scaled_octave_noise_4d(4.0f,
                                              persistence,
                                              0.25f,
