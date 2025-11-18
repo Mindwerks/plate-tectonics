@@ -84,9 +84,9 @@ jobs:
       - name: Build Python bindings (macOS/Windows - regular build)
         if: matrix.os != 'ubuntu-latest'
         run: |
-          pip install -U pip wheel setuptools
+          pip install -U pip build
           cd pybindings
-          python setup.py clean build sdist bdist_wheel
+          python -m build
 
       - name: Run Python tests (all platforms)
         run: |
