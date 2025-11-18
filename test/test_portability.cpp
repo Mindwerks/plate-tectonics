@@ -33,12 +33,12 @@ TEST(Portability, FloatOps)
     for (int i=0; i<2; i++) {
         v *= v + 812345.0123f;
     }
-    EXPECT_FLOAT_EQ((float)1.3347527e+22, v);
+    EXPECT_FLOAT_EQ(1.3347527e+22f, v);
 
     for (int i=0; i<3; i++) {
         v *= v + 812345.0123f;
     }
-    EXPECT_FLOAT_EQ(INFINITY, v);
+    EXPECT_FLOAT_EQ(std::numeric_limits<float>::infinity(), v);
 
     for (int i=0; i<95; i++) {
         v *= v + 812345.0123f;

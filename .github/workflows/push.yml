@@ -88,6 +88,13 @@ jobs:
           cd pybindings
           python setup.py clean build sdist bdist_wheel
 
+      - name: Run Python tests (all platforms)
+        run: |
+          pip install -U pip setuptools wheel
+          cd pybindings
+          python setup.py build_ext --inplace
+          python -m unittest discover -s test -p "test_*.py" -v
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

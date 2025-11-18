@@ -34,10 +34,10 @@
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
+      _worldDimension(worldDimension),
       velocity(1),
       rot_dir(randsource.next() % 2 ? 1 : -1),
-      dx(0), dy(0),
-      _worldDimension(worldDimension) {
+      dx(0), dy(0) {
     const double angle = 2 * M_PI * _randsource.next_double();
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;

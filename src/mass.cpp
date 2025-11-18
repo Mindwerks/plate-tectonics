@@ -66,7 +66,7 @@ Mass MassBuilder::build()
 // ----------------------------------------------
 
 Mass::Mass(float mass_, float cx_, float cy_)
-    : mass(mass_), cx(cx_), cy(cy_), _totalX(0), _totalY(0)
+    : mass(mass_), cx(cx_), cy(cy_)
 {
 
 }

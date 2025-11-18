@@ -45,7 +45,6 @@ public:
     uint32_t maximum();
 private:
     SimpleRandomCong_t* internal;
-    int counter;
 };
 
 #endif

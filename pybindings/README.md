@@ -11,15 +11,26 @@ pip install PyPlatec
 ## Requirements
 
 - Python 3.9 or higher
-- C++17 compatible compiler
+- No compiler needed when installing from PyPI (pre-built wheels available)
 
 ## Quick Start
 
 ```python
 import platec
 
-# Create a simulation
-p = platec.create(seed=3)
+# Create a simulation with keyword arguments (recommended)
+p = platec.create(
+    seed=3,
+    width=512,
+    height=512,
+    sea_level=0.65,
+    erosion_period=60,
+    folding_ratio=0.02,
+    aggr_overlap_abs=1000000,
+    aggr_overlap_rel=0.33,
+    cycle_count=2,
+    num_plates=10
+)
 
 # Run the simulation
 while platec.is_finished(p) == 0:
@@ -32,13 +43,35 @@ hm = platec.get_heightmap(p)
 platec.destroy(p)
 ```
 
-## Advanced Usage
+## API Reference
 
-For more control over the simulation parameters:
+### platec.create()
+
+**Important:** All 10 parameters are required. You can use either positional or keyword arguments.
+
+```python
+platec.create(seed, width, height, sea_level, erosion_period, folding_ratio,
+              aggr_overlap_abs, aggr_overlap_rel, cycle_count, num_plates)
+```
+
+**Parameters:**
+- `seed` (int): Random seed for the simulation
+- `width` (int): Map width in pixels
+- `height` (int): Map height in pixels  
+- `sea_level` (float): Sea level (0.0-1.0, typically 0.65)
+- `erosion_period` (int): Erosion period (typically 60)
+- `folding_ratio` (float): Folding ratio (typically 0.02)
+- `aggr_overlap_abs` (int): Absolute overlap threshold (typically 1000000)
+- `aggr_overlap_rel` (float): Relative overlap threshold (typically 0.33)
+- `cycle_count` (int): Number of cycles (typically 2)
+- `num_plates` (int): Number of plates (typically 10)
+
+**Example with custom parameters:**
 
 ```python
 import platec
 
+# Keyword arguments make the code more readable
 p = platec.create(
     seed=3,
     width=1000,
@@ -52,6 +85,8 @@ p = platec.create(
     num_plates=10
 )
 
+# Or use positional arguments if preferred
+p = platec.create(3, 1000, 800, 0.65, 60, 0.02, 1000000, 0.33, 2, 10)
 # Run simulation...
 ```
 

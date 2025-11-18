@@ -77,8 +77,8 @@ uint32_t SimpleRandom::maximum()
 
 uint32_t simplerandom_cong_num_seeds(const SimpleRandomCong_t * p_cong)
 {
-    (const void *)p_cong;   /* We only use this parameter for type checking. */
-
+    /* We only use this parameter for type checking. */
+    (void)p_cong;
     return 1u;
 }
 
@@ -111,7 +111,7 @@ void simplerandom_cong_seed(SimpleRandomCong_t * p_cong, uint32_t seed)
 void simplerandom_cong_sanitize(SimpleRandomCong_t * p_cong)
 {
     /* All state values are valid for Cong. No sanitizing needed. */
-    (const void *) p_cong;
+    (void)p_cong;
 }
 
 uint32_t simplerandom_cong_next(SimpleRandomCong_t * p_cong)

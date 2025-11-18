@@ -38,16 +38,19 @@ using namespace std;
 
 plate::plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
              uint32_t plate_age, WorldDimension worldDimension) :
+    _worldDimension(worldDimension),
     _randsource(seed),
-    _mass(MassBuilder(m, Dimension(w, h)).build()),
     map(m, w, h),
     age_map(w, h),
-    _worldDimension(worldDimension),
-    _movement(_randsource, worldDimension)
+    _bounds(nullptr),
+    _mass(MassBuilder(m, Dimension(w, h)).build()),
+    _movement(_randsource, worldDimension),
+    _segments(nullptr),
+    _mySegmentCreator(nullptr)
 {
     const uint32_t plate_area = w * h;
 
-    _bounds = new Bounds(worldDimension, FloatPoint(_x, _y), Dimension(w, h));
+    _bounds = new Bounds(worldDimension, FloatPoint(static_cast<float>(_x), static_cast<float>(_y)), Dimension(w, h));
 
     uint32_t k;
     for (uint32_t y = k = 0; y < _bounds->height(); ++y) {
@@ -122,11 +125,11 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     dx -= _movement.velocityOnX(dot > 0);
     dy -= _movement.velocityOnY(dot > 0);
 
-    float offset = (float)_randsource.next_double();
-    float offset_sign = 2 * (int)(_randsource.next() % 2) - 1;
+    float offset = static_cast<float>(_randsource.next_double());
+    float offset_sign = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset *= offset * offset * offset_sign;
-    float offset2 = (float)_randsource.next_double();
-    float offset_sign2 = 2 * (int)(_randsource.next() % 2) - 1;
+    float offset2 = static_cast<float>(_randsource.next_double());
+    float offset_sign2 = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset2 *= offset2 * offset2 * offset_sign2;
     dx = 10 * dx + 3 * offset;
     dy = 10 * dy + 3 * offset2;
@@ -136,7 +139,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
     if (_bounds->isInLimits(fx, fy))
     {
-        index = _bounds->index(fx, fy);
+        index = _bounds->index(static_cast<uint32_t>(fx), static_cast<uint32_t>(fy));
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);

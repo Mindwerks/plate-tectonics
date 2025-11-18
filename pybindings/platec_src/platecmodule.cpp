@@ -14,7 +14,7 @@ typedef INT32 int32_t;
 #include <stdint.h>
 #endif
 
-static PyObject * platec_create(PyObject *self, PyObject *args)
+static PyObject * platec_create(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     unsigned int seed;
     unsigned int width;
@@ -26,9 +26,25 @@ static PyObject * platec_create(PyObject *self, PyObject *args)
     float aggr_overlap_rel;
     unsigned int cycle_count;
     unsigned int num_plates;
-    if (!PyArg_ParseTuple(args, "IIIfIfIfII", &seed, &width, &height, &sea_level, &erosion_period,
-                          &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
-                          &cycle_count, &num_plates))
+    
+    static char *kwlist[] = {
+        (char*)"seed",
+        (char*)"width",
+        (char*)"height",
+        (char*)"sea_level",
+        (char*)"erosion_period",
+        (char*)"folding_ratio",
+        (char*)"aggr_overlap_abs",
+        (char*)"aggr_overlap_rel",
+        (char*)"cycle_count",
+        (char*)"num_plates",
+        nullptr
+    };
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "IIIfIfIfII", kwlist,
+                                      &seed, &width, &height, &sea_level, &erosion_period,
+                                      &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
+                                      &cycle_count, &num_plates))
         return nullptr;
     srand(seed);
 
@@ -36,14 +52,14 @@ static PyObject * platec_create(PyObject *self, PyObject *args)
                                     folding_ratio, aggr_overlap_abs, aggr_overlap_rel,
                                     cycle_count, num_plates);
 
-    long pointer = (long)litho;
-    return Py_BuildValue("l", pointer);
+    Py_ssize_t pointer = (Py_ssize_t)litho;
+    return Py_BuildValue("n", pointer);
 }
 
 static PyObject * platec_step(PyObject *self, PyObject *args)
 {
     void *litho;
-    if (!PyArg_ParseTuple(args, "l", &litho))
+    if (!PyArg_ParseTuple(args, "n", &litho))
         return nullptr;
     platec_api_step(litho);
     return Py_BuildValue("i", 0);
@@ -52,7 +68,7 @@ static PyObject * platec_step(PyObject *self, PyObject *args)
 static PyObject * platec_destroy(PyObject *self, PyObject *args)
 {
     void *litho;
-    if (!PyArg_ParseTuple(args, "l", &litho))
+    if (!PyArg_ParseTuple(args, "n", &litho))
         return nullptr;
     platec_api_destroy(litho);
     return Py_BuildValue("i", 0);
@@ -76,9 +92,8 @@ PyObject *makelist_int(uint32_t array[], uint32_t size) {
 
 static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
-    if (!PyArg_ParseTuple(args, "l", &litho))
+    if (!PyArg_ParseTuple(args, "n", &litho))
         return nullptr;
     float *hm = platec_api_get_heightmap(litho);
 
@@ -92,9 +107,8 @@ static PyObject * platec_get_heightmap(PyObject *self, PyObject *args)
 
 static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
-    if (!PyArg_ParseTuple(args, "l", &litho))
+    if (!PyArg_ParseTuple(args, "n", &litho))
         return nullptr;
     uint32_t *hm = platec_api_get_platesmap(litho);
 
@@ -108,16 +122,15 @@ static PyObject * platec_get_platesmap(PyObject *self, PyObject *args)
 
 static PyObject * platec_is_finished(PyObject *self, PyObject *args)
 {
-    size_t id;
     void *litho;
-    if (!PyArg_ParseTuple(args, "l", &litho))
+    if (!PyArg_ParseTuple(args, "n", &litho))
         return nullptr;
     PyObject* res = Py_BuildValue("b",platec_api_is_finished(litho));
     return res;
 }
 
 static PyMethodDef PlatecMethods[] = {
-    {   "create",  platec_create, METH_VARARGS,
+    {   "create",  (PyCFunction)platec_create, METH_VARARGS | METH_KEYWORDS,
         "Create initial plates configuration."
     },
     {   "destroy",  platec_destroy, METH_VARARGS,
