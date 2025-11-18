@@ -66,7 +66,7 @@ pyplatec = Extension(
 )
 
 setup (name = 'PyPlatec',
-       version = '1.4.2',
+       version = '1.4.3',
        author = "Federico Tomassetti, Bret Curtis",
        author_email = 'f.tomassetti@gmail.com, psi29a@gmail.com',
        url = "https://github.com/Mindwerks/pyplatec",
