@@ -59,7 +59,7 @@ double SimpleRandom::next_double()
 
 float SimpleRandom::next_float_signed()
 {
-    float value = next_double();
+    float value = static_cast<float>(next_double());
     ASSERT(value >= 0.0f && value <= 1.0f, "Invalid float range");
     return value - 0.5f;
 }

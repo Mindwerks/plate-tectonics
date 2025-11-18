@@ -143,7 +143,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);
-            age_map[index] = t * (z > 0);
+            age_map[index] = static_cast<uint32_t>(t * (z > 0));
 
             map[index] += z;
             _mass.incMass(z);
@@ -335,7 +335,7 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
             }
 
             // Erode this location with the water flow.
-            tmp[index] -= (tmp[index] - lower_bound) * 0.2;
+            tmp[index] -= (tmp[index] - lower_bound) * 0.2f;
         }
 
 
@@ -357,8 +357,8 @@ void plate::erode(float lower_bound)
 
     // Add random noise (10 %) to heightmap.
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
-        float alpha = 0.2 * (float)_randsource.next_double();
-        tmpHm[i] += 0.1 * tmpHm[i] - alpha * tmpHm[i];
+        float alpha = 0.2f * static_cast<float>(_randsource.next_double());
+        tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
     }
 
     map = tmpHm;
@@ -582,7 +582,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
         const uint32_t old_width  = _bounds->width();
         const uint32_t old_height = _bounds->height();
 
-        _bounds->shift(-1.0*d_lft, -1.0*d_top);
+        _bounds->shift(-1.0f*d_lft, -1.0f*d_top);
         _bounds->grow(d_lft + d_rgt, d_top + d_btm);
 
         HeightMap tmph = HeightMap(_bounds->width(), _bounds->height());
