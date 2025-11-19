@@ -180,6 +180,24 @@ For development:
 pip install -e .
 ```
 
+Code Quality and Linting
+=========================
+
+This project uses C++ linters to maintain code quality. See [LINTING.md](LINTING.md) for details.
+
+Quick start:
+```bash
+# Run all linters
+./run_linter.sh
+
+# Run specific linter
+./run_linter.sh clang-tidy
+./run_linter.sh cppcheck
+
+# Format code
+./run_astyle.sh
+```
+
 Plans for the future
 ====================
 
