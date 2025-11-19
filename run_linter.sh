@@ -16,12 +16,21 @@ CLANG_TIDY="/opt/homebrew/opt/llvm/bin/clang-tidy"
 echo -e "${GREEN}=== C++ Linting for plate-tectonics ===${NC}"
 echo ""
 
-# Check if compile_commands.json exists
-if [ ! -f "compile_commands.json" ]; then
-    echo -e "${YELLOW}Warning: compile_commands.json not found.${NC}"
-    echo -e "${YELLOW}Running cmake with -DCMAKE_EXPORT_COMPILE_COMMANDS=ON...${NC}"
-    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+# Check if compile_commands.json exists in build directory
+BUILD_DIR="build"
+if [ ! -f "$BUILD_DIR/compile_commands.json" ]; then
+    echo -e "${YELLOW}Warning: compile_commands.json not found in $BUILD_DIR/${NC}"
+    echo -e "${YELLOW}Creating build directory and running cmake...${NC}"
+    mkdir -p "$BUILD_DIR"
+    cd "$BUILD_DIR"
+    cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    cd ..
     echo ""
+fi
+
+# Create symlink to compile_commands.json in root for clang-tidy
+if [ ! -L "compile_commands.json" ]; then
+    ln -sf "$BUILD_DIR/compile_commands.json" compile_commands.json
 fi
 
 # Function to run clang-tidy
