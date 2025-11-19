@@ -189,8 +189,8 @@ Plans for the future
 Projects using plate-tectonics
 ==============================
 
-[WorldEngine](http://github.com/Mindwerks/worldengine), a world generator
-[Widelands](https://www.widelands.org/maps/lost-islands/), a free, open source real-time strategy game
+[WorldEngine](http://github.com/Mindwerks/worldengine), a world generator  
+[Widelands](https://www.widelands.org/maps/lost-islands/), a free, open source real-time strategy game  
 
 Original project
 ================
