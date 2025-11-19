@@ -37,8 +37,8 @@ TEST(Portability, FloatOps)
     EXPECT_FLOAT_EQ(1.3347527e+22f, v);
 
 #ifdef _MSC_VER
-    #pragma warning(push)
-    #pragma warning(disable: 4756)  // Intentional overflow to infinity in this test
+#pragma warning(push)
+#pragma warning(disable: 4756)  // Intentional overflow to infinity in this test
 #endif
     for (int i=0; i<3; i++) {
         v *= v + 812345.0123f;
@@ -50,7 +50,7 @@ TEST(Portability, FloatOps)
     }
     EXPECT_FLOAT_EQ(std::numeric_limits<float>::infinity(), v);
 #ifdef _MSC_VER
-    #pragma warning(pop)
+#pragma warning(pop)
 #endif
 }
 

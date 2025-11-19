@@ -469,7 +469,7 @@ void plate::erode(float lower_bound)
             }
         }
     }
-    
+
     // Clamp all heightmap values to prevent negative mass from floating point errors
     // This is a safety measure for Issue #30
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
@@ -477,7 +477,7 @@ void plate::erode(float lower_bound)
             tmpHm[i] = 0.0f;
         }
     }
-    
+
     map = tmpHm;
     _mass = massBuilder.build();
 }
@@ -645,7 +645,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
     if (z < 0.0f) {
         z = 0.0f;
     }
-    
+
     _mass.incMass(-1.0f * map[index]);
     _mass.incMass(z);      // Update mass counter.
     map[index] = z;     // Set new crust height to desired location.

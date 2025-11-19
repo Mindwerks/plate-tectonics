@@ -26,7 +26,7 @@ static PyObject * platec_create(PyObject *self, PyObject *args, PyObject *kwargs
     float aggr_overlap_rel;
     unsigned int cycle_count;
     unsigned int num_plates;
-    
+
     static char *kwlist[] = {
         (char*)"seed",
         (char*)"width",
@@ -40,11 +40,11 @@ static PyObject * platec_create(PyObject *self, PyObject *args, PyObject *kwargs
         (char*)"num_plates",
         nullptr
     };
-    
+
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "IIIfIfIfII", kwlist,
-                                      &seed, &width, &height, &sea_level, &erosion_period,
-                                      &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
-                                      &cycle_count, &num_plates))
+                                     &seed, &width, &height, &sea_level, &erosion_period,
+                                     &folding_ratio, &aggr_overlap_abs, &aggr_overlap_rel,
+                                     &cycle_count, &num_plates))
         return nullptr;
     srand(seed);
 
