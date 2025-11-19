@@ -809,7 +809,7 @@ void lithosphere::restart()
                 uint32_t* this_age;
 
                 plates[i]->getMap(&this_map, &this_age_const);
-                this_age = (uint32_t *)this_age_const;
+                this_age = const_cast<uint32_t*>(this_age_const);
 
                 for (uint32_t y = y0, j = 0; y < y1; ++y)
                 {

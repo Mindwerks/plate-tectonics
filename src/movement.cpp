@@ -112,14 +112,6 @@ float Movement::dot(float dx_, float dy_) const {
     return vx * dx_ + vy * dy_;
 }
 
-float Movement::relativeUnitVelocityOnX(float otherVx) const {
-    return vx - otherVx;
-}
-
-float Movement::relativeUnitVelocityOnY(float otherVy) const {
-    return vy - otherVy;
-}
-
 float Movement::momentum(const Mass& mass) const throw() {
     return mass.getMass() * velocity;
 }

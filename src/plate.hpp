@@ -35,7 +35,7 @@
 class IPlate : public IMass, public IMovement
 {
 public:
-    virtual ~IPlate() {}
+    ~IPlate() override = default;
 };
 
 class plate : public IPlate
@@ -53,7 +53,7 @@ public:
     plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
           uint32_t plate_age, WorldDimension worldDimension);
 
-    ~plate();
+    ~plate() override;
 
     /// Increment collision counter of the continent at given location.
     ///
@@ -204,7 +204,7 @@ public:
     /// @param  t   Time of creation of new crust.
     void setCrust(uint32_t x, uint32_t y, float z, uint32_t t);
 
-    float getMass() const throw() {
+    float getMass() const throw() override {
         return _mass.getMass();
     }
     float getMomentum() const throw() {
@@ -223,7 +223,7 @@ public:
         return _movement.getVelocity();
     }
 
-    Platec::FloatVector velocityUnitVector() const {
+    Platec::FloatVector velocityUnitVector() const override {
         return _movement.velocityUnitVector();
     }
 
@@ -248,11 +248,11 @@ public:
     float getCy() const {
         return _mass.getCy();
     }
-    FloatPoint massCenter() const {
+    FloatPoint massCenter() const override {
         return _mass.massCenter();
     }
 
-    void decImpulse(const Platec::FloatVector& delta) {
+    void decImpulse(const Platec::FloatVector& delta) override {
         _movement.decDx(delta.x());
         _movement.decDy(delta.y());
     }

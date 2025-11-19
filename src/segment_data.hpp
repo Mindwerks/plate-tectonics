@@ -39,7 +39,7 @@ public:
 class ISegmentData : public ISegmentDataAccess
 {
 public:
-    virtual ~ISegmentData() {}
+    ~ISegmentData() override = default;
     virtual void incCollCount() = 0;
     virtual void incArea() = 0;
     virtual void enlarge_to_contain(uint32_t x, uint32_t y) = 0;
@@ -54,23 +54,23 @@ public:
     SegmentData(const Platec::Rectangle& rectangle,
                 uint32_t area);
 
-    void enlarge_to_contain(uint32_t x, uint32_t y);
-    uint32_t getLeft() const;
-    uint32_t getRight() const;
-    uint32_t getTop() const;
-    uint32_t getBottom() const;
-    void shift(uint32_t dx, uint32_t dy);
+    void enlarge_to_contain(uint32_t x, uint32_t y) override;
+    uint32_t getLeft() const override;
+    uint32_t getRight() const override;
+    uint32_t getTop() const override;
+    uint32_t getBottom() const override;
+    void shift(uint32_t dx, uint32_t dy) override;
     void setLeft(uint32_t v);
     void setRight(uint32_t v);
     void setTop(uint32_t v);
     void setBottom(uint32_t v);
-    bool isEmpty() const;
-    void incCollCount();
-    void incArea();
+    bool isEmpty() const override;
+    void incCollCount() override;
+    void incArea() override;
     void incArea(uint32_t amount);
-    uint32_t area() const;
-    uint32_t collCount() const;
-    void markNonExistent();
+    uint32_t area() const override;
+    uint32_t collCount() const override;
+    void markNonExistent() override;
 private:
     Platec::Rectangle _rectangle;
     uint32_t _area; ///< Number of locations this area consists of.
