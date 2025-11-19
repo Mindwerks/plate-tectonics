@@ -52,6 +52,11 @@ public:
     Rectangle& operator=(const Rectangle& original)
     {
         if (this != &original) {
+            // Note: _worldDimension is a const reference and cannot be reassigned.
+            // Assignment is only valid between rectangles with the same world dimensions.
+            if (&_worldDimension != &original._worldDimension) {
+                throw std::invalid_argument("Cannot assign rectangles with different world dimensions");
+            }
             _left = original._left;
             _right = original._right;
             _top = original._top;
