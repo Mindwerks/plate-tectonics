@@ -1,16 +1,40 @@
-V 0.1
------
-* Imported code from Platec
-* Added CMake build files
-* Started writing tests with googletest
-* Configured build integration with Travis
+V 1.4.4
+-------
+* Fixed Issue #30: Mass values go below zero due to floating point precision errors
+  - Added clamping of heightmap values to prevent negative values after erosion
+  - Modified mass tracking to clamp negative values to zero instead of asserting
+  - Added comprehensive tests to verify the fix with problematic seeds
+* All existing tests continue to pass
 
-V 0.2
------
-* Using random function stable across platforms
-* Using simplex noise in some cases
-* Working towards supporting rectangular maps
-* Trying to simplify code
+V 1.4.3
+-------
+* Build system improvements and Python packaging updates
+* Updated Python wheel building for Python 3.9-3.14
+* Improved cross-platform compatibility
+
+V 1.4.2
+-------
+* Minor bug fixes and stability improvements
+* Code cleanup and maintenance updates
+
+V 1.4.1
+-------
+* Update to C++17 standards
+* Make use of noexcept
+* Clean up typos
+
+V 1.4.0
+-------
+* Great improvement in performance (up to 6 times faster!). This was done by Matthew Kenneally
+
+V 1.3.1.post1
+-------------
+* Fix the source distribution
+
+V 1.3.1
+-------
+* Fixing minor bugs here and there
+* Reducing noise of the initial map and revising noise in general
 
 V 1.3
 -----
@@ -19,21 +43,16 @@ V 1.3
 * Major refactoring. Plate and Lithospere classes have been disassembled in many smaller classes, methods
   have been divided and >50 tests have been written.
 
-V 1.3.1
--------
-* Fixing minor bugs here and there
-* Reducing noise of the initial map and revising noise in general
+V 0.2
+-----
+* Using random function stable across platforms
+* Using simplex noise in some cases
+* Working towards supporting rectangular maps
+* Trying to simplify code
 
-V 1.3.1.post1
--------------
-* Fix the source distribution
-
-V 1.4.0
--------
-* Great improvement in performance (up to 6 times faster!). This was done by Matthew Kenneally
-
-V 1.4.1
--------
-* Update to C++17 standards
-* Make use of noexcept
-* Clean up typos
+V 0.1
+-----
+* Imported code from Platec
+* Added CMake build files
+* Started writing tests with googletest
+* Configured build integration with Travis
