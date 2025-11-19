@@ -58,10 +58,10 @@ class Mass : public IMass
 public:
     Mass(float mass_, float cx_, float cy_);
     void incMass(float delta);
-    float getMass() const;
+    float getMass() const override;
     float getCx() const;
     float getCy() const;
-    FloatPoint massCenter() const {
+    FloatPoint massCenter() const override {
         return FloatPoint(cx, cy);
     }
     bool null() const;

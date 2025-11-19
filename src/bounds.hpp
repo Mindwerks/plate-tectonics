@@ -112,20 +112,20 @@ public:
            const FloatPoint& position,
            const Dimension& dimension);
 
-    uint32_t index(uint32_t x, uint32_t y) const;
-    uint32_t area() const;
-    uint32_t width() const;
-    uint32_t height() const;
-    uint32_t leftAsUint() const;
-    uint32_t topAsUint() const;
-    uint32_t rightAsUintNonInclusive() const;
-    uint32_t bottomAsUintNonInclusive() const;
-    bool containsWorldPoint(uint32_t x, uint32_t y) const;
-    bool isInLimits(float x, float y) const;
-    void shift(float dx, float dy);
-    void grow(int dx, int dy);
-    uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const;
-    uint32_t getMapIndex(uint32_t* x, uint32_t* y) const;
+    uint32_t index(uint32_t x, uint32_t y) const override;
+    uint32_t area() const override;
+    uint32_t width() const override;
+    uint32_t height() const override;
+    uint32_t leftAsUint() const override;
+    uint32_t topAsUint() const override;
+    uint32_t rightAsUintNonInclusive() const override;
+    uint32_t bottomAsUintNonInclusive() const override;
+    bool containsWorldPoint(uint32_t x, uint32_t y) const override;
+    bool isInLimits(float x, float y) const override;
+    void shift(float dx, float dy) override;
+    void grow(int dx, int dy) override;
+    uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const override;
+    uint32_t getMapIndex(uint32_t* x, uint32_t* y) const override;
 
 private:
 

@@ -57,8 +57,8 @@ public:
 class Segments : public ISegments
 {
 public:
-    Segments(uint32_t plate_area);
-    ~Segments();
+    explicit Segments(uint32_t plate_area);
+    ~Segments() override;
     void setSegmentCreator(ISegmentCreator* segmentCreator)
     {
         _segmentCreator = segmentCreator;
@@ -67,24 +67,24 @@ public:
     {
         _bounds = bounds;
     }
-    uint32_t area();
-    void reset();
-    void reassign(uint32_t newarea, uint32_t* tmps);
-    void shift(uint32_t d_lft, uint32_t d_top);
-    uint32_t size() const;
-    const ISegmentData& operator[](uint32_t index) const;
-    ISegmentData& operator[](uint32_t index);
-    void add(ISegmentData* data);
-    const ContinentId& id(uint32_t index) const {
+    uint32_t area() override;
+    void reset() override;
+    void reassign(uint32_t newarea, uint32_t* tmps) override;
+    void shift(uint32_t d_lft, uint32_t d_top) override;
+    uint32_t size() const override;
+    const ISegmentData& operator[](uint32_t index) const override;
+    ISegmentData& operator[](uint32_t index) override;
+    void add(ISegmentData* data) override;
+    const ContinentId& id(uint32_t index) const override {
         return segment[index];
     }
-    ContinentId& id(uint32_t index) {
+    ContinentId& id(uint32_t index) override {
         return segment[index];
     }
-    void setId(uint32_t index, ContinentId id) {
+    void setId(uint32_t index, ContinentId id) override {
         segment[index] = id;
     }
-    ContinentId getContinentAt(int x, int y) const;
+    ContinentId getContinentAt(int x, int y) const override;
 private:
     std::vector<ISegmentData*> seg_data; ///< Details of each crust segment.
     ContinentId* segment;              ///< Segment ID of each piece of continental crust.

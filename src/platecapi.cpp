@@ -79,14 +79,14 @@ const uint32_t* platec_api_get_agemap(uint32_t id)
 
 float* platec_api_get_heightmap(void *pointer)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     float *res = litho->getTopography();
     return res;
 }
 
 uint32_t* platec_api_get_platesmap(void *pointer)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     uint32_t *res = litho->getPlatesMap();
     return res;
 }
@@ -102,7 +102,7 @@ lithosphere* platec_api_get_lithosphere(uint32_t id)
 
 uint32_t platec_api_is_finished(void *pointer)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     if (litho->isFinished()) {
         return 1;
     } else {
@@ -112,7 +112,7 @@ uint32_t platec_api_is_finished(void *pointer)
 
 void platec_api_step(void *pointer)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     litho->update();
 }
 
@@ -128,12 +128,12 @@ uint32_t lithosphere_getMapHeight ( void* object)
 
 float platec_api_velocity_unity_vector_x(void* pointer, uint32_t plate_index)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     return litho->getPlate(plate_index)->velocityUnitVector().x();
 }
 
 float platec_api_velocity_unity_vector_y(void* pointer, uint32_t plate_index)
 {
-    lithosphere* litho = (lithosphere*)pointer;
+    lithosphere* litho = static_cast<lithosphere*>(pointer);
     return litho->getPlate(plate_index)->velocityUnitVector().y();
 }

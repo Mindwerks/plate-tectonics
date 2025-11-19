@@ -54,7 +54,7 @@ public:
     Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
     void applyFriction(float deformed_mass, float mass);
     void move();
-    Platec::FloatVector velocityUnitVector() const {
+    Platec::FloatVector velocityUnitVector() const override {
         return Platec::FloatVector(vx, vy);
     }
     Platec::FloatVector velocityVector() const {
@@ -88,14 +88,11 @@ public:
         dx += impulse.x();
         dy += impulse.y();
     }
-    void decImpulse(const Platec::FloatVector& delta) {
+    void decImpulse(const Platec::FloatVector& delta) override {
         dx -= delta.x();
         dy -= delta.y();
     };
 private:
-    float relativeUnitVelocityOnX(float otherVx) const;
-    float relativeUnitVelocityOnY(float otherVy) const;
-
     SimpleRandom _randsource;
     const WorldDimension _worldDimension;
     float velocity;       ///< Plate's velocity.

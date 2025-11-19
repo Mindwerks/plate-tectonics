@@ -51,8 +51,13 @@ public:
 
     Rectangle operator=(const Rectangle& original)
     {
-        Rectangle r(original);
-        return r;
+        if (this != &original) {
+            _left = original._left;
+            _right = original._right;
+            _top = original._top;
+            _bottom = original._bottom;
+        }
+        return *this;
     };
 
     uint32_t getMapIndex(uint32_t* px, uint32_t* py) const;

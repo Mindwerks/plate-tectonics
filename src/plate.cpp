@@ -114,7 +114,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     //       Drawbacks:
     //           Additional logic required
     //           Might place crust on other continent on same plate!
-    uint32_t index = _bounds->getValidMapIndex(&x, &y);
+    _bounds->getValidMapIndex(&x, &y);
 
     // Take vector difference only between plates that move more or less
     // to same direction. This makes subduction direction behave better.
@@ -136,6 +136,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
     float fx = x + dx;
     float fy = y + dy;
+    uint32_t index;
 
     if (_bounds->isInLimits(fx, fy))
     {

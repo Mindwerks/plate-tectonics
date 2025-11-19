@@ -53,7 +53,7 @@ public:
     /// @param	x	Offset on the local height map along X axis.
     /// @param	y	Offset on the local height map along Y axis.
     /// @return	ID of created segment on success, otherwise -1.
-    ContinentId createSegment(uint32_t wx, uint32_t wy) const throw();
+    ContinentId createSegment(uint32_t wx, uint32_t wy) const throw() override;
 private:
     uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID) const;
     void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
