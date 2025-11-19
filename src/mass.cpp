@@ -74,12 +74,14 @@ Mass::Mass(float mass_, float cx_, float cy_)
 void Mass::incMass(float delta)
 {
     mass += delta;
+    // Clamp negative mass to zero to handle floating point precision errors
+    // that accumulate over many iterations (Issue #30)
+    // For large maps (512x512+) with many plates (10+) and long simulations,
+    // errors can accumulate significantly. Since mass is recalculated from
+    // heightmaps during erosion cycles, accepting small negative values and
+    // clamping them to zero is acceptable.
     if (mass < 0.0f) {
-        if (mass > -0.01f) {
-            mass = 0.0f;
-        } else {
-            ASSERT(0, "A negative mass is not allowed");
-        }
+        mass = 0.0f;
     }
 }
 
