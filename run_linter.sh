@@ -69,8 +69,6 @@ run_cppcheck() {
              --verbose \
              --quiet \
              -I src/ \
-             -I test/googletest/googletest/include \
-             -i test/googletest \
              src/ examples/ test/ 2>&1 | grep -v "Checking " | grep -v "^$" || true
     
     echo -e "${GREEN}cppcheck complete!${NC}"

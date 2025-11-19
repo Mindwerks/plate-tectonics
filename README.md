@@ -94,6 +94,8 @@ cd examples
 How to run tests (C++)
 ======================
 
+GoogleTest is automatically fetched by CMake using FetchContent, so no manual installation is required.
+
 After building the library with CMake in the build directory:
 
 ```bash
@@ -102,17 +104,7 @@ make
 ./PlateTectonicsTests
 ```
 
-To run tests you need to install DevIL
-
-We use googletest (which is included in the project). After building the library:
-
-```
-cd test
-make
-./PlateTectonicsTest
-```
-
-Currently the test coverage is still poor (but improving!_, tests are present only for new code and tiny portion of the old code that were refactored.
+Currently the test coverage is still poor (but improving!), tests are present only for new code and tiny portion of the old code that were refactored.
 
 ## Python bindings
 
