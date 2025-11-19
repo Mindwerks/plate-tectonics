@@ -49,7 +49,7 @@ public:
     {
     };
 
-    Rectangle operator=(const Rectangle& original)
+    Rectangle& operator=(const Rectangle& original)
     {
         if (this != &original) {
             _left = original._left;

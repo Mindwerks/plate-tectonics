@@ -136,7 +136,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
     float fx = x + dx;
     float fy = y + dy;
-    uint32_t index;
+    uint32_t index = 0;
 
     if (_bounds->isInLimits(fx, fy))
     {
