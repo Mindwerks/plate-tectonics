@@ -26,6 +26,7 @@
 #include "utils.hpp"
 #include "rectangle.hpp"
 #include "world_point.hpp"
+#include "simd_utils.hpp"
 
 using namespace std;
 
@@ -62,10 +63,17 @@ public:
 
     void set_all(const Value& value)
     {
-        // we cannot use memset to make it very general
+        // Use SIMD-optimized implementation for float types
+        // Falls back to scalar loop for other types
         const uint32_t my_area = area();
-        for (uint32_t i = 0; i < my_area; i++) {
-            _data[i] = value;
+        if (sizeof(Value) == sizeof(float)) {
+            simd::set_all(reinterpret_cast<float*>(_data), my_area, 
+                         *reinterpret_cast<const float*>(&value));
+        } else {
+            // Generic fallback for non-float types
+            for (uint32_t i = 0; i < my_area; i++) {
+                _data[i] = value;
+            }
         }
     }
     void copy(const Matrix& other)
@@ -77,9 +85,8 @@ public:
             delete[] _data;
             _data = new Value[_area];
         }
-        for (uint32_t i = 0; i < _area; i++) {
-            _data[i] = other._data[i];
-        }
+        // Use fast memcpy for contiguous data
+        memcpy(_data, other._data, _area * sizeof(Value));
     }
 
     inline const Value& set(unsigned int x, unsigned y, const Value& value)
