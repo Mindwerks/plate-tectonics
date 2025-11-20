@@ -27,6 +27,7 @@
 #include <vector>
 #include <stdexcept> // std::invalid_argument
 #include <assert.h>
+#include "simd_utils.hpp"
 
 #include "plate.hpp"
 #include "heightmap.hpp"
@@ -360,12 +361,11 @@ void plate::erode(float lower_bound)
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
         float alpha = 0.2f * static_cast<float>(_randsource.next_double());
         tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
-        // Clamp to zero to prevent floating point errors from accumulating
-        // and causing negative mass values (Issue #30)
-        if (tmpHm[i] < 0.0f) {
-            tmpHm[i] = 0.0f;
-        }
     }
+    
+    // Clamp to zero to prevent floating point errors from accumulating
+    // and causing negative mass values (Issue #30)
+    simd::clamp_non_negative(tmpHm.raw_data(), _bounds->area());
 
     map = tmpHm;
     tmpHm.set_all(0.0f);
@@ -473,11 +473,7 @@ void plate::erode(float lower_bound)
 
     // Clamp all heightmap values to prevent negative mass from floating point errors
     // This is a safety measure for Issue #30
-    for (uint32_t i = 0; i < _bounds->area(); ++i) {
-        if (tmpHm[i] < 0.0f) {
-            tmpHm[i] = 0.0f;
-        }
-    }
+    simd::clamp_non_negative(tmpHm.raw_data(), _bounds->area());
 
     map = tmpHm;
     _mass = massBuilder.build();
