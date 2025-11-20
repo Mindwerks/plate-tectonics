@@ -32,11 +32,8 @@
 
 .idea
 
-CMakeCache.txt
-CMakeFiles/
-Makefile
-cmake_install.cmake
-compile_commands.json
+# Build directory (contains all CMake generated files)
+build/
 
 *.swp
 venv

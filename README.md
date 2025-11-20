@@ -32,46 +32,42 @@ We use [CMake](http://www.cmake.org/). Install it and then run the folowing comm
 ### Linux
 
 ```
-cmake . -G "Unix Makefiles"
+mkdir -p build
+cd build
+cmake .. -G "Unix Makefiles"
 make
 ```
 
 ### Mac OS-X
 
 ```
-cmake .
+mkdir -p build
+cd build
+cmake ..
 make
 ```
 
-This should produce a library (libPlateTectonics.a).
+This should produce a library (libPlateTectonics.a) in the build directory.
 
 ### Windows
 
 ```
-cmake .
+mkdir build
+cd build
+cmake ..
 cmake --build .
 ```
 
 If you want to build also the examples run:
 
 ```
-# instead of cmake .
-cmake . -DWITH_EXAMPLES=ON
-```
-
-Note that this command will build the library in the same directory where the source files are hosted. Some prefer to build out of tree the library (i.e., in a separate dir). For example in this scenario:
-
-```
--- plate-tectonics
-\- build-directory
-```
-
-You can enter build-directory and type:
-
-```
-cmake ../plate-tectonics
+mkdir -p build
+cd build
+cmake .. -DWITH_EXAMPLES=ON
 make
 ```
+
+Note: All builds are now done in the `build/` directory to keep the source tree clean. The build directory is excluded from version control via `.gitignore`.
 
 To compile on other platforms please run:
 
@@ -87,26 +83,28 @@ To run also the examples you need to install the library libpng.
 From the root directory run:
 
 ```bash
-cmake -DWITH_EXAMPLE=TRUE -G "Unix Makefiles"
+mkdir -p build
+cd build
+cmake .. -DWITH_EXAMPLES=ON -G "Unix Makefiles"
 make
 cd examples
-./simulation_rect
+./simulation
 ```
 
 How to run tests (C++)
 ======================
 
-To run tests you need to install DevIL
+GoogleTest is automatically fetched by CMake using FetchContent, so no manual installation is required.
 
-We use googletest (which is included in the project). After building the library:
+After building the library with CMake in the build directory:
 
-```
-cd test
+```bash
+cd build/test
 make
-./PlateTectonicsTest
+./PlateTectonicsTests
 ```
 
-Currently the test coverage is still poor (but improving!_, tests are present only for new code and tiny portion of the old code that were refactored.
+Currently the test coverage is still poor (but improving!), tests are present only for new code and tiny portion of the old code that were refactored.
 
 ## Python bindings
 
