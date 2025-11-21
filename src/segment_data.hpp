@@ -20,13 +20,12 @@
 #ifndef SEGMENT_DATA_HPP
 #define SEGMENT_DATA_HPP
 
-#include "utils.hpp"
 #include "rectangle.hpp"
+#include "utils.hpp"
 
-class ISegmentDataAccess
-{
-public:
-    virtual ~ISegmentDataAccess() {}
+class ISegmentDataAccess {
+  public:
+    virtual ~ISegmentDataAccess() = default;
     virtual uint32_t getLeft() const = 0;
     virtual uint32_t getRight() const = 0;
     virtual uint32_t getTop() const = 0;
@@ -36,9 +35,8 @@ public:
     virtual uint32_t collCount() const = 0;
 };
 
-class ISegmentData : public ISegmentDataAccess
-{
-public:
+class ISegmentData : public ISegmentDataAccess {
+  public:
     ~ISegmentData() override = default;
     virtual void incCollCount() = 0;
     virtual void incArea() = 0;
@@ -48,11 +46,9 @@ public:
 };
 
 /// Container for details about a segmented crust area on this plate.
-class SegmentData : public ISegmentData
-{
-public:
-    SegmentData(const Platec::Rectangle& rectangle,
-                uint32_t area);
+class SegmentData : public ISegmentData {
+  public:
+    SegmentData(const Platec::Rectangle& rectangle, uint32_t area);
 
     void enlarge_to_contain(uint32_t x, uint32_t y) override;
     uint32_t getLeft() const override;
@@ -71,9 +67,10 @@ public:
     uint32_t area() const override;
     uint32_t collCount() const override;
     void markNonExistent() override;
-private:
+
+  private:
     Platec::Rectangle _rectangle;
-    uint32_t _area; ///< Number of locations this area consists of.
+    uint32_t _area;       ///< Number of locations this area consists of.
     uint32_t _coll_count; ///< Number of collisions on this segment.
 };
 

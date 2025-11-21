@@ -1,43 +1,39 @@
 /******************************************************************************
-*  plate-tectonics, a plate tectonics simulation library
-*  Copyright (C) 2012-2013 Lauri Viitanen
-*  Copyright (C) 2014-2015 Federico Tomassetti, Bret Curtis
-*
-*  This library is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public
-*  License as published by the Free Software Foundation; either
-*  version 2.1 of the License, or (at your option) any later version.
-*
-*  This library is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*  Lesser General Public License for more details.
-*
-*  You should have received a copy of the GNU Lesser General Public
-*  License along with this library; if not, see http://www.gnu.org/licenses/
-*****************************************************************************/
+ *  plate-tectonics, a plate tectonics simulation library
+ *  Copyright (C) 2012-2013 Lauri Viitanen
+ *  Copyright (C) 2014-2015 Federico Tomassetti, Bret Curtis
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, see http://www.gnu.org/licenses/
+ *****************************************************************************/
 
 #include "movement.hpp"
-#include "plate.hpp"
 #include "mass.hpp"
+#include "plate.hpp"
 
 // Missing on Windows
 #ifndef M_PI
-#define M_PI 3.141592654
+    #define M_PI 3.141592654
 #endif
 
-#if (defined(_MSC_VER) && defined(_M_X64)) || \
-    (defined(__APPLE__) && defined(__clang__))
-#define sin(x) static_cast<float>(sin(static_cast<double>(x)))
-#define cos(x) static_cast<float>(cos(static_cast<double>(x)))
+#if (defined(_MSC_VER) && defined(_M_X64)) || (defined(__APPLE__) && defined(__clang__))
+    #define sin(x) static_cast<float>(sin(static_cast<double>(x)))
+    #define cos(x) static_cast<float>(cos(static_cast<double>(x)))
 #endif
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
-    : _randsource(randsource),
-      _worldDimension(worldDimension),
-      velocity(1),
-      rot_dir(static_cast<float>(randsource.next() % 2 ? 1 : -1)),
-      dx(0), dy(0) {
+    : _randsource(randsource), _worldDimension(worldDimension), velocity(1),
+      rot_dir(static_cast<float>(randsource.next() % 2 ? 1 : -1)), dx(0), dy(0) {
     const double angle = 2 * M_PI * _randsource.next_double();
     vx = cos(angle) * INITIAL_SPEED_X;
     vy = sin(angle) * INITIAL_SPEED_X;
@@ -66,7 +62,7 @@ void Movement::move() {
 
     // Force direction of plate to be unit vector.
     // Update velocity so that the distance of movement doesn't change.
-    float len = sqrt(vx*vx + vy*vy);
+    float len = sqrt(vx * vx + vy * vy);
     ASSERT(len > 0, "Velocity is zero!");
     // MK: Calculating the inverse length and multiplying changes the output data for maps!
     // I have held off on optimizations like these until the more important optimizations
@@ -112,13 +108,12 @@ float Movement::dot(float dx_, float dy_) const {
     return vx * dx_ + vy * dy_;
 }
 
-float Movement::momentum(const Mass& mass) const throw() {
+float Movement::momentum(const Mass& mass) const noexcept {
     return mass.getMass() * velocity;
 }
 
-void Movement::collide(const IMass& thisMass,
-                       IPlate& otherPlate,
-                       uint32_t wx, uint32_t wy, float coll_mass) {
+void Movement::collide(const IMass& thisMass, IPlate& otherPlate, uint32_t wx, uint32_t wy,
+                       float coll_mass) {
     const float coeff_rest = 0.0; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
     Platec::IntVector massCentersDistance =
@@ -131,7 +126,8 @@ void Movement::collide(const IMass& thisMass,
     // Scaling is required at last when impulses are added to plates!
     // Compute relative velocity between plates at the collision point.
     // Because torque is not included, calc simplifies to v_ab = v_a - v_b.
-    Platec::FloatVector collisionDirection = Platec::FloatVector(massCentersDistance.x()/distance,massCentersDistance.y()/distance);
+    Platec::FloatVector collisionDirection =
+        Platec::FloatVector(massCentersDistance.x() / distance, massCentersDistance.y() / distance);
     Platec::FloatVector relativeVelocity = velocityUnitVector() - otherPlate.velocityUnitVector();
 
     // Get the dot product of relative velocity vector and collision vector.

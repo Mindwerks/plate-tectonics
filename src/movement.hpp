@@ -20,37 +20,35 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include <vector>
-#include <cmath>     // sin, cos
-#include "simplerandom.hpp"
+#include "bounds.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 #include "segment_data.hpp"
+#include "simplerandom.hpp"
 #include "utils.hpp"
-#include "bounds.hpp"
+#include <cmath> // sin, cos
+#include <vector>
 
 #define CONT_BASE 1.0 ///< Height limit that separates seas from dry land.
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
 
-typedef uint32_t ContinentId;
+using ContinentId = uint16_t;
 
 class IPlate;
 class plate;
 class IMass;
 class Mass;
 
-class IMovement
-{
-public:
-    virtual ~IMovement() {}
+class IMovement {
+  public:
+    virtual ~IMovement() = default;
     virtual Platec::FloatVector velocityUnitVector() const = 0;
     virtual void decImpulse(const Platec::FloatVector& delta) = 0;
 };
 
-class Movement : public IMovement
-{
-public:
+class Movement : public IMovement {
+  public:
     Movement(SimpleRandom randsource, const WorldDimension& worldDimension);
     void applyFriction(float deformed_mass, float mass);
     void move();
@@ -65,16 +63,16 @@ public:
     float velocityOnX(float length) const;
     float velocityOnY(float length) const;
     float dot(float dx_, float dy_) const;
-    float momentum(const Mass& mass) const throw();
+    float momentum(const Mass& mass) const noexcept;
     float getVelocity() const {
         return velocity;
     };
     /// @Deprecated, use velocityUnitVector instead
-    float velX() const throw() {
+    float velX() const noexcept {
         return vx;
     }
     /// @Deprecated, use velocityUnitVector instead
-    float velY() const throw() {
+    float velY() const noexcept {
         return vy;
     }
     void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
@@ -92,14 +90,14 @@ public:
         dx -= delta.x();
         dy -= delta.y();
     };
-private:
+
+  private:
     SimpleRandom _randsource;
     const WorldDimension _worldDimension;
-    float velocity;       ///< Plate's velocity.
-    float rot_dir;        ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
-    float dx, dy;         ///< X and Y components of plate's acceleration vector.
-    float vx, vy;         ///< X and Y components of plate's direction unit vector.
+    float velocity; ///< Plate's velocity.
+    float rot_dir;  ///< Direction of rotation: 1 = CCW, -1 = ClockWise.
+    float dx, dy;   ///< X and Y components of plate's acceleration vector.
+    float vx, vy;   ///< X and Y components of plate's direction unit vector.
 };
-
 
 #endif

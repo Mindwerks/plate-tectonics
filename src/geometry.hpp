@@ -20,19 +20,18 @@
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
 
-#include <math.h>
-#include <stdexcept>
 #include "utils.hpp"
 #include "world_point.hpp"
+#include <math.h>
+#include <stdexcept>
 
 using namespace std;
 
 class WorldDimension;
 
 namespace Platec {
-class IntVector
-{
-public:
+class IntVector {
+  public:
     IntVector(int x, int y) : _x(x), _y(y) {}
     int x() const {
         return _x;
@@ -46,15 +45,15 @@ public:
     friend IntVector operator-(const IntVector& a, const IntVector& b) {
         return IntVector(a.x() - b.x(), a.y() - b.y());
     }
-private:
+
+  private:
     int _x, _y;
 };
-}
+} // namespace Platec
 
 /// A point with int coordinates.
 class IntPoint {
-public:
-
+  public:
     /// Create a point with the given coordinates
     IntPoint(int x, int y);
 
@@ -67,15 +66,14 @@ public:
     friend Platec::IntVector operator-(const IntPoint& a, const IntPoint& b) {
         return Platec::IntVector(a.getX() - b.getX(), a.getY() - b.getY());
     }
-private:
 
+  private:
     int _x, _y;
 };
 
 namespace Platec {
-class FloatVector
-{
-public:
+class FloatVector {
+  public:
     FloatVector(float x, float y) : _x(x), _y(y) {}
     float x() const {
         return _x;
@@ -110,15 +108,15 @@ public:
     friend FloatVector operator*(const FloatVector& v, float f) {
         return FloatVector(v.x() * f, v.y() * f);
     }
-private:
+
+  private:
     float _x, _y;
 };
-}
+} // namespace Platec
 
 /// A point with float coordinates.
 class FloatPoint {
-public:
-
+  public:
     /// Create a point with the given coordinates
     FloatPoint(float x, float y);
 
@@ -140,15 +138,14 @@ public:
     friend Platec::FloatVector operator-(const FloatPoint& a, const FloatPoint& b) {
         return Platec::FloatVector(a.getX() - b.getX(), a.getY() - b.getY());
     }
-private:
 
+  private:
     float _x, _y;
 };
 
 /// Dimension of a Rectangle.
 class Dimension {
-public:
-
+  public:
     /// Initialize the dimension with the given values
     Dimension(uint32_t width, uint32_t height);
     Dimension(const Dimension& original);
@@ -162,30 +159,31 @@ public:
     uint32_t getArea() const {
         return _width * _height;
     }
-    bool contains(const uint32_t x, const uint32_t y) const;
-    bool contains(const float x, const float y) const;
+    bool contains(uint32_t x, uint32_t y) const;
+    bool contains(float x, float y) const;
     bool contains(const FloatPoint& p) const;
     void grow(uint32_t amountX, uint32_t amountY);
-protected:
+
+  protected:
     uint32_t _width;
     uint32_t _height;
 };
 
 class WorldDimension : public Dimension {
-public:
+  public:
     WorldDimension(uint32_t width, uint32_t height);
     WorldDimension(const WorldDimension& original);
     uint32_t getMax() const;
     uint32_t xMod(uint32_t x) const;
     uint32_t yMod(uint32_t y) const;
     void normalize(uint32_t& x, uint32_t& y) const;
-    uint32_t indexOf(const uint32_t x, const uint32_t y) const;
-    uint32_t lineIndex(const uint32_t y) const;
-    uint32_t yFromIndex(const uint32_t index) const;
-    uint32_t xFromIndex(const uint32_t index) const;
-    uint32_t normalizedIndexOf(const uint32_t x, const uint32_t y) const;
-    uint32_t xCap(const uint32_t x) const;
-    uint32_t yCap(const uint32_t y) const;
+    uint32_t indexOf(uint32_t x, uint32_t y) const;
+    uint32_t lineIndex(uint32_t y) const;
+    uint32_t yFromIndex(uint32_t index) const;
+    uint32_t xFromIndex(uint32_t index) const;
+    uint32_t normalizedIndexOf(uint32_t x, uint32_t y) const;
+    uint32_t xCap(uint32_t x) const;
+    uint32_t yCap(uint32_t y) const;
     uint32_t largerSize() const;
 };
 
