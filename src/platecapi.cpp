@@ -68,7 +68,7 @@ void platec_api_destroy(void* litho)
         }
 }
 
-const uint32_t* platec_api_get_agemap(uint32_t id)
+const uint16_t* platec_api_get_agemap(uint32_t id)
 {
     lithosphere* litho = platec_api_get_lithosphere(id);
     if (!litho)
@@ -84,10 +84,10 @@ float* platec_api_get_heightmap(void *pointer)
     return res;
 }
 
-uint32_t* platec_api_get_platesmap(void *pointer)
+uint8_t* platec_api_get_platesmap(void *pointer)
 {
     lithosphere* litho = static_cast<lithosphere*>(pointer);
-    uint32_t *res = litho->getPlatesMap();
+    uint8_t *res = litho->getPlatesMap();
     return res;
 }
 

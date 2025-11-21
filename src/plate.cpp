@@ -362,7 +362,7 @@ void plate::erode(float lower_bound)
         float alpha = 0.2f * static_cast<float>(_randsource.next_double());
         tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
     }
-    
+
     // Clamp to zero to prevent floating point errors from accumulating
     // and causing negative mass values (Issue #30)
     simd::clamp_non_negative(tmpHm.raw_data(), _bounds->area());
@@ -507,7 +507,7 @@ uint32_t plate::getCrustTimestamp(uint32_t x, uint32_t y) const
     return index != BAD_INDEX ? age_map[index] : 0;
 }
 
-void plate::getMap(const float** c, const uint32_t** t) const
+void plate::getMap(const float** c, const uint16_t** t) const
 {
     if (c) {
         *c = map.raw_data();
@@ -611,7 +611,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t)
             memcpy(&tmph[dest_i], &map[src_i], old_width *
                    sizeof(float));
             memcpy(&tmpa[dest_i], &age_map[src_i], old_width *
-                   sizeof(uint32_t));
+                   sizeof(uint16_t));  // AgeMap is now uint16_t
             memcpy(&tmps[dest_i], &_segments->id(src_i), old_width *
                    sizeof(uint32_t));
         }

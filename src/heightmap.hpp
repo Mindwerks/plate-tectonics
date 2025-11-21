@@ -67,8 +67,8 @@ public:
         // Falls back to scalar loop for other types
         const uint32_t my_area = area();
         if (sizeof(Value) == sizeof(float)) {
-            simd::set_all(reinterpret_cast<float*>(_data), my_area, 
-                         *reinterpret_cast<const float*>(&value));
+            simd::set_all(reinterpret_cast<float*>(_data), my_area,
+                          *reinterpret_cast<const float*>(&value));
         } else {
             // Generic fallback for non-float types
             for (uint32_t i = 0; i < my_area; i++) {
@@ -143,7 +143,7 @@ private:
 };
 
 typedef Matrix<float> HeightMap;
-typedef Matrix<uint32_t> AgeMap;
-typedef Matrix<uint32_t> IndexMap;
+typedef Matrix<uint16_t> AgeMap;      // uint16_t: 65K step limit, saves 50% memory
+typedef Matrix<uint8_t> IndexMap;     // uint8_t: 255 max plates, saves 75% memory
 
 #endif

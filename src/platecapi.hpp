@@ -33,9 +33,9 @@ void *  platec_api_create(
     uint32_t cycle_count, uint32_t num_plates);
 
 void    platec_api_destroy(void*);
-const uint32_t* platec_api_get_agemap(uint32_t);
+const uint16_t* platec_api_get_agemap(uint32_t);
 float* platec_api_get_heightmap(void*);
-uint32_t* platec_api_get_platesmap(void*);
+uint8_t* platec_api_get_platesmap(void*);
 uint32_t  platec_api_is_finished(void*);
 void    platec_api_step(void*);
 

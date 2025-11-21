@@ -170,7 +170,7 @@ public:
     ///
     /// @param  c   Adress of crust height map is stored here.
     /// @param  t   Adress of crust timestamp map is stored here.
-    void getMap(const float** c, const uint32_t** t) const;
+    void getMap(const float** c, const uint16_t** t) const;
 
     void move(); ///< Moves plate along it's trajectory.
 

@@ -36,6 +36,13 @@ using namespace std;
 #define CONTINENTAL_BASE 1.0f
 #define OCEANIC_BASE     0.1f
 
+// Memory optimization: IndexMap uses uint8_t, so max 255 plates
+#define MAX_PLATE_INDEX 255
+static const uint8_t NO_PLATE_INDEX = 0xFF;  // Special value for "no plate assigned"
+
+// Memory optimization: AgeMap uses uint16_t, so max 65535 steps
+static const uint32_t MAX_SIMULATION_STEPS = 65535;
+
 class plate;
 
 /**
@@ -110,9 +117,9 @@ public:
         return _worldDimension;
     }
     uint32_t getPlateCount() const noexcept; ///< Return number of plates.
-    const uint32_t* getAgeMap() const noexcept; ///< Return surface age map.
+    const uint16_t* getAgeMap() const noexcept; ///< Return surface age map.
     float* getTopography() const noexcept; ///< Return height map.
-    uint32_t* getPlatesMap() const noexcept; ///< Return a map of the plates owning eaach point
+    uint8_t* getPlatesMap() const noexcept; ///< Return a map of the plates owning eaach point
     void update(); ///< Simulate one step of plate tectonics.
     uint32_t getWidth() const;
     uint32_t getHeight() const;
@@ -121,19 +128,55 @@ public:
 
 protected:
 private:
+    // Forward declarations
+    struct PerThreadCollisions;
+    struct WorldCellCollision;
+    class plateCollision;  // Defined later in this file
 
     void createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex = false);
     void createSlowNoise(float* tmp, const WorldDimension& tmpDim);
     void updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                                        uint32_t& oceanic_collisions,
                                        uint32_t& continental_collisions);
+
+    // Phase 1: Collect what each plate wants to write (parallel)
+    void collectPlateContributions(
+        uint32_t plate_start,
+        uint32_t plate_end,
+        std::vector<std::vector<WorldCellCollision>>& contributions) const;
+
+    // Phase 2: Resolve all contributions deterministically (serial or parallel)
+    void resolveWorldContributions(
+        const std::vector<std::vector<WorldCellCollision>>& contributions,
+        float* hmap,
+        uint8_t* imap,
+        uint16_t* amap);
+
+    // Helper: Resolve a single cell's contributions
+    void resolveCell(
+        uint32_t k,
+        const std::vector<WorldCellCollision>& cell_contributions,
+        float* hmap,
+        uint8_t* imap,
+        uint16_t* amap);
+
+    // Thread-safe version with thread-local subductions and collisions
+    void resolveCellThreaded(
+        uint32_t k,
+        const std::vector<WorldCellCollision>& cell_contributions,
+        float* hmap,
+        uint8_t* imap,
+        uint16_t* amap,
+        std::vector<std::vector<plateCollision>>& local_subductions,
+        std::vector<std::vector<plateCollision>>& local_collisions);
+
     void updateCollisions();
     void clearPlates();
     void growPlates();
     void removeEmptyPlates();
     void resolveJuxtapositions(const uint32_t& i, const uint32_t& j, const uint32_t& k,
                                const uint32_t& x_mod, const uint32_t& y_mod,
-                               const float*& this_map, const uint32_t*& this_age, uint32_t& continental_collisions);
+                               const float*& this_map, const uint16_t*& this_age, uint32_t& continental_collisions);
 
     /**
      * Container for collision details between two plates.
