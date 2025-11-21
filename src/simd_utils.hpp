@@ -23,17 +23,20 @@
 #include <cstdint>
 
 // Detect platform SIMD capabilities at compile time
-#if defined(__ARM_NEON) || defined(__aarch64__)
-    #define HAVE_NEON 1
-    #include <arm_neon.h>
-#endif
+// Can be disabled with -DFORCE_SCALAR_FALLBACK
+#ifndef FORCE_SCALAR_FALLBACK
+    #if defined(__ARM_NEON) || defined(__aarch64__)
+        #define HAVE_NEON 1
+        #include <arm_neon.h>
+    #endif
 
-#if defined(__AVX2__)
-    #define HAVE_AVX2 1
-    #include <immintrin.h>
-#elif defined(__SSE4_1__) || defined(__SSE4_2__)
-    #define HAVE_SSE4 1
-    #include <smmintrin.h>
+    #if defined(__AVX2__)
+        #define HAVE_AVX2 1
+        #include <immintrin.h>
+    #elif defined(__SSE4_1__) || defined(__SSE4_2__)
+        #define HAVE_SSE4 1
+        #include <smmintrin.h>
+    #endif
 #endif
 
 namespace simd {

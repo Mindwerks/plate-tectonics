@@ -24,17 +24,23 @@ if(ENABLE_UBSAN)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
 endif()
 
+# SIMD support
+option(DISABLE_SIMD "Disable SIMD optimizations (use scalar fallback)" OFF)
+
 # Detect SIMD capabilities based on target architecture
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64|ARM64")
+if(DISABLE_SIMD)
+    message(STATUS "SIMD optimizations: DISABLED (scalar fallback)")
+    set(TARGET_ARCH "SCALAR")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64|ARM64")
     set(TARGET_ARCH "ARM64")
     message(STATUS "Target architecture: ARM64 (NEON available)")
     # NEON is always available on ARM64
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a+simd")
-    
+
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
     set(TARGET_ARCH "X86_64")
     message(STATUS "Target architecture: x86-64")
-    
+
     # Check for AVX2 support
     include(CheckCXXSourceRuns)
     set(CMAKE_REQUIRED_FLAGS "-mavx2")
@@ -45,7 +51,7 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
             return 0;
         }
     " HAVE_AVX2_SUPPORT)
-    
+
     if(HAVE_AVX2_SUPPORT)
         message(STATUS "AVX2 support: YES")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma")
@@ -55,6 +61,7 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
     endif()
 else()
     message(STATUS "Target architecture: ${CMAKE_SYSTEM_PROCESSOR} - using scalar fallback")
+    set(TARGET_ARCH "SCALAR")
 endif()
 
 # Optimization flags for Release builds

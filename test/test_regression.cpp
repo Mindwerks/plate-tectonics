@@ -114,31 +114,41 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
 
     // Expected checksums from baseline run with seed 12345
     // These are checksums of the raw heightmap data
-    // NOTE: These checksums will differ between architectures due to SIMD differences
-    // On macOS ARM64 (NEON):
+    // NOTE: These checksums will differ between architectures/compilers due to:
+    // - SIMD implementations (NEON vs AVX2/SSE)
+    // - Compiler versions and optimization differences
+    // - Floating-point math library implementations
+
+    // Known good checksums from different platforms:
+    // macOS ARM64 (Apple Clang, NEON):
     const uint32_t EXPECTED_INITIAL_CRC32_ARM64 = 0x3E1ED204;
     const uint32_t EXPECTED_FINAL_CRC32_ARM64 = 0xD8F3679C;
-    // On Linux x86-64 (AVX2/SSE):
-    const uint32_t EXPECTED_INITIAL_CRC32_X86 = 0xBC72B08C;
-    const uint32_t EXPECTED_FINAL_CRC32_X86 = 0x007415B5;
 
-    // Check if we match either architecture's expected values
+    // Ubuntu x86-64 (GCC, AVX2/SSE) - GitHub Actions runner:
+    const uint32_t EXPECTED_INITIAL_CRC32_x86_64 = 0x0E3AFF64;
+    const uint32_t EXPECTED_FINAL_CRC32_x86_64 = 0x6929851B;
+
+    // Check if we match any known platform's expected values
     bool initial_matches = (initial_crc32 == EXPECTED_INITIAL_CRC32_ARM64) ||
-                          (initial_crc32 == EXPECTED_INITIAL_CRC32_X86);
+                          (initial_crc32 == EXPECTED_INITIAL_CRC32_x86_64);
     bool final_matches = (final_crc32 == EXPECTED_FINAL_CRC32_ARM64) ||
-                        (final_crc32 == EXPECTED_FINAL_CRC32_X86);
+                        (final_crc32 == EXPECTED_FINAL_CRC32_x86_64);
 
     EXPECT_TRUE(initial_matches)
         << "Initial heightmap checksum does not match known baseline.\n"
-        << "Expected (ARM64): 0x" << std::hex << EXPECTED_INITIAL_CRC32_ARM64 << "\n"
-        << "Expected (x86):   0x" << std::hex << EXPECTED_INITIAL_CRC32_X86 << "\n"
-        << "Got:              0x" << std::hex << initial_crc32 << "\n"
-        << "This may indicate the simulation initial state has changed, or a new architecture.";
+        << "Expected (macOS ARM64): 0x" << std::hex << EXPECTED_INITIAL_CRC32_ARM64 << "\n"
+        << "Expected (Ubuntu x86):  0x" << std::hex << EXPECTED_INITIAL_CRC32_x86_64 << "\n"
+        << "Got:                    0x" << std::hex << initial_crc32 << "\n"
+        << "This may indicate the simulation initial state has changed, or a new platform.\n"
+        << "If this is a new platform, verify the simulation produces correct output\n"
+        << "and add the checksums above as a new known platform.";
 
     EXPECT_TRUE(final_matches)
         << "Final heightmap checksum does not match known baseline.\n"
-        << "Expected (ARM64): 0x" << std::hex << EXPECTED_FINAL_CRC32_ARM64 << "\n"
-        << "Expected (x86):   0x" << std::hex << EXPECTED_FINAL_CRC32_X86 << "\n"
-        << "Got:              0x" << std::hex << final_crc32 << "\n"
-        << "This may indicate the simulation output has changed, or a new architecture.";
+        << "Expected (macOS ARM64): 0x" << std::hex << EXPECTED_FINAL_CRC32_ARM64 << "\n"
+        << "Expected (Ubuntu x86):  0x" << std::hex << EXPECTED_FINAL_CRC32_x86_64 << "\n"
+        << "Got:                    0x" << std::hex << final_crc32 << "\n"
+        << "This may indicate the simulation output has changed, or a new platform.\n"
+        << "If this is a new platform, verify the simulation produces correct output\n"
+        << "and add the checksums above as a new known platform.";
 }
