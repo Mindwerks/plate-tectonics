@@ -41,7 +41,7 @@ namespace simd {
 /**
  * Clamp all values in array to be non-negative (>= 0.0f)
  * Uses SIMD when available: NEON (ARM), AVX2 or SSE4.1 (x86-64)
- * 
+ *
  * @param data Array of floats to clamp in-place
  * @param size Number of elements in array
  */
@@ -50,7 +50,7 @@ void clamp_non_negative(float* data, uint32_t size);
 /**
  * Fill array with a constant value
  * Optimized for zero (uses memset) and SIMD for other values
- * 
+ *
  * @param data Array to fill
  * @param size Number of elements
  * @param value Value to fill with
@@ -60,7 +60,7 @@ void set_all(float* data, uint32_t size, float value);
 /**
  * Copy array from source to destination
  * Uses memcpy for optimal performance
- * 
+ *
  * @param dest Destination array
  * @param src Source array
  * @param size Number of elements to copy
@@ -70,7 +70,7 @@ void copy_array(float* dest, const float* src, uint32_t size);
 /**
  * Element-wise maximum of two arrays: dest[i] = max(src1[i], src2[i])
  * Uses SIMD when available
- * 
+ *
  * @param dest Destination array
  * @param src1 First source array
  * @param src2 Second source array
@@ -81,7 +81,7 @@ void element_max(float* dest, const float* src1, const float* src2, uint32_t siz
 /**
  * Compute dot product of two arrays: sum(a[i] * b[i])
  * Uses SIMD with FMA when available
- * 
+ *
  * @param a First array
  * @param b Second array
  * @param size Number of elements

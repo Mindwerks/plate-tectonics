@@ -20,23 +20,22 @@
 #ifndef SEGMENTS_HPP
 #define SEGMENTS_HPP
 
-#include <vector>
-#include <cmath>     // sin, cos
-#include "simplerandom.hpp"
-#include "heightmap.hpp"
-#include "rectangle.hpp"
-#include "segment_data.hpp"
-#include "utils.hpp"
 #include "bounds.hpp"
-#include "movement.hpp"
+#include "heightmap.hpp"
 #include "mass.hpp"
+#include "movement.hpp"
+#include "rectangle.hpp"
 #include "segment_creator.hpp"
+#include "segment_data.hpp"
+#include "simplerandom.hpp"
+#include "utils.hpp"
+#include <cmath> // sin, cos
+#include <vector>
 
 using ContinentId = uint32_t;
 
-class ISegments
-{
-public:
+class ISegments {
+  public:
     virtual ~ISegments() = default;
     virtual uint32_t area() = 0;
     virtual void reset() = 0;
@@ -54,17 +53,14 @@ public:
     virtual ContinentId getContinentAt(int x, int y) const = 0;
 };
 
-class Segments : public ISegments
-{
-public:
+class Segments : public ISegments {
+  public:
     explicit Segments(uint32_t plate_area);
     ~Segments() override;
-    void setSegmentCreator(ISegmentCreator* segmentCreator)
-    {
+    void setSegmentCreator(ISegmentCreator* segmentCreator) {
         _segmentCreator = segmentCreator;
     }
-    void setBounds(IBounds* bounds)
-    {
+    void setBounds(IBounds* bounds) {
         _bounds = bounds;
     }
     uint32_t area() override;
@@ -85,10 +81,11 @@ public:
         segment[index] = id;
     }
     ContinentId getContinentAt(int x, int y) const override;
-private:
+
+  private:
     std::vector<ISegmentData*> seg_data; ///< Details of each crust segment.
-    ContinentId* segment;              ///< Segment ID of each piece of continental crust.
-    int _area; /// Should be the same as the bounds area of the plate
+    ContinentId* segment;                ///< Segment ID of each piece of continental crust.
+    int _area;                           /// Should be the same as the bounds area of the plate
     ISegmentCreator* _segmentCreator;
     IBounds* _bounds;
 };

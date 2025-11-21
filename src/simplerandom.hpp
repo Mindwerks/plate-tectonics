@@ -25,14 +25,12 @@
 
 #include "utils.hpp"
 
-typedef struct
-{
-    uint32_t        cong;
+typedef struct {
+    uint32_t cong;
 } SimpleRandomCong_t;
 
-
 class SimpleRandom {
-public:
+  public:
     explicit SimpleRandom(uint32_t seed);
     SimpleRandom(const SimpleRandom& other);
     ~SimpleRandom();
@@ -43,7 +41,8 @@ public:
     // Return a random value in [-0.5f, 0.5f]
     float next_float_signed();
     uint32_t maximum();
-private:
+
+  private:
     SimpleRandomCong_t* internal;
 };
 

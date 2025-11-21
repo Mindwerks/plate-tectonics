@@ -20,28 +20,25 @@
 #ifndef PLATE_HPP
 #define PLATE_HPP
 
-#include <vector>
-#include <cmath>     // sin, cos
-#include "simplerandom.hpp"
+#include "bounds.hpp"
 #include "heightmap.hpp"
+#include "mass.hpp"
+#include "movement.hpp"
 #include "rectangle.hpp"
 #include "segment_data.hpp"
-#include "utils.hpp"
-#include "bounds.hpp"
-#include "movement.hpp"
-#include "mass.hpp"
 #include "segments.hpp"
+#include "simplerandom.hpp"
+#include "utils.hpp"
+#include <cmath> // sin, cos
+#include <vector>
 
-class IPlate : public IMass, public IMovement
-{
-public:
+class IPlate : public IMass, public IMovement {
+  public:
     ~IPlate() override = default;
 };
 
-class plate : public IPlate
-{
-public:
-
+class plate : public IPlate {
+  public:
     /// Initializes plate with the supplied height map.
     ///
     /// @param  m              Pointer to array to height map of terrain.
@@ -50,8 +47,8 @@ public:
     /// @param  _x             X of height map's left-top corner on world map.
     /// @param  _y             Y of height map's left-top corner on world map.
     /// @param  worldDimension Dimension of world map's either side in pixels.
-    plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y,
-          uint32_t plate_age, WorldDimension worldDimension);
+    plate(long seed, float* m, uint32_t w, uint32_t h, uint32_t _x, uint32_t _y, uint32_t plate_age,
+          WorldDimension worldDimension);
 
     ~plate() override;
 
@@ -69,7 +66,8 @@ public:
     /// @param  z   Amount of crust to add.
     /// @param  t   Time of creation of new crust.
     /// @param activeContinent Segment ID of the continent that's processed.
-    void addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t t, ContinentId activeContinent);
+    void addCrustByCollision(uint32_t x, uint32_t y, float z, uint32_t t,
+                             ContinentId activeContinent);
 
     /// Simulates subduction of oceanic plate under this plate.
     ///
@@ -84,8 +82,7 @@ public:
     /// @param  t   Time of creation of new crust.
     /// @param  dx  Direction of the subducting plate (X).
     /// @param  dy  Direction of the subducting plate (Y).
-    void addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
-                              float dx, float dy);
+    void addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t, float dx, float dy);
 
     /// Add continental crust from this plate as part of other plate.
     ///
@@ -141,8 +138,7 @@ public:
     /// @param  wy  Y coordinate of collision point on world map.
     /// @param[in, out] count Destination for the count of collisions.
     /// @param[in, out] count Destination for the % of area that collided.
-    void getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count,
-                          float* ratio) const;
+    void getCollisionInfo(uint32_t wx, uint32_t wy, uint32_t* count, float* ratio) const;
 
     /// Retrieve the surface area of continent lying at desired location.
     ///
@@ -213,10 +209,10 @@ public:
     uint32_t getHeight() const noexcept {
         return _bounds->height();
     }
-    uint32_t  getLeftAsUint() const noexcept {
+    uint32_t getLeftAsUint() const noexcept {
         return _bounds->leftAsUint();
     }
-    uint32_t  getTopAsUint() const noexcept {
+    uint32_t getTopAsUint() const noexcept {
         return _bounds->topAsUint();
     }
     float getVelocity() const noexcept {
@@ -239,7 +235,7 @@ public:
     uint32_t getWidth() const noexcept {
         return _bounds->width();
     }
-    bool   isEmpty() const noexcept {
+    bool isEmpty() const noexcept {
         return _mass.null();
     }
     float getCx() const {
@@ -266,26 +262,23 @@ public:
     }
 
     // visible for testing
-    void calculateCrust(uint32_t x, uint32_t y, uint32_t index,
-                        float& w_crust, float& e_crust, float& n_crust, float& s_crust,
-                        uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s);
+    void calculateCrust(uint32_t x, uint32_t y, uint32_t index, float& w_crust, float& e_crust,
+                        float& n_crust, float& s_crust, uint32_t& w, uint32_t& e, uint32_t& n,
+                        uint32_t& s);
 
     // Visible for testing
-    void injectSegments(ISegments* segments)
-    {
+    void injectSegments(ISegments* segments) {
         delete _segments;
         _segments = segments;
     }
 
     // Visible for testing
-    void injectBounds(IBounds* bounds)
-    {
+    void injectBounds(IBounds* bounds) {
         delete _bounds;
         _bounds = bounds;
     }
 
-private:
-
+  private:
     ISegmentData& getContinentAt(int x, int y);
     const ISegmentData& getContinentAt(int x, int y) const;
     void findRiverSources(float lower_bound, vector<uint32_t>* sources);
@@ -294,8 +287,8 @@ private:
 
     const WorldDimension _worldDimension;
     SimpleRandom _randsource;
-    HeightMap map;        ///< Bitmap of plate's structure/height.
-    AgeMap age_map;       ///< Bitmap of plate's soil's age: timestamp of creation.
+    HeightMap map;  ///< Bitmap of plate's structure/height.
+    AgeMap age_map; ///< Bitmap of plate's soil's age: timestamp of creation.
     IBounds* _bounds;
     Mass _mass;
     Movement _movement;

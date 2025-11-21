@@ -22,15 +22,15 @@
 
 #include <stdio.h>
 
-#include "simplerandom.hpp"
 #include "heightmap.hpp"
 #include "rectangle.hpp"
 #include "segment_data.hpp"
+#include "simplerandom.hpp"
 #include "utils.hpp"
 
 /// Represent the bounds of a Plate.
 class IBounds {
-public:
+  public:
     virtual ~IBounds() = default;
 
     /// Accept plate relative coordinates and return the index inside the plate.
@@ -101,15 +101,12 @@ public:
 };
 
 /// Plate bounds.
-class Bounds : public IBounds
-{
-public:
-
+class Bounds : public IBounds {
+  public:
     /// @param worldDimension dimension of the world containing the plate
     /// @param position Position of the top left corner of the plae
     /// @param dimension Dimension of the plate
-    Bounds(const WorldDimension& worldDimension,
-           const FloatPoint& position,
+    Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
            const Dimension& dimension);
 
     uint32_t index(uint32_t x, uint32_t y) const override;
@@ -127,8 +124,7 @@ public:
     uint32_t getValidMapIndex(uint32_t* px, uint32_t* py) const override;
     uint32_t getMapIndex(uint32_t* x, uint32_t* y) const override;
 
-private:
-
+  private:
     /// Return a rectangle representing the Bounds inside the world.
     Platec::Rectangle asRect() const;
 

@@ -20,24 +20,20 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <stdexcept> // std::invalid_argument
-#include <cstring>
-#include <string>
-#include "utils.hpp"
 #include "rectangle.hpp"
-#include "world_point.hpp"
 #include "simd_utils.hpp"
+#include "utils.hpp"
+#include "world_point.hpp"
+#include <cstring>
+#include <stdexcept> // std::invalid_argument
+#include <string>
 
 using namespace std;
 
 template <typename Value>
-class Matrix
-{
-public:
-
-    Matrix(unsigned int width, unsigned int height)
-        : m_width(width), m_height(height)
-    {
+class Matrix {
+  public:
+    Matrix(unsigned int width, unsigned int height) : m_width(width), m_height(height) {
         ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
         m_area = width * height;
         m_data = new Value[m_area];
@@ -50,34 +46,31 @@ public:
     }
 
     Matrix(const Matrix<Value>& other)
-        : m_width(other.m_width), m_height(other.m_height), m_area(other.m_area)
-    {
+        : m_width(other.m_width), m_height(other.m_height), m_area(other.m_area) {
         m_data = new Value[m_area];
         copy(other);
     }
 
     Matrix(Matrix<Value>&& other) noexcept
-        : m_data(other.m_data), m_width(other.m_width), m_height(other.m_height), m_area(other.m_area)
-    {
+        : m_data(other.m_data), m_width(other.m_width), m_height(other.m_height),
+          m_area(other.m_area) {
         other.m_data = nullptr;
         other.m_width = 0;
         other.m_height = 0;
         other.m_area = 0;
     }
 
-    ~Matrix()
-    {
+    ~Matrix() {
         delete[] m_data;
     }
 
-    void set_all(const Value& value)
-    {
+    void set_all(const Value& value) {
         // Use SIMD-optimized implementation for float types
         // Falls back to scalar loop for other types
         const uint32_t MY_AREA = area();
         if (sizeof(Value) == sizeof(float)) {
-            simd::set_all(reinterpret_cast<float*>(m_data), MY_AREA, 
-                         *reinterpret_cast<const float*>(&value));
+            simd::set_all(reinterpret_cast<float*>(m_data), MY_AREA,
+                          *reinterpret_cast<const float*>(&value));
         } else {
             // Generic fallback for non-float types
             for (uint32_t i = 0; i < MY_AREA; i++) {
@@ -85,8 +78,7 @@ public:
             }
         }
     }
-    void copy(const Matrix& other)
-    {
+    void copy(const Matrix& other) {
         if (m_area != other.m_area) {
             m_width = other.m_width;
             m_height = other.m_height;
@@ -98,29 +90,25 @@ public:
         memcpy(m_data, other.m_data, m_area * sizeof(Value));
     }
 
-    const Value& set(unsigned int x, unsigned y, const Value& value)
-    {
+    const Value& set(unsigned int x, unsigned y, const Value& value) {
         ASSERT(x < m_width && y < m_height, "Invalid coordinates");
         m_data[(y * m_width) + x] = value;
         return value;
     }
 
-    const Value& get(unsigned int x, unsigned y) const
-    {
+    const Value& get(unsigned int x, unsigned y) const {
         ASSERT(x < m_width && y < m_height, "Invalid coordinates");
         return m_data[(y * m_width) + x];
     }
 
-    Matrix<Value>& operator=(const Matrix<Value>& other)
-    {
+    Matrix<Value>& operator=(const Matrix<Value>& other) {
         if (this != &other) {
             copy(other);
         }
         return *this;
     }
 
-    Matrix<Value>& operator=(Matrix<Value>&& other) noexcept
-    {
+    Matrix<Value>& operator=(Matrix<Value>&& other) noexcept {
         if (this != &other) {
             delete[] m_data;
             m_data = other.m_data;
@@ -135,34 +123,28 @@ public:
         return *this;
     }
 
-    Value& operator[](unsigned int index)
-    {
+    Value& operator[](unsigned int index) {
         return this->m_data[index];
     }
 
-    const Value& operator[](unsigned int index) const
-    {
+    const Value& operator[](unsigned int index) const {
         return this->m_data[index];
     }
 
-    Value* raw_data() const
-    {
+    Value* raw_data() const {
         return m_data;
     }
-    [[nodiscard]] uint32_t width() const
-    {
+    [[nodiscard]] uint32_t width() const {
         return m_width;
     }
-    [[nodiscard]] uint32_t height() const
-    {
+    [[nodiscard]] uint32_t height() const {
         return m_height;
     }
-    [[nodiscard]] uint32_t area() const
-    {
+    [[nodiscard]] uint32_t area() const {
         return m_area;
     }
-private:
 
+  private:
     Value* m_data;
     unsigned int m_width;
     unsigned int m_height;

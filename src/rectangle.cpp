@@ -17,15 +17,14 @@
  *  License along with this library; if not, see http://www.gnu.org/licenses/
  *****************************************************************************/
 
-#include <stdexcept>
 #include "rectangle.hpp"
 #include "utils.hpp"
+#include <stdexcept>
 
 namespace Platec {
 
 /// Return a valid index or BAD_INDEX
-uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
-{
+uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const {
     uint32_t world_width = _worldDimension.getWidth();
     uint32_t world_height = _worldDimension.getHeight();
     uint32_t x = *px % world_width;
@@ -33,8 +32,10 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
 
     const uint32_t ilft = (uint32_t)(int)_left;
     const uint32_t itop = (uint32_t)(int)_top;
-    const uint32_t irgt = (uint32_t)(int)_right  + (((uint32_t)(int)_right  < ilft) ? (uint32_t)(int)world_width  : 0);
-    const uint32_t ibtm = (uint32_t)(int)_bottom + (((uint32_t)(int)_bottom < itop)  ? (uint32_t)(int)world_height : 0);
+    const uint32_t irgt =
+        (uint32_t)(int)_right + (((uint32_t)(int)_right < ilft) ? (uint32_t)(int)world_width : 0);
+    const uint32_t ibtm = (uint32_t)(int)_bottom +
+                          (((uint32_t)(int)_bottom < itop) ? (uint32_t)(int)world_height : 0);
     const int width = irgt - ilft;
     ASSERT(width >= 0, "Width must be postive");
 
@@ -53,7 +54,7 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
     const uint32_t yOkB = (y_plus_height >= itop) && (y_plus_height < ibtm);
     const uint32_t yOk = yOkA || yOkB;
 
-    x += (x < ilft) ? world_width : 0; // Point is within plate's map: wrap
+    x += (x < ilft) ? world_width : 0;  // Point is within plate's map: wrap
     y += (y < itop) ? world_height : 0; // it around world edges if necessary.
 
     ASSERT(x >= ilft && y >= itop, "Coordinates must be positive");
@@ -69,8 +70,7 @@ uint32_t Rectangle::getMapIndex(uint32_t* px, uint32_t* py) const
     }
 }
 
-void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y)
-{
+void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y) {
     if (y < _top) {
         _top = y;
     } else if (y > _bottom) {
@@ -83,4 +83,4 @@ void Rectangle::enlarge_to_contain(uint32_t x, uint32_t y)
     }
 }
 
-}
+} // namespace Platec
