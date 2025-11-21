@@ -16,12 +16,12 @@
 
 void produce_image_gray(float* heightmap, int width, int height, const char* filename)
 {
-    writeImageGray((char*)filename, width, height, heightmap, "FOO");
+    writeImageGray(const_cast<char*>(filename), width, height, heightmap, "FOO");
 }
 
 void produce_image_colors(float* heightmap, int width, int height, const char* filename)
 {
-    writeImageColors((char*)filename, width, height, heightmap, "FOO");
+    writeImageColors(const_cast<char*>(filename), width, height, heightmap, "FOO");
 }
 
 void save_image(void* p, const char* filename, const int width, const int height, bool colors)

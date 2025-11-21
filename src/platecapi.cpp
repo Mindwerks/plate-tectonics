@@ -22,6 +22,7 @@
 #include "platecapi.hpp"
 #include <stdlib.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include <vector>
 
@@ -61,11 +62,11 @@ void* platec_api_create(long seed, uint32_t width, uint32_t height, float sea_le
 
 void platec_api_destroy(const void* litho)
 {
-    for (uint32_t i = 0; i < lithospheres.size(); ++i)
-        if (lithospheres[i].data == litho) {
-            lithospheres.erase(lithospheres.begin()+i);
-            break;
-        }
+    auto it = std::find_if(lithospheres.begin(), lithospheres.end(),
+        [litho](const platec_api_list_elem& entry) { return entry.data == litho; });
+    if (it != lithospheres.end()) {
+        lithospheres.erase(it);
+    }
 }
 
 const uint16_t* platec_api_get_agemap(uint32_t id)
@@ -93,11 +94,9 @@ uint8_t* platec_api_get_platesmap(void *pointer)
 
 lithosphere* platec_api_get_lithosphere(uint32_t id)
 {
-    for (uint32_t i = 0; i < lithospheres.size(); ++i)
-        if (lithospheres[i].id == id)
-            return lithospheres[i].data;
-
-    return nullptr;
+    auto it = std::find_if(lithospheres.begin(), lithospheres.end(),
+        [id](const platec_api_list_elem& entry) { return entry.id == id; });
+    return (it != lithospheres.end()) ? it->data : nullptr;
 }
 
 uint32_t platec_api_is_finished(void *pointer)

@@ -188,12 +188,12 @@ Quick start:
 # Run all linters
 ./run_linter.sh
 
+# Run linter and check code style
+./run_linter.sh
+
 # Run specific linter
 ./run_linter.sh clang-tidy
 ./run_linter.sh cppcheck
-
-# Format code
-./run_astyle.sh
 ```
 
 Plans for the future

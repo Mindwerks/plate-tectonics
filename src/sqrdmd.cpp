@@ -97,7 +97,6 @@ int sqrdmd(long seed, float* map, int size, float rgh)
     temp = size - 1;
     // MUST EQUAL TO 2^x + 1!
     ASSERT(!(temp & (temp - 1) || temp & 3), "Side should be 2**n +1");
-    temp = size;
     slope = rgh;
     step = size & ~1;
 

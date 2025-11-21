@@ -70,7 +70,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
         png_text title_text;
         title_text.compression = PNG_TEXT_COMPRESSION_NONE;
         title_text.key = "Title";
-        title_text.text = (char*)title;
+        title_text.text = const_cast<char*>(title);
         png_set_text(png_ptr, info_ptr, &title_text, 1);
     }
 

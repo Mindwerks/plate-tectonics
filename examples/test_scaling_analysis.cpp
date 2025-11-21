@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstdlib>
 #include <thread>
+#include <numeric>
 
 struct Result {
     uint32_t width;
@@ -168,9 +169,7 @@ int main() {
             }
 
             // Check if ratios are roughly constant (exponential growth)
-            float avg_ratio = 0;
-            for (float r : ratios) avg_ratio += r;
-            avg_ratio /= ratios.size();
+            float avg_ratio = std::accumulate(ratios.begin(), ratios.end(), 0.0f) / ratios.size();
 
             float ratio_variance = 0;
             for (float r : ratios) {
