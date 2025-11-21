@@ -102,9 +102,7 @@ void simplerandom_cong_sanitize(SimpleRandomCong_t* p_cong) {
 }
 
 uint32_t simplerandom_cong_next(SimpleRandomCong_t* p_cong) {
-    uint32_t cong;
-
-    cong = UINT32_C(69069) * p_cong->cong + 12345u;
+    uint32_t cong = UINT32_C(69069) * p_cong->cong + 12345u;
     p_cong->cong = cong;
 
     return cong;

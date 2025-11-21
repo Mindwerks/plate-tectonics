@@ -237,14 +237,14 @@ void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources) {
                 continue;
             }
 
-            float w_crust;
-            float e_crust;
-            float n_crust;
-            float s_crust;
-            uint32_t w;
-            uint32_t e;
-            uint32_t n;
-            uint32_t s;
+            float w_crust = 0.0f;
+            float e_crust = 0.0f;
+            float n_crust = 0.0f;
+            float s_crust = 0.0f;
+            uint32_t w = 0;
+            uint32_t e = 0;
+            uint32_t n = 0;
+            uint32_t s = 0;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust, w, e, n, s);
 
             // This location is either at the edge of the plate or it is not the
@@ -282,14 +282,14 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
                 continue;
             }
 
-            float w_crust;
-            float e_crust;
-            float n_crust;
-            float s_crust;
-            uint32_t w;
-            uint32_t e;
-            uint32_t n;
-            uint32_t s;
+            float w_crust = 0.0f;
+            float e_crust = 0.0f;
+            float n_crust = 0.0f;
+            float s_crust = 0.0f;
+            uint32_t w = 0;
+            uint32_t e = 0;
+            uint32_t n = 0;
+            uint32_t s = 0;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust, w, e, n, s);
 
             // If this is the lowest part of its neighbourhood, stop.
@@ -370,14 +370,14 @@ void plate::erode(float lower_bound) {
                 continue;
             }
 
-            float w_crust;
-            float e_crust;
-            float n_crust;
-            float s_crust;
-            uint32_t w;
-            uint32_t e;
-            uint32_t n;
-            uint32_t s;
+            float w_crust = 0.0f;
+            float e_crust = 0.0f;
+            float n_crust = 0.0f;
+            float s_crust = 0.0f;
+            uint32_t w = 0;
+            uint32_t e = 0;
+            uint32_t n = 0;
+            uint32_t s = 0;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust, w, e, n, s);
 
             // This location has no neighbours (ARTIFACT!) or it is the lowest

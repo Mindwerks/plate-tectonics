@@ -379,8 +379,8 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
         const uint32_t x1 = x0 + plates[i]->getWidth();
         const uint32_t y1 = y0 + plates[i]->getHeight();
 
-        const float* this_map;
-        const uint32_t* this_age;
+        const float* this_map = nullptr;
+        const uint32_t* this_age = nullptr;
         plates[i]->getMap(&this_map, &this_age);
 
         uint32_t x_mod_start = (x0 + world_width) % world_width;
@@ -478,8 +478,8 @@ void lithosphere::updateCollisions() {
     for (uint32_t i = 0; i < num_plates; ++i) {
         for (uint32_t j = 0; j < collisions[i].size(); ++j) {
             const plateCollision& coll = collisions[i][j];
-            uint32_t coll_count, coll_count_i, coll_count_j;
-            float coll_ratio, coll_ratio_i, coll_ratio_j;
+            uint32_t coll_count = 0, coll_count_i = 0, coll_count_j = 0;
+            float coll_ratio = 0.0f, coll_ratio_i = 0.0f, coll_ratio_j = 0.0f;
 
             ASSERT(i != coll.index, "when colliding: SRC == DEST!");
 
@@ -717,9 +717,9 @@ void lithosphere::restart() {
                 const uint32_t x1 = x0 + plates[i]->getWidth();
                 const uint32_t y1 = y0 + plates[i]->getHeight();
 
-                const float* this_map;
-                const uint32_t* this_age_const;
-                uint32_t* this_age;
+                const float* this_map = nullptr;
+                const uint32_t* this_age_const = nullptr;
+                uint32_t* this_age = nullptr;
 
                 plates[i]->getMap(&this_map, &this_age_const);
                 this_age = const_cast<uint32_t*>(this_age_const);

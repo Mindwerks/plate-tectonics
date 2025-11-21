@@ -134,41 +134,41 @@ public:
     {
 
     }
-    virtual void incCollCount() {
+    void incCollCount() override {
         _collCount++;
     }
-    virtual void incArea() {
+    void incArea() override {
         _area++;
     }
-    virtual void enlarge_to_contain(uint32_t x, uint32_t y) {
+    void enlarge_to_contain(uint32_t x, uint32_t y) override {
         _enlargePoint = new IntPoint(x, y);
     }
-    virtual void markNonExistent() {
+    void markNonExistent() override {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t dx, uint32_t dy) {
+    void shift(uint32_t dx, uint32_t dy) override {
         throw runtime_error("Not implemented");
     }
 
-    virtual uint32_t getLeft() const {
+    uint32_t getLeft() const override {
         throw runtime_error("Not implemented");
     }
-    virtual uint32_t getRight() const {
+    uint32_t getRight() const override {
         throw runtime_error("Not implemented");
     }
-    virtual uint32_t getTop() const {
+    uint32_t getTop() const override {
         throw runtime_error("Not implemented");
     }
-    virtual uint32_t getBottom() const {
+    uint32_t getBottom() const override {
         throw runtime_error("Not implemented");
     }
-    virtual bool isEmpty() const {
+    bool isEmpty() const override {
         throw runtime_error("Not implemented");
     }
-    virtual uint32_t area() const {
+    uint32_t area() const override {
         return _area;
     }
-    virtual uint32_t collCount() const {
+    uint32_t collCount() const override {
         return _collCount;
     }
     IntPoint* enlargedPoint() {
@@ -188,48 +188,48 @@ public:
     {
 
     }
-    virtual uint32_t area() {
+    uint32_t area() override {
         throw runtime_error("Not implemented");
     }
-    virtual void reset() {
+    void reset() override {
         throw runtime_error("Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    void reassign(uint32_t newarea, uint32_t* tmps) override {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    void shift(uint32_t d_lft, uint32_t d_top) override {
         throw runtime_error("Not implemented");
     }
-    virtual uint32_t size() const {
+    uint32_t size() const override {
         throw runtime_error("(MockSegments::size) Not implemented");
     }
-    virtual const ISegmentData& operator[](uint32_t index) const {
+    const ISegmentData& operator[](uint32_t index) const override {
         if (index == _id) {
             return *_data;
         } else {
             throw runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual ISegmentData& operator[](uint32_t index) {
+    ISegmentData& operator[](uint32_t index) override {
         if (index == _id) {
             return *_data;
         } else {
             throw runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual void add(ISegmentData* data) {
+    void add(ISegmentData* data) override {
         throw runtime_error("Not implemented");
     }
-    virtual const ContinentId& id(uint32_t index) const {
+    const ContinentId& id(uint32_t index) const override {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual ContinentId& id(uint32_t index) {
+    ContinentId& id(uint32_t index) override {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual void setId(uint32_t index, ContinentId id) {
+    void setId(uint32_t index, ContinentId id) override {
         throw runtime_error("Not implemented");
     }
-    virtual ContinentId getContinentAt(int x, int y) const {
+    ContinentId getContinentAt(int x, int y) const override {
         if (x==_p.getX() && y==_p.getY()) {
             return _id;
         } else {
@@ -266,29 +266,29 @@ public:
     {
 
     }
-    virtual uint32_t area() {
+    uint32_t area() override {
         throw runtime_error("(MockSegments2::area) Not implemented");
     }
-    virtual void reset() {
+    void reset() override {
         throw runtime_error("(MockSegments2::reset) Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    void reassign(uint32_t newarea, uint32_t* tmps) override {
         throw runtime_error("(MockSegments2::reassign) Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    void shift(uint32_t d_lft, uint32_t d_top) override {
         throw runtime_error("(MockSegments2::shift) Not implemented");
     }
-    virtual uint32_t size() const {
+    uint32_t size() const override {
         throw runtime_error("(MockSegments2::size) Not implemented");
     }
-    virtual const ISegmentData& operator[](uint32_t index) const {
+    const ISegmentData& operator[](uint32_t index) const override {
         if (index == _id) {
             return *_data;
         } else {
             throw runtime_error("(MockSegments2::operator[]) Unexpected call");
         }
     }
-    virtual ISegmentData& operator[](uint32_t id) {
+    ISegmentData& operator[](uint32_t id) override {
         if (id == _id) {
             return *_data;
         } else {
@@ -296,10 +296,10 @@ public:
                                        + Platec::to_string(id)));
         }
     }
-    virtual void add(ISegmentData* data) {
+    void add(ISegmentData* data) override {
         throw runtime_error("(MockSegments2::add) Not implemented");
     }
-    virtual const ContinentId& id(uint32_t index) const {
+    const ContinentId& id(uint32_t index) const override {
         if (_index == index) return _id;
         throw runtime_error(
             string("(MockSegments2::id) Unexpected value ")
@@ -307,7 +307,7 @@ public:
             + " expected was "
             + Platec::to_string(_index));
     }
-    virtual ContinentId& id(uint32_t index) {
+    ContinentId& id(uint32_t index) override {
         if (_index == index) return _id;
         throw runtime_error(
             string("(MockSegments2::id) Unexpected value ")
@@ -315,7 +315,7 @@ public:
             + " expected was "
             + Platec::to_string(_index));
     }
-    virtual void setId(uint32_t index, ContinentId id) {
+    void setId(uint32_t index, ContinentId id) override {
         if (_index == index) {
             _id = id;
         } else {
@@ -323,7 +323,7 @@ public:
                                 + Platec::to_string(index));
         }
     }
-    virtual ContinentId getContinentAt(int x, int y) const {
+    ContinentId getContinentAt(int x, int y) const override {
         if (x==_p.getX() && y==_p.getY()) {
             return _id;
         } else {
