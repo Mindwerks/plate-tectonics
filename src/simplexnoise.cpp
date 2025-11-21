@@ -183,13 +183,13 @@ float raw_noise_2d(const float x, const float y) {
     float n0, n1, n2;
 
     // Skew the input space to determine which simplex cell we're in
-    float F2 = (float)(0.5 * (sqrtf(3.0) - 1.0));
+    float F2 = 0.5f * (sqrtf(3.0f) - 1.0f);
     // Hairy factor for 2D
     float s = (x + y) * F2;
     int i = fastfloor(x + s);
     int j = fastfloor(y + s);
 
-    float G2 = (float)((3.0 - sqrtf(3.0)) / 6.0);
+    float G2 = (3.0f - sqrtf(3.0f)) / 6.0f;
     float t = (i + j) * G2;
     // Unskew the cell origin back to (x,y) space
     float X0 = i - t;
@@ -258,13 +258,13 @@ float raw_noise_3d(const float x, const float y, const float z) {
     float n0, n1, n2, n3; // Noise contributions from the four corners
 
     // Skew the input space to determine which simplex cell we're in
-    float F3 = (float)(1.0 / 3.0);
+    float F3 = 1.0f / 3.0f;
     float s = (x + y + z)*F3; // Very nice and simple skew factor for 3D
     int i = fastfloor(x + s);
     int j = fastfloor(y + s);
     int k = fastfloor(z + s);
 
-    float G3 = (float)(1.0 / 6.0); // Very nice and simple unskew factor, too
+    float G3 = 1.0f / 6.0f; // Very nice and simple unskew factor, too
     float t = (i + j + k)*G3;
     float X0 = i - t; // Unskew the cell origin back to (x,y,z) space
     float Y0 = j - t;
@@ -391,8 +391,8 @@ float raw_noise_3d(const float x, const float y, const float z) {
 // 4D raw Simplex noise
 float raw_noise_4d(const float x, const float y, const float z, const float w) {
     // The skewing and unskewing factors are hairy again for the 4D case
-    float F4 = (float)((sqrtf(5.0) - 1.0) / 4.0);
-    float G4 = (float)((5.0 - sqrtf(5.0)) / 20.0);
+    float F4 = (sqrtf(5.0f) - 1.0f) / 4.0f;
+    float G4 = (5.0f - sqrtf(5.0f)) / 20.0f;
     float n0, n1, n2, n3, n4; // Noise contributions from the five corners
 
     // Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in

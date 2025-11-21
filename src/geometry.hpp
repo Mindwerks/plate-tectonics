@@ -41,7 +41,7 @@ public:
         return _y;
     }
     float length() const {
-        return sqrt((float)(_x * _x + _y * _y));
+        return sqrtf((float)(_x * _x + _y * _y));
     }
     friend IntVector operator-(const IntVector& a, const IntVector& b) {
         return IntVector(a.x() - b.x(), a.y() - b.y());
@@ -84,7 +84,7 @@ public:
         return _y;
     }
     float length() const {
-        return sqrt(_x * _x + _y * _y);
+        return sqrtf(_x * _x + _y * _y);
     }
     float normalize() {
         float len = length();
