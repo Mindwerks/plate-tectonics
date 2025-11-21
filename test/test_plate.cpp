@@ -130,7 +130,7 @@ class MockSegmentData : public ISegmentData
 {
 public:
     MockSegmentData(uint32_t collCount, uint32_t area)
-        : _collCount(collCount), _area(area)
+        : _collCount(collCount), _area(area), _enlargePoint(nullptr)
     {
 
     }

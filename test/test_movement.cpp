@@ -151,6 +151,7 @@ public:
     }
 
     void decImpulse(const FloatVector& delta) override {
+        delete _decImpulseDelta;
         _decImpulseDelta = new FloatVector(delta);
     }
 

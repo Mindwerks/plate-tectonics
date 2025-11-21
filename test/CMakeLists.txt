@@ -12,17 +12,21 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Make GoogleTest available
 FetchContent_MakeAvailable(googletest)
 
+# Find PNG for image writing in regression tests
+set(CMAKE_FIND_FRAMEWORK LAST)
+find_package(PNG REQUIRED)
+
 project (PlateTectonicsTests)
-add_executable(PlateTectonicsTests test_acceptance.cpp test_heightmap.cpp test_plate.cpp test_rectangle.cpp test_sqrdmd.cpp test_randomness.cpp test_portability.cpp test_bounds.cpp test_mass.cpp test_movement.cpp)
+add_executable(PlateTectonicsTests test_acceptance.cpp test_heightmap.cpp test_plate.cpp test_rectangle.cpp test_sqrdmd.cpp test_randomness.cpp test_portability.cpp test_bounds.cpp test_mass.cpp test_movement.cpp test_regression.cpp ../examples/map_drawing.cpp)
 
 add_test(NAME PlateTectonicsTests COMMAND PlateTectonicsTests)
 
-include_directories("../src" ${PNG_INCLUDE_DIR})
+include_directories("../src" "../examples" ${PNG_INCLUDE_DIRS})
 
 # Standard linking to gtest stuff.
 target_link_libraries(PlateTectonicsTests gtest gtest_main)
 
 # Extra linking for the project.
-target_link_libraries(PlateTectonicsTests PlateTectonics)
+target_link_libraries(PlateTectonicsTests PlateTectonics PNG::PNG)
 
 

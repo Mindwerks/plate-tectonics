@@ -19,7 +19,8 @@
 
 #include "segments.hpp"
 
-Segments::Segments(uint32_t plate_area) {
+Segments::Segments(uint32_t plate_area)
+    : _segmentCreator(nullptr), _bounds(nullptr) {
     _area = plate_area;
     segment = new uint32_t[plate_area];
     memset(segment, 255, plate_area * sizeof(uint32_t));

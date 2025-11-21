@@ -93,7 +93,7 @@ class Matrix {
     const Value& set(unsigned int x, unsigned y, const Value& value) {
         ASSERT(x < m_width && y < m_height, "Invalid coordinates");
         m_data[(y * m_width) + x] = value;
-        return value;
+        return m_data[(y * m_width) + x];
     }
 
     const Value& get(unsigned int x, unsigned y) const {
