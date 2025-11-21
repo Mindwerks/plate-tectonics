@@ -61,6 +61,7 @@ run_cppcheck() {
     
     cppcheck --enable=all \
              --suppress=missingIncludeSystem \
+             --suppress=missingInclude \
              --suppress=unusedFunction \
              --suppress=unmatchedSuppression \
              --inline-suppr \

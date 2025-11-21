@@ -32,7 +32,7 @@ void *  platec_api_create(
     uint32_t aggr_overlap_abs, float aggr_overlap_rel,
     uint32_t cycle_count, uint32_t num_plates);
 
-void    platec_api_destroy(void*);
+void    platec_api_destroy(const void*);
 const uint16_t* platec_api_get_agemap(uint32_t);
 float* platec_api_get_heightmap(void*);
 uint8_t* platec_api_get_platesmap(void*);

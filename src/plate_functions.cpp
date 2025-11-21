@@ -25,7 +25,7 @@ void calculateCrust(
     float& w_crust, float& e_crust, float& n_crust, float& s_crust,
     uint32_t& w, uint32_t& e, uint32_t& n, uint32_t& s,
     const WorldDimension& worldDimension,
-    HeightMap& map,
+    const HeightMap& map,
     const uint32_t width,  const uint32_t height)
 {
     try {

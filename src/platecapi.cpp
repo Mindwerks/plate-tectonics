@@ -59,7 +59,7 @@ void* platec_api_create(long seed, uint32_t width, uint32_t height, float sea_le
     return litho;
 }
 
-void platec_api_destroy(void* litho)
+void platec_api_destroy(const void* litho)
 {
     for (uint32_t i = 0; i < lithospheres.size(); ++i)
         if (lithospheres[i].data == litho) {
@@ -70,7 +70,7 @@ void platec_api_destroy(void* litho)
 
 const uint16_t* platec_api_get_agemap(uint32_t id)
 {
-    lithosphere* litho = platec_api_get_lithosphere(id);
+    const lithosphere* litho = platec_api_get_lithosphere(id);
     if (!litho)
         return nullptr;
 
@@ -79,14 +79,14 @@ const uint16_t* platec_api_get_agemap(uint32_t id)
 
 float* platec_api_get_heightmap(void *pointer)
 {
-    lithosphere* litho = static_cast<lithosphere*>(pointer);
+    const lithosphere* litho = static_cast<const lithosphere*>(pointer);
     float *res = litho->getTopography();
     return res;
 }
 
 uint8_t* platec_api_get_platesmap(void *pointer)
 {
-    lithosphere* litho = static_cast<lithosphere*>(pointer);
+    const lithosphere* litho = static_cast<const lithosphere*>(pointer);
     uint8_t *res = litho->getPlatesMap();
     return res;
 }
@@ -102,7 +102,7 @@ lithosphere* platec_api_get_lithosphere(uint32_t id)
 
 uint32_t platec_api_is_finished(void *pointer)
 {
-    lithosphere* litho = static_cast<lithosphere*>(pointer);
+    const lithosphere* litho = static_cast<const lithosphere*>(pointer);
     if (litho->isFinished()) {
         return 1;
     } else {
@@ -128,12 +128,12 @@ uint32_t lithosphere_getMapHeight ( void* object)
 
 float platec_api_velocity_unity_vector_x(void* pointer, uint32_t plate_index)
 {
-    lithosphere* litho = static_cast<lithosphere*>(pointer);
+    const lithosphere* litho = static_cast<const lithosphere*>(pointer);
     return litho->getPlate(plate_index)->velocityUnitVector().x();
 }
 
 float platec_api_velocity_unity_vector_y(void* pointer, uint32_t plate_index)
 {
-    lithosphere* litho = static_cast<lithosphere*>(pointer);
+    const lithosphere* litho = static_cast<const lithosphere*>(pointer);
     return litho->getPlate(plate_index)->velocityUnitVector().y();
 }

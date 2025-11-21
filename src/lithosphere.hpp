@@ -139,12 +139,6 @@ private:
                                        uint32_t& oceanic_collisions,
                                        uint32_t& continental_collisions);
 
-    // Phase 1: Collect what each plate wants to write (parallel)
-    void collectPlateContributions(
-        uint32_t plate_start,
-        uint32_t plate_end,
-        std::vector<std::vector<WorldCellCollision>>& contributions) const;
-
     // Phase 2: Resolve all contributions deterministically (serial or parallel)
     void resolveWorldContributions(
         const std::vector<std::vector<WorldCellCollision>>& contributions,
@@ -206,7 +200,6 @@ private:
     };
 
     void restart(); //< Replace plates with a new population.
-    WorldPoint randomPosition();
 
     HeightMap hmap; ///< Height map representing the topography of system.
     IndexMap imap; ///< Plate index map of the "owner" of each map point.

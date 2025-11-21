@@ -58,14 +58,6 @@ uint32_t findBound(const uint32_t* map, uint32_t length, uint32_t x0, uint32_t y
                    int dx, int dy);
 uint32_t findPlate(plate** plates, float x, float y, uint32_t num_plates);
 
-WorldPoint lithosphere::randomPosition()
-{
-    return WorldPoint(
-               _randsource.next() % _worldDimension.getWidth(),
-               _randsource.next() % _worldDimension.getHeight(),
-               _worldDimension);
-}
-
 void lithosphere::createNoise(float* tmp, const WorldDimension& tmpDim, bool useSimplex)
 {
     ::createNoise(tmp, tmpDim, _randsource, useSimplex);
@@ -472,47 +464,6 @@ struct DeferredPlateOp {
         : type(t), plate_idx(p), x(_x), y(_y), height(h), age(a), collision_area(0) {}
 };
 
-// Collect what each plate wants to write to world cells (Phase 1 - Parallel)
-void lithosphere::collectPlateContributions(
-    uint32_t plate_start,
-    uint32_t plate_end,
-    std::vector<std::vector<WorldCellCollision>>& contributions) const
-{
-    const uint32_t world_width = _worldDimension.getWidth();
-    const uint32_t world_height = _worldDimension.getHeight();
-
-    for (uint32_t i = plate_start; i < plate_end; ++i) {
-        const uint32_t x0 = plates[i]->getLeftAsUint();
-        const uint32_t y0 = plates[i]->getTopAsUint();
-        const uint32_t x1 = x0 + plates[i]->getWidth();
-        const uint32_t y1 = y0 + plates[i]->getHeight();
-
-        const float* this_map;
-        const uint16_t* this_age;
-        plates[i]->getMap(&this_map, &this_age);
-
-        uint32_t x_mod_start = (x0 + world_width) % world_width;
-        uint32_t y_mod = (y0 + world_height) % world_height;
-
-        for (uint32_t y = y0, j = 0; y < y1; ++y,
-                y_mod = ++y_mod >= world_height ? y_mod - world_height : y_mod)
-        {
-            const uint32_t y_width = y_mod * world_width;
-            uint32_t x_mod = x_mod_start;
-
-            for (uint32_t x = x0; x < x1; ++x, ++j,
-                    x_mod = ++x_mod >= world_width ? x_mod - world_width : x_mod)
-            {
-                const uint32_t k = x_mod + y_width;
-
-                if (this_map[j] >= 2 * FLT_EPSILON) {  // Has crust
-                    contributions[k].emplace_back(i, this_map[j], this_age[j], j, x_mod, y_mod);
-                }
-            }
-        }
-    }
-}
-
 // Phase 2: Process collected contributions in deterministic order (serial)
 void lithosphere::resolveWorldContributions(
     const std::vector<std::vector<WorldCellCollision>>& contributions,
@@ -688,13 +639,13 @@ void lithosphere::resolveCell(
                 imap[k] = i;
                 amap[k] = this_age;
             }
-        } else if (!this_is_oceanic & prev_is_oceanic) {
+        } else if ((!this_is_oceanic) & prev_is_oceanic) {
             // Continental crust pushes on oceanic crust
             subductions[imap[k]].push_back(plateCollision(i, x_mod, y_mod, hmap[k]));
             hmap[k] = this_height;
             imap[k] = i;
             amap[k] = this_age;
-        } else if (this_is_oceanic & !prev_is_oceanic) {
+        } else if (this_is_oceanic & (!prev_is_oceanic)) {
             // Oceanic crust subducts under continental
             subductions[i].push_back(plateCollision(imap[k], x_mod, y_mod, this_height));
         } else {
@@ -757,13 +708,13 @@ void lithosphere::resolveCellThreaded(
                 imap[k] = i;
                 amap[k] = this_age;
             }
-        } else if (!this_is_oceanic & prev_is_oceanic) {
+        } else if ((!this_is_oceanic) & prev_is_oceanic) {
             // Continental crust pushes on oceanic crust
             local_subductions[imap[k]].push_back(plateCollision(i, x_mod, y_mod, hmap[k]));
             hmap[k] = this_height;
             imap[k] = i;
             amap[k] = this_age;
-        } else if (this_is_oceanic & !prev_is_oceanic) {
+        } else if (this_is_oceanic & (!prev_is_oceanic)) {
             // Oceanic crust subducts under continental
             local_subductions[i].push_back(plateCollision(imap[k], x_mod, y_mod, this_height));
         } else {
@@ -1066,7 +1017,7 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                 static uint32_t step_count = 0;
                 step_count++;
                 if (step_count == 10 || step_count == 20 || step_count == 30 || step_count == 40) {
-                    printf("[Step %d] Phase1: %.2fms, Phase2: %.2fms, Total: %.2fms (Phase2: %.1f%%)\n",
+                    printf("[Step %u] Phase1: %.2fms, Phase2: %.2fms, Total: %.2fms (Phase2: %.1f%%)\n",
                            step_count, phase1_ms, phase2_ms, phase1_ms + phase2_ms,
                            100.0 * phase2_ms / (phase1_ms + phase2_ms));
                 }

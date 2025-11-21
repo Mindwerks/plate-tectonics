@@ -137,11 +137,10 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
     float fx = x + dx;
     float fy = y + dy;
-    uint32_t index = 0;
 
     if (_bounds->isInLimits(fx, fy))
     {
-        index = _bounds->index(static_cast<uint32_t>(fx), static_cast<uint32_t>(fy));
+        uint32_t index = _bounds->index(static_cast<uint32_t>(fx), static_cast<uint32_t>(fy));
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);
@@ -326,7 +325,6 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
             }
 
             if (s_crust < lowest_crust) {
-                lowest_crust = s_crust;
                 dest = index + _bounds->width();
             }
 

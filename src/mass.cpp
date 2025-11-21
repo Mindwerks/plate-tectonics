@@ -56,8 +56,7 @@ Mass MassBuilder::build()
         return Mass(0, 0, 0);
     } else {
         ASSERT(mass > 0, "Mass was zero!");
-        float inv_mass = 1.0f / mass;
-        return Mass(mass, cx * inv_mass, cy * inv_mass);
+        return Mass(mass, cx / mass, cy / mass);
     }
 }
 

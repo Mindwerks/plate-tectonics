@@ -142,15 +142,16 @@ public:
           _decImpulseDelta(nullptr)
     { }
 
-    ~MockPlate() {
+    ~MockPlate() override {
         if (_decImpulseDelta) delete _decImpulseDelta;
     }
 
-    FloatVector velocityUnitVector() const {
+    FloatVector velocityUnitVector() const override {
         return _velocityUnitVector;
     }
 
-    void decImpulse(const FloatVector& delta) {
+    void decImpulse(const FloatVector& delta) override {
+        if (_decImpulseDelta) delete _decImpulseDelta;
         _decImpulseDelta = new FloatVector(delta);
     }
 
@@ -159,11 +160,11 @@ public:
         return *_decImpulseDelta;
     }
 
-    float getMass() const {
+    float getMass() const override {
         return _mass;
     }
 
-    FloatPoint massCenter() const {
+    FloatPoint massCenter() const override {
         return _massCenter;
     }
 
