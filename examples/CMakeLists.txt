@@ -7,8 +7,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 project (PlateTectonicsExamples)
 add_executable(simulation simulation.cpp map_drawing.cpp)
 
+# Prefer Homebrew/standard system paths over frameworks (e.g., Mono)
+set(CMAKE_FIND_FRAMEWORK LAST)
 find_package(PNG REQUIRED)
 
-include_directories("../src" ${PNG_INCLUDE_DIRS})
-
-target_link_libraries(simulation PlateTectonics ${PNG_LIBRARIES})
+target_include_directories(simulation PRIVATE ../src ${PNG_INCLUDE_DIRS})
+target_link_libraries(simulation PRIVATE PlateTectonics PNG::PNG)
