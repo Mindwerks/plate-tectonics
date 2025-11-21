@@ -34,15 +34,15 @@ void *  platec_api_create(
 
 void    platec_api_destroy(const void*);
 const uint16_t* platec_api_get_agemap(uint32_t);
-float* platec_api_get_heightmap(void*);
-uint8_t* platec_api_get_platesmap(void*);
-uint32_t  platec_api_is_finished(void*);
+float* platec_api_get_heightmap(const void*);
+uint8_t* platec_api_get_platesmap(const void*);
+uint32_t  platec_api_is_finished(const void*);
 void    platec_api_step(void*);
 
-float platec_api_velocity_unity_vector_x(void*, uint32_t plate_index);
-float platec_api_velocity_unity_vector_y(void*, uint32_t plate_index);
+float platec_api_velocity_unity_vector_x(const void*, uint32_t plate_index);
+float platec_api_velocity_unity_vector_y(const void*, uint32_t plate_index);
 
-uint32_t lithosphere_getMapWidth ( void* object);
-uint32_t lithosphere_getMapHeight ( void* object);
+uint32_t lithosphere_getMapWidth ( const void* object);
+uint32_t lithosphere_getMapHeight ( const void* object);
 
 #endif

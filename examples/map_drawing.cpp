@@ -22,10 +22,10 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
                void (drawFunction)(png_structp&, png_bytep&, int, int, float*))
 {
     int code = 0;
-    FILE *fp;
-    png_structp png_ptr;
-    png_infop info_ptr;
-    png_bytep row;
+    FILE *fp = nullptr;
+    png_structp png_ptr = nullptr;
+    png_infop info_ptr = nullptr;
+    png_bytep row = nullptr;
 
     // Open file for writing (binary mode)
     fp = fopen(filename, "wb");
@@ -87,9 +87,13 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
 
 finalise:
     if (fp != nullptr) fclose(fp);
-    if (info_ptr != nullptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-    if (png_ptr != nullptr) png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
     if (row != nullptr) free(row);
+    if (png_ptr != nullptr) {
+        if (info_ptr != nullptr) {
+            png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
+        }
+        png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
+    }
 
     return code;
 }

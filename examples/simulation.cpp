@@ -24,9 +24,13 @@ void produce_image_colors(float* heightmap, int width, int height, const char* f
     writeImageColors(const_cast<char*>(filename), width, height, heightmap, "FOO");
 }
 
-void save_image(void* p, const char* filename, const int width, const int height, bool colors)
+void save_image(const void* p, const char* filename, const int width, const int height, bool colors)
 {
     const float* heightmap = platec_api_get_heightmap(p);
+    if (!heightmap) {
+        fprintf(stderr, "Error: Could not get heightmap\n");
+        return;
+    }
     float* copy = new float[width * height];
     memcpy(copy, heightmap, sizeof(float) * width * height);
     normalize(copy, width * height);
