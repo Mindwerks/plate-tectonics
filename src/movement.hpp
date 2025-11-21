@@ -33,7 +33,7 @@
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
 
-using ContinentId = uint32_t;
+using ContinentId = uint16_t;
 
 class IPlate;
 class plate;

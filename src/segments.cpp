@@ -22,8 +22,8 @@
 Segments::Segments(uint32_t plate_area)
     : _segmentCreator(nullptr), _bounds(nullptr) {
     _area = plate_area;
-    segment = new uint32_t[plate_area];
-    memset(segment, 255, plate_area * sizeof(uint32_t));
+    segment = new ContinentId[plate_area];
+    memset(segment, 255, plate_area * sizeof(ContinentId));
 }
 
 Segments::~Segments() {
@@ -40,14 +40,14 @@ uint32_t Segments::area() {
 }
 
 void Segments::reset() {
-    memset(segment, -1, sizeof(uint32_t) * _area);
+    memset(segment, -1, sizeof(ContinentId) * _area);
     for (size_t i = 0; i < seg_data.size(); i++) {
         delete seg_data[i];
     }
     seg_data.clear();
 }
 
-void Segments::reassign(uint32_t newarea, uint32_t* tmps) {
+void Segments::reassign(uint32_t newarea, ContinentId* tmps) {
     delete[] segment;
     _area = newarea;
     segment = tmps;

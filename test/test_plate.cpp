@@ -194,7 +194,7 @@ public:
     void reset() override {
         throw runtime_error("Not implemented");
     }
-    void reassign(uint32_t newarea, uint32_t* tmps) override {
+    void reassign(uint32_t newarea, ContinentId* tmps) override {
         throw runtime_error("Not implemented");
     }
     void shift(uint32_t d_lft, uint32_t d_top) override {
@@ -272,7 +272,7 @@ public:
     void reset() override {
         throw runtime_error("(MockSegments2::reset) Not implemented");
     }
-    void reassign(uint32_t newarea, uint32_t* tmps) override {
+    void reassign(uint32_t newarea, ContinentId* tmps) override {
         throw runtime_error("(MockSegments2::reassign) Not implemented");
     }
     void shift(uint32_t d_lft, uint32_t d_top) override {

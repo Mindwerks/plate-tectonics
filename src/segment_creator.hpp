@@ -24,7 +24,7 @@
 #include "utils.hpp"
 #include <vector>
 
-using ContinentId = uint32_t;
+using ContinentId = uint16_t;
 
 class IBounds;
 class ISegments;

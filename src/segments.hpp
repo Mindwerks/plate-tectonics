@@ -32,14 +32,14 @@
 #include <cmath> // sin, cos
 #include <vector>
 
-using ContinentId = uint32_t;
+using ContinentId = uint16_t;
 
 class ISegments {
   public:
     virtual ~ISegments() = default;
     virtual uint32_t area() = 0;
     virtual void reset() = 0;
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) = 0;
+    virtual void reassign(uint32_t newarea, ContinentId* tmps) = 0;
     virtual void shift(uint32_t d_lft, uint32_t d_top) = 0;
     virtual uint32_t size() const = 0;
     virtual const ISegmentData& operator[](uint32_t index) const = 0;
@@ -65,7 +65,7 @@ class Segments : public ISegments {
     }
     uint32_t area() override;
     void reset() override;
-    void reassign(uint32_t newarea, uint32_t* tmps) override;
+    void reassign(uint32_t newarea, ContinentId* tmps) override;
     void shift(uint32_t d_lft, uint32_t d_top) override;
     uint32_t size() const override;
     const ISegmentData& operator[](uint32_t index) const override;

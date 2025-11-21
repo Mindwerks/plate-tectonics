@@ -575,10 +575,10 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t) {
 
         HeightMap tmph = HeightMap(_bounds->width(), _bounds->height());
         AgeMap tmpa = AgeMap(_bounds->width(), _bounds->height());
-        uint32_t* tmps = new uint32_t[_bounds->area()];
+        ContinentId* tmps = new ContinentId[_bounds->area()];
         tmph.set_all(0);
         tmpa.set_all(0);
-        memset(tmps, 255, _bounds->area() * sizeof(uint32_t));
+        memset(tmps, 255, _bounds->area() * sizeof(ContinentId));
 
         // copy old plate into new.
         for (uint32_t j = 0; j < old_height; ++j) {
@@ -586,7 +586,7 @@ void plate::setCrust(uint32_t x, uint32_t y, float z, uint32_t t) {
             const uint32_t src_i = j * old_width;
             memcpy(&tmph[dest_i], &map[src_i], old_width * sizeof(float));
             memcpy(&tmpa[dest_i], &age_map[src_i], old_width * sizeof(uint32_t));
-            memcpy(&tmps[dest_i], &_segments->id(src_i), old_width * sizeof(uint32_t));
+            memcpy(&tmps[dest_i], &_segments->id(src_i), old_width * sizeof(ContinentId));
         }
 
         map = tmph;
