@@ -29,9 +29,9 @@ TEST(Randomness, SequenceDoubles)
     long seed = 3;
     SimpleRandom randsource(seed);
 
-    EXPECT_FLOAT_EQ((float)5.1118433e-05, (float)randsource.next_double());
-    EXPECT_FLOAT_EQ(0.53070194f, (float)randsource.next_double());
-    EXPECT_FLOAT_EQ(0.053402752f, (float)randsource.next_double());
+    EXPECT_FLOAT_EQ(5.1118433e-05f, randsource.next_float());
+    EXPECT_FLOAT_EQ(0.53070194f, randsource.next_float());
+    EXPECT_FLOAT_EQ(0.053402752f, randsource.next_float());
 }
 
 TEST(Randomness, Maximum)
@@ -39,5 +39,5 @@ TEST(Randomness, Maximum)
     long seed = 3;
     SimpleRandom randsource(seed);
 
-    EXPECT_FLOAT_EQ((float)4.2949673e+09, (float)randsource.maximum());
+    EXPECT_FLOAT_EQ(4.2949673e+09f, (float)randsource.maximum());
 }

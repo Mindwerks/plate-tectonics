@@ -125,10 +125,10 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     dx -= _movement.velocityOnX(dot > 0);
     dy -= _movement.velocityOnY(dot > 0);
 
-    float offset = static_cast<float>(_randsource.next_double());
+    float offset = _randsource.next_float();
     float offset_sign = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset *= offset * offset * offset_sign;
-    float offset2 = static_cast<float>(_randsource.next_double());
+    float offset2 = _randsource.next_float();
     float offset_sign2 = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset2 *= offset2 * offset2 * offset_sign2;
     dx = 10 * dx + 3 * offset;
@@ -358,7 +358,7 @@ void plate::erode(float lower_bound)
 
     // Add random noise (10 %) to heightmap.
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
-        float alpha = 0.2f * static_cast<float>(_randsource.next_double());
+        float alpha = 0.2f * _randsource.next_float();
         tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
         // Clamp to zero to prevent floating point errors from accumulating
         // and causing negative mass values (Issue #30)

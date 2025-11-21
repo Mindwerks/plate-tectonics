@@ -192,6 +192,6 @@ TEST(Movement, Collide)
     mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
 
     // Updated expected values for float-only math (no double intermediate precision)
-    EXPECT_FLOAT_EQ((float)-6.2893458e-05, otherPlate.decImpulseDelta().x());
+    EXPECT_FLOAT_EQ(-6.2893458e-05f, otherPlate.decImpulseDelta().x());
     EXPECT_FLOAT_EQ(-0.00064989907f, otherPlate.decImpulseDelta().y());
 }
