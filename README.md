@@ -191,9 +191,6 @@ Quick start:
 # Run specific linter
 ./run_linter.sh clang-tidy
 ./run_linter.sh cppcheck
-
-# Format code
-./run_astyle.sh
 ```
 
 Plans for the future

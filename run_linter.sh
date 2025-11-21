@@ -48,7 +48,7 @@ run_clang_tidy() {
     # Run clang-tidy on each file
     for file in $CPP_FILES; do
         echo "  Checking: $file"
-        $CLANG_TIDY "$file" -p . --quiet 2>&1 || true
+        $CLANG_TIDY "$file" -p . --quiet --checks='-misc-include-cleaner' 2>&1 || true
     done
     
     echo -e "${GREEN}clang-tidy complete!${NC}"
