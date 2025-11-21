@@ -158,7 +158,7 @@ lithosphere::lithosphere(long seed, uint32_t width, uint32_t height, float sea_l
     createPlates();
 }
 
-lithosphere::~lithosphere() throw()
+lithosphere::~lithosphere() noexcept
 {
     clearPlates();
     delete[] plates;
@@ -336,17 +336,17 @@ void lithosphere::createPlates()
     }
 }
 
-uint32_t lithosphere::getPlateCount() const throw()
+uint32_t lithosphere::getPlateCount() const noexcept
 {
     return num_plates;
 }
 
-const uint32_t* lithosphere::getAgeMap() const throw()
+const uint32_t* lithosphere::getAgeMap() const noexcept
 {
     return amap.raw_data();
 }
 
-float* lithosphere::getTopography() const throw()
+float* lithosphere::getTopography() const noexcept
 {
     return hmap.raw_data();
 }
@@ -853,7 +853,7 @@ uint32_t lithosphere::getHeight() const
     return _worldDimension.getHeight();
 }
 
-uint32_t* lithosphere::getPlatesMap() const throw()
+uint32_t* lithosphere::getPlatesMap() const noexcept
 {
     return imap.raw_data();
 }

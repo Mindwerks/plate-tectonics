@@ -33,7 +33,7 @@
 #define INITIAL_SPEED_X 1
 #define DEFORMATION_WEIGHT 2
 
-typedef uint32_t ContinentId;
+using ContinentId = uint32_t;
 
 class IPlate;
 class plate;
@@ -43,7 +43,7 @@ class Mass;
 class IMovement
 {
 public:
-    virtual ~IMovement() {}
+    virtual ~IMovement() = default;
     virtual Platec::FloatVector velocityUnitVector() const = 0;
     virtual void decImpulse(const Platec::FloatVector& delta) = 0;
 };
@@ -65,16 +65,16 @@ public:
     float velocityOnX(float length) const;
     float velocityOnY(float length) const;
     float dot(float dx_, float dy_) const;
-    float momentum(const Mass& mass) const throw();
+    float momentum(const Mass& mass) const noexcept;
     float getVelocity() const {
         return velocity;
     };
     /// @Deprecated, use velocityUnitVector instead
-    float velX() const throw() {
+    float velX() const noexcept {
         return vx;
     }
     /// @Deprecated, use velocityUnitVector instead
-    float velY() const throw() {
+    float velY() const noexcept {
         return vy;
     }
     void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);

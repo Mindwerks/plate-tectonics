@@ -48,7 +48,7 @@ private:
 class IMass
 {
 public:
-    virtual ~IMass() {}
+    virtual ~IMass() = default;
     virtual float getMass() const = 0;
     virtual FloatPoint massCenter() const = 0;
 };

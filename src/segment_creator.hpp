@@ -24,7 +24,7 @@
 #include "utils.hpp"
 #include "heightmap.hpp"
 
-typedef uint32_t ContinentId;
+using ContinentId = uint32_t;
 
 class IBounds;
 class ISegments;
@@ -53,10 +53,10 @@ public:
     /// @param	x	Offset on the local height map along X axis.
     /// @param	y	Offset on the local height map along Y axis.
     /// @return	ID of created segment on success, otherwise -1.
-    ContinentId createSegment(uint32_t wx, uint32_t wy) const throw() override;
+    ContinentId createSegment(uint32_t wx, uint32_t wy) const noexcept override;
 private:
-    uint32_t calcDirection(uint32_t x, uint32_t y, const uint32_t origin_index, const uint32_t ID) const;
-    void scanSpans(const uint32_t line, uint32_t& start, uint32_t& end,
+    uint32_t calcDirection(uint32_t x, uint32_t y, uint32_t origin_index, uint32_t ID) const;
+    void scanSpans(uint32_t line, uint32_t& start, uint32_t& end,
                    std::vector<uint32_t>* spans_todo, std::vector<uint32_t>* spans_done) const;
     const WorldDimension _worldDimension;
     IBounds& _bounds;

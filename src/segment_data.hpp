@@ -26,7 +26,7 @@
 class ISegmentDataAccess
 {
 public:
-    virtual ~ISegmentDataAccess() {}
+    virtual ~ISegmentDataAccess() = default;
     virtual uint32_t getLeft() const = 0;
     virtual uint32_t getRight() const = 0;
     virtual uint32_t getTop() const = 0;

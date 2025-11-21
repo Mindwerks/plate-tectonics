@@ -36,114 +36,141 @@ class Matrix
 public:
 
     Matrix(unsigned int width, unsigned int height)
-        : _width(width), _height(height)
+        : m_width(width), m_height(height)
     {
         ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
-        _area = width * height;
-        _data = new Value[_area];
+        m_area = width * height;
+        m_data = new Value[m_area];
     }
     Matrix(Value* data, unsigned int width, unsigned int height)
-        : _width(width), _height(height) {
+        : m_width(width), m_height(height) {
         ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
-        _area = width * height;
-        _data = data;
+        m_area = width * height;
+        m_data = data;
     }
 
     Matrix(const Matrix<Value>& other)
-        : _width(other._width), _height(other._height), _area(other._area)
+        : m_width(other.m_width), m_height(other.m_height), m_area(other.m_area)
     {
-        _data = new Value[_area];
+        m_data = new Value[m_area];
         copy(other);
+    }
+
+    Matrix(Matrix<Value>&& other) noexcept
+        : m_data(other.m_data), m_width(other.m_width), m_height(other.m_height), m_area(other.m_area)
+    {
+        other.m_data = nullptr;
+        other.m_width = 0;
+        other.m_height = 0;
+        other.m_area = 0;
     }
 
     ~Matrix()
     {
-        delete[] _data;
+        delete[] m_data;
     }
 
     void set_all(const Value& value)
     {
         // Use SIMD-optimized implementation for float types
         // Falls back to scalar loop for other types
-        const uint32_t my_area = area();
+        const uint32_t MY_AREA = area();
         if (sizeof(Value) == sizeof(float)) {
-            simd::set_all(reinterpret_cast<float*>(_data), my_area, 
+            simd::set_all(reinterpret_cast<float*>(m_data), MY_AREA, 
                          *reinterpret_cast<const float*>(&value));
         } else {
             // Generic fallback for non-float types
-            for (uint32_t i = 0; i < my_area; i++) {
-                _data[i] = value;
+            for (uint32_t i = 0; i < MY_AREA; i++) {
+                m_data[i] = value;
             }
         }
     }
     void copy(const Matrix& other)
     {
-        if (_area != other._area) {
-            _width = other._width;
-            _height = other._height;
-            _area = other._area;
-            delete[] _data;
-            _data = new Value[_area];
+        if (m_area != other.m_area) {
+            m_width = other.m_width;
+            m_height = other.m_height;
+            m_area = other.m_area;
+            delete[] m_data;
+            m_data = new Value[m_area];
         }
         // Use fast memcpy for contiguous data
-        memcpy(_data, other._data, _area * sizeof(Value));
+        memcpy(m_data, other.m_data, m_area * sizeof(Value));
     }
 
-    inline const Value& set(unsigned int x, unsigned y, const Value& value)
+    const Value& set(unsigned int x, unsigned y, const Value& value)
     {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        _data[y * _width + x] = value;
+        ASSERT(x < m_width && y < m_height, "Invalid coordinates");
+        m_data[(y * m_width) + x] = value;
         return value;
     }
 
-    inline const Value& get(unsigned int x, unsigned y) const
+    const Value& get(unsigned int x, unsigned y) const
     {
-        ASSERT(x < _width && y < _height, "Invalid coordinates");
-        return _data[y * _width + x];
+        ASSERT(x < m_width && y < m_height, "Invalid coordinates");
+        return m_data[(y * m_width) + x];
     }
 
     Matrix<Value>& operator=(const Matrix<Value>& other)
     {
-        copy(other);
+        if (this != &other) {
+            copy(other);
+        }
+        return *this;
+    }
+
+    Matrix<Value>& operator=(Matrix<Value>&& other) noexcept
+    {
+        if (this != &other) {
+            delete[] m_data;
+            m_data = other.m_data;
+            m_width = other.m_width;
+            m_height = other.m_height;
+            m_area = other.m_area;
+            other.m_data = nullptr;
+            other.m_width = 0;
+            other.m_height = 0;
+            other.m_area = 0;
+        }
         return *this;
     }
 
     Value& operator[](unsigned int index)
     {
-        return this->_data[index];
+        return this->m_data[index];
     }
 
     const Value& operator[](unsigned int index) const
     {
-        return this->_data[index];
+        return this->m_data[index];
     }
 
     Value* raw_data() const
     {
-        return _data;
+        return m_data;
     }
-    const uint32_t width() const
+    [[nodiscard]] uint32_t width() const
     {
-        return _width;
+        return m_width;
     }
-    const uint32_t height() const
+    [[nodiscard]] uint32_t height() const
     {
-        return _height;
+        return m_height;
     }
-    inline uint32_t area() const
+    [[nodiscard]] uint32_t area() const
     {
-        return _area;
+        return m_area;
     }
 private:
 
-    Value* _data;
-    unsigned int _width;
-    unsigned int _height;
-    unsigned int _area;
+    Value* m_data;
+    unsigned int m_width;
+    unsigned int m_height;
+    unsigned int m_area;
 };
 
-typedef Matrix<float> HeightMap;
-typedef Matrix<uint32_t> AgeMap;
-typedef Matrix<uint32_t> IndexMap;
+using HeightMap = Matrix<float>;
+using AgeMap = Matrix<uint32_t>;
+using IndexMap = Matrix<uint32_t>;
 
 #endif

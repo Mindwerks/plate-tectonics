@@ -32,12 +32,12 @@
 #include "mass.hpp"
 #include "segment_creator.hpp"
 
-typedef uint32_t ContinentId;
+using ContinentId = uint32_t;
 
 class ISegments
 {
 public:
-    virtual ~ISegments() {}
+    virtual ~ISegments() = default;
     virtual uint32_t area() = 0;
     virtual void reset() = 0;
     virtual void reassign(uint32_t newarea, uint32_t* tmps) = 0;

@@ -155,7 +155,8 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
 
 float plate::aggregateCrust(plate* p, uint32_t wx, uint32_t wy)
 {
-    uint32_t lx = wx, ly = wy;
+    uint32_t lx = wx;
+    uint32_t ly = wy;
     const uint32_t index = _bounds->getValidMapIndex(&lx, &ly);
 
     const ContinentId seg_id = _segments->id(index);
@@ -255,8 +256,14 @@ void plate::findRiverSources(float lower_bound, vector<uint32_t>* sources)
                 continue;
             }
 
-            float w_crust, e_crust, n_crust, s_crust;
-            uint32_t w, e, n, s;
+            float w_crust;
+            float e_crust;
+            float n_crust;
+            float s_crust;
+            uint32_t w;
+            uint32_t e;
+            uint32_t n;
+            uint32_t s;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
                            w, e, n, s);
 
@@ -296,8 +303,14 @@ void plate::flowRivers(float lower_bound, vector<uint32_t>* sources, HeightMap& 
                 continue;
             }
 
-            float w_crust, e_crust, n_crust, s_crust;
-            uint32_t w, e, n, s;
+            float w_crust;
+            float e_crust;
+            float n_crust;
+            float s_crust;
+            uint32_t w;
+            uint32_t e;
+            uint32_t n;
+            uint32_t s;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
                            w, e, n, s);
 
@@ -379,18 +392,26 @@ void plate::erode(float lower_bound)
             massBuilder.addPoint(x, y, map[index]);
             tmpHm[index] += map[index]; // Careful not to overwrite earlier amounts.
 
-            if (map[index] < lower_bound)
+            if (map[index] < lower_bound) {
                 continue;
+            }
 
-            float w_crust, e_crust, n_crust, s_crust;
-            uint32_t w, e, n, s;
+            float w_crust;
+            float e_crust;
+            float n_crust;
+            float s_crust;
+            uint32_t w;
+            uint32_t e;
+            uint32_t n;
+            uint32_t s;
             calculateCrust(x, y, index, w_crust, e_crust, n_crust, s_crust,
                            w, e, n, s);
 
             // This location has no neighbours (ARTIFACT!) or it is the lowest
             // part of its area. In either case the work here is done.
-            if (w_crust + e_crust + n_crust + s_crust == 0)
+            if (w_crust + e_crust + n_crust + s_crust == 0) {
                 continue;
+            }
 
             // The steeper the slope, the more water flows along it.
             // The more downhill (sources), the more water flows to here.
@@ -659,7 +680,7 @@ ContinentId plate::selectCollisionSegment(uint32_t coll_x, uint32_t coll_y)
 /// Private methods ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-uint32_t plate::createSegment(uint32_t x, uint32_t y) throw()
+uint32_t plate::createSegment(uint32_t x, uint32_t y) noexcept
 {
     return _mySegmentCreator->createSegment(x, y);
 }

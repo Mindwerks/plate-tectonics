@@ -162,8 +162,8 @@ public:
     uint32_t getArea() const {
         return _width * _height;
     }
-    bool contains(const uint32_t x, const uint32_t y) const;
-    bool contains(const float x, const float y) const;
+    bool contains(uint32_t x, uint32_t y) const;
+    bool contains(float x, float y) const;
     bool contains(const FloatPoint& p) const;
     void grow(uint32_t amountX, uint32_t amountY);
 protected:
@@ -179,13 +179,13 @@ public:
     uint32_t xMod(uint32_t x) const;
     uint32_t yMod(uint32_t y) const;
     void normalize(uint32_t& x, uint32_t& y) const;
-    uint32_t indexOf(const uint32_t x, const uint32_t y) const;
-    uint32_t lineIndex(const uint32_t y) const;
-    uint32_t yFromIndex(const uint32_t index) const;
-    uint32_t xFromIndex(const uint32_t index) const;
-    uint32_t normalizedIndexOf(const uint32_t x, const uint32_t y) const;
-    uint32_t xCap(const uint32_t x) const;
-    uint32_t yCap(const uint32_t y) const;
+    uint32_t indexOf(uint32_t x, uint32_t y) const;
+    uint32_t lineIndex(uint32_t y) const;
+    uint32_t yFromIndex(uint32_t index) const;
+    uint32_t xFromIndex(uint32_t index) const;
+    uint32_t normalizedIndexOf(uint32_t x, uint32_t y) const;
+    uint32_t xCap(uint32_t x) const;
+    uint32_t yCap(uint32_t y) const;
     uint32_t largerSize() const;
 };
 

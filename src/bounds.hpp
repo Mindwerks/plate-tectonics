@@ -31,7 +31,7 @@
 /// Represent the bounds of a Plate.
 class IBounds {
 public:
-    virtual ~IBounds() {}
+    virtual ~IBounds() = default;
 
     /// Accept plate relative coordinates and return the index inside the plate.
     /// The index can be used with other classes to retrieve information about specific points.

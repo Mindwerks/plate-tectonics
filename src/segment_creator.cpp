@@ -82,7 +82,7 @@ void MySegmentCreator::scanSpans(const uint32_t line, uint32_t& start, uint32_t&
     } while (start > end && spans_todo[line].size());
 }
 
-ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const throw()
+ContinentId MySegmentCreator::createSegment(uint32_t x, uint32_t y) const noexcept
 {
     const uint32_t bounds_width = _bounds.width();
     const uint32_t bounds_height = _bounds.height();

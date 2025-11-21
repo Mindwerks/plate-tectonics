@@ -112,7 +112,7 @@ float Movement::dot(float dx_, float dy_) const {
     return vx * dx_ + vy * dy_;
 }
 
-float Movement::momentum(const Mass& mass) const throw() {
+float Movement::momentum(const Mass& mass) const noexcept {
     return mass.getMass() * velocity;
 }
 

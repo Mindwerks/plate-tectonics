@@ -42,12 +42,7 @@ public:
     {
     };
 
-    Rectangle(const Rectangle& original) :
-        _worldDimension(original._worldDimension),
-        _left(original._left), _right(original._right),
-        _top(original._top), _bottom(original._bottom)
-    {
-    };
+    Rectangle(const Rectangle& original) = default;
 
     Rectangle& operator=(const Rectangle& original)
     {
@@ -120,8 +115,8 @@ public:
     {
         uint32_t cleanX = _worldDimension.xMod(x);
         uint32_t cleanY = _worldDimension.yMod(y);
-        if (cleanX < getLeft()) cleanX += _worldDimension.getWidth();
-        if (cleanY < getTop()) cleanY += _worldDimension.getHeight();
+        if (cleanX < getLeft()) { cleanX += _worldDimension.getWidth(); }
+        if (cleanY < getTop()) { cleanY += _worldDimension.getHeight(); }
         return cleanX >= getLeft() && cleanX < getRight()
                && cleanY >= getTop()  && cleanY < getBottom();
     }
