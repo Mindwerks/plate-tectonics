@@ -148,15 +148,15 @@ int main(int argc, char* argv[])
     fill_params(params, argc, argv);
 
     printf("Plate-tectonics simulation example\n");
-    printf(" seed     : %d\n", params.seed);
-    printf(" width    : %d\n", params.width);
-    printf(" height   : %d\n", params.height);
+    printf(" seed     : %u\n", params.seed);
+    printf(" width    : %u\n", params.width);
+    printf(" height   : %u\n", params.height);
     printf(" map      : %s\n", params.colors ? "colors" : "grayscale");
     printf(" filename : %s\n", params.filename);
     if (params.step == 0)
         printf(" step     : no\n");
     else
-        printf(" step     : %i\n", params.step);
+        printf(" step     : %u\n", params.step);
 
     printf("\n");
 

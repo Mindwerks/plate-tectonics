@@ -820,9 +820,8 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
     // Breakthrough: Batched atomic operations (1000 cells/batch) eliminated contention
     const char* force_serial = std::getenv("PLATE_SERIAL");
     const char* force_parallel = std::getenv("PLATE_PARALLEL");
-    const bool use_serial = (force_serial && std::atoi(force_serial) == 1) ? true :
-                            (force_parallel && std::atoi(force_parallel) == 1) ? false :
-                            false; // Default to parallel (now faster!)
+    const bool use_serial = (force_serial && std::atoi(force_serial) == 1) ||
+                            (force_parallel && std::atoi(force_parallel) == 0); // Default to parallel (now faster!)
 
     if (use_serial) {
         // Serial version - original algorithm (for debugging/comparison)
@@ -938,13 +937,13 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
             std::vector<std::vector<WorldCellCollision>> contributions(map_area);
 
             // Determine thread count and spatial partitioning
-            const uint32_t num_threads = std::thread::hardware_concurrency();
+            const uint32_t hw_threads = std::thread::hardware_concurrency();
 
             // Adaptive tiling strategy based on world size
             // Small worlds: 2× threads, Large worlds: 8× threads for load balancing
             const uint32_t world_area = world_width * world_height;
             const uint32_t oversubscription = (world_area < 512*512) ? 2 : (world_area < 2048*2048) ? 4 : 8;
-            const uint32_t target_tiles = num_threads * oversubscription;
+            const uint32_t target_tiles = hw_threads * oversubscription;
 
             const uint32_t tiles_per_side = (uint32_t)std::ceil(std::sqrt((double)target_tiles));
             const uint32_t tile_width = (world_width + tiles_per_side - 1) / tiles_per_side;
@@ -981,8 +980,6 @@ void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
                             const uint32_t plate_y0 = plates[i]->getTopAsUint();
                             const uint32_t plate_width = plates[i]->getWidth();
                             const uint32_t plate_height = plates[i]->getHeight();
-                            const uint32_t plate_x1 = plate_x0 + plate_width;
-                            const uint32_t plate_y1 = plate_y0 + plate_height;
 
                             // Quick cull: skip plates that don't intersect this tile
                             // (Handle world wrap-around)
