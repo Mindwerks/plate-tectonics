@@ -59,11 +59,18 @@ jobs:
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config RelWithDebInfo
 
-      - name: Run tests
+      - name: Run tests (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
           cd build
-          # Enable ASAN options for better crash reporting
           $env:ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
+          ctest -C RelWithDebInfo --verbose --output-on-failure
+
+      - name: Run tests (Linux/MacOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd build
+          export ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
           ctest -C RelWithDebInfo --verbose --output-on-failure
 
       - name: Upload regression test PNG artifacts
