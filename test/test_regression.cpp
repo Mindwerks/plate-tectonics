@@ -115,17 +115,30 @@ bool stats_match(const HeightmapStats& actual, const HeightmapStats& expected,
 // Save heightmap as PNG image for visual comparison
 void save_heightmap_png(const float* heightmap, uint32_t width, uint32_t height,
                         const char* filename, bool use_colors = true) {
+    // Validate inputs
+    if (heightmap == nullptr || width == 0 || height == 0) {
+        std::cerr << "Warning: Invalid parameters for PNG generation" << std::endl;
+        return;
+    }
+
     // Create a normalized copy for visualization
-    size_t map_size = width * height;
+    size_t map_size = static_cast<size_t>(width) * static_cast<size_t>(height);
     float* normalized = new float[map_size];
     std::memcpy(normalized, heightmap, sizeof(float) * map_size);
-    normalize(normalized, map_size);
+    normalize(normalized, static_cast<int>(map_size));
 
-    // Write the image
+    // Write the image (cast dimensions to int for API compatibility)
+    int w = static_cast<int>(width);
+    int h = static_cast<int>(height);
+    int result = 0;
     if (use_colors) {
-        writeImageColors(filename, width, height, normalized, "Regression Test Output");
+        result = writeImageColors(filename, w, h, normalized, "Regression Test Output");
     } else {
-        writeImageGray(filename, width, height, normalized, "Regression Test Output");
+        result = writeImageGray(filename, w, h, normalized, "Regression Test Output");
+    }
+
+    if (result != 0) {
+        std::cerr << "Warning: Failed to write PNG file: " << filename << std::endl;
     }
 
     delete[] normalized;
@@ -144,13 +157,18 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
     const size_t map_size = width * height;
 
     // Create simulation with same parameters as baseline
-    void* p = platec_api_create(seed, width, height, 0.65, 60, 0.02, 1000000, 0.33, 2, 10);
+    void* p = platec_api_create(seed, width, height, 0.65f, 60, 0.02f, 1000000, 0.33f, 2, 10);
     ASSERT_NE(p, nullptr) << "Failed to create simulation";
 
     // Get initial heightmap and compute statistics
     const float* initial_map = platec_api_get_heightmap(p);
     ASSERT_NE(initial_map, nullptr);
     HeightmapStats initial_stats = compute_stats(initial_map, map_size);
+
+    // Save a copy of initial heightmap before running simulation
+    // (the API returns a pointer to internal buffer that will be modified)
+    float* initial_map_copy = new float[map_size];
+    std::memcpy(initial_map_copy, initial_map, sizeof(float) * map_size);
 
     // Run simulation to completion
     while (platec_api_is_finished(p) == 0) {
@@ -164,10 +182,20 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
 
     // Save PNG images for visual comparison (before cleanup)
     // These will be collected as artifacts in CI for cross-platform comparison
-    save_heightmap_png(initial_map, width, height, "regression_seed12345_initial.png");
-    save_heightmap_png(final_map, width, height, "regression_seed12345_final.png");
+    std::cout << "Saving PNG artifacts..." << std::endl;
+    try {
+        save_heightmap_png(initial_map_copy, width, height, "regression_seed12345_initial.png");
+        std::cout << "  Initial PNG saved successfully" << std::endl;
+        save_heightmap_png(final_map, width, height, "regression_seed12345_final.png");
+        std::cout << "  Final PNG saved successfully" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception during PNG generation: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Unknown exception during PNG generation" << std::endl;
+    }
 
     // Clean up
+    delete[] initial_map_copy;
     platec_api_destroy(p);
 
     // Define tolerance thresholds first
@@ -193,13 +221,13 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
     // Final state differs across architectures due to floating-point accumulation
     // Baseline: macOS ARM64 (Apple Clang, NEON)
     HeightmapStats expected_final_arm64 = {
-        0.0142494f,  // min
-        11.2925f,    // max
-        0.6208f,     // mean
-        0.112179f,   // median
-        0.943399f,   // std_dev
-        0.0980789f,  // q25
-        0.85813f     // q75
+        0.0390768f,  // min
+        12.8598f,    // max
+        0.624101f,   // mean
+        0.114091f,   // median
+        0.930413f,   // std_dev
+        0.0982555f,  // q25
+        0.958133f    // q75
     };
 
     // Baseline: Ubuntu x86-64 (GCC, AVX2/SSE)

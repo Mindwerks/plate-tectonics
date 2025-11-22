@@ -25,7 +25,6 @@
 #include "utils.hpp"
 
 static const float SQRDMD_ROUGHNESS = 0.35f;
-#define PI 3.14159265f
 
 static uint32_t nearest_pow(uint32_t num)
 {

@@ -20,11 +20,7 @@
 #include "movement.hpp"
 #include "plate.hpp"
 #include "mass.hpp"
-
-// Missing on Windows
-#ifndef M_PI
-#define M_PI 3.141592654f
-#endif
+#include "utils.hpp"
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
@@ -32,7 +28,7 @@ Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension
       velocity(1),
       rot_dir(static_cast<float>(randsource.next() % 2 ? 1 : -1)),
       dx(0), dy(0) {
-    const float angle = 2.0f * M_PI * _randsource.next_float();
+    const float angle = 2.0f * PI * _randsource.next_float();
     vx = cosf(angle) * INITIAL_SPEED_X;
     vy = sinf(angle) * INITIAL_SPEED_X;
 }

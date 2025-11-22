@@ -144,7 +144,7 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
         if (map[index] > 0)
         {
             t = (map[index] * age_map[index] + z * t) / (map[index] + z);
-            age_map[index] = static_cast<uint32_t>(static_cast<float>(t) * static_cast<float>(z > 0));
+            age_map[index] = static_cast<uint32_t>(t * static_cast<float>(z > 0));
 
             map[index] += z;
             _mass.incMass(z);

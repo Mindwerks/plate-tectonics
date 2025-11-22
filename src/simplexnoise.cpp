@@ -27,6 +27,7 @@
 #include <cstdlib>
 
 #include "simplexnoise.hpp"
+#include "utils.hpp"
 
 /* 2D, 3D and 4D Simplex Noise functions return 'random' values in (-1, 1).
 
@@ -534,8 +535,6 @@ float dot(const int* g, const float x, const float y, const float z) {
 float dot(const int* g, const float x, const float y, const float z, const float w) {
     return g[0] * x + g[1] * y + g[2] * z + g[3] * w;
 }
-
-#define PI 3.14159265
 
 int simplexnoise(int32_t seed, float* map, int width, int height, float persistence) {
     float inv_width = 1 / (float)width;
