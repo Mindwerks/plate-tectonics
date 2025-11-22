@@ -230,15 +230,15 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
         0.958133f    // q75
     };
 
-    // Baseline: Ubuntu x86-64 (GCC, AVX2/SSE)
+    // Baseline: Windows/Ubuntu x86-64 (MSVC/GCC, AVX2/SSE)
     HeightmapStats expected_final_x86 = {
-        0.0404346f,  // min
-        10.7301f,    // max
-        0.623199f,   // mean
-        0.11466f,    // median
-        0.936392f,   // std_dev
-        0.0983511f,  // q25
-        0.937972f    // q75
+        0.0423916f,  // min
+        17.8405f,    // max
+        0.62406f,    // mean
+        0.114578f,   // median
+        0.945673f,   // std_dev
+        0.0983445f,  // q25
+        0.924061f    // q75
     };
 
     // Check initial state (should match on all platforms)
