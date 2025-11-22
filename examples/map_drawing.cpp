@@ -21,11 +21,11 @@ inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
 int writeImage(const char* filename, int width, int height, float *heightmap, const char* title,
                void (drawFunction)(png_structp&, png_bytep&, int, int, float*))
 {
-    int code = 0;
-    FILE *fp = nullptr;
-    png_structp png_ptr = nullptr;
-    png_infop info_ptr = nullptr;
-    png_bytep row = nullptr;
+    volatile int code = 0;
+    FILE * volatile fp = nullptr;
+    png_structp volatile png_ptr = nullptr;
+    png_infop volatile info_ptr = nullptr;
+    png_bytep volatile row = nullptr;
 
     // Open file for writing (binary mode)
 #ifdef _WIN32
@@ -85,7 +85,12 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     row = (png_bytep) malloc(3 * width * sizeof(png_byte));
 
     // Write image data
-    drawFunction(png_ptr, row, width, height, heightmap);
+    // Need to create non-volatile references for function calls
+    {
+        png_structp png_ptr_nv = png_ptr;
+        png_bytep row_nv = row;
+        drawFunction(png_ptr_nv, row_nv, width, height, heightmap);
+    }
 
     // End write
     png_write_end(png_ptr, nullptr);
@@ -97,7 +102,10 @@ finalise:
         if (info_ptr != nullptr) {
             png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         }
-        png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
+        {
+            png_structp png_ptr_nv = png_ptr;
+            png_destroy_write_struct(&png_ptr_nv, (png_infopp)nullptr);
+        }
     }
 
     return code;
