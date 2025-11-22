@@ -17,6 +17,11 @@
  *  License along with this library; if not, see http://www.gnu.org/licenses/
  *****************************************************************************/
 
+// Prevent Windows.h from defining min/max macros that conflict with std::min/std::max
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include "platecapi.hpp"
 #include "gtest/gtest.h"
 #include <cstdlib>
