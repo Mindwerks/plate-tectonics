@@ -28,8 +28,13 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     png_bytep row = nullptr;
 
     // Open file for writing (binary mode)
+#ifdef _WIN32
+    errno_t err = fopen_s(&fp, filename, "wb");
+    if (err != 0 || fp == nullptr) {
+#else
     fp = fopen(filename, "wb");
     if (fp == nullptr) {
+#endif
         fprintf(stderr, "Could not open file %s for writing\n", filename);
         code = 1;
         goto finalise;
@@ -136,9 +141,9 @@ void gradient(png_byte *ptr, png_byte ra, png_byte ga, png_byte ba, png_byte rb,
     float simil_b = (h - ha)/h_delta;
     float simil_a = (1.0f - simil_b);
     setColor(ptr,
-             (float)simil_a * ra + (float)simil_b * rb,
-             (float)simil_a * ga + (float)simil_b * gb,
-             (float)simil_a * ba + (float)simil_b * bb);
+             static_cast<png_byte>((float)simil_a * ra + (float)simil_b * rb),
+             static_cast<png_byte>((float)simil_a * ga + (float)simil_b * gb),
+             static_cast<png_byte>((float)simil_a * ba + (float)simil_b * bb));
 }
 
 void drawGrayImage(png_structp& png_ptr, png_bytep& row, int width, int height, float *heightmap)
@@ -157,7 +162,7 @@ void drawGrayImage(png_structp& png_ptr, png_bytep& row, int width, int height, 
                 res = (h * 255.0f);
             }
 
-            setGray(&(row[x*3]), res);
+            setGray(&(row[x*3]), static_cast<int>(res));
         }
         png_write_row(png_ptr, row);
     }
@@ -219,7 +224,7 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
                 res = (h * 255.0f);
             }
 
-            setGray(&(row[x*3]), res);
+            setGray(&(row[x*3]), static_cast<int>(res));
         }
         png_write_row(png_ptr, row);
     }
