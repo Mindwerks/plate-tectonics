@@ -49,9 +49,9 @@ TEST(Noise, SimplexRawNoiseRepeatability)
 {
     EXPECT_FLOAT_EQ(-0.12851511f, raw_noise_4d(0.3f, 0.78f, 1.677f, 0.99f));
     EXPECT_FLOAT_EQ(-0.83697641f, raw_noise_4d(-0.3f, 0.78f, 1.677f, 0.99f));
-    EXPECT_FLOAT_EQ(-0.5346415f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
+    EXPECT_FLOAT_EQ(-0.5346418f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
     EXPECT_FLOAT_EQ(0.089452535f, raw_noise_4d(0.3f, 70.78f, 1.677f, 0.0009f));
-    EXPECT_FLOAT_EQ(-0.063593678f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
+    EXPECT_FLOAT_EQ(-0.063593753f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
 }
 
 TEST(Noise, SimplexNoiseRepeatability)
