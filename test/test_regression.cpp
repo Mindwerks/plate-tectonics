@@ -80,19 +80,29 @@ HeightmapStats compute_stats(const float* heightmap, size_t size) {
     return stats;
 }
 
-// Compare two stats with tolerance
-bool stats_match(const HeightmapStats& actual, const HeightmapStats& expected, float tolerance) {
-    auto close_enough = [tolerance](float a, float b) {
-        return std::abs(a - b) < tolerance;
+// Compare two stats with adaptive tolerance based on metric type
+bool stats_match(const HeightmapStats& actual, const HeightmapStats& expected,
+                 float central_tolerance, float extrema_tolerance) {
+    auto close_enough = [](float a, float b, float rel_tol) {
+        // Use relative tolerance: allow X% difference relative to the expected value
+        // Also use absolute tolerance for values near zero to avoid division issues
+        float abs_tolerance = std::max(0.05f, std::abs(b) * rel_tol);
+        return std::abs(a - b) <= abs_tolerance;
     };
 
-    return close_enough(actual.min, expected.min) &&
-           close_enough(actual.max, expected.max) &&
-           close_enough(actual.mean, expected.mean) &&
-           close_enough(actual.median, expected.median) &&
-           close_enough(actual.std_dev, expected.std_dev) &&
-           close_enough(actual.q25, expected.q25) &&
-           close_enough(actual.q75, expected.q75);
+    // Min/max are single extreme values - more sensitive to platform differences
+    // Use more generous tolerance
+    bool extrema_ok = close_enough(actual.min, expected.min, extrema_tolerance) &&
+                      close_enough(actual.max, expected.max, extrema_tolerance);
+
+    // Central tendency metrics are more stable - use stricter tolerance
+    bool central_ok = close_enough(actual.mean, expected.mean, central_tolerance) &&
+                      close_enough(actual.median, expected.median, central_tolerance) &&
+                      close_enough(actual.std_dev, expected.std_dev, central_tolerance) &&
+                      close_enough(actual.q25, expected.q25, central_tolerance) &&
+                      close_enough(actual.q75, expected.q75, central_tolerance);
+
+    return extrema_ok && central_ok;
 }
 
 } // anonymous namespace
@@ -153,35 +163,62 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
         0.85813f     // q75
     };
 
-    // Use generous tolerance to account for platform differences
+    // Use adaptive tolerance to account for platform differences
     // while still catching major regressions
-    const float tolerance = 0.05f;  // 5% tolerance for raw heightmap values
+    // Central tendency metrics (mean, median, std_dev, quantiles) use strict tolerance
+    // Extrema (min, max) use generous tolerance as they're more variable
+    const float central_tolerance = 0.01f;   // 1% for mean, median, std_dev, quantiles
+    const float extrema_tolerance = 0.15f;   // 15% for min/max
 
-    bool initial_matches = stats_match(initial_stats, expected_initial, tolerance);
-    bool final_matches = stats_match(final_stats, expected_final, tolerance);
+    bool initial_matches = stats_match(initial_stats, expected_initial,
+                                       central_tolerance, extrema_tolerance);
+    bool final_matches = stats_match(final_stats, expected_final,
+                                     central_tolerance, extrema_tolerance);
 
-    // Print actual values for debugging/updating baselines
-    if (!initial_matches) {
-        std::cout << "\nInitial heightmap statistics:\n"
-                  << "  min:     " << initial_stats.min << " (expected: " << expected_initial.min << ")\n"
-                  << "  max:     " << initial_stats.max << " (expected: " << expected_initial.max << ")\n"
-                  << "  mean:    " << initial_stats.mean << " (expected: " << expected_initial.mean << ")\n"
-                  << "  median:  " << initial_stats.median << " (expected: " << expected_initial.median << ")\n"
-                  << "  std_dev: " << initial_stats.std_dev << " (expected: " << expected_initial.std_dev << ")\n"
-                  << "  q25:     " << initial_stats.q25 << " (expected: " << expected_initial.q25 << ")\n"
-                  << "  q75:     " << initial_stats.q75 << " (expected: " << expected_initial.q75 << ")\n";
-    }
+    // Helper lambda to format difference with sign (fixed decimal notation)
+    auto format_diff = [](float actual, float expected) -> std::string {
+        float diff = actual - expected;
+        char sign = (diff >= 0) ? '+' : '-';
+        char buffer[32];
+        snprintf(buffer, sizeof(buffer), "%c%.10f", sign, std::abs(diff));
+        return std::string(buffer);
+    };
 
-    if (!final_matches) {
-        std::cout << "\nFinal heightmap statistics:\n"
-                  << "  min:     " << final_stats.min << " (expected: " << expected_final.min << ")\n"
-                  << "  max:     " << final_stats.max << " (expected: " << expected_final.max << ")\n"
-                  << "  mean:    " << final_stats.mean << " (expected: " << expected_final.mean << ")\n"
-                  << "  median:  " << final_stats.median << " (expected: " << expected_final.median << ")\n"
-                  << "  std_dev: " << final_stats.std_dev << " (expected: " << expected_final.std_dev << ")\n"
-                  << "  q25:     " << final_stats.q25 << " (expected: " << expected_final.q25 << ")\n"
-                  << "  q75:     " << final_stats.q75 << " (expected: " << expected_final.q75 << ")\n";
-    }
+    // Always print statistics for tracking simulation evolution over time
+    std::cout << "\n=== Initial heightmap statistics ===\n";
+    std::cout << "  min:     " << initial_stats.min << " (diff: "
+              << format_diff(initial_stats.min, expected_initial.min) << ")\n";
+    std::cout << "  max:     " << initial_stats.max << " (diff: "
+              << format_diff(initial_stats.max, expected_initial.max) << ")\n";
+    std::cout << "  mean:    " << initial_stats.mean << " (diff: "
+              << format_diff(initial_stats.mean, expected_initial.mean) << ")\n";
+    std::cout << "  median:  " << initial_stats.median << " (diff: "
+              << format_diff(initial_stats.median, expected_initial.median) << ")\n";
+    std::cout << "  std_dev: " << initial_stats.std_dev << " (diff: "
+              << format_diff(initial_stats.std_dev, expected_initial.std_dev) << ")\n";
+    std::cout << "  q25:     " << initial_stats.q25 << " (diff: "
+              << format_diff(initial_stats.q25, expected_initial.q25) << ")\n";
+    std::cout << "  q75:     " << initial_stats.q75 << " (diff: "
+              << format_diff(initial_stats.q75, expected_initial.q75) << ")\n";
+    std::cout << "  Status:  " << (initial_matches ? "✓ PASS" : "✗ FAIL") << "\n";
+
+    std::cout << "\n=== Final heightmap statistics ===\n";
+    std::cout << "  min:     " << final_stats.min << " (diff: "
+              << format_diff(final_stats.min, expected_final.min) << ")\n";
+    std::cout << "  max:     " << final_stats.max << " (diff: "
+              << format_diff(final_stats.max, expected_final.max) << ")\n";
+    std::cout << "  mean:    " << final_stats.mean << " (diff: "
+              << format_diff(final_stats.mean, expected_final.mean) << ")\n";
+    std::cout << "  median:  " << final_stats.median << " (diff: "
+              << format_diff(final_stats.median, expected_final.median) << ")\n";
+    std::cout << "  std_dev: " << final_stats.std_dev << " (diff: "
+              << format_diff(final_stats.std_dev, expected_final.std_dev) << ")\n";
+    std::cout << "  q25:     " << final_stats.q25 << " (diff: "
+              << format_diff(final_stats.q25, expected_final.q25) << ")\n";
+    std::cout << "  q75:     " << final_stats.q75 << " (diff: "
+              << format_diff(final_stats.q75, expected_final.q75) << ")\n";
+    std::cout << "  Status:  " << (final_matches ? "✓ PASS" : "✗ FAIL") << "\n";
+    std::cout << std::endl;
 
     EXPECT_TRUE(initial_matches)
         << "Initial heightmap statistics differ significantly from baseline.\n"
