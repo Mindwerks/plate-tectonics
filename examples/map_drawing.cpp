@@ -6,9 +6,9 @@ using namespace std;
 
 inline void setGray(png_byte *ptr, int val)
 {
-    ptr[0] = val;
-    ptr[1] = val;
-    ptr[2] = val;
+    ptr[0] = static_cast<png_byte>(val);
+    ptr[1] = static_cast<png_byte>(val);
+    ptr[2] = static_cast<png_byte>(val);
 }
 
 inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
@@ -29,7 +29,10 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
 
     // Open file for writing (binary mode)
 #ifdef _WIN32
-    errno_t err = fopen_s(&fp, filename, "wb");
+    // fopen_s doesn't accept volatile pointer, so use a non-volatile temporary
+    FILE* fp_temp = nullptr;
+    errno_t err = fopen_s(&fp_temp, filename, "wb");
+    fp = fp_temp;
     if (err != 0 || fp == nullptr) {
 #else
     fp = fopen(filename, "wb");
@@ -57,11 +60,18 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     }
 
     // Setup Exception handling
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4611)  // Interaction between setjmp and C++ object destruction is acceptable here
+#endif
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Error during png creation\n");
         code = 1;
         goto finalise;
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
     png_init_io(png_ptr, fp);
 
