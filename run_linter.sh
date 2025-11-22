@@ -64,7 +64,7 @@ run_cppcheck() {
              --suppress=unusedFunction \
              --suppress=unmatchedSuppression \
              --inline-suppr \
-             --std=c++17 \
+             --std=c++20 \
              --platform=native \
              --verbose \
              --quiet \

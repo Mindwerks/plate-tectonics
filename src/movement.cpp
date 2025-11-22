@@ -108,7 +108,7 @@ float Movement::momentum(const Mass& mass) const throw() {
 
 void Movement::collide(const IMass& thisMass,
                        IPlate& otherPlate,
-                       uint32_t wx, uint32_t wy, float coll_mass) {
+                       float coll_mass) {
     const float coeff_rest = 0.0; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
     Platec::IntVector massCentersDistance =

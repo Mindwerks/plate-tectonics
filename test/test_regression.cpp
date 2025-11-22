@@ -115,33 +115,49 @@ bool stats_match(const HeightmapStats& actual, const HeightmapStats& expected,
 // Save heightmap as PNG image for visual comparison
 void save_heightmap_png(const float* heightmap, uint32_t width, uint32_t height,
                         const char* filename, bool use_colors = true) {
+    std::cout << "  [PNG] Entering save_heightmap_png for " << filename << std::endl;
+
     // Validate inputs
     if (heightmap == nullptr || width == 0 || height == 0) {
-        std::cerr << "Warning: Invalid parameters for PNG generation" << std::endl;
+        std::cerr << "  [PNG] ERROR: Invalid parameters for PNG generation" << std::endl;
         return;
     }
+    std::cout << "  [PNG] Validated inputs: width=" << width << ", height=" << height << std::endl;
 
     // Create a normalized copy for visualization
     size_t map_size = static_cast<size_t>(width) * static_cast<size_t>(height);
+    std::cout << "  [PNG] Allocating normalized array of size " << map_size << std::endl;
     float* normalized = new float[map_size];
+
+    std::cout << "  [PNG] Copying heightmap data..." << std::endl;
     std::memcpy(normalized, heightmap, sizeof(float) * map_size);
+
+    std::cout << "  [PNG] Normalizing data..." << std::endl;
     normalize(normalized, static_cast<int>(map_size));
 
     // Write the image (cast dimensions to int for API compatibility)
     int w = static_cast<int>(width);
     int h = static_cast<int>(height);
+    std::cout << "  [PNG] Writing image: w=" << w << ", h=" << h << ", use_colors=" << use_colors << std::endl;
+
     int result = 0;
     if (use_colors) {
+        std::cout << "  [PNG] Calling writeImageColors..." << std::endl;
         result = writeImageColors(filename, w, h, normalized, "Regression Test Output");
     } else {
+        std::cout << "  [PNG] Calling writeImageGray..." << std::endl;
         result = writeImageGray(filename, w, h, normalized, "Regression Test Output");
     }
 
     if (result != 0) {
-        std::cerr << "Warning: Failed to write PNG file: " << filename << std::endl;
+        std::cerr << "  [PNG] ERROR: Failed to write PNG file: " << filename << " (result=" << result << ")" << std::endl;
+    } else {
+        std::cout << "  [PNG] Successfully wrote " << filename << std::endl;
     }
 
+    std::cout << "  [PNG] Cleaning up normalized array..." << std::endl;
     delete[] normalized;
+    std::cout << "  [PNG] Exiting save_heightmap_png" << std::endl;
 }
 
 } // anonymous namespace

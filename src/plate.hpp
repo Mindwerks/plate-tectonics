@@ -123,10 +123,8 @@ public:
     /// deformation process is taken away from plate's momentum.
     ///
     /// @param  p   Plate to test against.
-    /// @param  wx  X coordinate of collision point on world map.
-    /// @param  wy  Y coordinate of collision point on world map.
     /// @param  coll_mass Amount of colliding mass from source plate.
-    void collide(plate& p, uint32_t xw, uint32_t wy, float coll_mass);
+    void collide(plate& p, float coll_mass);
 
     /// Apply plate wide erosion algorithm.
     ///

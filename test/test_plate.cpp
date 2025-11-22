@@ -146,7 +146,7 @@ public:
     virtual void markNonExistent() {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t dx, uint32_t dy) {
+    virtual void shift(uint32_t /* dx */, uint32_t /* dy */) {
         throw runtime_error("Not implemented");
     }
 
@@ -194,10 +194,10 @@ public:
     virtual void reset() {
         throw runtime_error("Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    virtual void reassign(uint32_t /* newarea */, uint32_t* /* tmps */) {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    virtual void shift(uint32_t /* d_lft */, uint32_t /* d_top */) {
         throw runtime_error("Not implemented");
     }
     virtual uint32_t size() const {
@@ -217,16 +217,16 @@ public:
             throw runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual void add(ISegmentData* data) {
+    virtual void add(ISegmentData* /* data */) {
         throw runtime_error("Not implemented");
     }
-    virtual const ContinentId& id(uint32_t index) const {
+    virtual const ContinentId& id(uint32_t /* index */) const {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual ContinentId& id(uint32_t index) {
+    virtual ContinentId& id(uint32_t /* index */) {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual void setId(uint32_t index, ContinentId id) {
+    virtual void setId(uint32_t /* index */, ContinentId /* id */) {
         throw runtime_error("Not implemented");
     }
     virtual ContinentId getContinentAt(int x, int y) const {
@@ -272,10 +272,10 @@ public:
     virtual void reset() {
         throw runtime_error("(MockSegments2::reset) Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    virtual void reassign(uint32_t /* newarea */, uint32_t* /* tmps */) {
         throw runtime_error("(MockSegments2::reassign) Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    virtual void shift(uint32_t /* d_lft */, uint32_t /* d_top */) {
         throw runtime_error("(MockSegments2::shift) Not implemented");
     }
     virtual uint32_t size() const {
@@ -296,7 +296,7 @@ public:
                                        + Platec::to_string(id)));
         }
     }
-    virtual void add(ISegmentData* data) {
+    virtual void add(ISegmentData* /* data */) {
         throw runtime_error("(MockSegments2::add) Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {

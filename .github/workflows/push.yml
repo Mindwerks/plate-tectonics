@@ -62,7 +62,9 @@ jobs:
       - name: Run tests
         run: |
           cd build
-          ctest -C RelWithDebInfo --verbose
+          # Enable ASAN options for better crash reporting
+          $env:ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
+          ctest -C RelWithDebInfo --verbose --output-on-failure
 
       - name: Upload regression test PNG artifacts
         if: always()
