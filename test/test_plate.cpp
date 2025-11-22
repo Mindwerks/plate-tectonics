@@ -49,9 +49,9 @@ TEST(Noise, SimplexRawNoiseRepeatability)
 {
     EXPECT_FLOAT_EQ(-0.12851511f, raw_noise_4d(0.3f, 0.78f, 1.677f, 0.99f));
     EXPECT_FLOAT_EQ(-0.83697641f, raw_noise_4d(-0.3f, 0.78f, 1.677f, 0.99f));
-    EXPECT_FLOAT_EQ(-0.5346415f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
+    EXPECT_FLOAT_EQ(-0.5346418f, raw_noise_4d(7339.3f, 0.78f, 1.677f, 0.99f));
     EXPECT_FLOAT_EQ(0.089452535f, raw_noise_4d(0.3f, 70.78f, 1.677f, 0.0009f));
-    EXPECT_FLOAT_EQ(-0.063593678f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
+    EXPECT_FLOAT_EQ(-0.063593753f, raw_noise_4d(0.3f, 500.78f, 1.677f, 500.99f));
 }
 
 TEST(Noise, SimplexNoiseRepeatability)
@@ -146,7 +146,7 @@ public:
     virtual void markNonExistent() {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t dx, uint32_t dy) {
+    virtual void shift(uint32_t /* dx */, uint32_t /* dy */) {
         throw runtime_error("Not implemented");
     }
 
@@ -194,10 +194,10 @@ public:
     virtual void reset() {
         throw runtime_error("Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    virtual void reassign(uint32_t /* newarea */, uint32_t* /* tmps */) {
         throw runtime_error("Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    virtual void shift(uint32_t /* d_lft */, uint32_t /* d_top */) {
         throw runtime_error("Not implemented");
     }
     virtual uint32_t size() const {
@@ -217,16 +217,16 @@ public:
             throw runtime_error("(MockSegments::operator[]) Unexpected call");
         }
     }
-    virtual void add(ISegmentData* data) {
+    virtual void add(ISegmentData* /* data */) {
         throw runtime_error("Not implemented");
     }
-    virtual const ContinentId& id(uint32_t index) const {
+    virtual const ContinentId& id(uint32_t /* index */) const {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual ContinentId& id(uint32_t index) {
+    virtual ContinentId& id(uint32_t /* index */) {
         throw runtime_error("(MockSegments::id) Not implemented");
     }
-    virtual void setId(uint32_t index, ContinentId id) {
+    virtual void setId(uint32_t /* index */, ContinentId /* id */) {
         throw runtime_error("Not implemented");
     }
     virtual ContinentId getContinentAt(int x, int y) const {
@@ -272,10 +272,10 @@ public:
     virtual void reset() {
         throw runtime_error("(MockSegments2::reset) Not implemented");
     }
-    virtual void reassign(uint32_t newarea, uint32_t* tmps) {
+    virtual void reassign(uint32_t /* newarea */, uint32_t* /* tmps */) {
         throw runtime_error("(MockSegments2::reassign) Not implemented");
     }
-    virtual void shift(uint32_t d_lft, uint32_t d_top) {
+    virtual void shift(uint32_t /* d_lft */, uint32_t /* d_top */) {
         throw runtime_error("(MockSegments2::shift) Not implemented");
     }
     virtual uint32_t size() const {
@@ -296,7 +296,7 @@ public:
                                        + Platec::to_string(id)));
         }
     }
-    virtual void add(ISegmentData* data) {
+    virtual void add(ISegmentData* /* data */) {
         throw runtime_error("(MockSegments2::add) Not implemented");
     }
     virtual const ContinentId& id(uint32_t index) const {

@@ -77,7 +77,7 @@ public:
     float velY() const throw() {
         return vy;
     }
-    void collide(const IMass& thisMass, IPlate& p, uint32_t wx, uint32_t wy, float coll_mass);
+    void collide(const IMass& thisMass, IPlate& p, float coll_mass);
     void decDx(float delta) {
         dx -= delta;
     }

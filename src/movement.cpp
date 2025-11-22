@@ -20,17 +20,7 @@
 #include "movement.hpp"
 #include "plate.hpp"
 #include "mass.hpp"
-
-// Missing on Windows
-#ifndef M_PI
-#define M_PI 3.141592654
-#endif
-
-#if (defined(_MSC_VER) && defined(_M_X64)) || \
-    (defined(__APPLE__) && defined(__clang__))
-#define sin(x) static_cast<float>(sin(static_cast<double>(x)))
-#define cos(x) static_cast<float>(cos(static_cast<double>(x)))
-#endif
+#include "utils.hpp"
 
 Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension)
     : _randsource(randsource),
@@ -38,9 +28,9 @@ Movement::Movement(SimpleRandom randsource, const WorldDimension& worldDimension
       velocity(1),
       rot_dir(static_cast<float>(randsource.next() % 2 ? 1 : -1)),
       dx(0), dy(0) {
-    const double angle = 2 * M_PI * _randsource.next_double();
-    vx = cos(angle) * INITIAL_SPEED_X;
-    vy = sin(angle) * INITIAL_SPEED_X;
+    const float angle = 2.0f * PI * _randsource.next_float();
+    vx = cosf(angle) * INITIAL_SPEED_X;
+    vy = sinf(angle) * INITIAL_SPEED_X;
 }
 
 void Movement::applyFriction(float deformed_mass, float mass) {
@@ -66,7 +56,7 @@ void Movement::move() {
 
     // Force direction of plate to be unit vector.
     // Update velocity so that the distance of movement doesn't change.
-    float len = sqrt(vx*vx + vy*vy);
+    float len = sqrtf(vx*vx + vy*vy);
     ASSERT(len > 0, "Velocity is zero!");
     // MK: Calculating the inverse length and multiplying changes the output data for maps!
     // I have held off on optimizations like these until the more important optimizations
@@ -82,8 +72,8 @@ void Movement::move() {
     uint32_t world_avg_side = (_worldDimension.getWidth() + _worldDimension.getHeight()) / 2;
     float alpha = rot_dir * velocity / (world_avg_side * 0.33f);
     float alpha_vel = alpha * velocity;
-    float _cos = cos(alpha_vel);
-    float _sin = sin(alpha_vel);
+    float _cos = cosf(alpha_vel);
+    float _sin = sinf(alpha_vel);
     float _vx = vx * _cos - vy * _sin;
     float _vy = vy * _cos + vx * _sin;
     vx = _vx;
@@ -118,7 +108,7 @@ float Movement::momentum(const Mass& mass) const throw() {
 
 void Movement::collide(const IMass& thisMass,
                        IPlate& otherPlate,
-                       uint32_t wx, uint32_t wy, float coll_mass) {
+                       float coll_mass) {
     const float coeff_rest = 0.0; // Coefficient of restitution.
     // 1 = fully elastic, 0 = stick together.
     Platec::IntVector massCentersDistance =

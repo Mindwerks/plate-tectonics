@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
     void* p = platec_api_create(params.seed, params.width, params.height, 0.65, 60, 0.02,1000000, 0.33, 2, 10);
 
     char filenamei[250];
-    sprintf(filenamei, "%s_initial.png", params.filename);
+    snprintf(filenamei, sizeof(filenamei), "%s_initial.png", params.filename);
     save_image(p, filenamei, params.width, params.height, params.colors);
     printf(" * initial map created\n");
 
@@ -174,14 +174,14 @@ int main(int argc, char* argv[])
 
         if (params.step != 0 && (step % params.step == 0) ) {
             char filename[250];
-            sprintf(filename, "%s_%i.png", params.filename, step);
+            snprintf(filename, sizeof(filename), "%s_%i.png", params.filename, step);
             printf(" * step %i (filename %s)\n", step, filename);
             save_image(p, filename, params.width, params.height, params.colors);
         }
     }
 
     char filename[250];
-    sprintf(filename, "%s.png", params.filename);
+    snprintf(filename, sizeof(filename), "%s.png", params.filename);
     save_image(p, filename, params.width, params.height, params.colors);
     printf(" * simulation completed (filename %s)\n", filename);
 }

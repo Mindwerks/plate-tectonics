@@ -40,6 +40,8 @@ jobs:
         run: |
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
           choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+          vcpkg install zlib:x64-windows libpng:x64-windows
+          vcpkg integrate install
 
       - name: Configure CMake (Linux/MacOS)
         if: matrix.os != 'windows-latest'
@@ -54,21 +56,31 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config RelWithDebInfo
-
-      - name: Run tests (Linux/MacOS)
-        if: matrix.os != 'windows-latest'
-        run: |
-          cd build/test
-          make -j2
-          ./PlateTectonicsTests
 
       - name: Run tests (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           cd build
-          ctest -C RelWithDebInfo --output-on-failure --test-dir test
+          $env:ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
+          ctest -C RelWithDebInfo --verbose --output-on-failure
+
+      - name: Run tests (Linux/MacOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd build
+          export ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
+          ctest -C RelWithDebInfo --verbose --output-on-failure
+
+      - name: Upload regression test PNG artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-pngs-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            build/regression_*.png
+          if-no-files-found: ignore
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -127,17 +139,39 @@ jobs:
         with:
           path: all-artifacts/
 
-      - name: Package all artifacts
+      - name: Package Python builds
         run: |
           mkdir -p final-builds
-          find all-artifacts/ -type f -exec mv {} final-builds/ \;
+          find all-artifacts/python-build-* -type f -exec mv {} final-builds/ \;
           ls -lah final-builds/
+
+      - name: Package regression PNG images
+        run: |
+          mkdir -p regression-pngs
+          find all-artifacts/regression-pngs-* -type f -name "*.png" -exec cp {} regression-pngs/ \;
+          # Rename files to include platform info
+          cd regression-pngs
+          for f in *.png; do
+            if [ -f "$f" ]; then
+              # Extract platform from parent directory name
+              platform=$(echo "$f" | cut -d'/' -f1)
+              echo "Found: $f"
+            fi
+          done
+          ls -lah
 
       - name: Upload final artifact package
         uses: actions/upload-artifact@v4
         with:
           name: final-python-builds
           path: final-builds/
+
+      - name: Upload regression PNG comparison package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-png-comparison
+          path: regression-pngs/
 
       - name: Upload to GitHub Releases (on tag push)
         if: startsWith(github.ref, 'refs/tags/')

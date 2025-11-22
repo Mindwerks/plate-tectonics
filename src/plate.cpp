@@ -125,10 +125,10 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
     dx -= _movement.velocityOnX(dot > 0);
     dy -= _movement.velocityOnY(dot > 0);
 
-    float offset = static_cast<float>(_randsource.next_double());
+    float offset = _randsource.next_float();
     float offset_sign = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset *= offset * offset * offset_sign;
-    float offset2 = static_cast<float>(_randsource.next_double());
+    float offset2 = _randsource.next_float();
     float offset_sign2 = static_cast<float>(2 * static_cast<int>(_randsource.next() % 2) - 1);
     offset2 *= offset2 * offset2 * offset_sign2;
     dx = 10 * dx + 3 * offset;
@@ -143,8 +143,8 @@ void plate::addCrustBySubduction(uint32_t x, uint32_t y, float z, uint32_t t,
         index = _bounds->index(static_cast<uint32_t>(fx), static_cast<uint32_t>(fy));
         if (map[index] > 0)
         {
-            t = (map[index] * age_map[index] + z * t) / (map[index] + z);
-            age_map[index] = static_cast<uint32_t>(static_cast<float>(t) * static_cast<float>(z > 0));
+            t = static_cast<uint32_t>((map[index] * age_map[index] + z * t) / (map[index] + z));
+            age_map[index] = static_cast<uint32_t>(t * static_cast<float>(z > 0.0f));
 
             map[index] += z;
             _mass.incMass(z);
@@ -223,10 +223,10 @@ void plate::applyFriction(float deformed_mass)
     }
 }
 
-void plate::collide(plate& p, uint32_t wx, uint32_t wy, float coll_mass)
+void plate::collide(plate& p, float coll_mass)
 {
     if (!_mass.null() && coll_mass > 0) {
-        _movement.collide(_mass, p, wx, wy, coll_mass);
+        _movement.collide(_mass, p, coll_mass);
     }
 }
 
@@ -358,7 +358,7 @@ void plate::erode(float lower_bound)
 
     // Add random noise (10 %) to heightmap.
     for (uint32_t i = 0; i < _bounds->area(); ++i) {
-        float alpha = 0.2f * static_cast<float>(_randsource.next_double());
+        float alpha = 0.2f * _randsource.next_float();
         tmpHm[i] += 0.1f * tmpHm[i] - alpha * tmpHm[i];
         // Clamp to zero to prevent floating point errors from accumulating
         // and causing negative mass values (Issue #30)

@@ -115,11 +115,11 @@ public:
     {
         return _data;
     }
-    const uint32_t width() const
+    uint32_t width() const
     {
         return _width;
     }
-    const uint32_t height() const
+    uint32_t height() const
     {
         return _height;
     }

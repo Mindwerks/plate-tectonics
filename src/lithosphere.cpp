@@ -413,8 +413,7 @@ void lithosphere::resolveJuxtapositions(const uint32_t& i, const uint32_t& j, co
 // Each plate's map's memory area is accessed sequentially and only
 // once as opposed to calculating "num_plates" indices within plate
 // maps in order to find out which plate(s) own current location.
-void lithosphere::updateHeightAndPlateIndexMaps(const uint32_t& map_area,
-        uint32_t& oceanic_collisions,
+void lithosphere::updateHeightAndPlateIndexMaps(uint32_t& oceanic_collisions,
         uint32_t& continental_collisions)
 {
     uint32_t world_width = _worldDimension.getWidth();
@@ -580,8 +579,7 @@ void lithosphere::updateCollisions()
                 // Calculate new direction and speed for the
                 // merged plate system, that is, for the
                 // receiving plate!
-                plates[coll.index]->collide(*plates[i],
-                                            coll.wx, coll.wy, amount);
+                plates[coll.index]->collide(*plates[i], amount);
             }
         }
 
@@ -663,7 +661,7 @@ void lithosphere::update()
         uint32_t oceanic_collisions = 0;
         uint32_t continental_collisions = 0;
 
-        updateHeightAndPlateIndexMaps(map_area, oceanic_collisions, continental_collisions);
+        updateHeightAndPlateIndexMaps(oceanic_collisions, continental_collisions);
 
         // Update the counter of iterations since last continental collision.
         last_coll_count = (last_coll_count + 1) & -(continental_collisions == 0);

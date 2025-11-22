@@ -137,9 +137,9 @@ class MockPlate : public IPlate {
 public:
     MockPlate(const FloatVector& velocityUnitVector, float mass, const FloatPoint& massCenter)
         : _velocityUnitVector(velocityUnitVector),
+          _decImpulseDelta(nullptr),
           _mass(mass),
-          _massCenter(massCenter),
-          _decImpulseDelta(nullptr)
+          _massCenter(massCenter)
     { }
 
     ~MockPlate() {
@@ -189,8 +189,9 @@ TEST(Movement, Collide)
     float otherPlateMass = 10000.0f;
     FloatPoint otherPlateMassCenter(100.0f, 400.0f);
     MockPlate otherPlate(otherPlateVelocityUnitVector, otherPlateMass, otherPlateMassCenter);
-    mov.collide(thisMass, otherPlate, 356, 439, 456.2f);
+    mov.collide(thisMass, otherPlate, 456.2f);
 
-    EXPECT_FLOAT_EQ((float)-6.2893254e-05, otherPlate.decImpulseDelta().x());
-    EXPECT_FLOAT_EQ(-0.00064989703f, otherPlate.decImpulseDelta().y());
+    // Updated expected values for float-only math (no double intermediate precision)
+    EXPECT_FLOAT_EQ(-6.2893458e-05f, otherPlate.decImpulseDelta().x());
+    EXPECT_FLOAT_EQ(-0.00064989907f, otherPlate.decImpulseDelta().y());
 }

@@ -6,9 +6,9 @@ using namespace std;
 
 inline void setGray(png_byte *ptr, int val)
 {
-    ptr[0] = val;
-    ptr[1] = val;
-    ptr[2] = val;
+    ptr[0] = static_cast<png_byte>(val);
+    ptr[1] = static_cast<png_byte>(val);
+    ptr[2] = static_cast<png_byte>(val);
 }
 
 inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
@@ -21,15 +21,23 @@ inline void setColor(png_byte *ptr, png_byte r, png_byte g, png_byte b)
 int writeImage(const char* filename, int width, int height, float *heightmap, const char* title,
                void (drawFunction)(png_structp&, png_bytep&, int, int, float*))
 {
-    int code = 0;
-    FILE *fp = nullptr;
-    png_structp png_ptr = nullptr;
-    png_infop info_ptr = nullptr;
-    png_bytep row = nullptr;
+    volatile int code = 0;
+    FILE * volatile fp = nullptr;
+    png_structp volatile png_ptr = nullptr;
+    png_infop volatile info_ptr = nullptr;
+    png_bytep volatile row = nullptr;
 
     // Open file for writing (binary mode)
+#ifdef _WIN32
+    // fopen_s doesn't accept volatile pointer, so use a non-volatile temporary
+    FILE* fp_temp = nullptr;
+    errno_t err = fopen_s(&fp_temp, filename, "wb");
+    fp = fp_temp;
+    if (err != 0 || fp == nullptr) {
+#else
     fp = fopen(filename, "wb");
     if (fp == nullptr) {
+#endif
         fprintf(stderr, "Could not open file %s for writing\n", filename);
         code = 1;
         goto finalise;
@@ -52,11 +60,18 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     }
 
     // Setup Exception handling
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4611)  // Interaction between setjmp and C++ object destruction is acceptable here
+#endif
     if (setjmp(png_jmpbuf(png_ptr))) {
         fprintf(stderr, "Error during png creation\n");
         code = 1;
         goto finalise;
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
     png_init_io(png_ptr, fp);
 
@@ -69,7 +84,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     if (title != nullptr) {
         png_text title_text;
         title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-        title_text.key = "Title";
+        title_text.key = const_cast<char*>("Title");
         title_text.text = (char*)title;
         png_set_text(png_ptr, info_ptr, &title_text, 1);
     }
@@ -80,7 +95,12 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     row = (png_bytep) malloc(3 * width * sizeof(png_byte));
 
     // Write image data
-    drawFunction(png_ptr, row, width, height, heightmap);
+    // Need to create non-volatile references for function calls
+    {
+        png_structp png_ptr_nv = png_ptr;
+        png_bytep row_nv = row;
+        drawFunction(png_ptr_nv, row_nv, width, height, heightmap);
+    }
 
     // End write
     png_write_end(png_ptr, nullptr);
@@ -92,7 +112,10 @@ finalise:
         if (info_ptr != nullptr) {
             png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         }
-        png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
+        {
+            png_structp png_ptr_nv = png_ptr;
+            png_destroy_write_struct(&png_ptr_nv, (png_infopp)nullptr);
+        }
     }
 
     return code;
@@ -136,9 +159,9 @@ void gradient(png_byte *ptr, png_byte ra, png_byte ga, png_byte ba, png_byte rb,
     float simil_b = (h - ha)/h_delta;
     float simil_a = (1.0f - simil_b);
     setColor(ptr,
-             (float)simil_a * ra + (float)simil_b * rb,
-             (float)simil_a * ga + (float)simil_b * gb,
-             (float)simil_a * ba + (float)simil_b * bb);
+             static_cast<png_byte>((float)simil_a * ra + (float)simil_b * rb),
+             static_cast<png_byte>((float)simil_a * ga + (float)simil_b * gb),
+             static_cast<png_byte>((float)simil_a * ba + (float)simil_b * bb));
 }
 
 void drawGrayImage(png_structp& png_ptr, png_bytep& row, int width, int height, float *heightmap)
@@ -157,7 +180,7 @@ void drawGrayImage(png_structp& png_ptr, png_bytep& row, int width, int height, 
                 res = (h * 255.0f);
             }
 
-            setGray(&(row[x*3]), res);
+            setGray(&(row[x*3]), static_cast<int>(res));
         }
         png_write_row(png_ptr, row);
     }
@@ -219,7 +242,7 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
                 res = (h * 255.0f);
             }
 
-            setGray(&(row[x*3]), res);
+            setGray(&(row[x*3]), static_cast<int>(res));
         }
         png_write_row(png_ptr, row);
     }

@@ -50,11 +50,11 @@ import sys
 # Platform-specific compiler flags
 extra_compile_args = []
 if sys.platform == 'win32':
-    # MSVC uses /std:c++17
-    extra_compile_args = ['/std:c++17']
+    # MSVC uses /std:c++20
+    extra_compile_args = ['/std:c++20']
 else:
-    # GCC/Clang use -std=c++17
-    extra_compile_args = ['-std=c++17']
+    # GCC/Clang use -std=c++20
+    extra_compile_args = ['-std=c++20']
 
 pyplatec = Extension(
     'platec',

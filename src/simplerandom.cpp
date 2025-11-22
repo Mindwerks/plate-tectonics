@@ -57,9 +57,14 @@ double SimpleRandom::next_double()
     return ((double)next() / (double)maximum());
 }
 
+float SimpleRandom::next_float()
+{
+    return ((float)next() / (float)maximum());
+}
+
 float SimpleRandom::next_float_signed()
 {
-    float value = static_cast<float>(next_double());
+    float value = next_float();
     ASSERT(value >= 0.0f && value <= 1.0f, "Invalid float range");
     return value - 0.5f;
 }

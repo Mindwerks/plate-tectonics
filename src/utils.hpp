@@ -37,6 +37,11 @@ typedef INT32 int32_t;
 #define UINT32_C(val) val##ui32
 #endif
 
+// Define PI constant for mathematical operations
+#ifndef PI
+#define PI 3.14159265358979323846264338327950288f
+#endif
+
 namespace Platec {
 
 std::string to_string(uint32_t value);
