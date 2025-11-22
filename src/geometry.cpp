@@ -86,7 +86,7 @@ Dimension::Dimension(const Dimension& original) :
 
 bool Dimension::contains(const uint32_t x, const uint32_t y) const
 {
-    return (x >= 0 && x < _width && y >= 0 && y < _height);
+    return (x < _width && y < _height);
 }
 
 bool Dimension::contains(const float x, const float y) const
@@ -145,7 +145,7 @@ uint32_t WorldDimension::indexOf(const uint32_t x, const uint32_t y) const
 
 uint32_t WorldDimension::lineIndex(const uint32_t y) const
 {
-    ASSERT(y >= 0 && y < _height, "y is not valid");
+    ASSERT(y < _height, "y is not valid");
     return indexOf(0, y);
 }
 
