@@ -25,6 +25,8 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include "map_drawing.hpp"
+#include "sqrdmd.hpp"
 
 ///
 /// Regression test to ensure simulation output remains consistent
@@ -105,6 +107,25 @@ bool stats_match(const HeightmapStats& actual, const HeightmapStats& expected,
     return extrema_ok && central_ok;
 }
 
+// Save heightmap as PNG image for visual comparison
+void save_heightmap_png(const float* heightmap, uint32_t width, uint32_t height,
+                        const char* filename, bool use_colors = true) {
+    // Create a normalized copy for visualization
+    size_t map_size = width * height;
+    float* normalized = new float[map_size];
+    std::memcpy(normalized, heightmap, sizeof(float) * map_size);
+    normalize(normalized, map_size);
+
+    // Write the image
+    if (use_colors) {
+        writeImageColors(filename, width, height, normalized, "Regression Test Output");
+    } else {
+        writeImageGray(filename, width, height, normalized, "Regression Test Output");
+    }
+
+    delete[] normalized;
+}
+
 } // anonymous namespace
 
 TEST(Regression, SimulationSeed12345_OutputConsistency) {
@@ -136,13 +157,24 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
     ASSERT_NE(final_map, nullptr);
     HeightmapStats final_stats = compute_stats(final_map, map_size);
 
+    // Save PNG images for visual comparison (before cleanup)
+    // These will be collected as artifacts in CI for cross-platform comparison
+    save_heightmap_png(initial_map, width, height, "regression_seed12345_initial.png");
+    save_heightmap_png(final_map, width, height, "regression_seed12345_final.png");
+
     // Clean up
     platec_api_destroy(p);
 
-    // Expected statistical properties from baseline runs with seed 12345
-    // These should be consistent across platforms with minor floating-point tolerance
-    // Baseline values obtained from macOS ARM64 (Apple Clang, NEON)
+    // Define tolerance thresholds first
+    // Use adaptive tolerance to account for platform differences
+    // while still catching major regressions
+    // Central tendency metrics (mean, median, std_dev, quantiles) use strict tolerance
+    // Extrema (min, max) use generous tolerance as they're more variable
+    const float central_tolerance = 0.01f;   // 1% for mean, median, std_dev, quantiles
+    const float extrema_tolerance = 0.15f;   // 15% for min/max
 
+    // Expected statistical properties from baseline runs with seed 12345
+    // Initial state is identical across platforms (generated before simulation)
     HeightmapStats expected_initial = {
         0.1f,       // min
         2.0f,       // max
@@ -153,7 +185,9 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
         1.63843f    // q75
     };
 
-    HeightmapStats expected_final = {
+    // Final state differs across architectures due to floating-point accumulation
+    // Baseline: macOS ARM64 (Apple Clang, NEON)
+    HeightmapStats expected_final_arm64 = {
         0.0142494f,  // min
         11.2925f,    // max
         0.6208f,     // mean
@@ -163,17 +197,32 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
         0.85813f     // q75
     };
 
-    // Use adaptive tolerance to account for platform differences
-    // while still catching major regressions
-    // Central tendency metrics (mean, median, std_dev, quantiles) use strict tolerance
-    // Extrema (min, max) use generous tolerance as they're more variable
-    const float central_tolerance = 0.01f;   // 1% for mean, median, std_dev, quantiles
-    const float extrema_tolerance = 0.15f;   // 15% for min/max
+    // Baseline: Ubuntu x86-64 (GCC, AVX2/SSE)
+    HeightmapStats expected_final_x86 = {
+        0.0404346f,  // min
+        10.7301f,    // max
+        0.623199f,   // mean
+        0.11466f,    // median
+        0.936392f,   // std_dev
+        0.0983511f,  // q25
+        0.937972f    // q75
+    };
 
+    // Check initial state (should match on all platforms)
     bool initial_matches = stats_match(initial_stats, expected_initial,
-                                       central_tolerance, extrema_tolerance);
-    bool final_matches = stats_match(final_stats, expected_final,
-                                     central_tolerance, extrema_tolerance);
+                                      central_tolerance, extrema_tolerance);
+
+    // Check final state against known platform baselines
+    bool final_matches_arm64 = stats_match(final_stats, expected_final_arm64,
+                                           central_tolerance, extrema_tolerance);
+    bool final_matches_x86 = stats_match(final_stats, expected_final_x86,
+                                         central_tolerance, extrema_tolerance);
+
+    bool final_matches = final_matches_arm64 || final_matches_x86;
+
+    // Determine which baseline we matched (for display purposes)
+    HeightmapStats expected_final = final_matches_arm64 ? expected_final_arm64 : expected_final_x86;
+    std::string platform = final_matches_arm64 ? "ARM64" : "x86-64";
 
     // Helper lambda to format difference with sign (fixed decimal notation)
     auto format_diff = [](float actual, float expected) -> std::string {
@@ -185,7 +234,7 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
     };
 
     // Always print statistics for tracking simulation evolution over time
-    std::cout << "\n=== Initial heightmap statistics ===\n";
+    std::cout << "\n=== Initial heightmap statistics (baseline: " << platform << ") ===\n";
     std::cout << "  min:     " << initial_stats.min << " (diff: "
               << format_diff(initial_stats.min, expected_initial.min) << ")\n";
     std::cout << "  max:     " << initial_stats.max << " (diff: "
@@ -202,7 +251,7 @@ TEST(Regression, SimulationSeed12345_OutputConsistency) {
               << format_diff(initial_stats.q75, expected_initial.q75) << ")\n";
     std::cout << "  Status:  " << (initial_matches ? "✓ PASS" : "✗ FAIL") << "\n";
 
-    std::cout << "\n=== Final heightmap statistics ===\n";
+    std::cout << "\n=== Final heightmap statistics (baseline: " << platform << ") ===\n";
     std::cout << "  min:     " << final_stats.min << " (diff: "
               << format_diff(final_stats.min, expected_final.min) << ")\n";
     std::cout << "  max:     " << final_stats.max << " (diff: "
