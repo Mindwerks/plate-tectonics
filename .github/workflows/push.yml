@@ -209,17 +209,31 @@ jobs:
       - name: Package regression PNG images
         run: |
           mkdir -p regression-pngs
-          find all-artifacts/regression-pngs-* -type f -name "*.png" -exec cp {} regression-pngs/ \;
-          # Rename files to include platform info
-          cd regression-pngs
-          for f in *.png; do
-            if [ -f "$f" ]; then
-              # Extract platform from parent directory name
-              platform=$(echo "$f" | cut -d'/' -f1)
-              echo "Found: $f"
+          # Copy PNGs from each platform artifact and rename to include platform info
+          for artifact_dir in all-artifacts/regression-pngs-*; do
+            if [ -d "$artifact_dir" ]; then
+              # Extract platform and python version from directory name
+              # Format: regression-pngs-<os>-<python>
+              artifact_name=$(basename "$artifact_dir")
+              # Extract everything after "regression-pngs-"
+              platform_info="${artifact_name#regression-pngs-}"
+              echo "Processing $artifact_name (platform: $platform_info)"
+
+              # Copy each PNG file with platform prefix
+              for png in "$artifact_dir"/*.png; do
+                if [ -f "$png" ]; then
+                  filename=$(basename "$png")
+                  # Add platform prefix to filename
+                  new_name="${platform_info}_${filename}"
+                  cp "$png" "regression-pngs/$new_name"
+                  echo "  Copied: $filename -> $new_name"
+                fi
+              done
             fi
           done
-          ls -lah
+
+          echo "Final PNG collection:"
+          ls -lah regression-pngs/
 
       - name: Upload final artifact package
         uses: actions/upload-artifact@v4
