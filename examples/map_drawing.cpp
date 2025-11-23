@@ -233,6 +233,11 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
             std::cout << "  [PNG] Processing row " << y << "/" << height << std::endl;
         }
 
+        // Extra detailed logging for the problematic range
+        if (y >= 170 && y <= 180) {
+            std::cout << "  [PNG] >> Starting row " << y << " (in crash zone 170-180)" << std::endl;
+        }
+
         for (x=0 ; x<width ; x++) {
             // Validate array access
             int index = y*width + x;
@@ -288,14 +293,19 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
             setGray(&(row[x*3]), static_cast<int>(res));
         }
 
+        // Extra logging in crash zone
+        if (y >= 170 && y <= 180) {
+            std::cout << "  [PNG] >> Completed pixel loop for row " << y << std::endl;
+        }
+
         // Log before writing row to PNG
-        if (y % 10 == 0) {
+        if (y % 10 == 0 || (y >= 170 && y <= 180)) {
             std::cout << "  [PNG] About to write row " << y << " to PNG..." << std::endl;
         }
 
         png_write_row(png_ptr, row);
 
-        if (y % 10 == 0) {
+        if (y % 10 == 0 || (y >= 170 && y <= 180)) {
             std::cout << "  [PNG] Successfully wrote row " << y << std::endl;
         }
     }
