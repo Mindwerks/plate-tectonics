@@ -2,6 +2,7 @@
 #include "utils.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     png_infop volatile info_ptr = nullptr;
     png_bytep volatile row = nullptr;
     size_t row_bytes = 0;  // Declare early to avoid goto issues
+    size_t alloc_size = 0;  // Declare early to avoid goto issues
 
     // Open file for writing (binary mode)
 #ifdef _WIN32
@@ -94,15 +96,22 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     png_write_info(png_ptr, info_ptr);
 
     // Allocate memory for one row (3 bytes per pixel - RGB)
+    // Add extra padding to detect buffer overruns
     row_bytes = 3 * width * sizeof(png_byte);
     std::cout << "  [PNG] Allocating row buffer: " << row_bytes << " bytes for width=" << width << std::endl;
-    row = (png_bytep) malloc(row_bytes);
+
+    // Allocate extra 16 bytes and fill with canary pattern
+    alloc_size = row_bytes + 16;
+    row = (png_bytep) malloc(alloc_size);
 
     if (row == nullptr) {
-        std::cerr << "  [PNG] ERROR: Failed to allocate row buffer of " << row_bytes << " bytes!" << std::endl;
+        std::cerr << "  [PNG] ERROR: Failed to allocate row buffer of " << alloc_size << " bytes!" << std::endl;
         code = 1;
         goto finalise;
     }
+
+    // Set canary bytes at the end
+    memset(row + row_bytes, 0xCD, 16);
     std::cout << "  [PNG] Row buffer allocated successfully at " << static_cast<void*>(row) << std::endl;
 
     // Write image data
@@ -239,16 +248,24 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
         }
 
         for (x=0 ; x<width ; x++) {
-            // Validate array access
+            // Validate array access for heightmap
             int index = y*width + x;
             if (index < 0 || index >= width * height) {
-                std::cerr << "  [PNG] ERROR: Invalid index " << index << " at x=" << x << ", y=" << y << std::endl;
+                std::cerr << "  [PNG] ERROR: Invalid heightmap index " << index << " at x=" << x << ", y=" << y << std::endl;
                 std::cerr << "  [PNG] Array bounds: 0 to " << (width * height - 1) << std::endl;
                 throw std::runtime_error("Buffer overflow in drawColorsImage");
             }
 
+            // Validate row buffer access (3 bytes per pixel for RGB)
+            int row_index = x * 3;
+            size_t row_size = 3 * width;
+            if (row_index < 0 || row_index + 2 >= static_cast<int>(row_size)) {
+                std::cerr << "  [PNG] ERROR: Invalid row buffer index " << row_index << " at x=" << x << ", y=" << y << std::endl;
+                std::cerr << "  [PNG] Row buffer size: " << row_size << " bytes, accessing: " << row_index << " to " << (row_index + 2) << std::endl;
+                throw std::runtime_error("Row buffer overflow in drawColorsImage");
+            }
+
             float h = heightmap[index];
-            float res = 0.0f;
 
             if (h < q15) {
                 gradient(&(row[x*3]), 0, 0, 255, 0, 20, 200, h, 0.0f, q15);
@@ -281,16 +298,6 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
             }
 
             gradient(&(row[x*3]), 91, 28, 13, 51, 0, 4, h, q99, 1.0f);
-
-            if (h <= 0.0f) {
-                res = 0;
-            } else if (h >= 1.0f) {
-                res = 255;
-            } else {
-                res = (h * 255.0f);
-            }
-
-            setGray(&(row[x*3]), static_cast<int>(res));
         }
 
         // Extra logging in crash zone
@@ -301,6 +308,21 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
         // Log before writing row to PNG
         if (y % 10 == 0 || (y >= 170 && y <= 180)) {
             std::cout << "  [PNG] About to write row " << y << " to PNG..." << std::endl;
+        }
+
+        // Check canary before write
+        size_t row_buffer_size = 3 * width * sizeof(png_byte);
+        bool canary_ok = true;
+        for (int i = 0; i < 16; i++) {
+            if (row[row_buffer_size + i] != 0xCD) {
+                canary_ok = false;
+                break;
+            }
+        }
+        if (!canary_ok) {
+            std::cerr << "  [PNG] ERROR: Buffer overrun detected before writing row " << y << "!" << std::endl;
+            std::cerr << "  [PNG] Canary bytes at offset " << row_buffer_size << " were corrupted" << std::endl;
+            throw std::runtime_error("Buffer overrun in drawColorsImage");
         }
 
         png_write_row(png_ptr, row);
