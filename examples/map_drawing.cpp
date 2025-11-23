@@ -96,13 +96,20 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     png_write_info(png_ptr, info_ptr);
 
     // Allocate memory for one row (3 bytes per pixel - RGB)
-    // Add extra padding to detect buffer overruns
+    // Add extra padding to detect buffer overruns and ensure alignment
     row_bytes = 3 * width * sizeof(png_byte);
     std::cout << "  [PNG] Allocating row buffer: " << row_bytes << " bytes for width=" << width << std::endl;
 
-    // Allocate extra 16 bytes and fill with canary pattern
-    alloc_size = row_bytes + 16;
+    // Allocate extra 64 bytes: 48 for canary + 16 for alignment padding
+    // This ensures we don't have alignment issues that could cause stack checks to fail
+    alloc_size = row_bytes + 64;
+
+#ifdef _WIN32
+    // Use aligned allocation on Windows to avoid stack corruption issues
+    row = (png_bytep) _aligned_malloc(alloc_size, 16);
+#else
     row = (png_bytep) malloc(alloc_size);
+#endif
 
     if (row == nullptr) {
         std::cerr << "  [PNG] ERROR: Failed to allocate row buffer of " << alloc_size << " bytes!" << std::endl;
@@ -111,7 +118,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     }
 
     // Set canary bytes at the end
-    memset(row + row_bytes, 0xCD, 16);
+    memset(row + row_bytes, 0xCD, 48);
     std::cout << "  [PNG] Row buffer allocated successfully at " << static_cast<void*>(row) << std::endl;
 
     // Write image data
@@ -131,7 +138,13 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
 
 finalise:
     if (fp != nullptr) fclose(fp);
-    if (row != nullptr) free(row);
+    if (row != nullptr) {
+#ifdef _WIN32
+        _aligned_free(row);
+#else
+        free(row);
+#endif
+    }
     if (png_ptr != nullptr) {
         if (info_ptr != nullptr) {
             png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
@@ -313,9 +326,11 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
         // Check canary before write
         size_t row_buffer_size = 3 * width * sizeof(png_byte);
         bool canary_ok = true;
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 48; i++) {
             if (row[row_buffer_size + i] != 0xCD) {
                 canary_ok = false;
+                std::cerr << "  [PNG] ERROR: Canary byte " << i << " was corrupted (expected 0xCD, got 0x"
+                          << std::hex << (int)row[row_buffer_size + i] << std::dec << ")" << std::endl;
                 break;
             }
         }
