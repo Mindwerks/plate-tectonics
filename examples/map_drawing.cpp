@@ -96,7 +96,15 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     png_write_info(png_ptr, info_ptr);
 
     // Allocate memory for one row (3 bytes per pixel - RGB)
-    // Add extra padding to detect buffer overruns and ensure alignment
+    //
+    // NOTE: The extra padding and alignment were added during debugging of a Windows crash
+    // (STATUS_STACK_BUFFER_OVERRUN at row 171). The crash was ultimately caused by MSVC
+    // runtime library mismatch (/MT vs /MD), not a buffer overflow. However, we keep the
+    // canary bytes and alignment as defensive programming to detect any future issues.
+    //
+    // For details on the original crash and fix, see:
+    // - CMakeLists.txt lines 28-81 (MSVC Runtime Library Configuration)
+    // - .github/workflows/push.yml (Windows CMake configuration with -DMSVC_RUNTIME=dynamic)
     row_bytes = 3 * width * sizeof(png_byte);
     std::cout << "  [PNG] Allocating row buffer: " << row_bytes << " bytes for width=" << width << std::endl;
 
@@ -105,7 +113,7 @@ int writeImage(const char* filename, int width, int height, float *heightmap, co
     alloc_size = row_bytes + 64;
 
 #ifdef _WIN32
-    // Use aligned allocation on Windows to avoid stack corruption issues
+    // Use aligned allocation on Windows for consistency with Windows alignment requirements
     row = (png_bytep) _aligned_malloc(alloc_size, 16);
 #else
     row = (png_bytep) malloc(alloc_size);

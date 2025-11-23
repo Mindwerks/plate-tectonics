@@ -26,10 +26,25 @@ add_library(PlateTectonics src/sqrdmd.cpp src/heightmap.cpp src/lithosphere.cpp 
 include_directories("src")
 
 #
-# The whole MSVC
+# MSVC Runtime Library Configuration
+#
+# CRITICAL: When using vcpkg or other pre-built libraries on Windows, the runtime
+# library setting MUST match between your code and the libraries.
+#
+# - vcpkg builds libraries with /MD (dynamic runtime) by default
+# - Mixing /MT (static) and /MD (dynamic) causes crashes when crossing DLL boundaries
+# - Symptoms include: STATUS_STACK_BUFFER_OVERRUN, access violations, heap corruption
+#
+# SOLUTION: Set MSVC_RUNTIME=dynamic when using vcpkg:
+#   cmake .. -DMSVC_RUNTIME=dynamic
+#
+# For more information:
+# - https://github.com/pnggroup/libpng/issues/221
+# - https://learn.microsoft.com/en-us/cpp/build/reference/md-mt-ld-use-run-time-library
 #
 if(MSVC)
 	# Default to statically-linked runtime.
+	# NOTE: Override with -DMSVC_RUNTIME=dynamic when using vcpkg!
 	if("${MSVC_RUNTIME}" STREQUAL "")
   		set(MSVC_RUNTIME "static")
 	endif()
@@ -46,7 +61,7 @@ if(MSVC)
 	)
 	if(${MSVC_RUNTIME} STREQUAL "static")
 	  message(STATUS
-	    "MSVC -> forcing use of statically-linked runtime."
+	    "MSVC -> forcing use of statically-linked runtime (/MT)."
 	  )
 	  foreach(variable ${variables})
 	    if(${variable} MATCHES "/MD")
@@ -55,7 +70,7 @@ if(MSVC)
 	  endforeach()
 	else()
 	  message(STATUS
-	    "MSVC -> forcing use of dynamically-linked runtime."
+	    "MSVC -> forcing use of dynamically-linked runtime (/MD) to match vcpkg libraries."
 	  )
 	  foreach(variable ${variables})
 	    if(${variable} MATCHES "/MT")
