@@ -551,8 +551,9 @@ int simplexnoise(int32_t seed, float* map, int width, int height, float persiste
     float inv_height = 1 / (float)height;
     float noiseScale = 0.593f;
     float ka = (float)(256 / seed);
-    float kb = (float)(seed * 567 % 256);
-    float kc = (float)((seed * seed) % 256);
+    // Use int64_t for intermediate calculations to avoid overflow, then mod 256
+    float kb = (float)((static_cast<int64_t>(seed) * 567) % 256);
+    float kc = (float)((static_cast<int64_t>(seed) * seed) % 256);
     float kd = (float)((567 - seed) % 256);
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {

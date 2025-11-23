@@ -695,8 +695,10 @@ void lithosphere::restart() {
                     const uint32_t a0 = amap[_worldDimension.indexOf(x_mod, y_mod)];
                     const uint32_t a1 = this_age[j];
 
+                    const float h_sum = h0 + h1;
+                    // Avoid division by zero: if both heights are zero, use the new age
                     amap[_worldDimension.indexOf(x_mod, y_mod)] =
-                        static_cast<uint32_t>((h0 * a0 + h1 * a1) / (h0 + h1));
+                        (h_sum > 0.0f) ? static_cast<uint32_t>((h0 * a0 + h1 * a1) / h_sum) : a1;
                     hmap[_worldDimension.indexOf(x_mod, y_mod)] += this_map[j];
                 }
             }
