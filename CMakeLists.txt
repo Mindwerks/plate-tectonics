@@ -11,9 +11,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Treat warnings as errors
 if(MSVC)
     add_compile_options(/W4 /WX)
-    # Enable Address Sanitizer for better error detection
-    add_compile_options(/fsanitize=address)
-    add_link_options(/fsanitize=address)
+    # Note: ASAN disabled on Windows as it causes tests to hang with vcpkg libraries
+    # Enable with -DENABLE_ASAN=ON if needed for debugging
+    if(ENABLE_ASAN)
+        add_compile_options(/fsanitize=address)
+        add_link_options(/fsanitize=address)
+    endif()
 else()
     add_compile_options(-Wall -Wextra -Werror)
 endif()

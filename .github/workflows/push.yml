@@ -59,12 +59,38 @@ jobs:
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build . --config RelWithDebInfo
 
+      - name: Configure Windows Error Reporting for crash dumps
+        if: matrix.os == 'windows-latest'
+        run: |
+          # Enable local crash dumps
+          New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" -Force | Out-Null
+          New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" -Name "DumpFolder" -Value "$env:TEMP\CrashDumps" -PropertyType ExpandString -Force | Out-Null
+          New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" -Name "DumpCount" -Value 10 -PropertyType DWord -Force | Out-Null
+          New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" -Name "DumpType" -Value 2 -PropertyType DWord -Force | Out-Null
+          # Create crash dump directory
+          New-Item -ItemType Directory -Force -Path "$env:TEMP\CrashDumps" | Out-Null
+          Write-Host "Crash dumps will be saved to: $env:TEMP\CrashDumps"
+
       - name: Run tests (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           cd build
-          $env:ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
           ctest -C RelWithDebInfo --verbose --output-on-failure
+
+      - name: Configure core dumps (Linux/MacOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          # Enable core dumps
+          ulimit -c unlimited
+          # Set core dump pattern
+          if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "Core dumps will be saved to: /tmp/cores"
+            sudo mkdir -p /tmp/cores
+            sudo chmod 777 /tmp/cores
+            echo "/tmp/cores/core.%e.%p" | sudo tee /proc/sys/kernel/core_pattern
+          else
+            echo "Core dumps enabled (macOS default location)"
+          fi
 
       - name: Run tests (Linux/MacOS)
         if: matrix.os != 'windows-latest'
@@ -72,6 +98,33 @@ jobs:
           cd build
           export ASAN_OPTIONS="halt_on_error=0:detect_leaks=1:symbolize=1"
           ctest -C RelWithDebInfo --verbose --output-on-failure
+
+      - name: Upload Windows crash dumps
+        if: always() && matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-dumps-windows-${{ matrix.python }}
+          path: |
+            ${{ runner.temp }}/CrashDumps/*.dmp
+          if-no-files-found: ignore
+
+      - name: Upload Linux core dumps
+        if: always() && matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-dumps-linux-${{ matrix.python }}
+          path: |
+            /tmp/cores/core.*
+          if-no-files-found: ignore
+
+      - name: Upload macOS core dumps
+        if: always() && matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-dumps-macos-${{ matrix.python }}
+          path: |
+            /cores/core.*
+          if-no-files-found: ignore
 
       - name: Upload regression test PNG artifacts
         if: always()
