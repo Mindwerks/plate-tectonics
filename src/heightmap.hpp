@@ -20,56 +20,47 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <stdexcept> // std::invalid_argument
-#include <cstring>
-#include <string>
-#include "utils.hpp"
 #include "rectangle.hpp"
+#include "utils.hpp"
 #include "world_point.hpp"
+#include <cstring>
+#include <stdexcept> // std::invalid_argument
+#include <string>
 
 using namespace std;
 
 template <typename Value>
-class Matrix
-{
-public:
-
-    Matrix(unsigned int width, unsigned int height)
-        : _width(width), _height(height)
-    {
+class Matrix {
+  public:
+    Matrix(unsigned int width, unsigned int height) : _width(width), _height(height) {
         ASSERT(width != 0 && height != 0, "Matrix width and height should be greater than zero");
         _area = width * height;
         _data = new Value[_area];
     }
-    Matrix(Value* data, unsigned int width, unsigned int height)
-        : _width(width), _height(height) {
+    Matrix(Value* data, unsigned int width, unsigned int height) : _width(width), _height(height) {
         ASSERT(data != 0 && width != 0 && height != 0, "Invalid matrix data");
         _area = width * height;
         _data = data;
     }
 
     Matrix(const Matrix<Value>& other)
-        : _width(other._width), _height(other._height), _area(other._area)
-    {
+        : _width(other._width), _height(other._height), _area(other._area) {
         _data = new Value[_area];
         copy(other);
     }
 
-    ~Matrix()
-    {
+    ~Matrix() {
         delete[] _data;
     }
 
-    void set_all(const Value& value)
-    {
+    void set_all(const Value& value) {
         // we cannot use memset to make it very general
         const uint32_t my_area = area();
         for (uint32_t i = 0; i < my_area; i++) {
             _data[i] = value;
         }
     }
-    void copy(const Matrix& other)
-    {
+    void copy(const Matrix& other) {
         if (_area != other._area) {
             _width = other._width;
             _height = other._height;
@@ -82,53 +73,44 @@ public:
         }
     }
 
-    inline const Value& set(unsigned int x, unsigned y, const Value& value)
-    {
+    inline const Value& set(unsigned int x, unsigned y, const Value& value) {
         ASSERT(x < _width && y < _height, "Invalid coordinates");
         _data[y * _width + x] = value;
         return value;
     }
 
-    inline const Value& get(unsigned int x, unsigned y) const
-    {
+    inline const Value& get(unsigned int x, unsigned y) const {
         ASSERT(x < _width && y < _height, "Invalid coordinates");
         return _data[y * _width + x];
     }
 
-    Matrix<Value>& operator=(const Matrix<Value>& other)
-    {
+    Matrix<Value>& operator=(const Matrix<Value>& other) {
         copy(other);
         return *this;
     }
 
-    Value& operator[](unsigned int index)
-    {
+    Value& operator[](unsigned int index) {
         return this->_data[index];
     }
 
-    const Value& operator[](unsigned int index) const
-    {
+    const Value& operator[](unsigned int index) const {
         return this->_data[index];
     }
 
-    Value* raw_data() const
-    {
+    Value* raw_data() const {
         return _data;
     }
-    uint32_t width() const
-    {
+    uint32_t width() const {
         return _width;
     }
-    uint32_t height() const
-    {
+    uint32_t height() const {
         return _height;
     }
-    inline uint32_t area() const
-    {
+    inline uint32_t area() const {
         return _area;
     }
-private:
 
+  private:
     Value* _data;
     unsigned int _width;
     unsigned int _height;

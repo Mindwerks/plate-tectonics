@@ -23,11 +23,12 @@
  *  @author Lauri Viitanen
  *  @date 2011-08-09
  */
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdexcept>
-#ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by Python...
-#undef __STRICT_ANSI__
+#include <stdio.h>
+#include <stdlib.h>
+#ifdef __MINGW32__ // this is to avoid a problem with the hypot function which is messed up by
+                   // Python...
+    #undef __STRICT_ANSI__
 #endif
 #include "simplerandom.hpp"
 
@@ -35,26 +36,24 @@
 
 using namespace std;
 
-#define CALC_SUM(a, b, c, d, rnd)\
-{\
-	sum = ((a) + (b) + (c) + (d)) * 0.25f;\
-	sum = sum + slope * rnd;\
-}
+#define CALC_SUM(a, b, c, d, rnd)                                                                  \
+    {                                                                                              \
+        sum = ((a) + (b) + (c) + (d)) * 0.25f;                                                     \
+        sum = sum + slope * rnd;                                                                   \
+    }
 
-#define SAVE_SUM(a)\
-{\
-	bool isZero = (int)map[a] == 0;  \
-	if (isZero) { \
-		map[a] = sum; \
-	} \
-}
+#define SAVE_SUM(a)                                                                                \
+    {                                                                                              \
+        bool isZero = (int)map[a] == 0;                                                            \
+        if (isZero) {                                                                              \
+            map[a] = sum;                                                                          \
+        }                                                                                          \
+    }
 
-void normalize(float* arr, int size)
-{
+void normalize(float* arr, int size) {
     float min = arr[0], max = arr[0], diff;
 
-    for (int i = 1; i < size; ++i)
-    {
+    for (int i = 1; i < size; ++i) {
         min = min < arr[i] ? min : arr[i];
         max = max > arr[i] ? max : arr[i];
     }
@@ -66,23 +65,19 @@ void normalize(float* arr, int size)
             arr[i] = (arr[i] - min) / diff;
 }
 
-class Coord
-{
-public:
-    Coord(int width, int height) : _width(width), _height(height)
-    {};
-    int indexOf(int x, int y) const
-    {
-        ASSERT(x >= 0 && x < _width && y >= 0 && y < _height,
-               "Coordinates are not valid");
+class Coord {
+  public:
+    Coord(int width, int height) : _width(width), _height(height) {};
+    int indexOf(int x, int y) const {
+        ASSERT(x >= 0 && x < _width && y >= 0 && y < _height, "Coordinates are not valid");
         return y * _width + x;
     }
-private:
+
+  private:
     int _width, _height;
 };
 
-int sqrdmd(long seed, float* map, int size, float rgh)
-{
+int sqrdmd(long seed, float* map, int size, float rgh) {
     SimpleRandom _randsource(seed);
 
     const int full_size = size * size;
@@ -117,53 +112,49 @@ int sqrdmd(long seed, float* map, int size, float rgh)
     CALC_SUM(map[0], map[dy], center_sum, center_sum, _randsource.next_float_signed());
     SAVE_SUM(p1);
     map[full_size + p0 - size] = map[p0]; /* Copy top val into btm row. */
-    map[p1 + size - 1] = map[p1]; /* Copy left value into right column. */
+    map[p1 + size - 1] = map[p1];         /* Copy left value into right column. */
     slope *= rgh;
     step >>= 1;
 
     while (step > 1) /* Enter the main loop. */
     {
         /*************************************************************
-        * Calc midpoint of sub squares on the map ("diamond step"). *
-        *************************************************************/
+         * Calc midpoint of sub squares on the map ("diamond step"). *
+         *************************************************************/
         dx = step;
         dy = step * size;
         i = (step >> 1) * (size + 1);
         line_jump = step * size + 1 + step - size;
-        for (y0 = 0, y1 = dy; y1 < size * size; y0 += dy, y1 += dy)
-        {
-            for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx, i += step)
-            {
-                sum = (map[y0+x0] + map[y0+x1] +
-                       map[y1+x0] + map[y1+x1]) * 0.25f;
+        for (y0 = 0, y1 = dy; y1 < size * size; y0 += dy, y1 += dy) {
+            for (x0 = 0, x1 = dx; x1 < size; x0 += dx, x1 += dx, i += step) {
+                sum = (map[y0 + x0] + map[y0 + x1] + map[y1 + x0] + map[y1 + x1]) * 0.25f;
                 sum = sum + slope * _randsource.next_float_signed();
                 masked = !((int)map[i]);
                 map[i] = map[i] * !masked + sum * masked;
             }
             /* There's additional step taken at the end of last
-            * valid loop. That step actually isn't valid because
-            * the row ends right then. Thus we are forced to
-            * manually remove it after the loop so that 'i'
-            * points again to the index accessed last.
-            */
+             * valid loop. That step actually isn't valid because
+             * the row ends right then. Thus we are forced to
+             * manually remove it after the loop so that 'i'
+             * points again to the index accessed last.
+             */
             i += line_jump - step;
         }
 
         /**************************************************************
-        * Calculate each sub diamonds' center point ("square step").
-        * Diamond gets its left and right vertices from the square
-        * corners of last iteration and its top and bottom vertices
-        * from the "diamond step" we just performed.
-        *************************************************************/
+         * Calculate each sub diamonds' center point ("square step").
+         * Diamond gets its left and right vertices from the square
+         * corners of last iteration and its top and bottom vertices
+         * from the "diamond step" we just performed.
+         *************************************************************/
         i = step >> 1;
-        p0 = step; /* right */
-        p1 = i * size + i; /* bottom */
-        p2 = 0; /* left */
+        p0 = step;                           /* right */
+        p1 = i * size + i;                   /* bottom */
+        p2 = 0;                              /* left */
         p3 = full_size + i - (i + 1) * size; /* top (wrapping edges) */
 
         /* Calculate "diamond" values for top row in map. */
-        while (p0 < size)
-        {
+        while (p0 < size) {
             sum = (map[p0] + map[p1] + map[p2] + map[p3]) * 0.25f;
             sum = sum + slope * _randsource.next_float_signed();
             masked = !((int)map[i]);
@@ -178,31 +169,28 @@ int sqrdmd(long seed, float* map, int size, float rgh)
         }
 
         /* Now that top row's values are calculated starting from
-        * 'y = step >> 1' both saves us from recalculating same things
-        * twice and guarantees that data will not be read beyond top
-        * row of map. 'size - (step >> 1)' guarantees that data will
-        * not be read beyond bottom row of map.
-        */
-        for (y = step >> 1, temp = 0; y < size - (step >> 1); y += step >> 1, temp = !temp)
-        {
+         * 'y = step >> 1' both saves us from recalculating same things
+         * twice and guarantees that data will not be read beyond top
+         * row of map. 'size - (step >> 1)' guarantees that data will
+         * not be read beyond bottom row of map.
+         */
+        for (y = step >> 1, temp = 0; y < size - (step >> 1); y += step >> 1, temp = !temp) {
             p0 = step >> 1; /* right */
             p1 = p0 * size; /* bottom */
-            p2 = -p0; /* left */
-            p3 = -p1; /* top */
+            p2 = -p0;       /* left */
+            p3 = -p1;       /* top */
             /* For even rows add step/2. Otherwise add nothing. */
             x = i = p0 * temp; /* Init 'x' while it's easy. */
-            i += y * size; /* Move 'i' into correct row. */
+            i += y * size;     /* Move 'i' into correct row. */
             p0 += i;
             p1 += i;
             /* For odd rows p2 (left) wraps around map edges. */
             p2 += i + (size - 1) * !temp;
             p3 += i;
             /* size - (step >> 1) guarantees that data will not be
-            * read beyond rightmost column of map. */
-            for (; x < size - (step >> 1); x += step)
-            {
-                sum = (map[p0] + map[p1] +
-                       map[p2] + map[p3]) * 0.25f;
+             * read beyond rightmost column of map. */
+            for (; x < size - (step >> 1); x += step) {
+                sum = (map[p0] + map[p1] + map[p2] + map[p3]) * 0.25f;
                 sum = sum + slope * _randsource.next_float_signed();
                 masked = !((int)map[i]);
                 map[i] = map[i] * !masked + sum * masked;
@@ -212,9 +200,9 @@ int sqrdmd(long seed, float* map, int size, float rgh)
                 p3 += step;
                 i += step;
                 /* if we start from leftmost column -> left
-                * point (p2) is going over the right border ->
-                * wrap it around into the beginning of
-                * previous rows left line. */
+                 * point (p2) is going over the right border ->
+                 * wrap it around into the beginning of
+                 * previous rows left line. */
                 p2 -= (size - 1) * !x;
             }
             /* copy rows first element into its last */
@@ -222,7 +210,7 @@ int sqrdmd(long seed, float* map, int size, float rgh)
             map[i + size - 1] = map[i];
         }
         slope *= rgh; /* reduce amount of randomness for next round */
-        step >>= 1; /* split squares and diamonds in half */
+        step >>= 1;   /* split squares and diamonds in half */
     }
     return (0);
 }

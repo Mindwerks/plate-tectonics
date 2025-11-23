@@ -1,37 +1,34 @@
 /******************************************************************************
-*  plate-tectonics, a plate tectonics simulation library
-*  Copyright (C) 2012-2013 Lauri Viitanen
-*  Copyright (C) 2014-2015 Federico Tomassetti, Bret Curtis
-*
-*  This library is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public
-*  License as published by the Free Software Foundation; either
-*  version 2.1 of the License, or (at your option) any later version.
-*
-*  This library is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*  Lesser General Public License for more details.
-*
-*  You should have received a copy of the GNU Lesser General Public
-*  License along with this library; if not, see http://www.gnu.org/licenses/
-*****************************************************************************/
+ *  plate-tectonics, a plate tectonics simulation library
+ *  Copyright (C) 2012-2013 Lauri Viitanen
+ *  Copyright (C) 2014-2015 Federico Tomassetti, Bret Curtis
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, see http://www.gnu.org/licenses/
+ *****************************************************************************/
 
 #include "bounds.hpp"
 
 Bounds::Bounds(const WorldDimension& worldDimension, const FloatPoint& position,
                const Dimension& dimension)
-    : _worldDimension(worldDimension),
-      _position(position),
-      _dimension(dimension) {
+    : _worldDimension(worldDimension), _position(position), _dimension(dimension) {
     ASSERT(_dimension.getWidth() <= _worldDimension.getWidth() &&
-           _dimension.getHeight() <= _worldDimension.getHeight(),
+               _dimension.getHeight() <= _worldDimension.getHeight(),
            "Bounds are larger than the world containing it");
 }
 
 uint32_t Bounds::index(uint32_t x, uint32_t y) const {
-    ASSERT(x < _dimension.getWidth() && y < _dimension.getHeight(),
-           "Invalid coordinates");
+    ASSERT(x < _dimension.getWidth() && y < _dimension.getHeight(), "Invalid coordinates");
     return y * _dimension.getWidth() + x;
 }
 
@@ -68,8 +65,10 @@ bool Bounds::containsWorldPoint(uint32_t x, uint32_t y) const {
 }
 
 bool Bounds::isInLimits(float x, float y) const {
-    if (x<0) return false;
-    if (y<0) return false;
+    if (x < 0)
+        return false;
+    if (y < 0)
+        return false;
     uint32_t ux = (uint32_t)x;
     uint32_t uy = (uint32_t)y;
     return ux < _dimension.getWidth() && uy < _dimension.getHeight();
@@ -87,9 +86,9 @@ void Bounds::grow(int dx, int dy) {
     ASSERT(_dimension.getWidth() <= _worldDimension.getWidth(),
            "Bounds are larger than the world containing it");
     ASSERT(_dimension.getHeight() <= _worldDimension.getHeight(),
-           "Bounds taller than the world containing it. delta=" + Platec::to_string(dy)
-           + " resulting plate height=" + Platec::to_string(_dimension.getHeight())
-           + " world height=" + Platec::to_string(_worldDimension.getHeight()));
+           "Bounds taller than the world containing it. delta=" + Platec::to_string(dy) +
+               " resulting plate height=" + Platec::to_string(_dimension.getHeight()) +
+               " world height=" + Platec::to_string(_worldDimension.getHeight()));
 }
 
 Platec::Rectangle Bounds::asRect() const {

@@ -1,22 +1,39 @@
 cmake_minimum_required (VERSION 3.10)
 project (PlateTectonics)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Export compile commands for clang-tidy and other tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Sanitizer support (AddressSanitizer, UndefinedBehaviorSanitizer)
+option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
+option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer" OFF)
+
+if(ENABLE_ASAN)
+    message(STATUS "AddressSanitizer enabled")
+    if(MSVC)
+        add_compile_options(/fsanitize=address)
+        add_link_options(/fsanitize=address)
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -g")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+    endif()
+endif()
+
+if(ENABLE_UBSAN)
+    message(STATUS "UndefinedBehaviorSanitizer enabled")
+    if(NOT MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-omit-frame-pointer -g")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=undefined")
+    endif()
+endif()
+
 # Treat warnings as errors
 if(MSVC)
     add_compile_options(/W4 /WX)
-    # Note: ASAN disabled on Windows as it causes tests to hang with vcpkg libraries
-    # Enable with -DENABLE_ASAN=ON if needed for debugging
-    if(ENABLE_ASAN)
-        add_compile_options(/fsanitize=address)
-        add_link_options(/fsanitize=address)
-    endif()
 else()
     add_compile_options(-Wall -Wextra -Werror)
 endif()

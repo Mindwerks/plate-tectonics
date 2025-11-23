@@ -20,29 +20,21 @@
 #include "world_point.hpp"
 #include "rectangle.hpp"
 
-WorldPoint::WorldPoint(uint32_t x, uint32_t y, const WorldDimension& dim)
-    : _x(x), _y(y)
-{
+WorldPoint::WorldPoint(uint32_t x, uint32_t y, const WorldDimension& dim) : _x(x), _y(y) {
     ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
 }
 
-WorldPoint::WorldPoint(const WorldPoint& other)
-    : _x(other.x()),
-      _y(other.y())
-{ }
+WorldPoint::WorldPoint(const WorldPoint& other) : _x(other.x()), _y(other.y()) {}
 
-uint32_t WorldPoint::x() const
-{
+uint32_t WorldPoint::x() const {
     return _x;
 }
 
-uint32_t WorldPoint::y() const
-{
+uint32_t WorldPoint::y() const {
     return _y;
 }
 
-uint32_t WorldPoint::toIndex(const WorldDimension& dim) const
-{
+uint32_t WorldPoint::toIndex(const WorldDimension& dim) const {
     ASSERT(_x < dim.getWidth() && _y < dim.getHeight(), "Point outside of world!");
     return _y * dim.getWidth() + _x;
 }
