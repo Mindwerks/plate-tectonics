@@ -228,8 +228,8 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
 
     int x, y;
     for (y=0 ; y<height ; y++) {
-        // Log every 50 rows to avoid too much output
-        if (y % 50 == 0) {
+        // Log every 10 rows to narrow down crash location
+        if (y % 10 == 0) {
             std::cout << "  [PNG] Processing row " << y << "/" << height << std::endl;
         }
 
@@ -289,13 +289,13 @@ void drawColorsImage(png_structp& png_ptr, png_bytep& row, int width, int height
         }
 
         // Log before writing row to PNG
-        if (y % 50 == 0) {
+        if (y % 10 == 0) {
             std::cout << "  [PNG] About to write row " << y << " to PNG..." << std::endl;
         }
 
         png_write_row(png_ptr, row);
 
-        if (y % 50 == 0) {
+        if (y % 10 == 0) {
             std::cout << "  [PNG] Successfully wrote row " << y << std::endl;
         }
     }

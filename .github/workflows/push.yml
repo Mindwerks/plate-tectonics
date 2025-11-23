@@ -65,9 +65,10 @@ jobs:
           # Download and extract ProcDump
           Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Procdump.zip" -OutFile procdump.zip
           Expand-Archive -Path procdump.zip -DestinationPath procdump
-          # Create crash dump directory
-          New-Item -ItemType Directory -Force -Path "$env:TEMP\CrashDumps" | Out-Null
-          Write-Host "ProcDump installed. Crash dumps will be saved to: $env:TEMP\CrashDumps"
+          # Create crash dump directory in runner.temp (where GitHub expects artifacts)
+          $dumpDir = Join-Path $env:RUNNER_TEMP "CrashDumps"
+          New-Item -ItemType Directory -Force -Path $dumpDir | Out-Null
+          Write-Host "ProcDump installed. Crash dumps will be saved to: $dumpDir"
 
       - name: Run tests (Windows)
         if: matrix.os == 'windows-latest'
@@ -76,7 +77,8 @@ jobs:
           cd build
           # Run test under ProcDump to capture crash dumps
           # -ma = full dump, -x = launch and monitor, -e = dump on exception, -accepteula = accept license
-          ..\procdump\procdump.exe -accepteula -ma -e -x $env:TEMP\CrashDumps test\RelWithDebInfo\PlateTectonicsTests.exe
+          $dumpDir = Join-Path $env:RUNNER_TEMP "CrashDumps"
+          ..\procdump\procdump.exe -accepteula -ma -e -x $dumpDir test\RelWithDebInfo\PlateTectonicsTests.exe
           Write-Host "Test execution completed (exit code: $LASTEXITCODE)"
 
       - name: Configure core dumps (Linux/MacOS)
