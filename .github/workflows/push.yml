@@ -74,9 +74,9 @@ jobs:
         continue-on-error: true
         run: |
           cd build
-          # Run test under ProcDump to capture crash dumps on any exception
-          # -ma = full dump, -e = dump on unhandled exception, -accepteula = accept license
-          ..\procdump\procdump.exe -accepteula -ma -e test\RelWithDebInfo\PlateTectonicsTests.exe $env:TEMP\CrashDumps
+          # Run test under ProcDump to capture crash dumps
+          # -ma = full dump, -x = launch and monitor, -e = dump on exception, -accepteula = accept license
+          ..\procdump\procdump.exe -accepteula -ma -e -x $env:TEMP\CrashDumps test\RelWithDebInfo\PlateTectonicsTests.exe
           Write-Host "Test execution completed (exit code: $LASTEXITCODE)"
 
       - name: Configure core dumps (Linux/MacOS)
